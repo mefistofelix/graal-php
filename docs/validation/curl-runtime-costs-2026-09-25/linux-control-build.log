@@ -1,0 +1,14 @@
+build/generated/graalphp/truffle/PhpRootGen.java:5719: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+build/generated/graalphp/truffle/PhpRootGen.java:7396: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+Note: src/graalphp/truffle/PhpContext.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+2 warnings
+[0m[38;5;2;1m[100%]:[0m [38;5;2;1mbuild ok, spent 30.482s[0m
+[0m[38;5;2;1m[100%]:[0m [38;5;2;1mbuild ok, spent 30.373s[0m
+[0m[38;5;2;1m[  1%]:[0m [38;5;5;1m<curl-native-benchmark>[0m cache compiling.release tests/native/curl_benchmark.c[0m
+[0m[38;5;2;1m[ 94%]:[0m [38;5;5;1m<curl-native-benchmark>[0m [38;5;5;1mlinking.release curl-native-benchmark[0m
+[0m[38;5;2;1m[100%]:[0m [38;5;2;1mbuild ok, spent 36.72s[0m

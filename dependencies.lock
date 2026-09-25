@@ -1,0 +1,11 @@
+truffle-runtime-25.4.4.1.1.jar|https://repo.maven.apache.org/maven2/org/graalvm/truffle/truffle-runtime/25.4.4.1.1/truffle-runtime-25.4.4.1.1.jar|25818863ef8e50fc6329a876a033055c7418f20bedb051cfbb31c3d895fad7c9
+truffle-dsl-processor-25.4.4.1.1.jar|https://repo.maven.apache.org/maven2/org/graalvm/truffle/truffle-dsl-processor/25.4.4.1.1/truffle-dsl-processor-25.4.4.1.1.jar|f6fdebcb85da6587d764ffcb0f859a84f5ae1b53866b96012d9e822412cf1518
+truffle-nfi-libffi-25.4.4.1.1.jar|https://repo.maven.apache.org/maven2/org/graalvm/truffle/truffle-nfi-libffi/25.4.4.1.1/truffle-nfi-libffi-25.4.4.1.1.jar|10acdddbe757fc751c89b19e8f01af95c91a182e41f9e577205ab9ef4a6a543d
+truffle-api-25.4.4.1.1.jar|https://repo.maven.apache.org/maven2/org/graalvm/truffle/truffle-api/25.4.4.1.1/truffle-api-25.4.4.1.1.jar|9dcc81b6890d6fcc9ab57d17bc4430335f071d82b108c0af8556a28381978da6
+truffle-compiler-25.4.4.1.1.jar|https://repo.maven.apache.org/maven2/org/graalvm/truffle/truffle-compiler/25.4.4.1.1/truffle-compiler-25.4.4.1.1.jar|06e9dcc0ed60616a4e1785f18ad6836c82295af7ee22f0802c69d46d325aacb2
+truffle-nfi-25.4.4.1.1.jar|https://repo.maven.apache.org/maven2/org/graalvm/truffle/truffle-nfi/25.4.4.1.1/truffle-nfi-25.4.4.1.1.jar|a2df98658e435820d289640dce2ba9061c7e9a7395125f62fb44ed8ce3ee358c
+collections-25.4.4.1.1.jar|https://repo.maven.apache.org/maven2/org/graalvm/sdk/collections/25.4.4.1.1/collections-25.4.4.1.1.jar|1b72cb9c9db533991bc308f2026a6fe986a4ca44b70b68fa6a2bb6c2fb9887ea
+jniutils-25.4.4.1.1.jar|https://repo.maven.apache.org/maven2/org/graalvm/sdk/jniutils/25.4.4.1.1/jniutils-25.4.4.1.1.jar|a9d7e6830e5068dcd6b780ccf2903c075da04b1b2f1fa6c8197b4e9b06d4c075
+polyglot-25.4.4.1.1.jar|https://repo.maven.apache.org/maven2/org/graalvm/polyglot/polyglot/25.4.4.1.1/polyglot-25.4.4.1.1.jar|cbacc2628fd5f99dbcebff7d398bcddde43ea15ebadc873d1da4454c718727d8
+nativeimage-25.4.4.1.1.jar|https://repo.maven.apache.org/maven2/org/graalvm/sdk/nativeimage/25.4.4.1.1/nativeimage-25.4.4.1.1.jar|d633cb9895f01db443dbd2b6e54211cd505e679279f6745a84b1fee843156677
+word-25.4.4.1.1.jar|https://repo.maven.apache.org/maven2/org/graalvm/sdk/word/25.4.4.1.1/word-25.4.4.1.1.jar|f20b7adf174a8c61018ce4e717d9dda65fec27d00540e547e63f1bafa400ac9a

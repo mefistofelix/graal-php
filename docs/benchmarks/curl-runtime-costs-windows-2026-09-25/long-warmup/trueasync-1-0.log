@@ -1,0 +1,4 @@
+VERSION 8.22.0
+PASS curl benchmark
+
+Warning: Future was never used; call await(), map(), catch(), finally() or ignore() to suppress this warning. Created at ${workspace}\tests\php\curl-benchmark.php:28 in Unknown on line 0

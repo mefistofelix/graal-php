@@ -1,0 +1,27 @@
+Direct cURL; ordinary provider forced with GRAALPHP_CURL_PROVIDER=standard
+No WebSocket, PHP HTTP server, SQLite or FFI extension/workload
+Payload=1024 bytes; independent HTTP/1.1 keep-alive peer; 0ms response delay; validates every body
+Warmup=64 clients * 256 requests before parking, excluded
+Native C control, when selected, uses the same static reactor/libraries, has no PHP coroutines and only supports parked=0
+Fresh PHP process and peer for each trial; alternating runtime order
+Metrics=external Windows process CPU, working set (RSS), private commit; sampled peak every 25ms
+Memory distribution=external samples during traffic, including endpoints; raw timestamps retained; quantiles nearest rank
+Latency=hrtime(true) around curl_exec including guest resumption; validation/recording after timestamp; closed-loop load
+Latency sampling interval=0; per-client offset=client index modulo interval; warmup discarded; raw samples emitted after end
+Measurement boundary=peer receives begin/end control calls, includes coroutine creation and drain
+Idle samples=1s held control request; no payload traffic
+Startup=before warmup, after first cURL control submission; baseline=after warmup
+Clients=64; iterations per client=1024; repetitions=2; parked=[1000, 10000]; profile=false
+Interpreter=null; traceCompilation=null
+Host=Windows 11 10.0; logical CPUs=16
+Commands=[RuntimeSpec[name=graalphp-before, command=[build\graalphp.exe], latencyEvery=0], RuntimeSpec[name=graalphp, command=[build\graalphp.exe, -Xmn16m, -XX:MaxHeapFree=1m, -XX:+PrintGC], latencyEvery=0]]
+graalphp-before SHA256=f84539cde1b2976077f4b29c68d3737f1ab096add2e8662f78d0a5d328c36c53
+graalphp SHA256=f84539cde1b2976077f4b29c68d3737f1ab096add2e8662f78d0a5d328c36c53
+graalphp-before run=1 parked=1000 VERSION libcurl/8.22.0 BoringSSL zlib/1.3.2 brotli/1.2.0 zstd/1.5.7 WinIDN nghttp2/1.63.0
+graalphp run=1 parked=1000 VERSION libcurl/8.22.0 BoringSSL zlib/1.3.2 brotli/1.2.0 zstd/1.5.7 WinIDN nghttp2/1.63.0
+graalphp-before run=1 parked=10000 VERSION libcurl/8.22.0 BoringSSL zlib/1.3.2 brotli/1.2.0 zstd/1.5.7 WinIDN nghttp2/1.63.0
+graalphp run=1 parked=10000 VERSION libcurl/8.22.0 BoringSSL zlib/1.3.2 brotli/1.2.0 zstd/1.5.7 WinIDN nghttp2/1.63.0
+graalphp run=2 parked=1000 VERSION libcurl/8.22.0 BoringSSL zlib/1.3.2 brotli/1.2.0 zstd/1.5.7 WinIDN nghttp2/1.63.0
+graalphp-before run=2 parked=1000 VERSION libcurl/8.22.0 BoringSSL zlib/1.3.2 brotli/1.2.0 zstd/1.5.7 WinIDN nghttp2/1.63.0
+graalphp run=2 parked=10000 VERSION libcurl/8.22.0 BoringSSL zlib/1.3.2 brotli/1.2.0 zstd/1.5.7 WinIDN nghttp2/1.63.0
+graalphp-before run=2 parked=10000 VERSION libcurl/8.22.0 BoringSSL zlib/1.3.2 brotli/1.2.0 zstd/1.5.7 WinIDN nghttp2/1.63.0

@@ -1,0 +1,207 @@
+{
+  "measured_requests": 3145728,
+  "passed_trials": 24,
+  "aggregation": "Latency: pooled sampled requests from three runs, nearest-rank quantiles. Memory: pooled external time samples from untimed trials only. Throughput/CPU: medians across three trials.",
+  "groups": [
+    {
+      "runtime": "graalphp",
+      "parked": 1000,
+      "latency_ms": {
+        "n": 24576,
+        "mean": 2.914408760579427,
+        "p20": 2.6742,
+        "p50": 2.8489,
+        "p90": 3.2099,
+        "p95": 3.4649,
+        "p99": 5.3652,
+        "max": 18.6443
+      },
+      "rss_untimed_mib": {
+        "n": 555,
+        "mean": 201.36397100225224,
+        "p20": 192.9375,
+        "p50": 204.1328125,
+        "p90": 210.89453125,
+        "p95": 211.34765625,
+        "p99": 211.3671875,
+        "max": 211.671875
+      },
+      "commit_untimed_mib": {
+        "n": 555,
+        "mean": 219.3329814189189,
+        "p20": 211.7578125,
+        "p50": 221.70703125,
+        "p90": 228.80078125,
+        "p95": 229.22265625,
+        "p99": 229.25390625,
+        "max": 229.359375
+      },
+      "medians": {
+        "": {
+          "requests_per_second": 22066.519,
+          "cpu_us_per_request": 48.876,
+          "rss_mib": 256.477,
+          "peak_rss_mib": 258.637
+        },
+        "-untimed": {
+          "requests_per_second": 22833.965,
+          "cpu_us_per_request": 45.3,
+          "rss_mib": 203.477,
+          "peak_rss_mib": 211.367
+        }
+      },
+      "timing_throughput_change_pct": -3.3609843932054684,
+      "timing_cpu_change_pct": 7.894039735099345
+    },
+    {
+      "runtime": "trueasync",
+      "parked": 1000,
+      "latency_ms": {
+        "n": 24576,
+        "mean": 2.605933907063802,
+        "p20": 2.4725,
+        "p50": 2.6083,
+        "p90": 2.812,
+        "p95": 2.898,
+        "p99": 3.854,
+        "max": 9.1861
+      },
+      "rss_untimed_mib": {
+        "n": 518,
+        "mean": 38.54391891891892,
+        "p20": 38.515625,
+        "p50": 38.58203125,
+        "p90": 38.58984375,
+        "p95": 38.58984375,
+        "p99": 38.58984375,
+        "max": 38.58984375
+      },
+      "commit_untimed_mib": {
+        "n": 518,
+        "mean": 2149.166339888996,
+        "p20": 2150.61328125,
+        "p50": 2150.67578125,
+        "p90": 2150.72265625,
+        "p95": 2150.72265625,
+        "p99": 2150.72265625,
+        "max": 2150.72265625
+      },
+      "medians": {
+        "": {
+          "requests_per_second": 24542.709,
+          "cpu_us_per_request": 40.65,
+          "rss_mib": 38.461,
+          "peak_rss_mib": 39.117
+        },
+        "-untimed": {
+          "requests_per_second": 24525.459,
+          "cpu_us_per_request": 40.65,
+          "rss_mib": 37.934,
+          "peak_rss_mib": 38.582
+        }
+      },
+      "timing_throughput_change_pct": 0.0703350750744347,
+      "timing_cpu_change_pct": 0.0
+    },
+    {
+      "runtime": "graalphp",
+      "parked": 10000,
+      "latency_ms": {
+        "n": 24576,
+        "mean": 2.969054805501302,
+        "p20": 2.698,
+        "p50": 2.8474,
+        "p90": 3.1357,
+        "p95": 3.284,
+        "p99": 5.4634,
+        "max": 63.9017
+      },
+      "rss_untimed_mib": {
+        "n": 569,
+        "mean": 221.89913774165203,
+        "p20": 211.6796875,
+        "p50": 222.92578125,
+        "p90": 230.296875,
+        "p95": 230.5546875,
+        "p99": 230.74609375,
+        "max": 230.74609375
+      },
+      "commit_untimed_mib": {
+        "n": 569,
+        "mean": 239.29726631151144,
+        "p20": 230.20703125,
+        "p50": 240.3125,
+        "p90": 246.8046875,
+        "p95": 247.27734375,
+        "p99": 247.77734375,
+        "max": 247.77734375
+      },
+      "medians": {
+        "": {
+          "requests_per_second": 21376.421,
+          "cpu_us_per_request": 48.28,
+          "rss_mib": 275.844,
+          "peak_rss_mib": 278.438
+        },
+        "-untimed": {
+          "requests_per_second": 22163.069,
+          "cpu_us_per_request": 46.611,
+          "rss_mib": 222.699,
+          "peak_rss_mib": 230.555
+        }
+      },
+      "timing_throughput_change_pct": -3.54936403437629,
+      "timing_cpu_change_pct": 3.5806998348029584
+    },
+    {
+      "runtime": "trueasync",
+      "parked": 10000,
+      "latency_ms": {
+        "n": 24576,
+        "mean": 2.573457861328125,
+        "p20": 2.4731,
+        "p50": 2.5958,
+        "p90": 2.7781,
+        "p95": 2.8341,
+        "p99": 3.0825,
+        "max": 11.511
+      },
+      "rss_untimed_mib": {
+        "n": 515,
+        "mean": 162.3350197208738,
+        "p20": 162.33984375,
+        "p50": 162.35546875,
+        "p90": 162.36328125,
+        "p95": 162.36328125,
+        "p99": 162.36328125,
+        "max": 162.36328125
+      },
+      "commit_untimed_mib": {
+        "n": 515,
+        "mean": 20238.89128489078,
+        "p20": 20240.37890625,
+        "p50": 20240.40234375,
+        "p90": 20240.4296875,
+        "p95": 20240.4296875,
+        "p99": 20240.4296875,
+        "max": 20240.4296875
+      },
+      "medians": {
+        "": {
+          "requests_per_second": 24707.368,
+          "cpu_us_per_request": 40.293,
+          "rss_mib": 162.664,
+          "peak_rss_mib": 163.297
+        },
+        "-untimed": {
+          "requests_per_second": 24322.631,
+          "cpu_us_per_request": 41.127,
+          "rss_mib": 161.707,
+          "peak_rss_mib": 162.355
+        }
+      },
+      "timing_throughput_change_pct": 1.5818066721482449,
+      "timing_cpu_change_pct": -2.0278649062659637
+    }
+  ]
+}

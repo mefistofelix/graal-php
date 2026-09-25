@@ -1,0 +1,5 @@
+runtime,repetition,parked,http_requests,distinct_peer_endpoints
+graalphp-native,1,1000,56015,1458
+trueasync,1,1000,103631,65
+graalphp-native,1,10000,56044,1532
+trueasync,1,10000,101697,68

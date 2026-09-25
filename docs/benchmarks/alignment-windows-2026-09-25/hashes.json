@@ -1,0 +1,9 @@
+{
+  "build/graalphp.exe": "82abc20ab25a9fe56f5ebed9e5bcf83bbf32ade535352289917a87797e9d6390",
+  "build/graalphp-linux-x64": "7bae4460b11e75db27fa7bad566b8ce1e56b0b9bd5ce6687dffd14298329e48a",
+  "build/graalphp-before-alignment.exe": "cca86410511f45d32f417935bd4283241fc340815c7641395b7a30b576a20731",
+  "build/graalphp-probe-compact.exe": "cf294fdf46a0fd575402ce2fe4c1b33cc35c86bf0bfce479f2d03cbe10c6e9cd",
+  "src/graalphp/runtime/Scheduler.java": "0115435d4866a2c330af80978ac9422318fdb21206563ca7f0a59e3b1b412858",
+  "src/graalphp/runtime/PhpValues.java": "c385e252a9e4acf539b3d6ca65129ca9cc43f3b8b977aa85070bcf72351c8051",
+  "xmake.lua": "36f05d9ed8ddd95256bc335e0b38423e5e650a35eba0477cabdd3a2e4f46b288"
+}

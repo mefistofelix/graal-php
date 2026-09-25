@@ -1,0 +1,14 @@
+build\generated\graalphp\truffle\PhpRootGen.java:5719: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+build\generated\graalphp\truffle\PhpRootGen.java:7396: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+Note: ${workspace}\src\graalphp\truffle\PhpContext.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+2 warnings
+using lock ${workspace}\build\toolchain.lock
+already installed 12 packages in ${workspace}\build\toolchain
+[0m[32;1m[100%]:[0m [32;1mbuild ok, spent 1.594s[0m
+[0m[32;1m[100%]:[0m [32;1mbuild ok, spent 1.297s[0m
+[0m[32;1m[100%]:[0m [32;1mbuild ok, spent 1.204s[0m

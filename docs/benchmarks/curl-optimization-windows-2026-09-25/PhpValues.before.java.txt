@@ -1,0 +1,624 @@
+package graalphp.runtime;
+
+import java.util.ArrayList;
+import java.util.ArrayDeque;
+import java.util.Collections;
+import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.function.Consumer;
+import com.oracle.truffle.api.interop.TruffleObject;
+
+/** Request-confined ownership, COW and references for the PHP 8.6 target. */
+public final class PhpValues {
+    public static final String PHP_TARGET = "8.6";
+
+
+    private PhpValues() {}
+
+    public static final class Owned implements AutoCloseable {
+        public final Object value;
+        private boolean closed;
+        private Set<Owned> owner;
+        private Owned(Object value) { this.value = value; retain(value); }
+        public void track(Set<Owned> next) {
+            if (owner != null) owner.remove(this);
+            owner = next;
+            if (next != null && !closed) next.add(this);
+        }
+        @Override @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+        public void close() {
+            if (!closed) { closed = true; track(null); release(value); }
+        }
+    }
+
+    public static Object own(Object value) { return value instanceof HeapNode ? new Owned(value) : value; }
+    public static Object unwrap(Object value) { return value instanceof Owned owned ? owned.value : value; }
+    public static void drop(Object value) { if (value instanceof Owned owned) owned.close(); }
+    @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+    public static List<Object> keys(Object value) {
+        if (!(unwrap(value) instanceof PhpArray array)) throw new PhpError("Expected an array");
+        return List.copyOf(array.entries.keySet());
+    }
+    @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+    public static Object element(Object value, Object key) {
+        var slot = ((PhpArray) unwrap(value)).entries.get(normalizeKey(key));
+        if (slot == null) throw new PhpError("Undefined array key: " + key);
+        return own(slot.read());
+    }
+
+    public record Statistics(long storageCopies, long liveArrays, long liveCells, int cycleCandidates) {}
+
+    public static Statistics statistics(Heap heap) {
+
+        return new Statistics(heap.storageCopies, heap.liveArrays, heap.liveCells, heap.candidates.size());
+    }
+
+    /** Returns reclaimed model nodes, not PHP's gc_collect_cycles() count. */
+    public static int collectCycles(Heap heap) {
+        return heap.collectCycles();
+    }
+
+    public static final class Scope implements AutoCloseable {
+        public final Heap heap;
+
+        public Scope(Heap heap) { this.heap = heap; }
+        public PhpArray array(Object... values) { return PhpArray.of(heap, values); }
+        public PhpArray emptyArray() { return PhpArray.empty(heap); }
+
+        private final List<Location> variables = new ArrayList<>();
+
+        public Location variable(Object value) {
+            var location = new Location(new Slot(heap), null, null);
+            location.set(value);
+            variables.add(location);
+            return location;
+        }
+
+        @Override
+        public void close() {
+            variables.forEach(location -> location.local.clear());
+            variables.clear();
+            heap.collectCycles();
+        }
+    }
+
+    /** A location is resolved for each operation; a bound reference captures a cell. */
+    public static final class Location {
+        private static final Object APPEND = new Object();
+        private final Slot local;
+        private final Location parent;
+        private Object key;
+        private boolean readonly;
+        public Location freeze() { readonly = true; return this; }
+
+        private Location(Slot local, Location parent, Object key) {
+            this.local = local;
+            this.parent = parent;
+            this.key = key;
+        }
+
+        @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+        public Location element(Object key) {
+            return new Location(null, this, normalizeKey(key));
+        }
+
+        public Location deferredAppend() { return new Location(null, this, APPEND); }
+
+        @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+        public Object readOrNull() {
+            var slot = resolve(false);
+            return slot == null ? null : slot.read();
+        }
+
+        /** Borrowed value: store it in a location to give it an owning lifetime. */
+        @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+        public Object read() {
+            var slot = resolve(false);
+            if (slot == null) throw new NoSuchElementException("Undefined location: " + key);
+            return slot.read();
+        }
+
+        @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+        public void set(Object value) {
+            validateValue(value);
+            // Preserve the RHS before resolving a destination inside that same array.
+            retain(value);
+            try {
+                resolve(true).set(value);
+            } finally {
+                release(value);
+            }
+        }
+
+        public void assign(Location source) {
+            set(source.read());
+        }
+
+        @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+        public void bind(Location source) {
+            try (var reference = source.reference()) {
+                bind(reference);
+            }
+        }
+
+        @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+        public void bind(Reference reference) {
+            resolve(true).bind(reference.cell());
+        }
+
+        public Reference reference() {
+            return new Reference(resolve(true).reference());
+        }
+
+        public boolean exists() {
+            return resolve(false) != null;
+        }
+
+        @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+        public void unset() {
+            if (readonly) throw new PhpError("Error", "Cannot unset readonly property");
+            if (parent == null) {
+                local.clear();
+                return;
+            }
+            if (!exists()) return;
+            var array = parent.writableArray();
+            array.entries.remove(key).clear();
+        }
+
+        @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+        public Location append() {
+            var array = writableArray();
+            long index = array.nextIndex;
+            if (array.entries.containsKey(index)) {
+                throw new IllegalStateException("Cannot append: next integer key is occupied");
+            }
+            var location = element(index);
+            location.set(null);
+            return location;
+        }
+
+        public List<Object> keys() {
+            return List.copyOf(((PhpArray) read()).entries.keySet());
+        }
+
+        @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+        public ReferenceIterator iterateReferences() {
+            if (!(read() instanceof PhpArray)) throw new IllegalStateException("foreach requires an array");
+            writableArray();
+            return new ReferenceIterator(reference());
+        }
+
+        public void forEachReference(Location variable, Consumer<Location> body) {
+            try (var iterator = iterateReferences()) {
+                while (iterator.next(variable)) body.accept(variable);
+            }
+        }
+
+        private Slot resolve(boolean write) {
+            if (write && readonly) throw new PhpError("Error", "Cannot modify readonly property");
+            if (parent == null) return write || local.defined ? local : null;
+            PhpArray array;
+            if (write) {
+                array = parent.writableArray();
+                if (key == APPEND) {
+                    key = array.nextIndex;
+                    if (array.entries.containsKey(key)) throw new PhpError("Cannot append: next integer key is occupied");
+                }
+            } else {
+                if (key == APPEND) throw new PhpError("Cannot read an append location");
+                var parentSlot = parent.resolve(false);
+                if (parentSlot == null || parentSlot.read() == null) return null;
+                if (!(parentSlot.read() instanceof PhpArray value)) throw new PhpError("Cannot access an array offset on this value");
+                array = value;
+            }
+            var slot = array.entries.get(key);
+            if (slot == null && write) {
+                slot = new Slot(array.heap);
+                array.insert(key, slot);
+                array.recordKey(key);
+            }
+            return slot;
+        }
+
+        private PhpArray writableArray() {
+            var slot = resolve(true);
+            if (slot.read() == null) slot.set(PhpArray.empty(slot.heap));
+            if (!(slot.read() instanceof PhpArray value)) throw new PhpError("Cannot write an array offset on this value");
+            var array = value;
+            if (array.owners > 1) {
+                array = array.copyStorage();
+                slot.set(array);
+            }
+            return array;
+        }
+    }
+
+    public static final class PhpArray extends HeapNode {
+        private final LinkedHashMap<Object, Slot> entries = new LinkedHashMap<>();
+        private final List<Bucket> order = new ArrayList<>();
+        private final Set<ReferenceIterator> iterators = Collections.newSetFromMap(new IdentityHashMap<>());
+        private long nextIndex;
+        private boolean hasIntegerKey;
+
+        private PhpArray(Heap heap) {
+            super(heap);
+            heap.liveArrays++;
+        }
+
+        public static PhpArray empty(Heap heap) {
+            return new PhpArray(heap);
+        }
+
+        public static PhpArray of(Heap heap, Object... values) {
+            var array = empty(heap);
+            for (var value : values) {
+                validateValue(value);
+                var slot = new Slot(array.heap);
+                slot.set(value);
+                array.insert(array.nextIndex, slot);
+                array.recordKey(array.nextIndex);
+            }
+            return array;
+        }
+
+        private void recordKey(Object key) {
+            if (!(key instanceof Long index)) return;
+            if (!hasIntegerKey || index >= nextIndex) {
+                nextIndex = index == Long.MAX_VALUE ? Long.MAX_VALUE : index + 1;
+            }
+            hasIntegerKey = true;
+        }
+
+        private PhpArray copyStorage() {
+            var copy = empty(heap);
+            for (var bucket : order) {
+                if (bucket.slot.defined) {
+                    copy.insert(bucket.key, bucket.slot.copyForArray());
+                } else {
+                    copy.order.add(bucket);
+                }
+            }
+            copy.nextIndex = nextIndex;
+            copy.hasIntegerKey = hasIntegerKey;
+            for (var iterator : iterators) {
+                iterator.register(copy, iterator.positions.get(this));
+            }
+            heap.storageCopies++;
+            return copy;
+        }
+
+        private void insert(Object key, Slot slot) {
+            entries.put(key, slot);
+            order.add(new Bucket(key, slot));
+        }
+
+        @Override
+        void children(Consumer<HeapNode> visit) {
+            for (var slot : entries.values()) {
+                if (slot.content instanceof HeapNode node) visit.accept(node);
+            }
+        }
+
+        @Override
+        void discard() {
+            entries.values().forEach(Slot::forget);
+            entries.clear();
+            order.clear();
+            for (var iterator : iterators) iterator.positions.remove(this);
+            iterators.clear();
+            heap.liveArrays--;
+        }
+    }
+
+    /** Identity objects and captured environments participate in the same ownership graph as arrays. */
+    public static final class PhpObject extends HeapNode implements TruffleObject {
+        public final Object descriptor;
+        private final LinkedHashMap<String, Slot> fields = new LinkedHashMap<>();
+
+        public PhpObject(Heap heap, Object descriptor) {
+            super(heap);
+            this.descriptor = descriptor;
+            heap.liveObjects++;
+        }
+
+        @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+        public Location field(String name) {
+            return new Location(fields.computeIfAbsent(name, ignored -> new Slot(heap)), null, null);
+        }
+
+        public void fieldType(String name, String type) { fields.get(name).type = type; }
+        public List<String> fieldNames() { return List.copyOf(fields.keySet()); }
+
+        @Override void children(Consumer<HeapNode> visit) {
+            for (var slot : fields.values()) if (slot.content instanceof HeapNode node) visit.accept(node);
+        }
+
+        @Override void discard() {
+            fields.values().forEach(Slot::forget);
+            fields.clear();
+            heap.liveObjects--;
+        }
+    }
+
+    private record Bucket(Object key, Slot slot) {}
+
+    /** Holds the source reference, so unset/rebind of its variable does not redirect the loop. */
+    public static final class ReferenceIterator implements AutoCloseable {
+        private final Reference source;
+        private final IdentityHashMap<PhpArray, Integer> positions = new IdentityHashMap<>();
+        public Object key;
+
+        private ReferenceIterator(Reference source) {
+            this.source = source;
+            register((PhpArray) source.read(), 0);
+        }
+
+        private void register(PhpArray array, int position) {
+            positions.put(array, position);
+            array.iterators.add(this);
+        }
+
+        public boolean next(Location variable) {
+            if (!(source.read() instanceof PhpArray array)) {
+                throw new IllegalStateException("foreach source is no longer an array");
+            }
+            if (!positions.containsKey(array)) register(array, 0);
+            int position = positions.get(array);
+            while (position < array.order.size()) {
+                var bucket = array.order.get(position++);
+                positions.put(array, position);
+                if (!bucket.slot.defined) continue;
+                key = bucket.key;
+                // Fetch-by-reference promotes the live bucket, even when a copy shares it.
+                // COW happens at reset or a subsequent write, not at every foreach fetch.
+                try (var reference = new Reference(bucket.slot.reference())) {
+                    variable.bind(reference);
+                }
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public void close() {
+            for (var array : positions.keySet()) array.iterators.remove(this);
+            positions.clear();
+            source.close();
+        }
+    }
+
+    /** An owning, direct reference, also usable as a return-by-reference result. */
+    public static final class Reference implements AutoCloseable {
+        private Cell cell;
+
+        private Reference(Cell cell) {
+            this.cell = cell;
+            cell.owners++;
+        }
+
+        @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+        public Object read() {
+            return cell().value;
+        }
+
+        @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+        public void set(Object value) {
+            validateValue(value);
+            cell().set(value);
+        }
+
+        private Cell cell() {
+            if (cell == null) throw new IllegalStateException("Reference has been closed");
+            return cell;
+        }
+
+        @Override
+        public void close() {
+            if (cell == null) return;
+            release(cell);
+            cell = null;
+        }
+    }
+
+    private static final class Cell extends HeapNode {
+        Object value;
+
+        Cell(Heap heap, Object value) {
+            super(heap);
+            this.value = value;
+            owners = 1;
+            heap.liveCells++;
+        }
+
+        void set(Object replacement) {
+            retain(replacement);
+            release(value);
+            value = replacement;
+        }
+
+        @Override
+        void children(Consumer<HeapNode> visit) {
+            if (value instanceof HeapNode node) visit.accept(node);
+        }
+
+        @Override
+        void discard() {
+            value = null;
+            heap.liveCells--;
+        }
+    }
+
+    private static final class Slot {
+        final Heap heap;
+        Slot(Heap heap) { this.heap = heap; }
+        Object content;
+        boolean defined;
+        String type;
+
+        Object read() {
+            return content instanceof Cell cell ? cell.value : content;
+        }
+
+        void set(Object value) {
+            if (type != null) value = ObjectModel.checkType(value, type);
+            if (value instanceof HeapNode node && node.heap != heap) {
+                throw new IllegalArgumentException("PHP containers must belong to the same request heap");
+            }
+            defined = true;
+            if (content instanceof Cell cell) {
+                cell.set(value);
+                return;
+            }
+            retain(value);
+            release(content);
+            content = value;
+        }
+
+        Cell reference() {
+            if (type != null) throw new PhpError("References to typed properties are not implemented");
+            defined = true;
+            if (content instanceof Cell cell) return cell;
+            // Transfer the owned value to the cell; do not acquire it a second time.
+            var cell = new Cell(heap, content);
+            content = cell;
+            return cell;
+        }
+
+        void bind(Cell cell) {
+            defined = true;
+            cell.owners++;
+            release(content);
+            content = cell;
+        }
+
+        Slot copyForArray() {
+            var copy = new Slot(heap);
+            if (content instanceof Cell cell && cell.owners > 1) {
+                copy.bind(cell);
+            } else {
+                // A reference with no other alias must not connect the separated arrays.
+                copy.set(read());
+            }
+            return copy;
+        }
+
+        void clear() {
+            var previous = content;
+            forget();
+            release(previous);
+        }
+
+        void forget() {
+            content = null;
+            defined = false;
+        }
+    }
+
+    private static Object normalizeKey(Object key) {
+        if (key == null) return "";
+        if (key instanceof Boolean bool) return bool ? 1L : 0L;
+        if (key instanceof Integer integer) return integer.longValue();
+        if (key instanceof Long) return key;
+        if (key instanceof Double number) return number.longValue();
+        if (key instanceof String string) {
+            try {
+                long integer = Long.parseLong(string);
+                if (Long.toString(integer).equals(string)) return integer;
+            } catch (NumberFormatException ignored) {
+                // Non-integer strings, including overflow, remain string keys in PHP.
+            }
+            return string;
+        }
+        throw new PhpError("Array keys currently support int|string|bool|null");
+    }
+
+    private static void validateValue(Object value) {
+        if (value == null || value instanceof Long || value instanceof Double || value instanceof Boolean
+                || value instanceof String || value instanceof PhpString || value instanceof PhpArray || value instanceof TruffleObject) return;
+        throw new PhpError("Unsupported PHP value type: " + value.getClass().getSimpleName());
+    }
+
+    static void retain(Object value) {
+        if (value instanceof HeapNode node) node.owners++;
+    }
+
+    static void release(Object value) {
+        if (!(value instanceof HeapNode node)) return;
+        var heap = node.heap;
+
+        if (--node.owners > 0) {
+            heap.candidates.add(node);
+            return;
+        }
+        var pending = new ArrayDeque<HeapNode>();
+        pending.add(node);
+        while (!pending.isEmpty()) {
+            var dead = pending.removeLast();
+            heap.candidates.remove(dead);
+            dead.children(child -> {
+                if (--child.owners == 0) pending.add(child);
+                else heap.candidates.add(child);
+            });
+            dead.discard();
+        }
+    }
+
+    abstract static class HeapNode {
+        final Heap heap;
+        HeapNode(Heap heap) { this.heap = heap; }
+        int owners;
+        abstract void children(Consumer<HeapNode> visit);
+        abstract void discard();
+    }
+
+    /** Trial deletion: internal graph edges do not keep an unreachable cycle alive. */
+    public static final class Heap {
+        Set<HeapNode> candidates = Collections.newSetFromMap(new IdentityHashMap<>());
+        long storageCopies;
+        long liveArrays;
+        long liveCells;
+        public long liveObjects;
+
+        public int collectCycles() {
+            if (candidates.isEmpty()) return 0;
+            var externalOwners = new IdentityHashMap<HeapNode, Integer>();
+            var pending = new ArrayDeque<>(candidates);
+            // Do not scan a table sized for a past coroutine peak on every scope close.
+            candidates = Collections.newSetFromMap(new IdentityHashMap<>());
+            while (!pending.isEmpty()) {
+                var node = pending.removeLast();
+                if (externalOwners.putIfAbsent(node, node.owners) != null) continue;
+                node.children(pending::add);
+            }
+            for (var node : externalOwners.keySet()) {
+                node.children(child -> externalOwners.put(child, externalOwners.get(child) - 1));
+            }
+            externalOwners.forEach((node, owners) -> {
+                if (owners > 0) pending.add(node);
+            });
+            var live = Collections.newSetFromMap(new IdentityHashMap<HeapNode, Boolean>());
+            while (!pending.isEmpty()) {
+                var node = pending.removeLast();
+                if (live.add(node)) node.children(pending::add);
+            }
+            var dead = new ArrayList<HeapNode>();
+            for (var node : externalOwners.keySet()) {
+                if (!live.contains(node)) dead.add(node);
+            }
+            for (var node : dead) {
+                node.children(child -> {
+                    if (live.contains(child)) release(child);
+                });
+            }
+            for (var node : dead) {
+                node.owners = 0;
+                node.discard();
+            }
+            return dead.size();
+        }
+    }
+}

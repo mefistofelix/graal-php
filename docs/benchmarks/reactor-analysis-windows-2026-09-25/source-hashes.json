@@ -1,0 +1,30 @@
+[
+  {
+    "file": "src/graalphp/runtime/Scheduler.java",
+    "sha256": "ada600ccfe2ed2c3cc86a8d4fed343c2e2ebfd6d35237103aae03c1b35d7135a"
+  },
+  {
+    "file": "src/graalphp/runtime/PhpValues.java",
+    "sha256": "77297c41da6633ced1d13ab5aa81742c41fa5b11d55da44e055ef460e46c3308"
+  },
+  {
+    "file": "src/graalphp/runtime/LibuvReactor.java",
+    "sha256": "77eaea96051d8c706af69a2c7ed406938a65d0015732263ef044ad4d5ea4e785"
+  },
+  {
+    "file": "src/native/reactor.c",
+    "sha256": "59c3cdaef9c42c5512c3f2b0ed537b93015006f97bc0117cb2b67efefca24440"
+  },
+  {
+    "file": "src/native/curl_reactor.c",
+    "sha256": "297332c6cee670e46dce90f4af5f7f00c9bc607ff78f4a590c33b6a32c868f27"
+  },
+  {
+    "file": "../php-xmake/in/php-src/ext/curl/curl_async.c",
+    "sha256": "36073dda8306e6eeb125a8b3710e8884b88a28242aaf56869b87aac7eb16a95d"
+  },
+  {
+    "file": "../php-xmake/in/php-src/Zend/zend_gc.c",
+    "sha256": "5d06fe9c74b611ef066266c199372188aa80f1ad1236d25c0c0120d7253554b2"
+  }
+]

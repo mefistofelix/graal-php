@@ -1,0 +1,3 @@
+VERSION libcurl/8.22.0 BoringSSL zlib/1.3.2 brotli/1.2.0 zstd/1.5.7 WinIDN nghttp2/1.63.0
+PASS curl assertions=93
+PASS independent peer: peak held requests=16; artifacts=${workspace}\build\curl-test-1736882686023687395

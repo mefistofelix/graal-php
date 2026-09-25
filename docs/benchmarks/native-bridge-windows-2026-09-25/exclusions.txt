@@ -1,0 +1,6 @@
+Excluded paired trial: main repetition=1, parked=1000, both runtimes.
+Reason: the first GraalPHP trial overlapped the final Linux differential test.
+Linux test completed at 2026-09-25T13:19:05.6269933Z, overlapping echo and relay and the beginning of sqlite.
+The entire pair is retained in raw CSV files but excluded from every summary.
+All main parked=10000 trials and main repetition=2 parked=1000 trials ran after functional tests and builds finished.
+A separate repeat series replaces the excluded population=1000 pair and adds a third population=10000 pair.

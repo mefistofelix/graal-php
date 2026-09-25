@@ -1,0 +1,1 @@
+GNU nm: no unprefixed curl_, Curl_ or curlx_ definitions in libstandard-curl.a

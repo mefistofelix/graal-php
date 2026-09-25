@@ -1,0 +1,15 @@
+Direct cURL; ordinary provider forced with GRAALPHP_CURL_PROVIDER=standard
+No WebSocket, PHP HTTP server, SQLite or FFI extension/workload
+Payload=1024 bytes; independent HTTP/1.1 keep-alive peer; 0ms response delay; validates every body
+Warmup=64 clients * 256 requests before parking, excluded
+Native C control, when selected, uses the same static reactor/libraries, has no PHP coroutines and only supports parked=0
+Fresh PHP process and peer for each trial; alternating runtime order
+Metrics=external Windows process CPU, working set (RSS), private commit; sampled peak every 25ms
+Measurement boundary=peer receives begin/end control calls, includes coroutine creation and drain
+Idle samples=1s held control request; no payload traffic
+Clients=64; iterations per client=4096; repetitions=1; parked=[0]; profile=false
+Interpreter=null; traceCompilation=null
+Host=Windows 11 10.0; logical CPUs=16
+Commands=[RuntimeSpec[name=graalphp, command=[build\graalphp-probe-dispatch-costs.exe]]]
+graalphp SHA256=6b91c0b0174c44dd15ea3b3214e5b41b79e2106e4110017a5f6f47d1a6e53474
+graalphp run=1 parked=0 VERSION libcurl/8.22.0 BoringSSL zlib/1.3.2 brotli/1.2.0 zstd/1.5.7 WinIDN nghttp2/1.63.0

@@ -1,0 +1,4 @@
+build/native-stack-probe-windows-native.log: PASS: 12 C stacks, 36 callback suspensions and forced GC requests, nested PHP/C calls, same OS thread; result=520:272
+build/native-stack-probe-windows-jvm.log: PASS: 12 C stacks, 36 callback suspensions and forced GC requests, nested PHP/C calls, same OS thread; result=520:272
+build/linux-workspace/build/native-stack-probe-linux-native.log: PASS: 12 C stacks, 36 callback suspensions and forced GC requests, nested PHP/C calls, same OS thread; result=520:272
+build/linux-workspace/build/native-stack-probe-linux-jvm.log: PASS: 12 C stacks, 36 callback suspensions and forced GC requests, nested PHP/C calls, same OS thread; result=520:272

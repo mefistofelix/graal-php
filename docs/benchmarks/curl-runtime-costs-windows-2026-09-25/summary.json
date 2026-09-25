@@ -1,0 +1,773 @@
+{
+  "native-control": {
+    "source": "curl-benchmark-12019929291150521781",
+    "trials": 6,
+    "pass_logs": 6,
+    "measured_requests": 1572864,
+    "groups": [
+      {
+        "runtime": "graalphp",
+        "parked": 0,
+        "n": 2,
+        "requests_per_second": {
+          "median": 20007.7535,
+          "min": 19778.742,
+          "max": 20236.765
+        },
+        "cpu_us_per_request": {
+          "median": 50.515,
+          "min": 50.187,
+          "max": 50.843
+        },
+        "user_us_per_request": {
+          "median": 29.564,
+          "min": 27.597,
+          "max": 31.531
+        },
+        "kernel_us_per_request": {
+          "median": 20.951,
+          "min": 19.312,
+          "max": 22.59
+        },
+        "rss_mib": {
+          "median": 136.426,
+          "min": 85.59,
+          "max": 187.262
+        },
+        "private_commit_mib": {
+          "median": 149.2305,
+          "min": 96.641,
+          "max": 201.82
+        },
+        "peak_rss_mib": {
+          "median": 205.95499999999998,
+          "min": 201.355,
+          "max": 210.555
+        },
+        "distinct_peer_endpoints": {
+          "median": 70.0,
+          "min": 64.0,
+          "max": 76.0
+        }
+      },
+      {
+        "runtime": "trueasync",
+        "parked": 0,
+        "n": 2,
+        "requests_per_second": {
+          "median": 24380.4065,
+          "min": 24331.721,
+          "max": 24429.092
+        },
+        "cpu_us_per_request": {
+          "median": 40.859,
+          "min": 40.71,
+          "max": 41.008
+        },
+        "user_us_per_request": {
+          "median": 18.4775,
+          "min": 18.12,
+          "max": 18.835
+        },
+        "kernel_us_per_request": {
+          "median": 22.3815,
+          "min": 22.173,
+          "max": 22.59
+        },
+        "rss_mib": {
+          "median": 23.7735,
+          "min": 23.758,
+          "max": 23.789
+        },
+        "private_commit_mib": {
+          "median": 74.4685,
+          "min": 74.453,
+          "max": 74.484
+        },
+        "peak_rss_mib": {
+          "median": 24.4725,
+          "min": 24.453,
+          "max": 24.492
+        },
+        "distinct_peer_endpoints": {
+          "median": 64.0,
+          "min": 64.0,
+          "max": 64.0
+        }
+      },
+      {
+        "runtime": "native-curl",
+        "parked": 0,
+        "n": 2,
+        "requests_per_second": {
+          "median": 27637.7385,
+          "min": 27406.433,
+          "max": 27869.044
+        },
+        "cpu_us_per_request": {
+          "median": 36.1205,
+          "min": 35.763,
+          "max": 36.478
+        },
+        "user_us_per_request": {
+          "median": 13.977,
+          "min": 13.649,
+          "max": 14.305
+        },
+        "kernel_us_per_request": {
+          "median": 22.143,
+          "min": 22.113,
+          "max": 22.173
+        },
+        "rss_mib": {
+          "median": 9.3165,
+          "min": 9.289,
+          "max": 9.344
+        },
+        "private_commit_mib": {
+          "median": 2.4665,
+          "min": 2.441,
+          "max": 2.492
+        },
+        "peak_rss_mib": {
+          "median": 9.7405,
+          "min": 9.719,
+          "max": 9.762
+        },
+        "distinct_peer_endpoints": {
+          "median": 64.0,
+          "min": 64.0,
+          "max": 64.0
+        }
+      }
+    ]
+  },
+  "long-warmup": {
+    "source": "curl-benchmark-11178734300089369381",
+    "trials": 4,
+    "pass_logs": 4,
+    "measured_requests": 1048576,
+    "groups": [
+      {
+        "runtime": "graalphp",
+        "parked": 0,
+        "n": 2,
+        "requests_per_second": {
+          "median": 20393.393,
+          "min": 20343.46,
+          "max": 20443.326
+        },
+        "cpu_us_per_request": {
+          "median": 49.680499999999995,
+          "min": 49.293,
+          "max": 50.068
+        },
+        "user_us_per_request": {
+          "median": 28.849,
+          "min": 27.478,
+          "max": 30.22
+        },
+        "kernel_us_per_request": {
+          "median": 20.8315,
+          "min": 19.848,
+          "max": 21.815
+        },
+        "rss_mib": {
+          "median": 53.711,
+          "min": 53.637,
+          "max": 53.785
+        },
+        "private_commit_mib": {
+          "median": 62.303,
+          "min": 62.293,
+          "max": 62.313
+        },
+        "peak_rss_mib": {
+          "median": 180.707,
+          "min": 175.809,
+          "max": 185.605
+        },
+        "distinct_peer_endpoints": {
+          "median": 81.0,
+          "min": 64.0,
+          "max": 98.0
+        }
+      },
+      {
+        "runtime": "trueasync",
+        "parked": 0,
+        "n": 2,
+        "requests_per_second": {
+          "median": 23870.458,
+          "min": 23464.111,
+          "max": 24276.805
+        },
+        "cpu_us_per_request": {
+          "median": 41.7235,
+          "min": 41.068,
+          "max": 42.379
+        },
+        "user_us_per_request": {
+          "median": 19.5505,
+          "min": 19.491,
+          "max": 19.61
+        },
+        "kernel_us_per_request": {
+          "median": 22.173000000000002,
+          "min": 21.577,
+          "max": 22.769
+        },
+        "rss_mib": {
+          "median": 23.83,
+          "min": 23.719,
+          "max": 23.941
+        },
+        "private_commit_mib": {
+          "median": 75.492,
+          "min": 74.629,
+          "max": 76.355
+        },
+        "peak_rss_mib": {
+          "median": 24.5215,
+          "min": 24.398,
+          "max": 24.645
+        },
+        "distinct_peer_endpoints": {
+          "median": 64.0,
+          "min": 64.0,
+          "max": 64.0
+        }
+      }
+    ]
+  },
+  "dispatch": {
+    "source": "curl-benchmark-7591116930753443304",
+    "trials": 1,
+    "pass_logs": 1,
+    "measured_requests": 262144,
+    "groups": [
+      {
+        "runtime": "graalphp",
+        "parked": 0,
+        "n": 1,
+        "requests_per_second": {
+          "median": 19064.616,
+          "min": 19064.616,
+          "max": 19064.616
+        },
+        "cpu_us_per_request": {
+          "median": 53.346,
+          "min": 53.346,
+          "max": 53.346
+        },
+        "user_us_per_request": {
+          "median": 32.008,
+          "min": 32.008,
+          "max": 32.008
+        },
+        "kernel_us_per_request": {
+          "median": 21.338,
+          "min": 21.338,
+          "max": 21.338
+        },
+        "rss_mib": {
+          "median": 91.957,
+          "min": 91.957,
+          "max": 91.957
+        },
+        "private_commit_mib": {
+          "median": 102.25,
+          "min": 102.25,
+          "max": 102.25
+        },
+        "peak_rss_mib": {
+          "median": 217.23,
+          "min": 217.23,
+          "max": 217.23
+        },
+        "distinct_peer_endpoints": {
+          "median": 64.0,
+          "min": 64.0,
+          "max": 64.0
+        }
+      }
+    ],
+    "counters": [
+      {
+        "name": "native",
+        "count": 853975,
+        "inclusive_ms": 11477.496,
+        "exclusive_ms": 11381.618,
+        "exclusive_us_per_curl": 40.8628739247196
+      },
+      {
+        "name": "native-wait",
+        "count": 27,
+        "inclusive_ms": 2094.361,
+        "exclusive_ms": 2094.267,
+        "exclusive_us_per_curl": 7.518945758476583
+      },
+      {
+        "name": "curl-dispatch",
+        "count": 2228537,
+        "inclusive_ms": 21507.422,
+        "exclusive_ms": 597.977,
+        "exclusive_us_per_curl": 2.146887969784441
+      },
+      {
+        "name": "cycle-collector",
+        "count": 278803,
+        "inclusive_ms": 105.979,
+        "exclusive_ms": 105.979,
+        "exclusive_us_per_curl": 0.38049129004925825
+      },
+      {
+        "name": "activation-close",
+        "count": 278796,
+        "inclusive_ms": 158.227,
+        "exclusive_ms": 51.67,
+        "exclusive_us_per_curl": 0.18550830784254593
+      },
+      {
+        "name": "variable",
+        "count": 3066453,
+        "inclusive_ms": 575.779,
+        "exclusive_ms": 575.779,
+        "exclusive_us_per_curl": 2.06719156147229
+      },
+      {
+        "name": "string-fromBytes",
+        "count": 278532,
+        "inclusive_ms": 267.697,
+        "exclusive_ms": 267.697,
+        "exclusive_us_per_curl": 0.961099622305516
+      },
+      {
+        "name": "reactor-submit",
+        "count": 278532,
+        "inclusive_ms": 9794.625,
+        "exclusive_ms": 100.945,
+        "exclusive_us_per_curl": 0.36241796274754784
+      },
+      {
+        "name": "reactor-step",
+        "count": 17614,
+        "inclusive_ms": 3473.082,
+        "exclusive_ms": 1.668,
+        "exclusive_us_per_curl": 0.005988539916418939
+      },
+      {
+        "name": "native-completion",
+        "count": 278532,
+        "inclusive_ms": 95.972,
+        "exclusive_ms": 95.972,
+        "exclusive_us_per_curl": 0.3445636408024931
+      },
+      {
+        "name": "function-dispatch",
+        "count": 2228799,
+        "inclusive_ms": 22060.059,
+        "exclusive_ms": 550.157,
+        "exclusive_us_per_curl": 1.9752021311734378
+      },
+      {
+        "name": "execute-child",
+        "count": 278538,
+        "inclusive_ms": 10381.939,
+        "exclusive_ms": 170.288,
+        "exclusive_us_per_curl": 0.6113767897404966
+      },
+      {
+        "name": "scheduler-advance",
+        "count": 278663,
+        "inclusive_ms": 11433.631,
+        "exclusive_ms": 412.484,
+        "exclusive_us_per_curl": 1.480921402208723
+      },
+      {
+        "name": "scheduler-resume",
+        "count": 278534,
+        "inclusive_ms": 13290.522,
+        "exclusive_ms": 384.806,
+        "exclusive_us_per_curl": 1.3815504143150519
+      }
+    ],
+    "curl_calls_including_warmup_control": 278532
+  },
+  "final-ab": {
+    "source": "curl-benchmark-9314491433571289043",
+    "trials": 12,
+    "pass_logs": 12,
+    "measured_requests": 786432,
+    "groups": [
+      {
+        "runtime": "graalphp-before",
+        "parked": 1000,
+        "n": 3,
+        "requests_per_second": {
+          "median": 20502.632,
+          "min": 18384.596,
+          "max": 20794.889
+        },
+        "cpu_us_per_request": {
+          "median": 51.737,
+          "min": 49.114,
+          "max": 55.552
+        },
+        "user_us_per_request": {
+          "median": 32.663,
+          "min": 30.041,
+          "max": 33.617
+        },
+        "kernel_us_per_request": {
+          "median": 18.12,
+          "min": 16.451,
+          "max": 25.511
+        },
+        "rss_mib": {
+          "median": 191.734,
+          "min": 189.012,
+          "max": 219.41
+        },
+        "private_commit_mib": {
+          "median": 206.738,
+          "min": 203.699,
+          "max": 234.918
+        },
+        "peak_rss_mib": {
+          "median": 200.09,
+          "min": 197.523,
+          "max": 228.441
+        },
+        "distinct_peer_endpoints": {
+          "median": 64.0,
+          "min": 64.0,
+          "max": 64.0
+        }
+      },
+      {
+        "runtime": "graalphp",
+        "parked": 1000,
+        "n": 3,
+        "requests_per_second": {
+          "median": 22436.723,
+          "min": 22260.461,
+          "max": 22668.113
+        },
+        "cpu_us_per_request": {
+          "median": 45.776,
+          "min": 44.823,
+          "max": 47.207
+        },
+        "user_us_per_request": {
+          "median": 24.319,
+          "min": 22.65,
+          "max": 29.802
+        },
+        "kernel_us_per_request": {
+          "median": 21.458,
+          "min": 17.405,
+          "max": 22.173
+        },
+        "rss_mib": {
+          "median": 182.957,
+          "min": 181.668,
+          "max": 199.664
+        },
+        "private_commit_mib": {
+          "median": 199.988,
+          "min": 198.969,
+          "max": 216.508
+        },
+        "peak_rss_mib": {
+          "median": 188.535,
+          "min": 188.43,
+          "max": 205.066
+        },
+        "distinct_peer_endpoints": {
+          "median": 64.0,
+          "min": 64.0,
+          "max": 64.0
+        }
+      },
+      {
+        "runtime": "graalphp-before",
+        "parked": 10000,
+        "n": 3,
+        "requests_per_second": {
+          "median": 19691.105,
+          "min": 19498.366,
+          "max": 19799.527
+        },
+        "cpu_us_per_request": {
+          "median": 54.598,
+          "min": 52.214,
+          "max": 54.598
+        },
+        "user_us_per_request": {
+          "median": 35.048,
+          "min": 33.379,
+          "max": 38.147
+        },
+        "kernel_us_per_request": {
+          "median": 18.835,
+          "min": 16.451,
+          "max": 19.55
+        },
+        "rss_mib": {
+          "median": 242.488,
+          "min": 212.0,
+          "max": 242.551
+        },
+        "private_commit_mib": {
+          "median": 256.102,
+          "min": 227.324,
+          "max": 257.469
+        },
+        "peak_rss_mib": {
+          "median": 243.395,
+          "min": 221.031,
+          "max": 251.77
+        },
+        "distinct_peer_endpoints": {
+          "median": 64.0,
+          "min": 64.0,
+          "max": 78.0
+        }
+      },
+      {
+        "runtime": "graalphp",
+        "parked": 10000,
+        "n": 3,
+        "requests_per_second": {
+          "median": 21581.72,
+          "min": 21451.143,
+          "max": 21779.304
+        },
+        "cpu_us_per_request": {
+          "median": 48.161,
+          "min": 47.207,
+          "max": 49.114
+        },
+        "user_us_per_request": {
+          "median": 28.61,
+          "min": 25.272,
+          "max": 30.041
+        },
+        "kernel_us_per_request": {
+          "median": 18.597,
+          "min": 18.12,
+          "max": 23.842
+        },
+        "rss_mib": {
+          "median": 222.68,
+          "min": 205.832,
+          "max": 223.996
+        },
+        "private_commit_mib": {
+          "median": 238.594,
+          "min": 222.977,
+          "max": 240.098
+        },
+        "peak_rss_mib": {
+          "median": 223.906,
+          "min": 207.023,
+          "max": 225.43
+        },
+        "distinct_peer_endpoints": {
+          "median": 64.0,
+          "min": 64.0,
+          "max": 64.0
+        }
+      }
+    ]
+  },
+  "final-trueasync": {
+    "source": "curl-benchmark-3070204405440806293",
+    "trials": 12,
+    "pass_logs": 12,
+    "measured_requests": 786432,
+    "groups": [
+      {
+        "runtime": "graalphp",
+        "parked": 1000,
+        "n": 3,
+        "requests_per_second": {
+          "median": 22687.279,
+          "min": 21021.76,
+          "max": 22814.97
+        },
+        "cpu_us_per_request": {
+          "median": 46.492,
+          "min": 46.253,
+          "max": 50.783
+        },
+        "user_us_per_request": {
+          "median": 24.08,
+          "min": 23.603,
+          "max": 24.319
+        },
+        "kernel_us_per_request": {
+          "median": 22.888,
+          "min": 21.935,
+          "max": 26.703
+        },
+        "rss_mib": {
+          "median": 199.027,
+          "min": 197.77,
+          "max": 199.375
+        },
+        "private_commit_mib": {
+          "median": 215.578,
+          "min": 214.676,
+          "max": 216.277
+        },
+        "peak_rss_mib": {
+          "median": 203.844,
+          "min": 203.625,
+          "max": 204.133
+        },
+        "distinct_peer_endpoints": {
+          "median": 64.0,
+          "min": 64.0,
+          "max": 86.0
+        }
+      },
+      {
+        "runtime": "trueasync",
+        "parked": 1000,
+        "n": 3,
+        "requests_per_second": {
+          "median": 25455.365,
+          "min": 23512.93,
+          "max": 25581.886
+        },
+        "cpu_us_per_request": {
+          "median": 39.101,
+          "min": 39.101,
+          "max": 42.439
+        },
+        "user_us_per_request": {
+          "median": 17.166,
+          "min": 16.451,
+          "max": 19.312
+        },
+        "kernel_us_per_request": {
+          "median": 22.65,
+          "min": 19.789,
+          "max": 25.272
+        },
+        "rss_mib": {
+          "median": 37.77,
+          "min": 37.758,
+          "max": 37.801
+        },
+        "private_commit_mib": {
+          "median": 2086.391,
+          "min": 2084.418,
+          "max": 2086.426
+        },
+        "peak_rss_mib": {
+          "median": 38.422,
+          "min": 38.391,
+          "max": 38.434
+        },
+        "distinct_peer_endpoints": {
+          "median": 64.0,
+          "min": 64.0,
+          "max": 64.0
+        }
+      },
+      {
+        "runtime": "graalphp",
+        "parked": 10000,
+        "n": 3,
+        "requests_per_second": {
+          "median": 21583.68,
+          "min": 21571.566,
+          "max": 22338.997
+        },
+        "cpu_us_per_request": {
+          "median": 48.399,
+          "min": 45.776,
+          "max": 49.114
+        },
+        "user_us_per_request": {
+          "median": 24.796,
+          "min": 24.319,
+          "max": 33.855
+        },
+        "kernel_us_per_request": {
+          "median": 20.981,
+          "min": 15.259,
+          "max": 24.08
+        },
+        "rss_mib": {
+          "median": 222.609,
+          "min": 205.887,
+          "max": 224.031
+        },
+        "private_commit_mib": {
+          "median": 238.582,
+          "min": 222.953,
+          "max": 240.152
+        },
+        "peak_rss_mib": {
+          "median": 223.793,
+          "min": 207.082,
+          "max": 225.488
+        },
+        "distinct_peer_endpoints": {
+          "median": 72.0,
+          "min": 64.0,
+          "max": 84.0
+        }
+      },
+      {
+        "runtime": "trueasync",
+        "parked": 10000,
+        "n": 3,
+        "requests_per_second": {
+          "median": 23991.862,
+          "min": 23861.795,
+          "max": 24183.306
+        },
+        "cpu_us_per_request": {
+          "median": 41.485,
+          "min": 41.246,
+          "max": 41.723
+        },
+        "user_us_per_request": {
+          "median": 20.266,
+          "min": 19.789,
+          "max": 21.458
+        },
+        "kernel_us_per_request": {
+          "median": 21.458,
+          "min": 19.789,
+          "max": 21.696
+        },
+        "rss_mib": {
+          "median": 161.523,
+          "min": 161.5,
+          "max": 161.609
+        },
+        "private_commit_mib": {
+          "median": 20176.141,
+          "min": 20174.246,
+          "max": 20176.156
+        },
+        "peak_rss_mib": {
+          "median": 162.16,
+          "min": 162.133,
+          "max": 162.266
+        },
+        "distinct_peer_endpoints": {
+          "median": 64.0,
+          "min": 64.0,
+          "max": 64.0
+        }
+      }
+    ]
+  }
+}

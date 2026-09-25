@@ -1,0 +1,14 @@
+{
+  "graalvm": "25.4.4.1.1+1.1",
+  "installed_Continuation_source_sha256": "0824b37ed3211e1ab7653529ae660c11a9b8adb13c2840003703b7642489d054",
+  "hashes": {
+    "tests/native/native_stack_probe.c": "4b87d22d1d2da3d5b342eccbb9035607fb143c790f3a7fea647a1243a37bcbe1",
+    "tests/graalphp/NativeStackProbe.java": "976b985128434590d3e86a47eca0c1971d3f6c13d5408802424111d4b23080a1",
+    "build/native-stack-probe.dll": "0041129b01d31eab20fad62ff3f17f0edf49b8a3cca3d67c2a747392bec5d563",
+    "build/native-stack-probe-runner.exe": "6549d6abd10750fc141bfbfbbd541f099c0c72fefbb7687d925c071b4058c220",
+    "build/linux-workspace/build/libnative-stack-probe.so": "5ae938eacfc007894774242f14d284a551392cd8d2fc2a1e3bda6490ea7895f3",
+    "build/linux-workspace/build/native-stack-probe-runner": "13332d17d49df70ef0ce1c3f31db3b78f4f2b10795dea2d38395c3d484a2c3c3",
+    "build/graalphp.exe": "82abc20ab25a9fe56f5ebed9e5bcf83bbf32ade535352289917a87797e9d6390",
+    "build/graalphp-linux-x64": "7bae4460b11e75db27fa7bad566b8ce1e56b0b9bd5ce6687dffd14298329e48a"
+  }
+}

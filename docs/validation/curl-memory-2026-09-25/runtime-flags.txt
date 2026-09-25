@@ -1,0 +1,497 @@
+  -XX:ActiveProcessorCount=-1                  Overwrites the available number of processors provided by the OS. Any value <= 0 means using the processor count from
+                                               the OS.
+  -XX:AggregatedMetricsFile=...                File to which aggregated metrics are dumped at shutdown. Default: None [Extra help available]
+  -XX:±AlignJumpTableEntry                     Aligns jump table entries as if they were loop headers. Default: + (enabled).
+  -XX:±AlwaysInlineIntrinsics                  Unconditionally inline intrinsics. Default: - (disabled).
+  -XX:ArrayRegionEqualsConstantLimit=4096      Evaluates array region equality checks at compile time if the receiver is a constant and the length of the array is less
+                                               than this value.
+  -XX:±AssumeIntLoopsAreShort                  Assume all int loops, no matter how complex, finish quickly and arethus short running. Default: - (disabled).
+  -XX:±AutomaticReferenceHandling              Determines if the reference handling is executed automatically or manually. Default: + (enabled).
+  -XX:AuxiliaryImageBytes=0                    Size in bytes of the auxiliary image.
+  -XX:AuxiliaryImagePath=...                   Path to the auxiliary image. Default: None
+  -XX:±BBLSLatencyAwareScheduling              This option selects whether the latency of a node should be considered when scheduling. Default: - (disabled).
+  -XX:BBLSMinBlockFrequency=0.5                Sets the minimum relative execution frequency for a block to be considered for Basic Block Local Scheduling (BBLS).
+                                               [Extra help available]
+  -XX:BBLSMinBlockSize=5                       Sets the minimum number of nodes a basic block must contain for BasicBlockLocalScheduling to be applied.
+  -XX:±BailoutOnRegisterPressureFailure        Permit RegisterPressure setting to cause compilation to fail. Default: - (disabled).
+  -XX:±BlindConstants                          Blinds constants in code with a random key. Default: - (disabled).
+  -XX:±CMoveALot                               Perform CMove transformation on every IfNode possible. Default: - (disabled).
+  -XX:±CacheCompilerDataStructures             Enables caching of data structures like control flow graph or schedule across compiler phases. Default: + (enabled).
+  -XX:±CanonicalGraphStringsCheckConstants     Exclude virtual nodes when dumping canonical text for graphs. Default: - (disabled).
+  -XX:±CanonicalGraphStringsExcludeVirtuals    Exclude virtual nodes when dumping canonical text for graphs. Default: + (enabled).
+  -XX:±CanonicalGraphStringsRemoveIdentities   Attempts to remove object identity hashes when dumping canonical text for graphs. Default: + (enabled).
+  -XX:±CloneReadElimination                    Tries to eliminate array clone operations by handling clone operations in early read elimination. Default: + (enabled).
+  -XX:±CollectYoungGenerationSeparately        Determines if a full GC collects the young generation separately or together with the old generation. Serial GC only. 
+  -XX:±CompilationBailoutAsFailure             Treats compilation bailouts as compilation failures. Default: - (disabled).
+  -XX:CompilationExcludePhases=...             Exclude certain phases from compilation based on the given phase filter(s). Default: None [Extra help available]
+  -XX:CompilationExpirationPeriod=300.0        Time limit in seconds before a compilation expires (0 to disable the limit). A non-zero value for this option is doubled
+                                               if assertions are enabled and quadrupled if DetailedAsserts is true. Must be 0 or >= 0.001.
+  -XX:CompilationFailureAction=Silent          Specifies the action to take when compilation fails. [Extra help available]
+  -XX:CompilationIsolateAddressSpaceSize=0     Size of the reserved address space of each compilation isolate (0: default for new isolates).
+  -XX:CompilationIsolateOptions=...            Options that are passed to each compilation isolate. Individual arguments are separated by spaces. Arguments that
+                                               contain spaces need to be enclosed by single quotes. Default: None
+  -XX:CompilationNoProgressPeriod=30.0         Time limit in seconds before a compilation expires (0 to disable the limit) because no progress was made in the
+                                               compiler. Must be 0 or >= 0.001.
+  -XX:CompilationNoProgressStartTrackingProgressPeriod=10.0
+                                               Delay in seconds before compilation progress detection starts. Must be 0 or >= 0.001.
+  -XX:CompilationWatchDogStartDelay=0          Delay in seconds before watch dog monitors a compilation (0 disables monitoring).
+  -XX:CompilationWatchDogVMExitDelay=0         Number of seconds after which a compilation appearing to make no progress causes the VM to exit (0 disables VM exiting).
+  -XX:±CompileInIsolates                       Activate runtime compilation in separate isolates (enable support during image build with option
+                                               SupportCompileInIsolates). Default: + (enabled).
+  -XX:±CompileInPerThreadReusedIsolates        Create one reusable isolate per compilation thread as opposed to one isolate per compilation (enable through
+                                               CompileInIsolates). Default: + (enabled).
+  -XX:±ConditionalElimination                  Eliminates redundant conditional expressions and statements where possible. This can improve performance because fewer
+                                               logic instructions have to be executed. Default: + (enabled).
+  -XX:ConditionalEliminationMaxIterations=4    
+  -XX:±ConsiderVectorizableLoops               Considers the vectorizability of loop during the duplication of a merge inside a loop.There are rare cases where
+                                               duplication can destroy vectorization. Default: + (enabled).
+  -XX:CostNewLiveVariable=4                    PullThroughPhiOptimization: Abstract cost for the creation of a new live value: new values can have a negativeimpact on
+                                               register allocation, therefore we penalize it.
+  -XX:CostReductionFactor=32.0                 PullThroughPhiOptimization: Cost/Benefit heuristic for floating node duplication: reduces cost by a constant factor when
+                                               comparing with relative benefit.
+  -XX:CostReductionFactorHotCode=128.0         See CostReductionFactor.
+  -XX:CountedStripMinedBenefitBoost=0          Benefit boost for strip mined counted loops.
+  -XX:CountedStripMiningBudget=0.1             Code size budget of the strip mining transformation in terms of NodeCostSize.
+  -XX:CountedStripMiningBudgetHotCode=2.5      See CountedStripMiningBudget.
+  -XX:CountedStripMiningInnerLoopTrips=4096    The max number of iterations the counted inner loop takes.
+  -XX:±CountedStripMiningLogCounters           Print counter phi values on each outer and inner loop iteration. Default: - (disabled).
+  -XX:CountedStripMiningMinFrequency=4         Minimal frequency to consider a loop for strip mining.
+  -XX:CountedStripMiningNodeSizeSmallGraphs=2000
+                                               Code size in NodeSize defining when code size heuristics starts capping strip mining.
+  -XX:Counters=...                             Comma separated names of counters that are enabled. An empty value enables all counters unconditionally. Default: None
+  -XX:CrashAt=...                              Pattern for method(s) that will trigger an exception when compiled. Default: None [Extra help available]
+  -XX:±DebugPeelingSynonyms                    Debug simulation synonyms during simulation-based loop peeling. Default: - (disabled).
+  -XX:±DebugStubsAndSnippets                   Enable debug output for stub code generation and snippet preparation. Default: - (disabled).
+  -XX:DefaultLoopFrequency=100.0               Default frequency for loops with unknown local frequency.
+  -XX:DefaultUnswitchFactor=0.7                Default unswitching factor for control split node with unknown profile data.
+  -XX:DeoptsToDisableOptimisticOptimization=40 Specifies the number of deoptimizations allowed per compilation unit until optimistic optimizations are disabled.
+  -XX:±DetectInvertedLoopsAsCounted            Applies counted loop optimization to tail-counted loops. Default: + (enabled).
+  -XX:DiagnoseOptions="Dump=:3"                Option values to use during a retry compilation triggered by CompilationFailureAction=Diagnose or
+                                               CompilationFailureAction=ExitVM. If the value starts with a non-letter character, that character is used as the
+                                               separator between options instead of a space. For example: \"DiagnoseOptions=@Log=Inlining@LogFile=/path/with space.\".
+  -XX:DiagnosticDetails=""                     Specifies how many details are printed for certain diagnostic thunks, e.g.: 'DumpThreads:1,DumpRegisters:2'. A value of
+                                               1 will result in the maximum amount of information, higher values will print less information. By default, the most
+                                               detailed output is enabled for all diagnostic thunks. Wildcards (*) are supported in the name of the diagnostic thunk.
+  -XX:±DisableExplicitGC                       Ignore calls to System.gc(). Default: - (disabled).
+  -XX:±DisableIntercept                        Disable intercepting exceptions in debug scopes. Default: - (disabled).
+  -XX:DisableIntrinsics=...                    Disable intrinsics matching the given method filter (see MethodFilter option for details). For example,
+                                               'DisableIntrinsics=String.equals' disables intrinsics for any method named 'equals' in a class whose simple name is
+                                               'String'. You can append ':verbose' at the end of the filter value to print out disabled intrinsics as they are
+                                               encountered during compilation (e.g., 'String.equals:verbose'). Default: None
+  -XX:±DoNotMoveAllocationsWithOOMEHandlers    Do not move allocations when the parser encounters allocations covered by an exception handler for OutOfMemoryError.
+                                               Default: + (enabled).
+  -XX:DominatorUsageTreeMaxDepth=16            
+  -XX:Dump=...                                 Filter pattern for specifying scopes in which dumping is enabled. Default: None [Extra help available]
+  -XX:±DumpAfterEveryLowering                  Dump lowering after every node to igv. Default: - (disabled).
+  -XX:±DumpEndVersusExitLoopFrequencies        Debug flag to dump loop frequency differences computed based on loop end or exit nodes.If the frequencies diverge a lot,
+                                               this may indicate missing profiles on control flowinside the loop body. Default: - (disabled).
+  -XX:DumpHeapAfter=...                        Emit a heap dump after each phase matching the given phase filter(s). Default: None [Extra help available]
+  -XX:±DumpHeapAndExit                         Create a heap dump and exit. Default: - (disabled).
+  -XX:±DumpOnError                             Send compiler IR to dump handlers on error. Default: - (disabled).
+  -XX:DumpOnPhaseChange=...                    Dump a before and after graph if the named phase changes the graph.%nThe argument is substring matched against the
+                                               simple name of the phase class. Default: None
+  -XX:DumpPath="graal_dumps"                   The directory where various Graal dump files are written.
+  -XX:±DumpingErrorsAreFatal                   Treat any exceptions during dumping as fatal. Default: - (disabled).
+  -XX:DuplicationBudgetFactor=0.25             Specifies the percentage in node cost graph size for the duplication budget (computed relative to the methods code
+                                               size). The greater the budget the more code duplication can be performed. This can improve performance at the cost of
+                                               additional code size.
+  -XX:DuplicationBudgetFactorHotCode=2.5       See DuplicationBudgetFactor.
+  -XX:DuplicationBudgetFactorLate=0.5          Percentage in node cost graph size for the late duplication budget. Computed relative to the methods code size.
+  -XX:DuplicationCostReductionFactor=64        Cost/Benefit heuristic for simulation-based code duplication: reduce cost by a constant factor when comparing with
+                                               relative benefit.
+  -XX:DuplicationCostReductionFactorHotCode=256
+                                               See DuplicationCostReductionFactor.
+  -XX:DuplicationMinBranchFrequency=0.66       Ignores low frequency branches during duplication.
+  -XX:±EarlyCodeEmissionOrder                  Enable early code emission order computation instead of late code emission order computation. Default: - (disabled).
+  -XX:±EarlyLICM                               Performs early loop-invariant code motion. Default: + (enabled).
+  -XX:±EnableFixReadsConditionalElimination    Default: + (enabled).
+  -XX:±EnableSignalHandling                    Enables signal handling. 
+  -XX:±EnterpriseEarlyInversionGVN             Enterprise Loop Inversion for GVN. Default: + (enabled).
+  -XX:±EnterpriseRCELogRangeCheckValues        Log all range check sub values to stdout. Default: - (disabled).
+  -XX:EscapeAnalysisIterations=2               
+  -XX:EscapeAnalysisLoopCutoff=20              
+  -XX:EscapeAnalyzeOnly=...                    Default: None
+  -XX:ExactFullUnrollMaxNodes=800              
+  -XX:ExactPartialUnrollMaxNodes=200           
+  -XX:ExcludeFunctionFromDuplication=...       Excludes compilations that MethodFilter.match this string from the duplication optimization. Default: None
+  -XX:±ExitOnOutOfMemoryError                  Exit on the first occurrence of an out-of-memory error that is thrown because the Java heap is out of memory. Default: -
+                                               (disabled).
+  -XX:±FailedLoopExplosionIsFatal              Do not bail out but throw an exception on failed loop explosion. Default: - (disabled).
+  -XX:±FieldAccessSkipPreciseTypes             Default: + (enabled).
+  -XX:±FloatingDivNodes                        Try to float non-constant division operations to expose global value numbering of divisions. Default: + (enabled).
+  -XX:±ForceAdversarialLayout                  Place N-byte constants in the data section such that they are misaligned with respect to N*2. For example, place 4 byte
+                                               constants at offset 4, 12 or 20, etc. This layout is used to detect instructions that load constants with alignment
+                                               smaller than the fetch size. For instance, an XORPS instruction that does a 16-byte fetch of a 4-byte float not aligned
+                                               to 16 bytes will cause a segfault. Default: - (disabled).
+  -XX:±ForceDumpGraphsBeforeCompilation        Force-dump graphs before compilation. Default: - (disabled).
+  -XX:±ForceInvertVectorLoops                  Also invert loops that look like they can be inverted. Default: - (disabled).
+  -XX:±ForceUnroll                             Force partial unrolling of loops if at all possible. Default: - (disabled).
+  -XX:±FullUnroll                              Performs loop unrolling optimization. . Default: + (enabled).
+  -XX:FullUnrollCodeSizeBudgetFactorForLargeGraphs=2.0
+                                               Maximum factor by which full unrolling can increase code size for large graphs. The FullUnrollSmallGraphThreshold option
+                                               determines which graphs are small.
+  -XX:FullUnrollCodeSizeBudgetFactorForSmallGraphs=10.0
+                                               Maximum factor by which full unrolling can increase code size for small graphs. The FullUnrollSmallGraphThreshold option
+                                               determines which graphs are small.
+  -XX:FullUnrollConstantCompareBoost=15        
+  -XX:FullUnrollMaxApplication=60              
+  -XX:FullUnrollMaxIterations=600              
+  -XX:FullUnrollMaxNodes=700                   
+  -XX:FullUnrollSmallGraphThreshold=1000       The threshold in terms of NodeSize for a graph to be considered small for the purpose of full unrolling. Applied in
+                                               conjunction with the FullUnrollCodeSizeBudgetFactorForSmallGraphs and FullUnrollCodeSizeBudgetFactorForLargeGraphs
+                                               options.
+  -XX:±GenLoopSafepoints                       Default: + (enabled).
+  -XX:GraphCompressionThreshold=70             Graal graph compression is performed when percent of live nodes falls below this value.
+  -XX:±GuardPriorities                         Default: + (enabled).
+  -XX:±HighTierUnswitching                     Unswitch loops in high tier. Default: + (enabled).
+  -XX:HotCodeMinSelfTime=0.001                 Minimal self time for a compilation unit to be considered hot globally.
+  -XX:±HotSpotPrintInlining                    Print inlining optimizations. Default: - (disabled).
+  -XX:±IgnoreBadDuplications                   Ignores duplications with a bad benefit cost relation. Default: + (enabled).
+  -XX:±IgnoreDeoptUsages                       Default: + (enabled).
+  -XX:±ImplicitExceptionWithoutStacktraceIsFatal
+                                               Determines if implicit exceptions are fatal if they don't have a stack trace. Default: - (disabled).
+  -XX:±IncrementalCanonDuringPeel              Run the canonicalizer incrementally between iterative peelings to improve the heuristics. Default: + (enabled).
+  -XX:InfeasiblePathCorrelationWindowSize=10   Limit of the number of dominating if nodes to consider in infeasible path correlation to avoid compile time explosion.
+  -XX:InitialCollectionPolicy=...              The garbage collection policy. Default: 'Adaptive2'. Former default: 'Adaptive' (deprecated). Serial GC only. Default:
+                                               None
+  -XX:InjectedCompilationDelay=0               The number of seconds by which to slow down each compilation. The compilations slowed down can be restricted with
+                                               MethodFilter. This option exists to test the compilation watchdog.
+  -XX:±InlineEverything                        Default: - (disabled).
+  -XX:InliningDepthError=1000                  Maximum inlining depth during partial evaluation before reporting an infinite recursion.
+  -XX:±InsertPreMainPostOnly                   Do not unroll the main loop, only create pre-main-post. Default: - (disabled).
+  -XX:±InstallSegfaultHandler                  Install segfault handler that prints register contents and full Java stacktrace. Default: enabled for an executable,
+                                               disabled for a shared library, disabled when EnableSignalHandling is disabled. 
+  -XX:±InterceptBailout                        Intercept also bailout exceptions. Default: - (disabled).
+  -XX:IntervalBinarySearchLimit=100            Use binary search if interval is longer than this limit.
+  -XX:±Intrinsify                              Uses compiler intrinsifications. Default: + (enabled).
+  -XX:InversionMinLocalFrequency=2.0           Minimal loop frequency for a loop to be considered for inversion.
+  -XX:InversionMinRelativeFrequency=1.0        Minimal relative frequency for a loop to be considered for inversion.
+  -XX:±InvertMultiEndLoops                     Default: - (disabled).
+  -XX:±InvertNonLeafLoops                      Default: - (disabled).
+  -XX:±InvertVectorizableLoops                 Default: - (disabled).
+  -XX:IsolatedLoopHeaderAlignment=32           Alignment in bytes for loop header blocks that have no fall through paths.
+  -XX:IterativePeelingLimit=2                  Allow iterative peeling of loops up to this many times (each time the peeling phase runs).
+  -XX:IterativePeelingOuterFrequencyBonusThreshold=4.0
+                                               Allow iterative peeling of loops with an outer frequency bonus above this value.
+  -XX:LIRInstructionVerifierPath=...           Path to jar file containing LIR instruction verifier. Default: None
+  -XX:LIROptLSRAMaxBlocksForFastPathRecovery=400
+                                               Maximum number of LIR blocks in a compilation eligible for fast-path spill recovery. Non-positive values disable this
+                                               optimization.
+  -XX:LIROptLSRAMaxFastPathRecoverySplits=100  Maximum number of interval splits created to keep pressure spills off unrelated fast paths. Non-positive values disable
+                                               this optimization.
+  -XX:±LIROptLSRAOptimizeSpillPosition         Enable spill position optimization. 
+  -XX:±LIROptimization                         Enable LIR level optimizations. Default: + (enabled).
+  -XX:LimitInlinedInvokes=5.0                  
+  -XX:±ListMetrics                             Lists on the console at VM shutdown the metric names available to the Timers, Counters and MemUseTrackers options. Note
+                                               that this only lists the metrics that were initialized during the VM execution and so will not include metrics for
+                                               compiler code that is not executed. Default: - (disabled).
+  -XX:Log=...                                  Pattern for specifying scopes in which logging is enabled. See the Dump option for the pattern syntax. Default: None
+  -XX:±LogVerbose                              Enable more verbose log output when available. Default: - (disabled).
+  -XX:LoopExitVsLoopEndFrequencyDiff=1000.0    Scaling factor of frequency difference computed based on loop ends or exits.
+  -XX:LoopHeaderAlignment=16                   Specifies the alignment in bytes for loop header blocks.
+  -XX:±LoopInversion                           Performs loop-inversion optimization. Default: + (enabled).
+  -XX:LoopMaxUnswitch=3                        
+  -XX:±LoopOnFatalError                        Execute an endless loop before printing diagnostics for a fatal error. Default: - (disabled).
+  -XX:±LoopRotationAssertCountedAfter          Default: - (disabled).
+  -XX:LoopRotationToxicNodeSetMaxNodecost=512  Maximum size in NodeSize of the code to be duplicated during rotation.
+  -XX:LoopUnswitchFrequencyBoost=40.0          Specifies the number of nodes allowed for a loop unswitching per loop frequency. The number of nodes allowed for an
+                                               unswitching is proportional to the relative frequency of the loop by this value.
+  -XX:LoopUnswitchFrequencyMaxFactor=0.95      Maximun value for the frequency factor of an invariant.
+  -XX:LoopUnswitchFrequencyMinFactor=0.05      Minimum value for the frequency factor of an invariant.
+  -XX:LoopUnswitchMaxIncrease=2000             Maximum loop unswitching code size increase in nodes.
+  -XX:LoopUnswitchMinSplitFrequency=1.0        Lower bound for the minimun frequency of an invariant condition to be unswitched.
+  -XX:LoopUnswitchTrivial=40                   Number of nodes allowed for a loop unswitching regardless of the loop frequency.
+  -XX:±LoopVectorizationKeepPostLoop           Keep the original loop as the post-loop during loop vectorization. Default: - (disabled).
+  -XX:LoopVectorizationMaxBodyNodes=16         The maximal number of fixed body nodes to consider in loop vectorization.
+  -XX:±MatchExpressions                        Allow backend to match complex expressions. Default: + (enabled).
+  -XX:MaxCompilationProblemsPerAction=2        Specifies the maximum number of compilation failures to handle with the action specified by CompilationFailureAction
+                                               before changing to a less verbose action. This does not apply to the ExitVM action..
+  -XX:MaxDirectMemorySize=0                    Maximum total size of NIO direct-buffer allocations.
+  -XX:MaxGraphSizeNodeCost=100000              Maximum node cost graph size for duplication. If a graph is bigger duplication will stop.
+  -XX:MaxHeapFree=0                            The maximum free bytes reserved for allocations, in bytes (0 for automatic according to GC policy). Serial GC only.
+  -XX:MaxHeapSize=0                            The maximum heap size at run-time, in bytes.
+  -XX:MaxMispredictionCostIncreaseFactor=2.0   Abstract measure of the cost of branch misprediction. Higher values make generation of conditional moves more likely.
+  -XX:MaxNewSize=0                             The maximum size of the young generation at run-time, in bytes.
+  -XX:MaxRAM=0                                 Physical memory size (in bytes). By default, the value is queried from the OS/container during VM startup.
+  -XX:MaxRuntimeCodeOffset=0                   Maximum random offset in bytes applied to entry points of runtime-installed methods, to make them less predictable. The
+                                               effective padding is rounded up to architecture-specific alignment.
+  -XX:MaxSimulationIterations=2                Maximum simulation-duplication iterations of the duplication optimization per invocation.
+  -XX:MaxSimulationIterationsHotCode=4         See MaxSimulationIterations.
+  -XX:MaxSplitsPerNode=32                      
+  -XX:MaxUnswitchSuccessors=64                 Maximum number of split successors before aborting unswitching.
+  -XX:MaxVectorAlignmentUnroll=4               Maximum number of unrolled alignment instructions.
+  -XX:MaxVectorUnroll=16                       Maximum length of linear-code vector operations.
+  -XX:MaximumDesiredSize=20000                 Maximum desired size of the compiler graph in nodes.
+  -XX:MaximumEscapeAnalysisArrayLength=128     Specifies the maximum length of an array that will be escape analyzed.
+  -XX:MaximumHeapSizePercent=80                The maximum heap size as percent of physical memory. Serial and epsilon GC only.
+  -XX:MaximumInliningSize=300                  Specifies the maximum graph size (measured in nodes) for which inlining is explored for each call site.
+  -XX:MaximumLoopExplosionCount=30000          Max number of loop explosions per method.
+  -XX:MaximumRecursiveInlining=5               Specifies the maximum level of recursive inlining.
+  -XX:MaximumTransitiveEnabledPullFactor=2     PullThroughPhiOptimization: Maximum number of algorithm iterations per optimization invocation.
+  -XX:MaximumYoungGenerationSizePercent=10     The maximum size of the young generation as a percentage of the maximum heap size. Serial and epsilon GC only.
+  -XX:MegamorphicInliningMinMethodProbability=0.33
+                                               Minimum probability for methods to be inlined for megamorphic type profiles.
+  -XX:MemUseTrackers=...                       Comma separated names of memory usage trackers that are enabled. An empty value enables all memory usage trackers
+                                               unconditionally. Default: None
+  -XX:±MemoryMaskingAndFencing                 AMD64 only spectre mitigation for runtime compiled code (masking or fencing before accesses). Default: - (disabled).
+  -XX:MethodFilter=...                         Pattern for matching methods. Default: None [Extra help available]
+  -XX:±MethodFilterRootOnly                    Only check MethodFilter against the root method in the context if true, otherwise check all methods. Default: -
+                                               (disabled).
+  -XX:MethodInlineBailoutLimit=1000            Per-compilation method inlining exploration limit before giving up (use 0 to disable).
+  -XX:MetricsFile=...                          File to which metrics are dumped per compilation at shutdown. Default: None [Extra help available]
+  -XX:±MidTierUnswitching                      Unswitch loops in mid tier. Default: + (enabled).
+  -XX:MinBlockFrequencyPull=0.66               PullThroughPhiOptimization: Ignore low frequency branches during duplication.
+  -XX:MinHeapSize=0                            The minimum heap size at run-time, in bytes.
+  -XX:MinTLABSize=0                            Minimum allowed TLAB size (in bytes).
+  -XX:MinimalBulkZeroingSize=2048              If applicable, uses bulk zeroing instructions when the zeroing size in bytes exceeds this threshold.
+  -XX:MinimalGraphNodeSizeCheckSize=1000       Minimal size in NodeSize to check the graph size increases of phases.
+  -XX:±MinimalRegions                          Tries to reduce duplication code size to the minimal amount of code. Default: + (enabled).
+  -XX:MinimumBlindedConstantSize=4             Specifies the minimum size (in bytes) of constants to blind.
+  -XX:MissingRegistrationReportingMode=Throw   Select the mode in which the missing reflection registrations will be reported. [Extra help available]
+  -XX:MissingRegistrationWarnContextLines=8    Number of context lines printed for each missing registration error in Warn mode.
+  -XX:±MoveGuardsUpwards                       Moves guard nodes to earlier places in the dominator tree if all successors of a basic block share a common guard
+                                               condition. Default: + (enabled).
+  -XX:MultiExitCostFactor=32                   Cost/Benefit heuristic for EE unrolling: If a loop has multiple exits, cost is increased by this value for every
+                                               none-sinking loop exit.
+  -XX:MultiExitCostFactorSink=2                Cost/Benefit heuristic for EE unrolling: If a loop has multiple exits, cost is increased by this value for every sinking
+                                               loop exit.
+  -XX:NonCountedStripMinedBenefitBoost=64      Benefit boost for strip mined non counted loops.
+  -XX:NonCountedStripMiningBudget=0.1          Code size budget of the non-counted strip mining transformation in terms of NodeCostSize.
+  -XX:NonCountedStripMiningBudgetHotCode=2.5   See NonCountedStripMiningBudget.
+  -XX:±NonCountedStripMiningForceStripAll      Forces non-counted strip mining for all loops (also counted ones), test flag only. Default: - (disabled).
+  -XX:±NonCountedStripMiningIgnoreSmallLoops   Ignores small loops from strip mining, the iv overhead can cause slowdowns. Default: + (enabled).
+  -XX:NonCountedStripMiningInnerLoopTrips=-1   The max number of iterations the counted inner loop takes. If -1, the frequency of the loop will be used to derive an
+                                               inner frequency.
+  -XX:NonCountedStripMiningMaximumInnerLoopTrips=8192
+                                               If NonCountedStripMiningInnerLoopTrips == -1: Maximum loop trips for strip mined non-counted loops.
+  -XX:NonCountedStripMiningMinFrequency=16.0   Minimal loop frequency to consider a non-counted loop for strip mining.
+  -XX:NonCountedStripMiningMinimumInnerLoopTrips=512
+                                               If NonCountedStripMiningInnerLoopTrips == -1: Minimum loop trips for strip mined non-counted loops.
+  -XX:±NonCountedStripMiningReuseIVs           Tries to reuse pre-existing induction variables inside non-counted loops for the strip-mined loop's exit check. Default:
+                                               + (enabled).
+  -XX:ObjdumpExecutables=...                   Comma separated list of candidate GNU objdump executables. If not specified, disassembling via GNU objdump is disabled.
+                                               Otherwise, the first existing executable in the list is used. Default: None
+  -XX:±OmitZeroMetrics                         Omit metrics with a zero value when writing CSV files. Default: + (enabled).
+  -XX:±OptBulkAllocation                       Default: + (enabled).
+  -XX:±OptConvertDeoptsToGuards                Replaces deoptimization points with movable guards where possible. This can help the optimizer to apply better code
+                                               movement optimizations. Default: + (enabled).
+  -XX:±OptDevirtualizeInvokesOptimistically    Default: + (enabled).
+  -XX:±OptEarlyReadElimination                 Default: + (enabled).
+  -XX:±OptEliminateGuards                      Default: + (enabled).
+  -XX:±OptFloatingReads                        Performs floating-read optimization. This enables memory read operations to freely move in control-flow while respecting
+                                               memory (anti)-dependencies. This helps to reduce memory accesses and can improve performance. . Default: + (enabled).
+  -XX:±OptReadElimination                      Tries to remove redundant memory accesses (for example, successive reads of a non-volatile Java field). Default: +
+                                               (enabled).
+  -XX:±OptScheduleOutOfLoops                   Default: + (enabled).
+  -XX:±OptimisticAliasingUseSpeculation        Use speculation and deoptimization in optimistic aliasing analysis. Default: + (enabled).
+  -XX:OptimizationLog=...                      Enable the structured optimization log and specify where it is printed. Default: None [Extra help available]
+  -XX:±OptimizeLongJumps                       AMD64 only: Replace forward jumps (jmp, jcc) with equivalent but smaller instructions if the actual jump displacement
+                                               fits in one byte. Default: - (disabled).
+  -XX:±OptimizeVectorAPI                       Expand Vector API operations to optimized machine instructions. Default: + (enabled).
+  -XX:±PartialEscapeAnalysis                   Performs partial escape analysis and scalar replacement optimization. Default: + (enabled).
+  -XX:PartialUnrollCostReductionFactorHighTier=2
+                                               Cost/Benefit heuristic for EE unrolling in high tier: reduce cost by a constant factor when comparing with relative
+                                               benefit.
+  -XX:PartialUnrollCostReductionFactorHotCodeMidTier=32
+                                               See PartialUnrollCostReductionFactorMidTier.
+  -XX:PartialUnrollCostReductionFactorMidTier=8
+                                               Cost/Benefit heuristic for EE unrolling in mid tier: reduce cost by a constant factor when comparing with relative
+                                               benefit.
+  -XX:PartialUnrollMaxIterationsHighTier=4     Maximum number of iterations to unroll for a high tier main loop.
+  -XX:PartialUnrollMaxIterationsMidTier=16     Maximum number of iterations to unroll for a mid tier main loop.
+  -XX:PartialUnrollMaxSizeHighTier=256         Maximum node cost size of a loop to be considered for high tier unrolling.
+  -XX:PartialUnrollMaxSizeHotCodeMidTier=1024  See PartialUnrollMaxSizeMidTier.
+  -XX:PartialUnrollMaxSizeMidTier=256          Maximum node cost size of a loop to be considered for mid tier tier unrolling.
+  -XX:PartialUnrollMinFrequency=4              Minimal loop frequency to consider a loop for partial unrolling.
+  -XX:±PeelALot                                Stress test for the loop peeling optimization by applying it aggressively. Default: - (disabled).
+  -XX:PeelOnlyLoopWithNodeID=-1                Peel only the loop with the specific loop begin node ID for debugging purposes.
+  -XX:PeelingConsideredMinLoopIterations=1.5   Minimal loop body iterations necessary to consider peeling.
+  -XX:PeelingConsideredMinRelativeFrequency=4.0
+                                               Minimal relative frequency of loop begin necessary to consider peeling.
+  -XX:PeelingIgnoreVectorizationCheck=...      Method Filter to ignore vectorization checks for peeling. Default: None
+  -XX:±PenalizeComplexLoopControlFlow          Increases the cost of duplicating control flow splits inside loops if they are not foldable.The generally tend to
+                                               complicate control flow and generate worse code in the backend. Default: + (enabled).
+  -XX:PercentTimeInIncrementalCollection=50    Percentage of total collection time that should be spent on young generation collections. Serial GC with collection
+                                               policy 'BySpaceAndTime' only.
+  -XX:PhiMinificationMinimalLoopFrequency=2.0  Minimal loop frequency to consider a loop for inverted phi minifaction.
+  -XX:±PreferUnsignedComparison                Rewrite signed comparisons to unsigned ones if the result is equal. Default: + (enabled).
+  -XX:±PreferVectorSafepoint                   Prefer a vector safepoint over a strip mined, safepoint free, inner loop. Default: - (disabled).
+  -XX:±PrintBBInfo                             Enables dumping of basic blocks relative PC and frequencies in the dump directory. Default: - (disabled).
+  -XX:±PrintBackendCFG                         Enable dumping scheduled HIR, LIR, register allocation and code generation info to the C1Visualizer. Default: -
+                                               (disabled).
+  -XX:±PrintBlockMapping                       Enable dumping CFG built during initial BciBlockMapping. Default: - (disabled).
+  -XX:PrintCanonicalGraphStringFlavor=0        Choose format used when dumping canonical text for graphs: 0 gives a scheduled graph (better for spotting changes
+                                               involving the schedule) while 1 gives a CFG containing expressions rooted at fixed nodes (better for spotting small
+                                               structure differences).
+  -XX:±PrintCanonicalGraphStrings              Enable dumping canonical text from for graphs. Default: - (disabled).
+  -XX:±PrintCompilation                        Print an informational line to the console for each completed compilation. Default: - (disabled).
+  -XX:PrintCompilationCSV=...                  Print statistics for each completed compilation to a CSV file specified by the given filename pattern. Default: None
+                                               [Extra help available]
+  -XX:PrintFlags=...                           Show available options based on comma-separated option-types (allowed categories: User, Expert, Debug). Default: None
+  -XX:PrintFlagsWithExtraHelp=...              Print extra help, if available, based on comma-separated option names. Pass * to show all options that contain extra
+                                               help. Default: None
+  -XX:±PrintGC                                 Print summary GC information after each collection. Default: - (disabled).
+  -XX:±PrintGCSummary                          Print summary GC information after application main method returns. Serial GC only. Default: - (disabled).
+  -XX:±PrintGCTimes                            Print the time for each of the phases of each collection, if +VerboseGC. Serial GC only. Default: - (disabled).
+  -XX:PrintGraph=File                          Where IdealGraphVisualizer graph dumps triggered by Dump or DumpOnError should be written. [Extra help available]
+  -XX:±PrintGraphStateDiff                     Prints the difference in the graph state caused by each phase of the suite. Default: - (disabled).
+  -XX:±PrintGraphWithSchedule                  Schedule graphs as they are dumped. Default: - (disabled).
+  -XX:±PrintIRWithLIR                          Print HIR along side LIR as the latter is generated. Default: - (disabled).
+  -XX:±PrintIntrinsics                         Print the registered intrinsics in a format compatible with DisableIntrinsics. Default: - (disabled).
+  -XX:±PrintLIRWithAssembly                    Include the LIR as comments with the final assembly. Default: - (disabled).
+  -XX:±PrintLoweringScheduleToTTY              Print schedule result pre lowering to TTY. Default: - (disabled).
+  -XX:±PrintUnmodifiedGraphs                   Dump a graph even if it has not changed since it was last dumped.  Change detection is based on adding and deleting
+                                               nodes or changing inputs. Default: + (enabled).
+  -XX:±PrintVMInfoAndExit                      Print some VM information and exit. Default: - (disabled).
+  -XX:±ProfileLockElimination                  Default: - (disabled).
+  -XX:±ProfileOptBulkAllocation                Default: - (disabled).
+  -XX:PropagateEqualityDepth=6                 Maximum depth of dependency when propagating equals property.
+  -XX:±PruneLargeDominatorUsageTrees           Default: + (enabled).
+  -XX:PullThroughPhiCodeSizeIncrease=0.1       PullThroughPhiOptimization: Percentage in node cost graph size for the floating node duplication budget. Computed
+                                               relative to the method's graph size.
+  -XX:PullThroughPhiCodeSizeIncreaseHotCode=2.5
+                                               See PullThroughPhiCodeSizeIncrease.
+  -XX:±RawConditionalElimination               Default: + (enabled).
+  -XX:ReadEliminationMaxLoopVisits=5           
+  -XX:RecordForReplay=...                      Record the compilations matching the method filter for replay compilation. Default: None
+  -XX:±ReduceCodeSize                          Default: - (disabled).
+  -XX:±ReduceDCE                               Disable optional dead code eliminations. Default: + (enabled).
+  -XX:RegisterPressure=...                     Comma separated list of registers that register allocation is limited to. Default: None
+  -XX:±RemoveLoopSafepoints                    Removes safepoints on counted loop ends. Default: + (enabled).
+  -XX:±ReplaceInputsWithConstantsBasedOnStamps Default: + (enabled).
+  -XX:±ReportFatalErrorOnOutOfMemoryError      Report a fatal error on the first occurrence of an out-of-memory error that is thrown because the Java heap is out of
+                                               memory. Default: - (disabled).
+  -XX:ReportHotCodeIGVLevel=1                  Specifies the debug level for dumping hottest code parts to the Ideal Graph Visualizer (IGV).
+  -XX:±ReportHotCodeInfos                      Enables printing of informational messages in hot code regions. Default: - (disabled).
+  -XX:ReportHotCodeMinimalFrequencyToReport=1.0
+                                               Specifies the minimum relative frequency for reporting hot code regions.
+  -XX:±ReportHotCodePartsToIGV                 Dumps the hottest code parts to the Ideal Graph Visualizer (IGV) for further analysis and visualization. Default: -
+                                               (disabled).
+  -XX:±ReportHotCodeWarnings                   Enables printing of warning messages about potential performance issues in hot code regions. Default: + (enabled).
+  -XX:ReportHotMetrics=...                     Report hot metrics extracted from compiler IR. Default: None
+  -XX:ReportHotMetricsAfterPhases=...          Report hot metrics after each phase matching the given phase filter(s). Default: None
+  -XX:ReportHotMetricsBeforePhases="HighTierLoweringPhase"
+                                               Report hot metrics before each phase matching the given phase filter(s).
+  -XX:ReservedAddressSpaceSize=0               The number of bytes that should be reserved for the heap address space.
+  -XX:±ResizeTLAB                              Dynamically resize TLAB size for threads. Default: + (enabled).
+  -XX:±RespectVectorization                    Avoid loop optimizations on vectorizable loops. Default: + (enabled).
+  -XX:±RewriteStripMinedCounterTo32Bit         Rewrite the counter of a strip mined loop to have a 32bit type. Default: + (enabled).
+  -XX:±RotateNonLeafLoops                      Default: - (disabled).
+  -XX:RotationMinLocalFrequency=2.0            Minimal loop frequency for a loop to be considered for rotation.
+  -XX:RotationMinRelativeFrequency=1.0         Minimal relative frequency for a loop to be considered for rotation.
+  -XX:SafepointPromptnessFailureNanos=0        Exit the VM if I can not come to a safepoint in this many nanoseconds. 0 implies forever.
+  -XX:SafepointPromptnessWarningNanos=0        Print a warning if I can not come to a safepoint in this many nanoseconds. 0 implies forever.
+  -XX:±ScheduledDuplicationSimulation          Simulation can either only process fixed nodes or schedule the graph and also process floating nodes. Default: -
+                                               (disabled).
+  -XX:SchedulingPolicy=RevMinLivenessPolicy    Selects the SchedulingPolicy to be used by the DependencyGraph. [Extra help available]
+  -XX:±ShowDumpFiles                           Print the name of each dump file path as it's created. Default: - (disabled).
+  -XX:±SimulationPruneUnlikelyBranches         Ignores low frequency branches during simulation. Default: + (enabled).
+  -XX:SmallCompiledLowLevelGraphSize=330       If the previous low-level graph size of the method exceeds the threshold, it is not inlined.
+  -XX:SmallGraphDuplicationBudgetFactor=1.0    See 'DuplicationBudgetFactor': for small graphs.
+  -XX:SmallGraphSize=2000                      Node cost graph size for a graph to be considered 'small'.
+  -XX:SoftRefLRUPolicyMSPerMB=1000             This number of milliseconds multiplied by the free heap memory in MByte is the time span for which a soft reference will
+                                               keep its referent alive after its last access.
+  -XX:SpectrePHTBarriers=None                  Selects a strategy to mitigate speculative bounds check bypass (also known as Spectre-PHT or Spectre V1). [Extra help
+                                               available]
+  -XX:±SpectrePHTIndexMasking                  Masks indices to scope access to allocation size after bounds check. Default: - (disabled).
+  -XX:±SpeculateVirtualLocks                   Speculate that locks can be virtualized on HotSpot. Default: + (enabled).
+  -XX:±SpeculativeExecutionBarriers            Stop speculative execution on all branch targets with execution barrier instructions. Default: - (disabled).
+  -XX:±SpeculativeGuardMovement                Moves loop invariant guards (for example, array bounds checks) out of loops. Default: + (enabled).
+  -XX:StackSize=0                              The size of each thread stack at run-time, in bytes.
+  -XX:±StressExplicitExceptionCode             Stress the code emitting explicit exception throwing code. Default: - (disabled).
+  -XX:StringIndexOfConstantLimit=4096          Invocations of String.indexOf are evaluated at compile time if the receiver is a constant and its length is less than
+                                               this value.
+  -XX:±StripMineALot                           Force strip mining of all loops that can be strip mined. Default: - (disabled).
+  -XX:±StripMineInvertedLoops                  Strip mine inverted loops. Default: + (enabled).
+  -XX:SystemicCompilationFailureRate=1         Specifies the compilation failure rate that indicates a systemic compilation problem. The value is made absolute and
+                                               clamped to produce P, a value between 0 and 100. Systemic failure is detected if the percentage of failing compilations
+                                               in a sliding time window >= P. A negative value will cause the VM to exit after issuing the warning. Set to 0 to
+                                               disable systemic compilation problem detection.
+  -XX:TLABSize=0                               Starting TLAB size (in bytes); zero means set ergonomically.
+  -XX:±TargetVectorLowering                    Enables target-specific lowering and legalization of SIMD operations. Required for SIMD code generation. Default: +
+                                               (enabled).
+  -XX:TearDownFailureNanos=0                   The number of nanoseconds that the isolate teardown can take before a fatal error is thrown. Disabled if less or equal
+                                               to 0.
+  -XX:TearDownFailureSeconds=0                 The number of seconds that the isolate teardown can take before a fatal error is thrown. Disabled if less or equal to 0.
+  -XX:TearDownWarningNanos=0                   The number of nanoseconds that the isolate teardown can take before warnings are printed. Disabled if less or equal to
+                                               0.
+  -XX:TearDownWarningSeconds=0                 The number of seconds that the isolate teardown can take before warnings are printed. Disabled if less or equal to 0.
+  -XX:Timers=...                               Comma separated names of timers that are enabled. An empty value enables all timers unconditionally. Default: None
+  -XX:±TraceClassLoading                       Trace runtime class loading events. Default: - (disabled).
+  -XX:±TraceCodeCache                          Print logging information for runtime code cache modifications. Default: - (disabled).
+  -XX:±TraceDeoptimization                     Print logging information for every deoptimization. Default: - (disabled).
+  -XX:±TraceDeoptimizationDetails              Print verbose logging information for every deoptimization. Default: - (disabled).
+  -XX:±TraceEscapeAnalysis                     Default: - (disabled).
+  -XX:±TraceHeapChunks                         Trace heap chunks during collections, if +VerboseGC. Serial GC only. Default: - (disabled).
+  -XX:±TraceInlining                           Enable tracing of inlining decisions. Default: - (disabled). [Extra help available]
+  -XX:±TraceInliningForStubsAndSnippets        Enable inlining decision tracing in stubs and snippets. Default: - (disabled).
+  -XX:TraceLIRGeneratorLevel=0                 The trace level for the LIR generator.
+  -XX:TraceMetadata=...                        Enables metadata tracing at run time. This option is only supported if -H:+MetadataTracingSupport is set when building
+                                               the image. Default: None [Extra help available]
+  -XX:TraceMetadataConditionPackages=...       Specifies a comma-separated list of package prefixes used to condition traced metadata. Default: None [Extra help
+                                               available]
+  -XX:±TraceThreadedSwitchOptimization         Enables tracing of threaded switch optimization decisions. Default: - (disabled).
+  -XX:±TrackGraphSizesInDuplication            Enables (if Count is enabled) graph size tracking during every duplication iteration. Default: - (disabled).
+  -XX:±TrackNodeInsertion                      Track source stack trace where a node was inserted into the graph. Default: - (disabled).
+  -XX:±TrackNodeSourcePosition                 Track the NodeSourcePosition. Default: - (disabled).
+  -XX:TrivialInliningSize=10                   Specifies the size of a graph (counted in nodes) that is considered trivial. Graphs with fewer than this number of nodes
+                                               are therefore always inlined.
+  -XX:TrivialLoopSizeLimitForPeeling=512.0     Loop peeling will consider any loop with a size (in terms of estimated machine instructions) below this value to be a
+                                               prime candidate for peeling. Larger loops will only be considered for peeling if the simulated benefit of peeling is
+                                               relatively high. The larger the loop, the greater the expected benefit has to be.
+  -XX:±TruffleTrustedFinalProperties           Whether Truffle DynamicObject property reads are trusted final. Default: + (enabled).
+  -XX:±TruffleTrustedNonNullCast               Whether Truffle trusted non-null casts are enabled. Default: + (enabled).
+  -XX:±TruffleTrustedTypeCast                  Whether Truffle trusted type casts are enabled. Default: + (enabled).
+  -XX:±TrustFinalDefaultFields                 Determines whether to treat final fields with default values as constant. Default: + (enabled).
+  -XX:±TryExplodeOverPhis                      PullThroughPhiOptimization: Enable floating node duplication over multiple phi nodes at once. Default: + (enabled).
+  -XX:±TryPhiPhiPulls                          PullThroughPhiOptimization: Enable floating node duplication over phis where the target node has different phis as
+                                               input. Default: + (enabled).
+  -XX:±UnrollEmptyLoops                        Unroll empty loops. Default: - (disabled).
+  -XX:±UnrollInvertedLoops                     Unroll inverted (tail counted) loops. Default: + (enabled).
+  -XX:UnrollMaxIterations=16                   
+  -XX:±UnrollMultiEndLoops                     Unroll loops with multiple loop ends. Default: + (enabled).
+  -XX:±UnrollMultiExitLoops                    Unroll loops with multiple loop exits. Default: + (enabled).
+  -XX:±UnsafeDumpOtherThreadStacksOnFatalError Unsafely try to print stack traces of other threads after a fatal error. Stack traces can be entirely incorrect.
+                                               Default: - (disabled).
+  -XX:±UseBranchesWithin32ByteBoundary         Forces branch instructions to align with 32-bytes boundaries, to mitigate the jcc erratum. See
+                                               https://www.intel.com/content/dam/support/us/en/documents/processors/mitigations-jump-conditional-code-erratum.pdf for
+                                               more details. If not set explicitly, the default value is determined according to the CPU model.. Default: -
+                                               (disabled).
+  -XX:±UseLoopEndFrequencies                   Derive loop frequencies only from backedge frequencies instead of from loop exit frequencies. Default: - (disabled).
+  -XX:±UseLoopExitSafepoints                   Inject safepoint polls on every loop exit. Default: + (enabled).
+  -XX:±UseLoopLimitChecks                      Default: + (enabled).
+  -XX:±UsePerfData                             Flag to disable jvmstat instrumentation for performance testing. Default: + (enabled).
+  -XX:±UseSnippetTemplateCache                 Use a LRU cache for snippet templates. Default: + (enabled).
+  -XX:±VectorAlignment                         Emit a pointer alignment header for vectorized loops, where supported. Default: + (enabled).
+  -XX:VectorFoldMinIterations=4                Only generate SIMD loops for vector folds expected to iterate at least this many times.
+  -XX:VectorUnroll=1                           Unroll vectorized loops.
+  -XX:±Vectorization                           Enables vectorization. This is a global switch to enable/disable all vectorization-related optimizations. Default: +
+                                               (enabled).
+  -XX:±VectorizeAllocation                     Enable vectorized array initialization. Default: + (enabled).
+  -XX:±VectorizeConditional                    Enable vectorization of conditional code. Default: + (enabled).
+  -XX:±VectorizeDeopts                         Enable vectorization of loops with conditional deopts before writes. Default: + (enabled).
+  -XX:±VectorizeFoldShaped                     Enable vectorization of loops implementing a higher-order 'fold' function. Default: + (enabled).
+  -XX:±VectorizeGather                         Enable vectorization of vector gather operations. Default: + (enabled).
+  -XX:±VectorizeHashes                         Enable vectorization of hashCode patterns. Default: + (enabled).
+  -XX:±VectorizeIntegerMinMax                  Enable vectorization of integer min/max operations. Default: + (enabled).
+  -XX:±VectorizeLoops                          Enable vectorization of loops. Default: + (enabled).
+  -XX:±VectorizeMapShaped                      Enable vectorization of loops implementing a higher-order 'map' function. Default: + (enabled).
+  -XX:±VectorizeNegativeStride                 Enable vectorization of loops with negative strides. Default: + (enabled).
+  -XX:±VectorizeReachabilityFences             Enable vectorization of loops with reachability fences. Default: + (enabled).
+  -XX:±VectorizeSafepoints                     Enable vectorization of loops with safepoints. Default: + (enabled).
+  -XX:±VectorizeSequence                       Enable vectorization of sequence values. Default: + (enabled).
+  -XX:±VerboseGC                               Print more information about the heap before and after each collection. Default: - (disabled).
+  -XX:±VerifyAfterGC                           Verify the heap after doing a garbage collection. 
+  -XX:±VerifyBeforeGC                          Verify the heap before doing a garbage collection. 
+  -XX:±VerifyDuplicationOperations             Default: - (disabled).
+  -XX:±VerifyDuringGC                          Verify the heap during a garbage collection. 
+  -XX:±VerifyGraalGraphEdges                   Perform expensive verification of graph inputs, usages, successors and predecessors. Default: - (disabled).
+  -XX:±VerifyGraalPhasesSize                   Verify before - after relation of the relative, computed, code size of a graph. Default: - (disabled).
+  -XX:±VerifyKillCFGUnusedNodes                Verify that there are no new unused nodes when performing killCFG. Default: - (disabled).
+  -XX:±VerifyLoopVectorization                 Run expensive checks to verify the graph after loop vectorization. Default: - (disabled).
+  -XX:±VerifyWriteBarrierElimination           Add code to verify that eliminated barriers weren't needed. Default: - (disabled).
+  -XX:WriteSinkingDetailsCSV=...               Write per-method/per-loop write-sinking rejection details to this CSV file. The filename may contain %p, matching the
+                                               Graal metrics filename convention. Default: None
+  -XX:WriteSinkingExcludeFields=...            Exclude certain fields from write sinking. Fields are specified with the same syntax as method filters, minus the
+                                               signature part. Default: None
+  -XX:±WriteableCodeCache                      Allocate code cache with write access, allowing inlining of objects. Default: - (disabled).

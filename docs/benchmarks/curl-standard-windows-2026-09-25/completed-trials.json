@@ -1,0 +1,30 @@
+{
+  "delayed": [
+    "graalphp-1-1000",
+    "graalphp-1-10000",
+    "graalphp-2-1000",
+    "graalphp-2-10000",
+    "graalphp-3-1000",
+    "graalphp-3-10000",
+    "trueasync-1-1000",
+    "trueasync-1-10000",
+    "trueasync-2-1000",
+    "trueasync-2-10000",
+    "trueasync-3-1000",
+    "trueasync-3-10000"
+  ],
+  "zero-delay": [
+    "graalphp-1-1000",
+    "graalphp-1-10000",
+    "graalphp-2-1000",
+    "graalphp-2-10000",
+    "graalphp-3-1000",
+    "graalphp-3-10000",
+    "trueasync-1-1000",
+    "trueasync-1-10000",
+    "trueasync-2-1000",
+    "trueasync-2-10000",
+    "trueasync-3-1000",
+    "trueasync-3-10000"
+  ]
+}

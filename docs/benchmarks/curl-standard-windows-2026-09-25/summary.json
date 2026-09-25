@@ -1,0 +1,126 @@
+{
+  "delayed": [
+    {
+      "requests_per_second": 10456.593,
+      "cpu_us_per_request": 89.645,
+      "rss_mib": 195.57,
+      "private_commit_mib": 213.023,
+      "peak_rss_mib": 199.488,
+      "min_rps": 10405.973,
+      "max_rps": 10699.739,
+      "peer_range": [
+        64,
+        64
+      ],
+      "runtime": "graalphp",
+      "parked": 1000
+    },
+    {
+      "requests_per_second": 10125.488,
+      "cpu_us_per_request": 56.744,
+      "rss_mib": 36.0,
+      "private_commit_mib": 2050.262,
+      "peak_rss_mib": 36.898,
+      "min_rps": 9999.654,
+      "max_rps": 10163.058,
+      "peer_range": [
+        64,
+        64
+      ],
+      "runtime": "trueasync",
+      "parked": 1000
+    },
+    {
+      "requests_per_second": 10171.79,
+      "cpu_us_per_request": 92.03,
+      "rss_mib": 210.789,
+      "private_commit_mib": 228.844,
+      "peak_rss_mib": 221.461,
+      "min_rps": 10147.738,
+      "max_rps": 10275.206,
+      "peer_range": [
+        64,
+        64
+      ],
+      "runtime": "graalphp",
+      "parked": 10000
+    },
+    {
+      "requests_per_second": 10135.653,
+      "cpu_us_per_request": 56.267,
+      "rss_mib": 159.777,
+      "private_commit_mib": 20138.047,
+      "peak_rss_mib": 160.785,
+      "min_rps": 10124.784,
+      "max_rps": 10168.257,
+      "peer_range": [
+        64,
+        64
+      ],
+      "runtime": "trueasync",
+      "parked": 10000
+    }
+  ],
+  "zero-delay": [
+    {
+      "requests_per_second": 13329.713,
+      "cpu_us_per_request": 76.771,
+      "rss_mib": 190.938,
+      "private_commit_mib": 209.113,
+      "peak_rss_mib": 196.273,
+      "min_rps": 12368.227,
+      "max_rps": 13852.288,
+      "peer_range": [
+        64,
+        64
+      ],
+      "runtime": "graalphp",
+      "parked": 1000
+    },
+    {
+      "requests_per_second": 25925.872,
+      "cpu_us_per_request": 38.624,
+      "rss_mib": 36.438,
+      "private_commit_mib": 2086.414,
+      "peak_rss_mib": 37.074,
+      "min_rps": 23575.232,
+      "max_rps": 26224.401,
+      "peer_range": [
+        64,
+        64
+      ],
+      "runtime": "trueasync",
+      "parked": 1000
+    },
+    {
+      "requests_per_second": 13111.845,
+      "cpu_us_per_request": 78.201,
+      "rss_mib": 210.457,
+      "private_commit_mib": 227.891,
+      "peak_rss_mib": 222.426,
+      "min_rps": 12139.12,
+      "max_rps": 13136.029,
+      "peer_range": [
+        64,
+        66
+      ],
+      "runtime": "graalphp",
+      "parked": 10000
+    },
+    {
+      "requests_per_second": 21080.929,
+      "cpu_us_per_request": 47.207,
+      "rss_mib": 160.203,
+      "private_commit_mib": 20176.152,
+      "peak_rss_mib": 160.844,
+      "min_rps": 21079.637,
+      "max_rps": 21643.742,
+      "peer_range": [
+        64,
+        64
+      ],
+      "runtime": "trueasync",
+      "parked": 10000
+    }
+  ]
+}

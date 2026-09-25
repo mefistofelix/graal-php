@@ -1,0 +1,64 @@
+[
+  {
+    "repetition": 1,
+    "window_start": "2026-09-25T18:13:22.544988500Z",
+    "window_end": "2026-09-25T18:13:35.359335600Z",
+    "events": [
+      {
+        "seconds_after_start": 0.064012,
+        "event": "[engine] opt done   engine=1  id=18    PhpRootGen@78b6470d                                |Tier 1|Time    60(  26+34  )ms|AST    2|Inlined   0Y   0N|IR   1246/  4582|CodeSize   20117|Addr 0x48cb505d0000|CompId 5749   |UTC 2026-09-25T18:13:22.609|Src n/a"
+      },
+      {
+        "seconds_after_start": 0.064012,
+        "event": "[engine] opt done   engine=1  id=108   PhpRootGen@78b6470d(resume_bci=450)                |Tier 2|Time    60(  15+46  )ms|AST    1|Inlined   0Y   0N|IR   1084/  2462|CodeSize    9990|Addr 0x0ef70be30000|CompId 5750   |UTC 2026-09-25T18:13:22.609|Src n/a"
+      }
+    ]
+  },
+  {
+    "repetition": 2,
+    "window_start": "2026-09-25T18:14:35.265640400Z",
+    "window_end": "2026-09-25T18:14:48.152807600Z",
+    "events": [
+      {
+        "seconds_after_start": 0.03736,
+        "event": "[engine] opt done   engine=1  id=18    PhpRootGen@35b519d7                                |Tier 1|Time    38(  17+21  )ms|AST    2|Inlined   0Y   0N|IR    995/  3399|CodeSize   14827|Addr 0x19a21a600000|CompId 5745   |UTC 2026-09-25T18:14:35.303|Src n/a"
+      },
+      {
+        "seconds_after_start": 0.05236,
+        "event": "[engine] opt done   engine=1  id=108   PhpRootGen@35b519d7(resume_bci=450)                |Tier 2|Time    41(  10+31  )ms|AST    1|Inlined   0Y   0N|IR   1067/  2208|CodeSize    8838|Addr 0x6ed6cdde0000|CompId 5746   |UTC 2026-09-25T18:14:35.318|Src n/a"
+      },
+      {
+        "seconds_after_start": 1.73536,
+        "event": "[engine] opt inval. engine=1  id=78    PhpRootGen@593e7da8                                                                                                                                                               |UTC 2026-09-25T18:14:37.001|Src n/a|Reason null"
+      },
+      {
+        "seconds_after_start": 1.73536,
+        "event": "[engine] opt deopt  engine=1  id=78    PhpRootGen@593e7da8                                |Invalidated  true|                                                                                                            |UTC 2026-09-25T18:14:37.001|Src n/a|Reason unknown"
+      },
+      {
+        "seconds_after_start": 1.73536,
+        "event": "[engine] opt inval. engine=1  id=108   PhpRootGen@35b519d7(resume_bci=450)                                                                                                                                               |UTC 2026-09-25T18:14:37.001|Src n/a|Reason null"
+      },
+      {
+        "seconds_after_start": 1.73536,
+        "event": "[engine] opt deopt  engine=1  id=108   PhpRootGen@35b519d7(resume_bci=450)                |Invalidated  true|                                                                                                            |UTC 2026-09-25T18:14:37.001|Src n/a|Reason unknown"
+      },
+      {
+        "seconds_after_start": 1.78236,
+        "event": "[engine] opt done   engine=1  id=78    PhpRootGen@593e7da8                                |Tier 1|Time    37(  14+23  )ms|AST    2|Inlined   0Y   0N|IR   1188/  3441|CodeSize   15920|Addr 0x660999920000|CompId 5747   |UTC 2026-09-25T18:14:37.048|Src n/a"
+      },
+      {
+        "seconds_after_start": 1.78236,
+        "event": "[engine] opt done   engine=1  id=108   PhpRootGen@35b519d7(resume_bci=450)                |Tier 1|Time    40(  10+29  )ms|AST    1|Inlined   0Y   0N|IR   1213/  2822|CodeSize   11226|Addr 0x79eae1150000|CompId 5748   |UTC 2026-09-25T18:14:37.048|Src n/a"
+      },
+      {
+        "seconds_after_start": 1.82936,
+        "event": "[engine] opt done   engine=1  id=78    PhpRootGen@593e7da8                                |Tier 2|Time    48(  16+32  )ms|AST    2|Inlined   0Y   0N|IR   1126/  2911|CodeSize   12629|Addr 0x42312d8f0000|CompId 5749   |UTC 2026-09-25T18:14:37.095|Src n/a"
+      },
+      {
+        "seconds_after_start": 1.84036,
+        "event": "[engine] opt done   engine=1  id=108   PhpRootGen@35b519d7(resume_bci=450)                |Tier 2|Time    51(   7+44  )ms|AST    1|Inlined   0Y   0N|IR   1084/  2343|CodeSize    9434|Addr 0x42c1b2830000|CompId 5750   |UTC 2026-09-25T18:14:37.106|Src n/a"
+      }
+    ]
+  }
+]

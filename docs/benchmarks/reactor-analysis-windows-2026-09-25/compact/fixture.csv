@@ -1,0 +1,9 @@
+runtime,repetition,parked,http_requests,distinct_peer_endpoints
+graalphp-before,1,1000,29551,907
+graalphp-native,1,1000,34219,625
+graalphp-before,1,10000,25963,1205
+graalphp-native,1,10000,35453,537
+graalphp-native,2,1000,36365,468
+graalphp-before,2,1000,32839,634
+graalphp-native,2,10000,34674,538
+graalphp-before,2,10000,24399,1577

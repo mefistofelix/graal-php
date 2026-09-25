@@ -1,0 +1,11 @@
+Windows JVM: 73 integration scenarios; 53 value-model scenarios; 82 TrueAsync differential scenarios.
+Linux JVM: 67 integration scenarios (6 Windows-only DLL cases excluded); 53 value-model scenarios; 82 TrueAsync differential scenarios.
+Windows and Linux Native Image: 82 TrueAsync differential scenarios each.
+WebSocket/TLS curl-impersonate/SQLite suite: 50 assertions on each platform, JVM and Native Image.
+Transparent FFI suite: Windows/Linux, JVM/Native Image; 80 observed Full GC events in each configuration (320 total).
+FFI cases include recursive C locals, nested calls, original PHP task and OS thread, mixed scalar ABIs, multiple callbacks, copied strings, void, serial pool, invalid callback result, exception drain, running/queued cancellation, protected scope cancellation, foreign-thread rejection and built-in SQLite callback.
+Windows/Linux product CLI: transparent FFI suite passed.
+Windows package isolated from Java and graalphp-native.dll: transparent FFI suite passed, with the external C fixture and three MSVC runtime DLLs.
+Linux product dynamic dependencies: libc.so.6, libm.so.6 and ld-linux-x86-64.so.2 (plus kernel vDSO).
+The helper DLL/SO is a test fixture, not a product dependency.
+Evidence applies to the binaries and sources in hashes.json. It does not establish support for persistent/foreign-thread callbacks, CData, sanitizer integration, arbitrary managed/native stacks or other platforms.

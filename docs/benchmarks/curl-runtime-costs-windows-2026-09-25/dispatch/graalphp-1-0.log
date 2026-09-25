@@ -1,0 +1,16 @@
+DISPATCH native count=853975 inclusive_ms=11477.496 exclusive_ms=11381.618
+DISPATCH native-wait count=27 inclusive_ms=2094.361 exclusive_ms=2094.267
+DISPATCH curl-dispatch count=2228537 inclusive_ms=21507.422 exclusive_ms=597.977
+DISPATCH cycle-collector count=278803 inclusive_ms=105.979 exclusive_ms=105.979
+DISPATCH activation-close count=278796 inclusive_ms=158.227 exclusive_ms=51.670
+DISPATCH variable count=3066453 inclusive_ms=575.779 exclusive_ms=575.779
+DISPATCH string-fromBytes count=278532 inclusive_ms=267.697 exclusive_ms=267.697
+DISPATCH reactor-submit count=278532 inclusive_ms=9794.625 exclusive_ms=100.945
+DISPATCH reactor-step count=17614 inclusive_ms=3473.082 exclusive_ms=1.668
+DISPATCH native-completion count=278532 inclusive_ms=95.972 exclusive_ms=95.972
+DISPATCH function-dispatch count=2228799 inclusive_ms=22060.059 exclusive_ms=550.157
+DISPATCH execute-child count=278538 inclusive_ms=10381.939 exclusive_ms=170.288
+DISPATCH scheduler-advance count=278663 inclusive_ms=11433.631 exclusive_ms=412.484
+DISPATCH scheduler-resume count=278534 inclusive_ms=13290.522 exclusive_ms=384.806
+VERSION libcurl/8.22.0 BoringSSL zlib/1.3.2 brotli/1.2.0 zstd/1.5.7 WinIDN nghttp2/1.63.0
+PASS curl benchmark

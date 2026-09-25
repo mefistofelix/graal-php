@@ -1,0 +1,43 @@
+Focused cURL runtime-cost validation, 2026-09-25
+
+PASS Windows JVM: 94 assertions; peak held requests=16.
+PASS Windows Native Image: 102 assertions; peak held requests=16.
+PASS Windows TrueAsync 0.10.0: 83 assertions; peak held requests=16.
+PASS Linux JVM: 100 assertions; peak held requests=16.
+PASS Linux Native Image: 106 assertions; peak held requests=16.
+Counts include polling and GraalPHP-specific provider/handle-guard cases.
+
+Cases include CA-verified HTTPS, redirects, gzip, POST, headers, connection reuse,
+timeout/error reuse, cancellation/detachment/reuse, outer protection, multi,
+binary bytes/NUL, concurrent providers, temporary handles, empty and 1 MiB
+responses, cancellation before suspension with PHP finally, and busy guards.
+Linux JVM reports zlib/1.3; Linux Native Image and both Windows modes report
+zlib/1.3.2. The runtime strings are preserved in the logs; JVM and Native Image
+are not claimed to have identical process-wide dynamic symbol resolution.
+
+PASS A/B: 12/12 trials, 786432 measured requests, baseline SHA recorded in data.
+PASS final vs TrueAsync: 12/12 trials, 786432 measured requests.
+Each campaign: 3 alternating repetitions; 64 clients; 65536 measured + 16384
+warmup requests per trial; 1000 and 10000 parked coroutines; no peer delay.
+PASS C-control comparison: 6/6 trials, 1572864 measured requests.
+PASS long warmup: 4/4 trials, 1048576 measured requests.
+PASS nested timer probe: 1/1 trial, 262144 measured requests.
+The three diagnostic campaigns use the prechange runtime or its timer variant.
+Only the two final campaigns measure the current product.
+
+PASS Windows/Linux source parity for src/, tests/, build.sh, BuildSupport.java,
+xmake.lua and dependencies.lock.
+PASS Xmake curl-native-control build entry point on Windows and Linux.
+PASS Windows and Linux Native Image builds: -O3 -march=compatibility.
+PASS normal Xmake curl_costs=false on both platforms.
+PASS normal products/bridges have no diagnostic counter format strings.
+PASS Linux ldd: libc, libm and system loader; not fully static.
+
+Current Windows product: build/graalphp.exe, 89886720 bytes.
+Current Linux product: build/graalphp-linux-x64, 92801832 bytes.
+Old executable controls retained under build/; all hashes in hashes.json.
+No native C product sources or native library versions changed in this iteration.
+
+No new full language/value/ownership, WebSocket, SQLite or FFI suite run.
+Earlier test records remain historical. Full PHP destructor/weakref/resurrection
+semantics are not claimed by this focused optimization.

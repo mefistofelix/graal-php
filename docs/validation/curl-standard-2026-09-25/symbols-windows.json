@@ -1,0 +1,7 @@
+{
+  "unprefixed_standard_curl_symbols": [],
+  "overlapping_curl_symbols": [],
+  "standard_tls_new_present": true,
+  "impersonate_tls_new_present": true,
+  "standard_session_destructor_prefixed": true
+}

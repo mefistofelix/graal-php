@@ -1,0 +1,103 @@
+build/generated/graalphp/truffle/PhpRootGen.java:5719: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+build/generated/graalphp/truffle/PhpRootGen.java:7396: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+Note: src/graalphp/truffle/PhpContext.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+2 warnings
+[100%]: build ok, spent 31.008s
+[100%]: build ok, spent 29.684s
+WARNING: Unknown module: com.oracle.truffle.enterprise.svm specified to --add-exports
+========================================================================================================================
+GraalVM Native Image: Generating 'graalphp' (executable)...
+========================================================================================================================
+For detailed information and explanations on the build output, visit:
+https://github.com/oracle/graal/blob/master/docs/reference-manual/native-image/BuildOutput.md
+------------------------------------------------------------------------------------------------------------------------
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by com.oracle.truffle.polyglot.JDKSupport in module org.graalvm.truffle (file:${linux_workspace}/build/deps/25.4.4.1.1/truffle-api-25.4.4.1.1.jar)
+WARNING: Use --enable-native-access=org.graalvm.truffle to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+[1/8] Initializing...                                                                                  (14.0s @ 0.20GiB)
+ Builder configuration:
+ - Java version: 25.0.4.1.1+1-LTS, vendor version: Oracle GraalVM 25.4.4.1.1+1.1
+ - Graal compiler: optimization level: 3, target machine: compatibility, PGO: ML-inferred
+ - C compiler: gcc (linux, x86_64, 13.3.0)
+ - Assertions: disabled, system assertions: disabled
+ - 9 user-specific feature(s):
+   - com.oracle.svm.enterprise.truffle.EnterpriseTruffleFeature: Provides enterprise extensions for the Truffle runtime.
+   - com.oracle.svm.enterprise.truffle.compiler.EnterpriseTruffleCompilerFeature: Provides additional optimizations and isolated compilation for Truffle.
+   - com.oracle.svm.truffle.TruffleBaseFeature: Provides internal support for Truffle
+   - com.oracle.svm.truffle.TruffleFeature: Provides internal support for Truffle runtime compilation
+   - com.oracle.svm.truffle.nfi.TruffleNFIFeature
+   - com.oracle.svm.truffle.nfi.posix.PosixTruffleNFIFeature
+   - com.oracle.truffle.api.impl.TruffleAPIFeature: Provides basic support for Truffle
+   - com.oracle.truffle.api.object.DynamicObjectFeature: Provides support for DynamicObject
+   - org.graalvm.home.HomeFinderFeature: Finds GraalVM paths and its version number
+ Image configuration:
+ - Garbage collector: Serial GC (max heap size: 80% of RAM)
+ - Assertions: disabled (class-specific config may apply), system assertions: disabled
+------------------------------------------------------------------------------------------------------------------------
+Build resources:
+ - 6.00GiB of memory (78.7% of system memory, set via '-Xmx6g')
+ - 8 thread(s) (50.0% of 16 available processor(s), set via '--parallelism=8')
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.oracle.truffle.api.object.DynamicObject (file:${linux_workspace}/build/deps/25.4.4.1.1/truffle-api-25.4.4.1.1.jar)
+WARNING: Please consider reporting this to the maintainers of class com.oracle.truffle.api.object.DynamicObject
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[2/8] Performing analysis...  [***********]                                                            (26.2s @ 1.33GiB)
+   12,595 types,  17,300 fields, and  63,310 methods found reachable
+      296 types,      87 fields, and     633 methods registered for reflection
+       58 types,      59 fields, and      52 methods registered for JNI access
+       67 resource accesses registered with 172.36KiB total size
+       23 native libraries: :libgcc_eh.a, :libstdc++.a, boringssl, brotli, curl-impersonate, dl, graalphp-builtins, impersonate-nghttp2, m, pcre2, pthread, rt, sqlite3, standard-boringssl, standard-curl, uv, z, zlib, zstd
+    2,908 runtime compiled methods (4.6% of all reachable methods)
+[3/8] Building universe...                                                                              (3.8s @ 1.55GiB)
+[4/8] Parsing methods...      [****]                                                                   (13.2s @ 1.73GiB)
+[5/8] Inlining methods...     [***]                                                                     (1.9s @ 1.22GiB)
+[6/8] Compiling methods...    [*********]                                                              (78.9s @ 2.01GiB)
+[7/8] Laying out methods...   [***]                                                                     (9.3s @ 2.70GiB)
+[8/8] Creating image...       [****]                                                                   (14.5s @ 2.92GiB)
+  47.88MiB (51.33%) for code area:    37,464 compilation units
+  30.38MiB (32.56%) for image heap:  351,857 objects and 16 resources
+  15.03MiB (16.11%) for other data
+  93.29MiB in total image size, 88.63MiB in total file size
+------------------------------------------------------------------------------------------------------------------------
+Top 10 origins of code area:                                Top 10 object types in image heap:
+   3.40MiB o.g.truffle/com.oracle.truffle.polyglot            12.00MiB byte[] for code metadata
+   2.76MiB o.g.n.runtime/com.oracle.svm.core.code              3.95MiB byte[] for string data
+   1.70MiB java.base/java.util                                 2.12MiB java.base/java.lang.String
+   1.63MiB graalphp.truffle                                    1.93MiB byte[] for graph encodings
+   1.56MiB o.g.truffle/com.oracle.truffle.host                 1.92MiB java.base/java.lang.Class
+   1.43MiB o.g.truffle/com.oracle.truffle.api.interop          1.35MiB o.g.n.runtime/c.o.s.core.hub.DynamicHubCompanion
+   1.41MiB graalphp.runtime                                  813.28KiB byte[] for general heap data
+   1.06MiB j.g.compiler/jdk.graal.compiler.lir.amd64         531.11KiB java.base/java.lang.Object[]
+ 999.88KiB j.g.compiler/jdk.graal.compiler.nodes             510.47KiB java.base/j.u.concurrent.ConcurrentHashMap$Node
+ 938.28KiB c.o.t.tru~_nfi/com.oracle.truffle.nfi             470.46KiB o.g.t.r.svm/c.o.s.t.api.SubstrateTruffleMethod
+  31.04MiB for 376 more packages                               4.83MiB for 3364 more object types
+                            Use '--emit build-report' to create a report with more details.
+------------------------------------------------------------------------------------------------------------------------
+Security report:
+ - Binary includes Java deserialization.
+ - CycloneDX SBOM with 11 component(s) is embedded in binary (747B). 302 type(s) could not be associated to a component.
+ - Advanced obfuscation not enabled; enable with '-H:AdvancedObfuscation=""' (experimental support).
+------------------------------------------------------------------------------------------------------------------------
+Recommendations:
+ G1GC: Use the G1 GC ('--gc=G1') for improved latency and throughput.
+ PGO:  Use Profile-Guided Optimizations ('--pgo') for improved throughput.
+ FUTR: Use '--future-defaults=all' to prepare for future releases.
+ HEAP: Set max heap for improved and more predictable memory usage.
+ QBM:  Use the quick build mode ('-Ob') to speed up builds during development.
+------------------------------------------------------------------------------------------------------------------------
+                      16.2s (9.6% of total time) in 1699 GCs | Peak RSS: 6.48GiB | CPU load: 8.24
+------------------------------------------------------------------------------------------------------------------------
+Build artifacts:
+ ${linux_workspace}/build/graalphp (executable, 88.63MiB)
+========================================================================================================================
+Finished generating 'graalphp' in 2m 45s.
+VERSION libcurl/8.22.0 BoringSSL zlib/1.3.2 brotli/1.2.0 zstd/1.5.7 nghttp2/1.63.0
+PASS curl assertions=112
+PASS independent peer: peak held requests=16; artifacts=${linux_workspace}/build/curl-test-17863361783432929052

@@ -1,0 +1,142 @@
+package graalphp;
+
+import com.sun.net.httpserver.HttpServer;
+import java.io.*;
+import java.net.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.LongAdder;
+
+/** Direct cURL throughput. All process counters are sampled outside the PHP runtime. */
+public final class CurlBenchmark {
+    private static final byte[] BODY = "r".repeat(1024).getBytes(StandardCharsets.US_ASCII);
+    private record Control(String path, CompletableFuture<Void> release) {}
+    private record RuntimeSpec(String name, List<String> command) {}
+    private static final String HEADER = "runtime,repetition,parked,clients,phase,requests,seconds,requests_per_second,cpu_seconds,cpu_us_per_request,rss_mib,private_commit_mib,peak_rss_mib,distinct_peer_endpoints\n";
+    public static void main(String[] args) throws Exception {
+        if (!System.getProperty("os.name").startsWith("Windows")) throw new IllegalArgumentException("The external process sampler currently supports Windows");
+        int repetitions = args.length > 0 ? Integer.parseInt(args[0]) : 3;
+        int iterations = args.length > 1 ? Integer.parseInt(args[1]) : 512;
+        int clients = args.length > 2 ? Integer.parseInt(args[2]) : 64;
+        if (repetitions < 1 || iterations < 1 || clients < 1) throw new IllegalArgumentException("Positive repetitions, iterations and clients required");
+        System.setProperty("sun.net.httpserver.maxIdleConnections", "4096");
+        Path root = Path.of("").toAbsolutePath();
+        Path output = Files.createTempDirectory(root.resolve("build"), "curl-benchmark-");
+        var runtimes = List.of(new RuntimeSpec("graalphp", List.of(root.resolve("build/graalphp.exe").toString())),
+                new RuntimeSpec("trueasync", List.of(root.resolve("tools/trueasync-0.10.0/php.exe").toString(), "-n", "-d",
+                        "extension_dir=" + root.resolve("tools/trueasync-0.10.0/ext"), "-d", "extension=curl", "-d", "memory_limit=-1")));
+        Files.writeString(output.resolve("results.csv"), HEADER);
+        Files.writeString(output.resolve("environment.txt"), "Direct cURL; ordinary provider forced with GRAALPHP_CURL_PROVIDER=standard\n"
+                + "No WebSocket, PHP HTTP server, SQLite or FFI extension/workload\n"
+                + "Payload=1024 bytes; independent HTTP/1.1 keep-alive peer; 5ms response delay; validates every body\n"
+                + "Warmup=64 coroutines * 256 requests before parking, excluded\n"
+                + "Fresh PHP process and peer for each trial; alternating runtime order\n"
+                + "Metrics=external Windows process CPU, working set (RSS), private commit; sampled peak every 25ms\n"
+                + "Measurement boundary=peer receives begin/end control calls, includes coroutine creation and drain\n"
+                + "Idle samples=1s held control request; no payload traffic\n"
+                + "Clients=" + clients + "; iterations per client=" + iterations + "; repetitions=" + repetitions + "; parked=1000,10000\n"
+                + "Host=" + System.getProperty("os.name") + " " + System.getProperty("os.version") + "; logical CPUs=" + Runtime.getRuntime().availableProcessors() + "\n");
+        for (var runtime : runtimes) Files.writeString(output.resolve("environment.txt"), runtime.name + " SHA256="
+                + HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(Path.of(runtime.command.getFirst())))) + "\n", StandardOpenOption.APPEND);
+        for (int repetition = 1; repetition <= repetitions; repetition++) {
+            for (int parked : new int[] {1000, 10000}) for (var runtime : repetition % 2 == 1 ? runtimes : runtimes.reversed()) {
+                run(root, output, runtime, repetition, parked, clients, iterations);
+            }
+        }
+        System.out.println("RESULTS " + output);
+    }
+    private static void run(Path root, Path output, RuntimeSpec runtime, int repetition, int parked, int clients, int iterations) throws Exception {
+        try (var fixture = new Fixture()) {
+            var command = new ArrayList<>(runtime.command); command.add("tests/php/curl-benchmark.php");
+            Path log = output.resolve(runtime.name + "-" + repetition + "-" + parked + ".log");
+            var builder = new ProcessBuilder(command).directory(root.toFile()).redirectErrorStream(true).redirectOutput(log.toFile());
+            builder.environment().putAll(Map.of("BENCH_UPSTREAM", "http://127.0.0.1:" + fixture.server.getAddress().getPort(),
+                    "BENCH_BODY", new String(BODY, StandardCharsets.US_ASCII), "BENCH_CLIENTS", Integer.toString(clients),
+                    "BENCH_ITERATIONS", Integer.toString(iterations), "BENCH_PARKED", Integer.toString(parked),
+                    "GRAALPHP_CURL_PROVIDER", "standard", "GRAALPHP_REACTOR", "libuv", "GRAALPHP_TIMEOUT_MS", "180000"));
+            Process process = builder.start();
+            System.out.printf("START %s run=%d parked=%d pid=%d%n", runtime.name, repetition, parked, process.pid());
+            boolean completed = false;
+            try (var sampler = new NetworkBenchmark.Sampler(process.pid())) {
+                NetworkBenchmark.Resources before = null;
+                long begin = 0, peak = 0;
+                long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(180);
+                while (process.isAlive() && System.nanoTime() < deadline) {
+                    Control control = fixture.controls.poll(25, TimeUnit.MILLISECONDS);
+                    if (before != null) peak = Math.max(peak, sampler.read().resident());
+                    if (control == null) continue;
+                    switch (control.path) {
+                        case "/baseline", "/suspended" -> {
+                            var idleBefore = sampler.read(); long idleStart = System.nanoTime();
+                            Thread.sleep(1000);
+                            var idleAfter = sampler.read();
+                            save(output, runtime, repetition, parked, 0, control.path.substring(1), 0, idleStart, idleBefore, idleAfter, idleAfter.resident(), 0);
+                        }
+                        case "/begin" -> {
+                            fixture.requests.reset(); fixture.peers.clear();
+                            before = sampler.read(); begin = System.nanoTime(); peak = before.resident();
+                        }
+                        case "/end" -> {
+                            var after = sampler.read();
+                            long count = fixture.requests.sum();
+                            if (count != (long) clients * iterations) throw new AssertionError("Peer request count: " + count);
+                            save(output, runtime, repetition, parked, clients, "curl", count, begin, before, after, peak, fixture.peers.size());
+                            before = null; completed = true;
+                        }
+                        default -> throw new AssertionError("Unknown control " + control.path);
+                    }
+                    control.release.complete(null);
+                }
+                if (!process.waitFor(5, TimeUnit.SECONDS)) throw new AssertionError("PHP benchmark exceeded deadline");
+                String text = Files.readString(log);
+                if (process.exitValue() != 0 || !text.contains("PASS curl benchmark") || !completed) throw new AssertionError(text);
+                if (!text.contains("8.22.0")) throw new AssertionError("Unexpected cURL version: " + text);
+                Files.writeString(output.resolve("environment.txt"), runtime.name + " run=" + repetition + " parked=" + parked + " "
+                        + text.lines().filter(line -> line.startsWith("VERSION ")).findFirst().orElseThrow() + "\n", StandardOpenOption.APPEND);
+            } catch (Exception | AssertionError error) {
+                Files.writeString(output.resolve("failure.txt"), runtime.name + " run=" + repetition + " parked=" + parked + "\n" + error + "\n" + Files.readString(log));
+                throw error;
+            } finally {
+                if (process.isAlive()) { process.destroy(); if (!process.waitFor(2, TimeUnit.SECONDS)) process.destroyForcibly(); }
+            }
+        }
+    }
+    private static void save(Path output, RuntimeSpec runtime, int repetition, int parked, int clients, String phase, long requests,
+            long begin, NetworkBenchmark.Resources before, NetworkBenchmark.Resources after, long peak, int peers) throws IOException {
+        double seconds = (System.nanoTime() - begin) / 1e9, cpu = (after.cpuNanos() - before.cpuNanos()) / 1e9;
+        String row = String.format(Locale.ROOT, "%s,%d,%d,%d,%s,%d,%.6f,%.3f,%.6f,%.3f,%.3f,%.3f,%.3f,%d%n",
+                runtime.name, repetition, parked, clients, phase, requests, seconds, requests / seconds, cpu,
+                requests == 0 ? 0 : cpu * 1e6 / requests, after.resident() / 1048576.0, after.privateCommit() / 1048576.0, peak / 1048576.0, peers);
+        Files.writeString(output.resolve("results.csv"), row, StandardOpenOption.APPEND);
+        System.out.print(row);
+    }
+    private static final class Fixture implements AutoCloseable {
+        final HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 512);
+        final ExecutorService workers = Executors.newVirtualThreadPerTaskExecutor();
+        final BlockingQueue<Control> controls = new LinkedBlockingQueue<>();
+        final Set<InetSocketAddress> peers = ConcurrentHashMap.newKeySet();
+        final LongAdder requests = new LongAdder();
+        Fixture() throws IOException {
+            server.setExecutor(workers);
+            server.createContext("/", exchange -> {
+                try {
+                    byte[] body = BODY;
+                    if (exchange.getRequestURI().getPath().equals("/payload")) {
+                        requests.increment(); peers.add(exchange.getRemoteAddress()); Thread.sleep(5);
+                    } else {
+                        var control = new Control(exchange.getRequestURI().getPath(), new CompletableFuture<>());
+                        controls.add(control); control.release.get(10, TimeUnit.SECONDS);
+                        body = "ok".getBytes(StandardCharsets.US_ASCII);
+                    }
+                    exchange.sendResponseHeaders(200, body.length); exchange.getResponseBody().write(body);
+                } catch (InterruptedException error) { Thread.currentThread().interrupt(); }
+                catch (ExecutionException | TimeoutException error) { throw new IOException(error); }
+                finally { exchange.close(); }
+            });
+            server.start();
+        }
+        @Override public void close() { server.stop(0); workers.shutdownNow(); }
+    }
+}

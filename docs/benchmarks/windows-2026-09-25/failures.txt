@@ -1,0 +1,16 @@
+graalphp-native run=3 parked=10000
+java.io.IOException: Failure during /relay clients=256; pid=7860; still alive; log=build\network-benchmark-15401488294723741165\graalphp-native-3-10000.log
+	at graalphp.NetworkBenchmark.run(NetworkBenchmark.java:137)
+	at graalphp.NetworkBenchmark.main(NetworkBenchmark.java:71)
+Caused by: java.util.concurrent.ExecutionException: java.lang.AssertionError: Response mismatch: CLOSED:1006
+	at java.base/java.util.concurrent.FutureTask.report(FutureTask.java:124)
+	at java.base/java.util.concurrent.FutureTask.get(FutureTask.java:207)
+	at graalphp.NetworkBenchmark.traffic(NetworkBenchmark.java:203)
+	at graalphp.NetworkBenchmark.run(NetworkBenchmark.java:123)
+	... 1 more
+Caused by: java.lang.AssertionError: Response mismatch: CLOSED:1006
+	at graalphp.NetworkBenchmark.lambda$traffic$0(NetworkBenchmark.java:190)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.ThreadPerTaskExecutor$ThreadBoundFuture.run(ThreadPerTaskExecutor.java:323)
+	at java.base/java.lang.VirtualThread.run(VirtualThread.java:460)
+

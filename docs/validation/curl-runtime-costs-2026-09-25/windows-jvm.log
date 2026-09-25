@@ -1,0 +1,20 @@
+build\generated\graalphp\truffle\PhpRootGen.java:5719: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+build\generated\graalphp\truffle\PhpRootGen.java:7396: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+Note: ${workspace}\src\graalphp\truffle\PhpContext.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+2 warnings
+using lock ${workspace}\build\toolchain.lock
+already installed 12 packages in ${workspace}\build\toolchain
+[0m[32;1m[100%]:[0m [32;1mbuild ok, spent 1.203s[0m
+[0m[32;1m[100%]:[0m [32;1mbuild ok, spent 1.188s[0m
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime (file:/${workspace}/build/deps/25.4.4.1.1/truffle-runtime-25.4.4.1.1.jar)
+WARNING: Please consider reporting this to the maintainers of class com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+VERSION libcurl/8.22.0 BoringSSL zlib/1.3.2 brotli/1.2.0 zstd/1.5.7 WinIDN nghttp2/1.63.0
+PASS curl assertions=94
+PASS independent peer: peak held requests=16; artifacts=${workspace}\build\curl-test-496602273047923659

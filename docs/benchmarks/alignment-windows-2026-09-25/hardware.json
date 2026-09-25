@@ -1,0 +1,7 @@
+{
+  "cpu": "11th Gen Intel(R) Core(TM) i7-11800H @ 2.30GHz",
+  "logicalProcessors": 16,
+  "physicalMemoryGiB": 15.73,
+  "graalphp": "0.1; Native Image/Truffle 25.4.4.1.1; libcurl 8.21.0/curl-impersonate 2.2.2",
+  "trueasync": "0.10.0; PHP 8.6.0-dev; server 0.15.0; libcurl 8.22.0/OpenSSL 4.0.2"
+}

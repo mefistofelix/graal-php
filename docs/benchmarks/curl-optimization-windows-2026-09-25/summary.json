@@ -1,0 +1,238 @@
+{
+  "final-ab": {
+    "graalphp-before/1000": {
+      "trials": 3,
+      "requests": 196608,
+      "requests_per_second": {
+        "median": 13504.817,
+        "min": 13227.641,
+        "max": 13613.667
+      },
+      "cpu_us_per_request": {
+        "median": 77.486,
+        "min": 76.056,
+        "max": 78.678
+      },
+      "rss_mib": {
+        "median": 213.977,
+        "min": 185.645,
+        "max": 215.277
+      },
+      "private_commit_mib": {
+        "median": 231.824,
+        "min": 203.703,
+        "max": 232.809
+      },
+      "peak_rss_mib": {
+        "median": 219.453,
+        "min": 197.789,
+        "max": 220.68
+      }
+    },
+    "graalphp/1000": {
+      "trials": 3,
+      "requests": 196608,
+      "requests_per_second": {
+        "median": 18219.219,
+        "min": 17022.099,
+        "max": 18341.425
+      },
+      "cpu_us_per_request": {
+        "median": 55.79,
+        "min": 55.075,
+        "max": 62.227
+      },
+      "rss_mib": {
+        "median": 196.348,
+        "min": 191.688,
+        "max": 221.34
+      },
+      "private_commit_mib": {
+        "median": 212.742,
+        "min": 207.688,
+        "max": 235.832
+      },
+      "peak_rss_mib": {
+        "median": 204.777,
+        "min": 200.445,
+        "max": 227.383
+      }
+    },
+    "graalphp-before/10000": {
+      "trials": 3,
+      "requests": 196608,
+      "requests_per_second": {
+        "median": 12626.073,
+        "min": 12601.81,
+        "max": 13006.098
+      },
+      "cpu_us_per_request": {
+        "median": 80.109,
+        "min": 77.724,
+        "max": 80.347
+      },
+      "rss_mib": {
+        "median": 203.168,
+        "min": 201.664,
+        "max": 205.285
+      },
+      "private_commit_mib": {
+        "median": 221.711,
+        "min": 219.66,
+        "max": 223.426
+      },
+      "peak_rss_mib": {
+        "median": 219.875,
+        "min": 218.371,
+        "max": 222.34
+      }
+    },
+    "graalphp/10000": {
+      "trials": 3,
+      "requests": 196608,
+      "requests_per_second": {
+        "median": 17668.382,
+        "min": 17394.224,
+        "max": 17881.702
+      },
+      "cpu_us_per_request": {
+        "median": 59.843,
+        "min": 58.413,
+        "max": 59.843
+      },
+      "rss_mib": {
+        "median": 240.91,
+        "min": 209.125,
+        "max": 242.613
+      },
+      "private_commit_mib": {
+        "median": 256.871,
+        "min": 227.16,
+        "max": 258.496
+      },
+      "peak_rss_mib": {
+        "median": 241.34,
+        "min": 217.688,
+        "max": 243.781
+      }
+    }
+  },
+  "final-trueasync": {
+    "graalphp/1000": {
+      "trials": 3,
+      "requests": 196608,
+      "requests_per_second": {
+        "median": 17666.368,
+        "min": 17602.764,
+        "max": 17838.458
+      },
+      "cpu_us_per_request": {
+        "median": 59.366,
+        "min": 57.697,
+        "max": 61.035
+      },
+      "rss_mib": {
+        "median": 220.734,
+        "min": 220.273,
+        "max": 224.059
+      },
+      "private_commit_mib": {
+        "median": 236.816,
+        "min": 235.746,
+        "max": 238.773
+      },
+      "peak_rss_mib": {
+        "median": 225.984,
+        "min": 220.938,
+        "max": 232.309
+      }
+    },
+    "trueasync/1000": {
+      "trials": 3,
+      "requests": 196608,
+      "requests_per_second": {
+        "median": 23757.994,
+        "min": 22293.937,
+        "max": 24645.2
+      },
+      "cpu_us_per_request": {
+        "median": 41.962,
+        "min": 40.531,
+        "max": 44.823
+      },
+      "rss_mib": {
+        "median": 36.426,
+        "min": 36.395,
+        "max": 36.434
+      },
+      "private_commit_mib": {
+        "median": 2086.328,
+        "min": 2084.398,
+        "max": 2086.379
+      },
+      "peak_rss_mib": {
+        "median": 37.066,
+        "min": 37.027,
+        "max": 37.078
+      }
+    },
+    "graalphp/10000": {
+      "trials": 3,
+      "requests": 196608,
+      "requests_per_second": {
+        "median": 16976.873,
+        "min": 16906.254,
+        "max": 17378.846
+      },
+      "cpu_us_per_request": {
+        "median": 60.32,
+        "min": 58.174,
+        "max": 62.704
+      },
+      "rss_mib": {
+        "median": 212.578,
+        "min": 211.082,
+        "max": 242.707
+      },
+      "private_commit_mib": {
+        "median": 229.238,
+        "min": 227.715,
+        "max": 258.426
+      },
+      "peak_rss_mib": {
+        "median": 220.617,
+        "min": 220.305,
+        "max": 249.695
+      }
+    },
+    "trueasync/10000": {
+      "trials": 3,
+      "requests": 196608,
+      "requests_per_second": {
+        "median": 21906.785,
+        "min": 21404.133,
+        "max": 22477.816
+      },
+      "cpu_us_per_request": {
+        "median": 45.3,
+        "min": 44.584,
+        "max": 46.73
+      },
+      "rss_mib": {
+        "median": 160.184,
+        "min": 160.168,
+        "max": 160.406
+      },
+      "private_commit_mib": {
+        "median": 20176.137,
+        "min": 20174.145,
+        "max": 20176.363
+      },
+      "peak_rss_mib": {
+        "median": 160.836,
+        "min": 160.805,
+        "max": 161.043
+      }
+    }
+  }
+}

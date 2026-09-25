@@ -1,0 +1,218 @@
+[
+  {
+    "campaign": "final-ab",
+    "runtime": "graalphp-before",
+    "repetition": 1,
+    "parked": 1000,
+    "requests": 65536,
+    "passed": true,
+    "peer_endpoints": 64
+  },
+  {
+    "campaign": "final-ab",
+    "runtime": "graalphp",
+    "repetition": 1,
+    "parked": 1000,
+    "requests": 65536,
+    "passed": true,
+    "peer_endpoints": 64
+  },
+  {
+    "campaign": "final-ab",
+    "runtime": "graalphp-before",
+    "repetition": 1,
+    "parked": 10000,
+    "requests": 65536,
+    "passed": true,
+    "peer_endpoints": 64
+  },
+  {
+    "campaign": "final-ab",
+    "runtime": "graalphp",
+    "repetition": 1,
+    "parked": 10000,
+    "requests": 65536,
+    "passed": true,
+    "peer_endpoints": 64
+  },
+  {
+    "campaign": "final-ab",
+    "runtime": "graalphp",
+    "repetition": 2,
+    "parked": 1000,
+    "requests": 65536,
+    "passed": true,
+    "peer_endpoints": 64
+  },
+  {
+    "campaign": "final-ab",
+    "runtime": "graalphp-before",
+    "repetition": 2,
+    "parked": 1000,
+    "requests": 65536,
+    "passed": true,
+    "peer_endpoints": 64
+  },
+  {
+    "campaign": "final-ab",
+    "runtime": "graalphp",
+    "repetition": 2,
+    "parked": 10000,
+    "requests": 65536,
+    "passed": true,
+    "peer_endpoints": 64
+  },
+  {
+    "campaign": "final-ab",
+    "runtime": "graalphp-before",
+    "repetition": 2,
+    "parked": 10000,
+    "requests": 65536,
+    "passed": true,
+    "peer_endpoints": 64
+  },
+  {
+    "campaign": "final-ab",
+    "runtime": "graalphp-before",
+    "repetition": 3,
+    "parked": 1000,
+    "requests": 65536,
+    "passed": true,
+    "peer_endpoints": 64
+  },
+  {
+    "campaign": "final-ab",
+    "runtime": "graalphp",
+    "repetition": 3,
+    "parked": 1000,
+    "requests": 65536,
+    "passed": true,
+    "peer_endpoints": 64
+  },
+  {
+    "campaign": "final-ab",
+    "runtime": "graalphp-before",
+    "repetition": 3,
+    "parked": 10000,
+    "requests": 65536,
+    "passed": true,
+    "peer_endpoints": 68
+  },
+  {
+    "campaign": "final-ab",
+    "runtime": "graalphp",
+    "repetition": 3,
+    "parked": 10000,
+    "requests": 65536,
+    "passed": true,
+    "peer_endpoints": 64
+  },
+  {
+    "campaign": "final-trueasync",
+    "runtime": "graalphp",
+    "repetition": 1,
+    "parked": 1000,
+    "requests": 65536,
+    "passed": true,
+    "peer_endpoints": 64
+  },
+  {
+    "campaign": "final-trueasync",
+    "runtime": "trueasync",
+    "repetition": 1,
+    "parked": 1000,
+    "requests": 65536,
+    "passed": true,
+    "peer_endpoints": 64
+  },
+  {
+    "campaign": "final-trueasync",
+    "runtime": "graalphp",
+    "repetition": 1,
+    "parked": 10000,
+    "requests": 65536,
+    "passed": true,
+    "peer_endpoints": 78
+  },
+  {
+    "campaign": "final-trueasync",
+    "runtime": "trueasync",
+    "repetition": 1,
+    "parked": 10000,
+    "requests": 65536,
+    "passed": true,
+    "peer_endpoints": 64
+  },
+  {
+    "campaign": "final-trueasync",
+    "runtime": "trueasync",
+    "repetition": 2,
+    "parked": 1000,
+    "requests": 65536,
+    "passed": true,
+    "peer_endpoints": 64
+  },
+  {
+    "campaign": "final-trueasync",
+    "runtime": "graalphp",
+    "repetition": 2,
+    "parked": 1000,
+    "requests": 65536,
+    "passed": true,
+    "peer_endpoints": 64
+  },
+  {
+    "campaign": "final-trueasync",
+    "runtime": "trueasync",
+    "repetition": 2,
+    "parked": 10000,
+    "requests": 65536,
+    "passed": true,
+    "peer_endpoints": 64
+  },
+  {
+    "campaign": "final-trueasync",
+    "runtime": "graalphp",
+    "repetition": 2,
+    "parked": 10000,
+    "requests": 65536,
+    "passed": true,
+    "peer_endpoints": 64
+  },
+  {
+    "campaign": "final-trueasync",
+    "runtime": "graalphp",
+    "repetition": 3,
+    "parked": 1000,
+    "requests": 65536,
+    "passed": true,
+    "peer_endpoints": 64
+  },
+  {
+    "campaign": "final-trueasync",
+    "runtime": "trueasync",
+    "repetition": 3,
+    "parked": 1000,
+    "requests": 65536,
+    "passed": true,
+    "peer_endpoints": 64
+  },
+  {
+    "campaign": "final-trueasync",
+    "runtime": "graalphp",
+    "repetition": 3,
+    "parked": 10000,
+    "requests": 65536,
+    "passed": true,
+    "peer_endpoints": 64
+  },
+  {
+    "campaign": "final-trueasync",
+    "runtime": "trueasync",
+    "repetition": 3,
+    "parked": 10000,
+    "requests": 65536,
+    "passed": true,
+    "peer_endpoints": 64
+  }
+]

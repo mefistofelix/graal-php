@@ -1,0 +1,21 @@
+windows-values: PASS: 53 semantic scenarios + storage/lifetime invariants
+windows-values: PASS: 256 ownership graphs, 1280 collection phases, exactly-once resource release
+windows-jvm-curl: VERSION libcurl/8.22.0 BoringSSL zlib/1.3.2 brotli/1.2.0 zstd/1.5.7 WinIDN nghttp2/1.63.0
+windows-jvm-curl: PASS curl assertions=89
+windows-jvm-curl: PASS independent peer: peak held requests=16; artifacts=${workspace}\build\curl-test-1960878020807905065
+windows-native-curl: VERSION libcurl/8.22.0 BoringSSL zlib/1.3.2 brotli/1.2.0 zstd/1.5.7 WinIDN nghttp2/1.63.0
+windows-native-curl: PASS curl assertions=93
+windows-native-curl: PASS independent peer: peak held requests=16; artifacts=${workspace}\build\curl-test-1736882686023687395
+trueasync-windows-curl: VERSION 8.22.0
+trueasync-windows-curl: PASS curl assertions=82
+trueasync-windows-curl: PASS independent peer: peak held requests=16; artifacts=${workspace}\build\curl-test-16205223190788798900
+linux-native-curl: VERSION libcurl/8.22.0 BoringSSL zlib/1.3.2 brotli/1.2.0 zstd/1.5.7 nghttp2/1.63.0
+linux-native-curl: PASS curl assertions=103
+linux-native-curl: PASS independent peer: peak held requests=16; artifacts=${workspace}/build/linux-workspace/build/curl-test-3084717282858826668
+linux-jvm-curl: VERSION libcurl/8.22.0 BoringSSL zlib/1.3 brotli/1.2.0 zstd/1.5.7 nghttp2/1.63.0
+linux-jvm-curl: PASS curl assertions=93
+linux-jvm-curl: PASS independent peer: peak held requests=16; artifacts=${workspace}/build/linux-workspace/build/curl-test-17061234551130491964
+linux-values: PASS: 53 semantic scenarios + storage/lifetime invariants
+linux-values: PASS: 256 ownership graphs, 1280 collection phases, exactly-once resource release
+24/24 final benchmark trials passed; 1572864 measured responses and 393216 warmup responses verified. No trial excluded.
+Assertion counts include curl_multi polling and may vary with completion timing.

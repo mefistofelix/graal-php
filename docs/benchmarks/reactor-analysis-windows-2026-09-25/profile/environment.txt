@@ -1,0 +1,12 @@
+OS=Windows 11 10.0
+Processors=16
+Java=25.0.4.1.1
+Repetitions=1
+SecondsPerPhase=10
+Payload=128-byte WebSocket echo; relay=1024-byte HTTP response after 5ms fixture delay, HTTP/1.1 keep-alive
+Warmup=4 seconds echo + 3 seconds relay, 32 clients, excluded; populations above 10000 use memory-only phases
+Populations=[1000, 10000]
+Profile=true; clients=[64]
+Fixture=new HTTP peer for each trial; maxIdleConnections=4096; successful phases only in results.csv, failures retained separately
+Commands=[RuntimeSpec[name=graalphp-profile, command=[build\graalphp-profile.exe]]]
+graalphp-profile sha256=2800f789f8fdc656c110628541d4fea03413a8355ea1ef91b78eecc0cf849e9e

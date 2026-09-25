@@ -1,0 +1,2 @@
+PASS: 53 semantic scenarios + storage/lifetime invariants
+PASS: 256 ownership graphs, 1280 collection phases, exactly-once resource release

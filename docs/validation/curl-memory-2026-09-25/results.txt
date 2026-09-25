@@ -1,0 +1,42 @@
+cURL memory and cold-start validation, 2026-09-25
+
+PASS Windows final benchmark: 36/36 trials, 4718592 payload requests.
+Three repetitions, 64 clients, 1000/10000 parked coroutines, previous GraalPHP,
+new GraalPHP and TrueAsync, with paired timed/untimed workloads.
+No warmup and no discarded payload requests. No pre-traffic idle wait.
+Window: before process launch through work completion, including parked release;
+excludes sample printing and final context/process shutdown. CPU includes JIT.
+PASS latency sample count: 147456 total, 24576 per runtime/population.
+PASS all per-trial latency and RSS quantiles independently recomputed from raw CSV.
+PASS both Windows GraalPHP executable hashes match benchmark environment.txt.
+No failed trials or removed outliers. TrueAsync with 10000 parked coroutines
+had variable pre-payload delays (0.12-2.59s in untimed trials), retained in results.
+The cause of those delays was not determined.
+
+PASS Windows Native Image cURL suite: 110 assertions, peak held requests=16.
+PASS Windows JVM cURL suite: 100 assertions, peak held requests=16.
+PASS Linux Native Image cURL suite: 112 assertions, peak held requests=16.
+PASS Linux JVM cURL suite: 100 assertions, peak held requests=16.
+Counts include polling and provider-specific cases and can vary.
+PASS separate cold-start JIT trace: 8 completed Tier 1 and 4 completed Tier 2 compilations.
+The trace run is excluded from the performance comparison.
+PASS final Java benchmark/report drivers compile.
+PASS Windows/Linux source and test parity: 82 files.
+PASS Linux ELF linkage: libc, libm and system loader, as before.
+PASS native C product sources unchanged from the previous release.
+No change to cURL versions, libuv reactor, PHP ownership or coroutine architecture.
+No Linux performance claim. Full language, SQLite, WebSocket and FFI suites not rerun.
+The general network and value-model benchmarks had their discarded warmups removed;
+network startup is also recorded separately. Those workloads were not run here.
+The C benchmark warmup was removed in source; the C control was not rebuilt/run here.
+
+CLI default engine.CompilerIdleDelay changed from 10000ms to 500ms, overridable
+with -Dpolyglot.engine.CompilerIdleDelay. Embedded hosts keep their builder options.
+The final A/B measures both binaries from cold under the same updated workload.
+Earlier exploratory warmup diagnostics are archived separately, not presented
+as current real-world results. No new warmup run followed the method change.
+No NMT category breakdown was performed. GC heap limits were not changed.
+
+Median RSS fell 46.2%/38.5%, sampled peak 10.5%/8.6%; median throughput changed
+-2.1%/+0.7%, pooled sampled p99 +4.0%/+11.2%. Three repetitions do not establish
+statistical equivalence. See ../../curl-memory.md for raw-data links and scope.

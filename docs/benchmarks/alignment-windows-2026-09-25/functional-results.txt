@@ -1,0 +1,13 @@
+build/alignment-integration-windows.log: PASS: 73 integration scenarios (Truffle, async, reload, threads, NFI, host)
+build/alignment-verify-windows.log: PASS: 53 semantic scenarios + storage/lifetime invariants
+build/alignment-trueasync-windows-jvm.log: PASS: 82 differential scenarios against TrueAsync 0.10.0
+build/alignment-trueasync-windows-native.log: PASS: 82 differential scenarios against TrueAsync 0.10.0
+build/alignment-network-windows-jvm.log: PASS: 50 network assertions in 5.950 s
+build/alignment-network-windows-native.log: PASS: 50 network assertions in 4.494 s
+build/alignment-package-windows.log: PASS: 50 network assertions in 4.478 s
+build/linux-workspace/build/alignment-integration-linux.log: PASS: 67 integration scenarios (Truffle, async, reload, threads, NFI, host)
+build/linux-workspace/build/alignment-values-linux.log: PASS: 53 semantic scenarios + storage/lifetime invariants
+build/linux-workspace/build/alignment-trueasync-linux-jvm.log: PASS: 82 differential scenarios against TrueAsync 0.10.0
+build/linux-workspace/build/alignment-trueasync-linux-native.log: PASS: 82 differential scenarios against TrueAsync 0.10.0
+build/linux-workspace/build/alignment-network-linux-jvm.log: PASS: 50 network assertions in 8.795 s
+build/linux-workspace/build/alignment-network-linux-native.log: PASS: 50 network assertions in 3.215 s

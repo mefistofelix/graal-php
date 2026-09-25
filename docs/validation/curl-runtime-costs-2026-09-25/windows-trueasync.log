@@ -1,0 +1,3 @@
+VERSION 8.22.0
+PASS curl assertions=83
+PASS independent peer: peak held requests=16; artifacts=${workspace}\build\curl-test-5080527872128726941

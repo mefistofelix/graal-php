@@ -1,0 +1,28 @@
+Windows JVM
+VERSION libcurl/8.22.0 BoringSSL zlib/1.3.2 brotli/1.2.0 zstd/1.5.7 WinIDN nghttp2/1.63.0
+PASS curl assertions=84
+PASS independent peer: peak held requests=16
+
+Windows Native Image
+VERSION libcurl/8.22.0 BoringSSL zlib/1.3.2 brotli/1.2.0 zstd/1.5.7 WinIDN nghttp2/1.63.0
+PASS curl assertions=98
+PASS independent peer: peak held requests=16
+
+Linux JVM
+VERSION libcurl/8.22.0 BoringSSL zlib/1.3 brotli/1.2.0 zstd/1.5.7 nghttp2/1.63.0
+PASS curl assertions=88
+PASS independent peer: peak held requests=16
+
+Linux Native Image
+VERSION libcurl/8.22.0 BoringSSL zlib/1.3.2 brotli/1.2.0 zstd/1.5.7 nghttp2/1.63.0
+PASS curl assertions=98
+PASS independent peer: peak held requests=16
+
+TrueAsync Windows
+VERSION 8.22.0
+PASS curl assertions=75
+PASS independent peer: peak held requests=16
+
+Assertion totals include each multi event-loop iteration and therefore vary between runs.
+Native products embed both cURL/TLS archives. Windows imports only OS + MSVC runtime DLLs; Linux imports libc/libm/loader.
+Linux JVM reports the already loaded host zlib 1.3; Native Image uses bundled zlib 1.3.2. Both pass gzip checks.

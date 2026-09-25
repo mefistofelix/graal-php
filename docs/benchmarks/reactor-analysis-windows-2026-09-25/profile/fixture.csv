@@ -1,0 +1,3 @@
+runtime,repetition,parked,http_requests,distinct_peer_endpoints
+graalphp-profile,1,1000,55839,1280
+graalphp-profile,1,10000,31453,3778

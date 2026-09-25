@@ -1,0 +1,64 @@
+build/reactor-compact-values.log
+PASS: 53 semantic scenarios + storage/lifetime invariants
+
+build/reactor-compact-integration.log
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime (file:/build/deps/25.4.4.1.1/truffle-runtime-25.4.4.1.1.jar)
+WARNING: Please consider reporting this to the maintainers of class com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+PASS: 72 integration scenarios (Truffle, async, reload, threads, NFI, host)
+
+build/reactor-compact-network.log
+PASS HTTP route
+PASS transaction rollback
+PASS ordinary curl TLS request
+PASS single-reader contract and cancellation
+PASS immediate curl failure, reuse and PHP 8 curl_close identity
+PASS curl cancellation task started
+PASS cancelled request reached HTTPS peer
+PASS curl cancellation and same-handle reuse before peer release
+PASS fragmented UTF-8 text
+PASS 64-bit frame length
+PASS fragmented binary, NUL and non-UTF-8 bytes
+PASS ping/pong
+PASS untrusted certificate rejected
+PASS curl deadline
+PASS explicit multi batch starts
+PASS two multi transfers reach the HTTPS barrier
+PASS HTTP progresses during explicit multi transfers
+PASS multi results, content, error queue, SQLite and close/reuse
+PASS native multi connection limit is respected
+PASS multi cancellation scenario starts
+PASS both cancellable multi requests reach the HTTPS peer
+PASS cancelling select preserves transfers and the other waiter
+PASS remove and same-handle reuse before peer release
+PASS surviving transfer completes, next multi starts
+PASS transfer is active before multi_close
+PASS multi_close wakes select and permits immediate reuse
+PASS eight reactor transfers reached the upstream concurrently
+PASS HTTP progresses while curl transfers are blocked
+PASS libuv ping progresses while curl transfers are blocked
+PASS 16 concurrent clients, 64 committed requests
+PASS curl concurrency exceeds the former four-worker pool
+WORKLOAD: 16 clients, 64 messages, 0.690 s, upstream peak concurrency 16
+PASS control frame between fragments
+PASS message after interleaved ping
+PASS close handshake
+PASS unmasked client frame
+PASS invalid text UTF-8
+PASS oversize frame rejected before allocation
+PASS invalid continuation
+PASS malformed upgrade rejected
+PASS server survives abrupt disconnect
+PASS persisted row count while serving
+PASS Chrome headers observed on the wire
+PASS TLS ClientHello contains Chrome cipher ordering and GREASE
+PASS profile changes TLS fingerprint beyond User-Agent
+PASS graceful stop route
+PASS idle connection drained within shutdown deadline
+PASS server exits without a live reactor/worker
+PASS fresh process reopens database
+PASS persisted values, rollback and SQLite binding types after restart
+PASS SQLite file format on disk
+PASS: 50 network assertions in 4.533 s; artifacts: build\network-native-15872011194673917894
+

@@ -1,0 +1,11 @@
+OS=Windows 11 10.0
+Processors=16
+Java=25.0.4.1.1
+Repetitions=3
+SecondsPerPhase=4
+Payload=128-byte WebSocket echo; relay=1024-byte HTTP response after 5ms fixture delay, HTTP/1.1 keep-alive
+Warmup=4 seconds echo + 3 seconds relay, 32 clients, excluded; populations above 10000 use memory-only phases
+Populations=[1000, 10000]
+Commands=[RuntimeSpec[name=graalphp-native, command=[build\graalphp.exe]], RuntimeSpec[name=trueasync, command=[tools\trueasync-0.10.0\php.exe, -n, -d, extension_dir=tools\trueasync-0.10.0\ext, -d, extension=true_async_server, -d, extension=curl, -d, memory_limit=-1]]]
+graalphp-native sha256=332f974ae2dca72076f79df76ae08dab2a923cca2635a6180bb126c66d843169
+trueasync sha256=f098912bcc6ed7e6d4a3d44ba58818443b74688855a14541d4101c5f1972ab4c

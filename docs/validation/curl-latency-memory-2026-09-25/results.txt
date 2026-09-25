@@ -1,0 +1,37 @@
+cURL latency and memory validation, 2026-09-25
+
+PASS final Windows benchmark: 24/24 trials, 3145728 measured requests.
+Three alternating repetitions, 64 active clients, 1000/10000 parked coroutines,
+GraalPHP/TrueAsync, each with and without request timing. Warmup 16384 requests
+per trial, 393216 total, excluded from the measurement window.
+PASS sampled latency: 8192 durations per timed trial, 24576 per runtime/population,
+98304 total. Raw samples and nearest-rank p20/p50/p90/p95/p99 verified.
+PASS external RSS/private-commit sampling: timestamps, raw samples, all per-trial
+RSS quantiles independently recomputed. Main RAM report uses untimed trials.
+PASS measured Windows executable SHA256 matches current product.
+
+An earlier attempt completed 13 trials then TrueAsync exited before traffic
+while preparing 10000 parked coroutines. Its driver did not record the exit
+status. Failure retained; cause undetermined. Final campaign did not reproduce
+it. Final tables exclude the incomplete campaign and retain both data sets.
+
+PASS Windows JVM cURL suite: 102 assertions, peak held requests=16.
+PASS Windows Native Image cURL suite: 104 assertions, peak held requests=16.
+PASS Windows TrueAsync cURL suite: 83 assertions, peak held requests=16.
+PASS Linux JVM cURL suite: 98 assertions, peak held requests=16.
+PASS Linux Native Image cURL suite: 106 assertions, peak held requests=16.
+Counts include polling and provider-specific cases and may vary.
+New checks cover hrtime named/scalar/pair results, monotonic order and nanosecond
+units through coroutine suspension. Existing cURL functional coverage retained.
+
+PASS Windows/Linux Native Image builds and current source parity.
+Linux ldd: libc, libm and system loader. Windows retains MSVC runtime DLLs.
+JVM Linux reports zlib/1.3; native product reports statically bundled zlib/1.3.2.
+No cURL library version, reactor or coroutine architecture change this turn.
+No full language, SQLite, WebSocket or FFI suite repeated.
+
+Latency includes the timer/recording workload's effects. Paired controls show
+approximately 3.4-3.5% lower GraalPHP throughput with timing; latency quantiles
+are not mathematically corrected. Memory quantiles are time-sample statistics;
+sampled peaks are not guaranteed instantaneous process maxima.
+See ../../curl-latency-memory.md and hashes.json.

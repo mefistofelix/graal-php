@@ -1,0 +1,16 @@
+OS=Windows 11 10.0
+Processors=16
+Java=25.0.4.1.1
+Repetitions=1
+SecondsPerPhase=4
+Payload=128-byte WebSocket echo; relay=1024-byte HTTP response after 5ms fixture delay, HTTP/1.1 keep-alive
+SQLite=one in-memory database and prepared UPSERT per client; one UPSERT + primary-key SELECT per message; relay-sqlite stores the HTTP response
+Warmup=4s echo + 3s relay + 2s sqlite + 2s relay-sqlite (+2s callback when enabled), 32 clients, excluded; populations above 10000 use memory-only phases
+Callbacks=true; one C call/message, 33 recursive C frames, 3 PHP callbacks each with Async\delay(0); fixture validates C locals and owner thread
+Populations=[1000, 10000]
+Profile=false; clients=[64]
+Fixture=new HTTP peer for each trial; maxIdleConnections=4096; successful phases only in results.csv, failures retained separately
+Commands=[RuntimeSpec[name=graalphp-native, command=[build\graalphp.exe]], RuntimeSpec[name=trueasync, command=[tools\trueasync-0.10.0\php.exe, -n, -d, extension_dir=tools\trueasync-0.10.0\ext, -d, extension=true_async_server, -d, extension=curl, -d, extension=sqlite3, -d, extension=ffi, -d, ffi.enable=1, -d, memory_limit=-1]]]
+graalphp-native sha256=99ce1bfe130623f616a59c05e09d7040a4642f00850da01bb3b44ed0c85be5fd
+trueasync sha256=f098912bcc6ed7e6d4a3d44ba58818443b74688855a14541d4101c5f1972ab4c
+ffi-bridge-fixture sha256=81a24cff735ea61163b266bd7972209ea8b00c3eb61d19c2c2e9681affc9d2f9
