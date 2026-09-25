@@ -1,9 +1,19 @@
-# Verifica — 25 settembre 2026
+# Verifica — 26 settembre 2026
 
 Toolchain: Oracle GraalVM 25.4.4.1.1+1.1, Java 25.0.4.1.1, Truffle 25.4.4.1.1.
 Oracoli: PHP 8.6.0RC2 e TrueAsync 0.10.0 / PHP 8.6.0-dev / ABI v0.26.0.
 
-La campagna corrente misura [memoria e prestazioni cURL da freddo](curl-memory.md):
+Il 26 settembre è stato verificato il [tooling e l'A/B p99 sullo stesso
+eseguibile](curl-p99.md): 32 prove principali, 8 diagnostiche JIT/GC e 4 con
+GC del peer, tutte passate. 5.767.168 richieste e 229.376 durate campionate;
+26 controlli Java, 7 test Python e 6 prove brevi GraalPHP/TrueAsync passati.
+RSS p50 −47,18%/−41,86%, p99 −2,41%/+10,42%; attribuzione causale ancora aperta.
+Solo benchmark/report modificati, binari invariati; nessuna nuova verifica
+funzionale completa o esecuzione Linux.
+[Esiti](validation/curl-p99-2026-09-26/results.txt),
+[hash](validation/curl-p99-2026-09-26/hashes.json).
+
+La precedente campagna del 25 settembre misura [memoria e prestazioni cURL da freddo](curl-memory.md):
 36/36 prove Windows, 4.718.592 richieste, nessun warmup escluso. Il nuovo default
 CLI `engine.CompilerIdleDelay=500` riduce la RAM trattenuta dai compilatori JIT;
 RSS p50 −46,2%/−38,5% con 1.000/10.000 sospese, p99 delle latenze +4,0%/+11,2%.

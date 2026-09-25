@@ -1,0 +1,209 @@
+{
+  "method": "Fresh processes; no discarded warmup; nearest-rank pooled quantiles; controls kept separate. Timeline bins use bounded clock-alignment midpoints, not exact event timestamps. Native GC/JIT totals cover the complete child log including shutdown; payload JIT and optional peer GC are filtered between suspended/end control UTC receipts. No exact Native Image GC clock alignment or compiler-worker lifetime tracing. Logs are diagnostics, not causal attribution.",
+  "trials": [
+    {
+      "runtime": "graalphp",
+      "repetition": 1,
+      "parked": 10,
+      "requests": 128,
+      "seconds": 0.132914,
+      "requests_per_second": 963.029,
+      "cpu_us_per_request": 244.141,
+      "rss_mib": {
+        "samples": 7,
+        "mean": 19.857700892857142,
+        "p20": 19.1875,
+        "p50": 19.73828125,
+        "p90": 20.7890625,
+        "p95": 20.7890625,
+        "p99": 20.7890625,
+        "max": 20.7890625
+      },
+      "control_observation_delays_ms": {
+        "/begin": 33.9246,
+        "/suspended": 0.1221,
+        "/end": 0.1253
+      },
+      "latency_ms": {
+        "samples": 8,
+        "mean": 0.6149125,
+        "p20": 0.4342,
+        "p50": 0.4723,
+        "p90": 1.4438,
+        "p95": 1.4438,
+        "p99": 1.4438,
+        "max": 1.4438
+      }
+    },
+    {
+      "runtime": "trueasync",
+      "repetition": 1,
+      "parked": 10,
+      "requests": 128,
+      "seconds": 0.070428,
+      "requests_per_second": 1817.472,
+      "cpu_us_per_request": 610.352,
+      "rss_mib": {
+        "samples": 7,
+        "mean": 19.184151785714285,
+        "p20": 20.54296875,
+        "p50": 20.76953125,
+        "p90": 20.85546875,
+        "p95": 20.85546875,
+        "p99": 20.85546875,
+        "max": 20.85546875
+      },
+      "control_observation_delays_ms": {
+        "/begin": 0.1388,
+        "/suspended": 0.1965,
+        "/end": 0.125
+      },
+      "latency_ms": {
+        "samples": 8,
+        "mean": 0.5160375,
+        "p20": 0.3694,
+        "p50": 0.4034,
+        "p90": 1.277,
+        "p95": 1.277,
+        "p99": 1.277,
+        "max": 1.277
+      }
+    }
+  ],
+  "groups": [
+    {
+      "runtime": "graalphp",
+      "parked": 10,
+      "trials": 1,
+      "requests_per_second": {
+        "median": 963.029,
+        "min": 963.029,
+        "max": 963.029,
+        "trials": [
+          963.029
+        ]
+      },
+      "seconds": {
+        "median": 0.132914,
+        "min": 0.132914,
+        "max": 0.132914,
+        "trials": [
+          0.132914
+        ]
+      },
+      "cpu_us_per_request": {
+        "median": 244.141,
+        "min": 244.141,
+        "max": 244.141,
+        "trials": [
+          244.141
+        ]
+      },
+      "rss_mib_pooled": {
+        "samples": 7,
+        "mean": 19.857700892857142,
+        "p20": 19.1875,
+        "p50": 19.73828125,
+        "p90": 20.7890625,
+        "p95": 20.7890625,
+        "p99": 20.7890625,
+        "max": 20.7890625
+      },
+      "rss_p50_mib_per_trial": {
+        "median": 19.73828125,
+        "min": 19.73828125,
+        "max": 19.73828125,
+        "trials": [
+          19.73828125
+        ]
+      },
+      "latency_ms_pooled": {
+        "samples": 8,
+        "mean": 0.6149125,
+        "p20": 0.4342,
+        "p50": 0.4723,
+        "p90": 1.4438,
+        "p95": 1.4438,
+        "p99": 1.4438,
+        "max": 1.4438
+      },
+      "p99_ms_per_trial": {
+        "median": 1.4438,
+        "min": 1.4438,
+        "max": 1.4438,
+        "trials": [
+          1.4438
+        ]
+      }
+    },
+    {
+      "runtime": "trueasync",
+      "parked": 10,
+      "trials": 1,
+      "requests_per_second": {
+        "median": 1817.472,
+        "min": 1817.472,
+        "max": 1817.472,
+        "trials": [
+          1817.472
+        ]
+      },
+      "seconds": {
+        "median": 0.070428,
+        "min": 0.070428,
+        "max": 0.070428,
+        "trials": [
+          0.070428
+        ]
+      },
+      "cpu_us_per_request": {
+        "median": 610.352,
+        "min": 610.352,
+        "max": 610.352,
+        "trials": [
+          610.352
+        ]
+      },
+      "rss_mib_pooled": {
+        "samples": 7,
+        "mean": 19.184151785714285,
+        "p20": 20.54296875,
+        "p50": 20.76953125,
+        "p90": 20.85546875,
+        "p95": 20.85546875,
+        "p99": 20.85546875,
+        "max": 20.85546875
+      },
+      "rss_p50_mib_per_trial": {
+        "median": 20.76953125,
+        "min": 20.76953125,
+        "max": 20.76953125,
+        "trials": [
+          20.76953125
+        ]
+      },
+      "latency_ms_pooled": {
+        "samples": 8,
+        "mean": 0.5160375,
+        "p20": 0.3694,
+        "p50": 0.4034,
+        "p90": 1.277,
+        "p95": 1.277,
+        "p99": 1.277,
+        "max": 1.277
+      },
+      "p99_ms_per_trial": {
+        "median": 1.277,
+        "min": 1.277,
+        "max": 1.277,
+        "trials": [
+          1.277
+        ]
+      }
+    }
+  ],
+  "completed_trials": 2,
+  "payload_requests": 256,
+  "latency_samples": 16,
+  "failures": null
+}

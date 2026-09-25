@@ -1,0 +1,405 @@
+{
+  "method": "Fresh processes; no discarded warmup; nearest-rank pooled quantiles; controls kept separate. Timeline bins use bounded clock-alignment midpoints, not exact event timestamps. Native GC/JIT totals cover the complete child log including shutdown; payload JIT and optional peer GC are filtered between suspended/end control UTC receipts. No exact Native Image GC clock alignment or compiler-worker lifetime tracing. Logs are diagnostics, not causal attribution.",
+  "trials": [
+    {
+      "runtime": "graalphp",
+      "repetition": 1,
+      "parked": 10,
+      "requests": 128,
+      "seconds": 0.11299,
+      "requests_per_second": 1132.848,
+      "cpu_us_per_request": 488.281,
+      "rss_mib": {
+        "samples": 6,
+        "mean": 19.91796875,
+        "p20": 19.1796875,
+        "p50": 19.75390625,
+        "p90": 20.8203125,
+        "p95": 20.8203125,
+        "p99": 20.8203125,
+        "max": 20.8203125
+      },
+      "control_observation_delays_ms": {
+        "/begin": 20.1192,
+        "/suspended": 0.1659,
+        "/end": 0.1428
+      },
+      "latency_ms": {
+        "samples": 8,
+        "mean": 0.6531,
+        "p20": 0.5264,
+        "p50": 0.5704,
+        "p90": 1.1826,
+        "p95": 1.1826,
+        "p99": 1.1826,
+        "max": 1.1826
+      },
+      "timeline": {
+        "clock_uncertainty_ms": 2.3525,
+        "bins": [
+          {
+            "start_seconds": 0.0,
+            "latency_ms": {
+              "samples": 8,
+              "mean": 0.6531,
+              "p20": 0.5264,
+              "p50": 0.5704,
+              "p90": 1.1826,
+              "p95": 1.1826,
+              "p99": 1.1826,
+              "max": 1.1826
+            }
+          }
+        ],
+        "slowest": [
+          {
+            "client": "0",
+            "iteration": "0",
+            "guest_start_ns": "241534112202200",
+            "duration_ns": "1182600",
+            "start_elapsed_lower_ns": "92094100",
+            "start_elapsed_upper_ns": "94446600"
+          },
+          {
+            "client": "0",
+            "iteration": "16",
+            "guest_start_ns": "241534121699700",
+            "duration_ns": "708500",
+            "start_elapsed_lower_ns": "101591600",
+            "start_elapsed_upper_ns": "103944100"
+          },
+          {
+            "client": "1",
+            "iteration": "1",
+            "guest_start_ns": "241534113847100",
+            "duration_ns": "649700",
+            "start_elapsed_lower_ns": "93739000",
+            "start_elapsed_upper_ns": "96091500"
+          },
+          {
+            "client": "2",
+            "iteration": "18",
+            "guest_start_ns": "241534123509900",
+            "duration_ns": "570500",
+            "start_elapsed_lower_ns": "103401800",
+            "start_elapsed_upper_ns": "105754300"
+          },
+          {
+            "client": "2",
+            "iteration": "2",
+            "guest_start_ns": "241534114998300",
+            "duration_ns": "570400",
+            "start_elapsed_lower_ns": "94890200",
+            "start_elapsed_upper_ns": "97242700"
+          },
+          {
+            "client": "1",
+            "iteration": "17",
+            "guest_start_ns": "241534123461800",
+            "duration_ns": "531400",
+            "start_elapsed_lower_ns": "103353700",
+            "start_elapsed_upper_ns": "105706200"
+          },
+          {
+            "client": "3",
+            "iteration": "19",
+            "guest_start_ns": "241534124297100",
+            "duration_ns": "526400",
+            "start_elapsed_lower_ns": "104189000",
+            "start_elapsed_upper_ns": "106541500"
+          },
+          {
+            "client": "3",
+            "iteration": "3",
+            "guest_start_ns": "241534115693200",
+            "duration_ns": "485300",
+            "start_elapsed_lower_ns": "95585100",
+            "start_elapsed_upper_ns": "97937600"
+          }
+        ]
+      },
+      "gc_log": {
+        "events": 0,
+        "total_pause_ms": 0,
+        "max_pause_ms": 0,
+        "entries": []
+      },
+      "jit_log": {
+        "tier1_done": 0,
+        "tier2_done": 0,
+        "invalidations": 0,
+        "events": [],
+        "payload_events": [],
+        "payload_invalidations": 0
+      }
+    },
+    {
+      "runtime": "trueasync",
+      "repetition": 1,
+      "parked": 10,
+      "requests": 128,
+      "seconds": 0.059812,
+      "requests_per_second": 2140.05,
+      "cpu_us_per_request": 366.211,
+      "rss_mib": {
+        "samples": 7,
+        "mean": 19.318638392857142,
+        "p20": 20.55859375,
+        "p50": 20.796875,
+        "p90": 20.87109375,
+        "p95": 20.87109375,
+        "p99": 20.87109375,
+        "max": 20.87109375
+      },
+      "control_observation_delays_ms": {
+        "/begin": 0.2015,
+        "/suspended": 0.0837,
+        "/end": 0.1417
+      },
+      "latency_ms": {
+        "samples": 8,
+        "mean": 0.488075,
+        "p20": 0.3793,
+        "p50": 0.4143,
+        "p90": 0.9017,
+        "p95": 0.9017,
+        "p99": 0.9017,
+        "max": 0.9017
+      },
+      "timeline": {
+        "clock_uncertainty_ms": 1.1869,
+        "bins": [
+          {
+            "start_seconds": 0.0,
+            "latency_ms": {
+              "samples": 8,
+              "mean": 0.488075,
+              "p20": 0.3793,
+              "p50": 0.4143,
+              "p90": 0.9017,
+              "p95": 0.9017,
+              "p99": 0.9017,
+              "max": 0.9017
+            }
+          }
+        ],
+        "slowest": [
+          {
+            "client": "0",
+            "iteration": "0",
+            "guest_start_ns": "241534223286100",
+            "duration_ns": "901700",
+            "start_elapsed_lower_ns": "43886300",
+            "start_elapsed_upper_ns": "45073200"
+          },
+          {
+            "client": "1",
+            "iteration": "17",
+            "guest_start_ns": "241534230639000",
+            "duration_ns": "560400",
+            "start_elapsed_lower_ns": "51239200",
+            "start_elapsed_upper_ns": "52426100"
+          },
+          {
+            "client": "0",
+            "iteration": "16",
+            "guest_start_ns": "241534231168800",
+            "duration_ns": "511500",
+            "start_elapsed_lower_ns": "51769000",
+            "start_elapsed_upper_ns": "52955900"
+          },
+          {
+            "client": "2",
+            "iteration": "2",
+            "guest_start_ns": "241534224983600",
+            "duration_ns": "418900",
+            "start_elapsed_lower_ns": "45583800",
+            "start_elapsed_upper_ns": "46770700"
+          },
+          {
+            "client": "3",
+            "iteration": "19",
+            "guest_start_ns": "241534232212200",
+            "duration_ns": "414300",
+            "start_elapsed_lower_ns": "52812400",
+            "start_elapsed_upper_ns": "53999300"
+          },
+          {
+            "client": "2",
+            "iteration": "18",
+            "guest_start_ns": "241534232150500",
+            "duration_ns": "394400",
+            "start_elapsed_lower_ns": "52750700",
+            "start_elapsed_upper_ns": "53937600"
+          },
+          {
+            "client": "3",
+            "iteration": "3",
+            "guest_start_ns": "241534225336500",
+            "duration_ns": "379300",
+            "start_elapsed_lower_ns": "45936700",
+            "start_elapsed_upper_ns": "47123600"
+          },
+          {
+            "client": "1",
+            "iteration": "1",
+            "guest_start_ns": "241534224562200",
+            "duration_ns": "324100",
+            "start_elapsed_lower_ns": "45162400",
+            "start_elapsed_upper_ns": "46349300"
+          }
+        ]
+      },
+      "gc_log": {
+        "events": 0,
+        "total_pause_ms": 0,
+        "max_pause_ms": 0,
+        "entries": []
+      },
+      "jit_log": {
+        "tier1_done": 0,
+        "tier2_done": 0,
+        "invalidations": 0,
+        "events": [],
+        "payload_events": [],
+        "payload_invalidations": 0
+      }
+    }
+  ],
+  "groups": [
+    {
+      "runtime": "graalphp",
+      "parked": 10,
+      "trials": 1,
+      "requests_per_second": {
+        "median": 1132.848,
+        "min": 1132.848,
+        "max": 1132.848,
+        "trials": [
+          1132.848
+        ]
+      },
+      "seconds": {
+        "median": 0.11299,
+        "min": 0.11299,
+        "max": 0.11299,
+        "trials": [
+          0.11299
+        ]
+      },
+      "cpu_us_per_request": {
+        "median": 488.281,
+        "min": 488.281,
+        "max": 488.281,
+        "trials": [
+          488.281
+        ]
+      },
+      "rss_mib_pooled": {
+        "samples": 6,
+        "mean": 19.91796875,
+        "p20": 19.1796875,
+        "p50": 19.75390625,
+        "p90": 20.8203125,
+        "p95": 20.8203125,
+        "p99": 20.8203125,
+        "max": 20.8203125
+      },
+      "rss_p50_mib_per_trial": {
+        "median": 19.75390625,
+        "min": 19.75390625,
+        "max": 19.75390625,
+        "trials": [
+          19.75390625
+        ]
+      },
+      "latency_ms_pooled": {
+        "samples": 8,
+        "mean": 0.6531,
+        "p20": 0.5264,
+        "p50": 0.5704,
+        "p90": 1.1826,
+        "p95": 1.1826,
+        "p99": 1.1826,
+        "max": 1.1826
+      },
+      "p99_ms_per_trial": {
+        "median": 1.1826,
+        "min": 1.1826,
+        "max": 1.1826,
+        "trials": [
+          1.1826
+        ]
+      }
+    },
+    {
+      "runtime": "trueasync",
+      "parked": 10,
+      "trials": 1,
+      "requests_per_second": {
+        "median": 2140.05,
+        "min": 2140.05,
+        "max": 2140.05,
+        "trials": [
+          2140.05
+        ]
+      },
+      "seconds": {
+        "median": 0.059812,
+        "min": 0.059812,
+        "max": 0.059812,
+        "trials": [
+          0.059812
+        ]
+      },
+      "cpu_us_per_request": {
+        "median": 366.211,
+        "min": 366.211,
+        "max": 366.211,
+        "trials": [
+          366.211
+        ]
+      },
+      "rss_mib_pooled": {
+        "samples": 7,
+        "mean": 19.318638392857142,
+        "p20": 20.55859375,
+        "p50": 20.796875,
+        "p90": 20.87109375,
+        "p95": 20.87109375,
+        "p99": 20.87109375,
+        "max": 20.87109375
+      },
+      "rss_p50_mib_per_trial": {
+        "median": 20.796875,
+        "min": 20.796875,
+        "max": 20.796875,
+        "trials": [
+          20.796875
+        ]
+      },
+      "latency_ms_pooled": {
+        "samples": 8,
+        "mean": 0.488075,
+        "p20": 0.3793,
+        "p50": 0.4143,
+        "p90": 0.9017,
+        "p95": 0.9017,
+        "p99": 0.9017,
+        "max": 0.9017
+      },
+      "p99_ms_per_trial": {
+        "median": 0.9017,
+        "min": 0.9017,
+        "max": 0.9017,
+        "trials": [
+          0.9017
+        ]
+      }
+    }
+  ],
+  "completed_trials": 2,
+  "payload_requests": 256,
+  "latency_samples": 16,
+  "failures": null
+}

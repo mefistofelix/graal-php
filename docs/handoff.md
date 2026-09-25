@@ -15,21 +15,57 @@ L'ultimo intervento runtime è **concluso**: default CLI
 `engine.CompilerIdleDelay=500`, rispetto ai 10.000 ms precedenti, con JIT attivo.
 L'utente ha poi richiesto che **nessun benchmark escluda il warmup**: i driver
 sono stati aggiornati e il confronto cURL è stato rifatto da processi nuovi.
-La consegna documentale ha aggiunto AGENTS/TODO/handoff. Il 26 settembre è
-stato inizializzato Git e creato il repository GitHub pubblico; queste attività
-non modificano runtime o eseguibili. Le verifiche runtime sotto restano quelle
-del 25 settembre. Non ci sono lavori parziali da far passare per completati.
+La consegna documentale ha aggiunto AGENTS/TODO/handoff. Il 26 settembre sono
+stati inizializzati Git e il repository pubblico, poi è stato completato un
+blocco di `PERF-01`: A/B sullo stesso eseguibile e diagnostica temporale
+[cURL p99](curl-p99.md). **Nessuna modifica al runtime o ai binari** in questo
+blocco; non è ancora una correzione del p99.
 
-La prossima indagine proposta è `PERF-01`: capire l'aumento del p99 senza
-perdere il risparmio RAM. Per le funzionalità, restano prioritari i contratti
+La continuazione di `PERF-01` deve separare allocazioni/GC, invalidazioni guest,
+interferenza della JVM del peer e lifetime effettivo dei compiler worker, senza
+perdere il risparmio RAM. Le trace di compilazione non dimostrano da sole un
+riavvio dei worker. Per le funzionalità, restano prioritari i contratti
 linguaggio/valori, TrueAsync, shared-memory threading e FFI; Composer applicativo,
 Compose e mobile sono rinviati. Procedere nel lavoro già autorizzato senza
 riconfermare queste decisioni; chiarire soltanto ambiguità che cambiano obiettivo
 o vincoli, usando giudizio sulle normali scelte implementative.
 
-## Ultima verifica e metodo
+## Ultimo blocco: PERF-01, 26 settembre
 
-[Rapporto corrente](curl-memory.md), [esiti](validation/curl-memory-2026-09-25/results.txt),
+[Rapporto](curl-p99.md), [esiti](validation/curl-p99-2026-09-26/results.txt),
+[hash](validation/curl-p99-2026-09-26/hashes.json),
+[dati e riepiloghi](benchmarks/curl-p99-windows-2026-09-26/README.md).
+
+32/32 prove da freddo, quattro ripetizioni alternate, stesso eseguibile Windows
+con idle 10.000/500 ms, controlli untimed separati dalle latenze. RSS p50
+147,18→77,74 MiB con 1.000 sospese e 175,53→102,04 MiB con 10.000; throughput
+mediano +0,17%/−0,09%, CPU per richiesta −1,67%/+1,03%. P99 campionato
+4,4363→4,3295 ms e 4,1578→4,5911 ms: −2,41%/+10,42%. I min–max per prova
+si sovrappongono; non sono dimostrate equivalenza o significatività statistica.
+
+Altre 8 prove con timeline/JIT/GC e 4 con GC della JVM del peer: 44/44 prove
+complessive, 5.767.168 richieste e 229.376 campioni. Le diagnostiche restano
+separate: gli array della timeline alterano le allocazioni. Osservate
+compilazioni Tier 1/2, invalidazioni, pause Native Image e pause del peer;
+nessuna attribuzione causale del delta p99, nessun NMT. Driver e peer condividono
+una JVM fra le prove; ogni processo PHP e istanza HttpServer sono nuovi.
+
+Il driver conserva timestamp e limiti dell'allineamento guest/host, CPU
+cumulativa nei campioni RAM e ricezione dei controlli. Il confine wall-time
+ora è realmente la ricezione di `/end`, distinta dalla successiva lettura dei
+contatori. Nessuna fase di warmup esclusa. 26 controlli Java e 7 test Python
+passati; 6 prove brevi GraalPHP/TrueAsync archiviate separatamente.
+
+I sorgenti prodotto e gli hash dei due eseguibili sono invariati. Nessuna nuova
+build Native Image, esecuzione Linux o suite funzionale completa. Le verifiche
+funzionali e la parità Windows/Linux del 25 settembre restano storiche.
+Ricalcolo offline: `uv run tests/curl_benchmark_report.py <cartella-dati>`;
+comandi completi e nuovi flag nel rapporto. Il blocco tooling è concluso,
+`PERF-01` resta aperto e non c'è un processo/build interrotto da riprendere.
+
+## Precedente verifica runtime e metodo, 25 settembre
+
+[Rapporto precedente](curl-memory.md), [esiti](validation/curl-memory-2026-09-25/results.txt),
 [hash](validation/curl-memory-2026-09-25/hashes.json),
 [dati da freddo](benchmarks/curl-memory-windows-2026-09-25/cold-start/environment.txt).
 

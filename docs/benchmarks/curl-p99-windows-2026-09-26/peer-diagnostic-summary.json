@@ -1,0 +1,2166 @@
+{
+  "method": "Fresh processes; no discarded warmup; nearest-rank pooled quantiles; controls kept separate. Timeline bins use bounded clock-alignment midpoints, not exact event timestamps. Native GC/JIT totals cover the complete child log including shutdown; payload JIT and optional peer GC are filtered between suspended/end control UTC receipts. No exact Native Image GC clock alignment or compiler-worker lifetime tracing. Logs are diagnostics, not causal attribution.",
+  "trials": [
+    {
+      "runtime": "graalphp-before",
+      "repetition": 1,
+      "parked": 10000,
+      "requests": 131072,
+      "seconds": 6.027979,
+      "requests_per_second": 21743.939,
+      "cpu_us_per_request": 48.757,
+      "rss_mib": {
+        "samples": 232,
+        "mean": 223.28337149784483,
+        "p20": 232.76171875,
+        "p50": 234.4375,
+        "p90": 238.60546875,
+        "p95": 239.58203125,
+        "p99": 239.58203125,
+        "max": 240.359375
+      },
+      "control_observation_delays_ms": {
+        "/begin": 17.5569,
+        "/suspended": 0.1544,
+        "/end": 0.2584
+      },
+      "latency_ms": {
+        "samples": 8192,
+        "mean": 2.8166218383789063,
+        "p20": 2.2807,
+        "p50": 2.665,
+        "p90": 3.2042,
+        "p95": 4.0544,
+        "p99": 5.7446,
+        "max": 27.4667
+      },
+      "timeline": {
+        "clock_uncertainty_ms": 7.7393,
+        "bins": [
+          {
+            "start_seconds": 0.0,
+            "latency_ms": {
+              "samples": 273,
+              "mean": 4.392394871794872,
+              "p20": 3.391,
+              "p50": 4.2438,
+              "p90": 5.559,
+              "p95": 6.0161,
+              "p99": 12.5269,
+              "max": 16.4472
+            }
+          },
+          {
+            "start_seconds": 0.5,
+            "latency_ms": {
+              "samples": 595,
+              "mean": 3.3369870588235293,
+              "p20": 2.4461,
+              "p50": 2.9382,
+              "p90": 4.4298,
+              "p95": 4.5237,
+              "p99": 5.0307,
+              "max": 27.4667
+            }
+          },
+          {
+            "start_seconds": 1.0,
+            "latency_ms": {
+              "samples": 783,
+              "mean": 2.5495844189016603,
+              "p20": 2.2588,
+              "p50": 2.308,
+              "p90": 2.4913,
+              "p95": 2.6277,
+              "p99": 21.2577,
+              "max": 23.4726
+            }
+          },
+          {
+            "start_seconds": 1.5,
+            "latency_ms": {
+              "samples": 814,
+              "mean": 2.4287764127764127,
+              "p20": 2.2566,
+              "p50": 2.3273,
+              "p90": 2.4909,
+              "p95": 2.5618,
+              "p99": 2.8869,
+              "max": 22.6325
+            }
+          },
+          {
+            "start_seconds": 2.0,
+            "latency_ms": {
+              "samples": 792,
+              "mean": 2.482109090909091,
+              "p20": 2.2389,
+              "p50": 2.2885,
+              "p90": 2.4413,
+              "p95": 2.5632,
+              "p99": 4.7744,
+              "max": 23.6266
+            }
+          },
+          {
+            "start_seconds": 2.5,
+            "latency_ms": {
+              "samples": 873,
+              "mean": 2.2501303550973653,
+              "p20": 2.1104,
+              "p50": 2.1669,
+              "p90": 2.2898,
+              "p95": 2.3634,
+              "p99": 4.0507,
+              "max": 21.8883
+            }
+          },
+          {
+            "start_seconds": 3.0,
+            "latency_ms": {
+              "samples": 670,
+              "mean": 2.9625653731343284,
+              "p20": 2.7123,
+              "p50": 2.9242,
+              "p90": 3.208,
+              "p95": 3.2712,
+              "p99": 8.704,
+              "max": 9.0705
+            }
+          },
+          {
+            "start_seconds": 3.5,
+            "latency_ms": {
+              "samples": 652,
+              "mean": 3.0489504601226995,
+              "p20": 2.8471,
+              "p50": 3.0622,
+              "p90": 3.2189,
+              "p95": 3.2535,
+              "p99": 5.3533,
+              "max": 8.9726
+            }
+          },
+          {
+            "start_seconds": 4.0,
+            "latency_ms": {
+              "samples": 695,
+              "mean": 2.8857903597122303,
+              "p20": 2.5819,
+              "p50": 2.7286,
+              "p90": 3.0309,
+              "p95": 3.2307,
+              "p99": 8.0893,
+              "max": 8.9756
+            }
+          },
+          {
+            "start_seconds": 4.5,
+            "latency_ms": {
+              "samples": 681,
+              "mean": 2.9299610866372983,
+              "p20": 2.6179,
+              "p50": 2.7923,
+              "p90": 3.0804,
+              "p95": 3.4232,
+              "p99": 6.0402,
+              "max": 11.9839
+            }
+          },
+          {
+            "start_seconds": 5.0,
+            "latency_ms": {
+              "samples": 662,
+              "mean": 3.0183450151057403,
+              "p20": 2.7751,
+              "p50": 2.928,
+              "p90": 3.1053,
+              "p95": 3.5454,
+              "p99": 7.0025,
+              "max": 8.7661
+            }
+          },
+          {
+            "start_seconds": 5.5,
+            "latency_ms": {
+              "samples": 690,
+              "mean": 2.863783768115942,
+              "p20": 2.7147,
+              "p50": 2.8848,
+              "p90": 3.0535,
+              "p95": 3.0835,
+              "p99": 3.354,
+              "max": 8.5725
+            }
+          },
+          {
+            "start_seconds": 6.0,
+            "latency_ms": {
+              "samples": 12,
+              "mean": 3.1395583333333335,
+              "p20": 2.9809,
+              "p50": 3.0336,
+              "p90": 3.4617,
+              "p95": 3.4648,
+              "p99": 3.4648,
+              "max": 3.4648
+            }
+          }
+        ],
+        "slowest": [
+          {
+            "client": "45",
+            "iteration": "125",
+            "guest_start_ns": "241907036989800",
+            "duration_ns": "27466700",
+            "start_elapsed_lower_ns": "698046400",
+            "start_elapsed_upper_ns": "705785700"
+          },
+          {
+            "client": "29",
+            "iteration": "125",
+            "guest_start_ns": "241907035818500",
+            "duration_ns": "27411100",
+            "start_elapsed_lower_ns": "696875100",
+            "start_elapsed_upper_ns": "704614400"
+          },
+          {
+            "client": "60",
+            "iteration": "124",
+            "guest_start_ns": "241907035266000",
+            "duration_ns": "27226800",
+            "start_elapsed_lower_ns": "696322600",
+            "start_elapsed_upper_ns": "704061900"
+          },
+          {
+            "client": "12",
+            "iteration": "124",
+            "guest_start_ns": "241907034716700",
+            "duration_ns": "27027800",
+            "start_elapsed_lower_ns": "695773300",
+            "start_elapsed_upper_ns": "703512600"
+          },
+          {
+            "client": "54",
+            "iteration": "790",
+            "guest_start_ns": "241908758589400",
+            "duration_ns": "23626600",
+            "start_elapsed_lower_ns": "2419646000",
+            "start_elapsed_upper_ns": "2427385300"
+          },
+          {
+            "client": "55",
+            "iteration": "791",
+            "guest_start_ns": "241908758463200",
+            "duration_ns": "23595100",
+            "start_elapsed_lower_ns": "2419519800",
+            "start_elapsed_upper_ns": "2427259100"
+          },
+          {
+            "client": "5",
+            "iteration": "389",
+            "guest_start_ns": "241907761178700",
+            "duration_ns": "23472600",
+            "start_elapsed_lower_ns": "1422235300",
+            "start_elapsed_upper_ns": "1429974600"
+          },
+          {
+            "client": "53",
+            "iteration": "389",
+            "guest_start_ns": "241907759390500",
+            "duration_ns": "22767600",
+            "start_elapsed_lower_ns": "1420447100",
+            "start_elapsed_upper_ns": "1428186400"
+          },
+          {
+            "client": "37",
+            "iteration": "789",
+            "guest_start_ns": "241908756878000",
+            "duration_ns": "22711200",
+            "start_elapsed_lower_ns": "2417934600",
+            "start_elapsed_upper_ns": "2425673900"
+          },
+          {
+            "client": "37",
+            "iteration": "389",
+            "guest_start_ns": "241907759329300",
+            "duration_ns": "22699600",
+            "start_elapsed_lower_ns": "1420385900",
+            "start_elapsed_upper_ns": "1428125200"
+          }
+        ]
+      },
+      "gc_log": {
+        "events": 16,
+        "total_pause_ms": 227.194,
+        "max_pause_ms": 43.997,
+        "entries": [
+          {
+            "reported_uptime_seconds": 0.174,
+            "pause_ms": 43.997
+          },
+          {
+            "reported_uptime_seconds": 0.704,
+            "pause_ms": 23.378
+          },
+          {
+            "reported_uptime_seconds": 1.089,
+            "pause_ms": 18.507
+          },
+          {
+            "reported_uptime_seconds": 1.424,
+            "pause_ms": 19.881
+          },
+          {
+            "reported_uptime_seconds": 1.757,
+            "pause_ms": 19.271
+          },
+          {
+            "reported_uptime_seconds": 2.091,
+            "pause_ms": 18.55
+          },
+          {
+            "reported_uptime_seconds": 2.422,
+            "pause_ms": 19.729
+          },
+          {
+            "reported_uptime_seconds": 2.74,
+            "pause_ms": 19.051
+          },
+          {
+            "reported_uptime_seconds": 3.052,
+            "pause_ms": 5.798
+          },
+          {
+            "reported_uptime_seconds": 3.452,
+            "pause_ms": 5.63
+          },
+          {
+            "reported_uptime_seconds": 3.869,
+            "pause_ms": 5.889
+          },
+          {
+            "reported_uptime_seconds": 4.258,
+            "pause_ms": 5.351
+          },
+          {
+            "reported_uptime_seconds": 4.633,
+            "pause_ms": 5.82
+          },
+          {
+            "reported_uptime_seconds": 5.037,
+            "pause_ms": 5.44
+          },
+          {
+            "reported_uptime_seconds": 5.436,
+            "pause_ms": 5.426
+          },
+          {
+            "reported_uptime_seconds": 5.824,
+            "pause_ms": 5.476
+          }
+        ]
+      },
+      "jit_log": {
+        "tier1_done": 10,
+        "tier2_done": 5,
+        "invalidations": 2,
+        "events": [
+          "[engine] opt start  engine=1  id=21    PhpRootGen@25ba095c                                |Tier 1|Priority 112847220|Rate 751,3148|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:06.606|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=21    PhpRootGen@25ba095c                                |Tier 1|Count/Thres        400/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:06.606|Src n/a",
+          "[engine] opt done   engine=1  id=21    PhpRootGen@25ba095c                                |Tier 1|Time    16(   8+8   )ms|AST    2|Inlined   0Y   0N|IR    396/  1439|CodeSize    5827|Addr 0x5fe7ede80000|CompId 5725   |UTC 2026-09-25T22:44:06.622|Src n/a",
+          "[engine] opt queued engine=1  id=21    PhpRootGen@25ba095c                                |Tier 2|Count/Thres      10000/    10000|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:06.625|Src n/a",
+          "[engine] opt start  engine=1  id=21    PhpRootGen@25ba095c                                |Tier 2|Priority   4876061|Rate 486,6061|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:06.626|Src n/a|Bonuses",
+          "[engine] opt queued engine=1  id=83    PhpRootGen@26f3a5f4(resume_bci=1536)               |Tier 1|Count/Thres        400/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:06.626|Src n/a",
+          "[engine] opt start  engine=1  id=83    PhpRootGen@26f3a5f4(resume_bci=1536)               |Tier 1|Priority 137198880|Rate 913,6592|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:06.626|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=77    CallSignatureNode.CallSignatureRootNode@59784b75   |Tier 1|Count/Thres        400/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:06.627|Src n/a",
+          "[engine] opt start  engine=1  id=77    CallSignatureNode.CallSignatureRootNode@59784b75   |Tier 1|Priority    759613|Rate 4,064091|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:06.627|Src n/a|Bonuses first tier",
+          "[engine] opt start  engine=1  id=76    FunctionExecuteNode.SignatureExecuteNode@6b46066e  |Tier 1|Priority    758772|Rate 4,058483|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:06.627|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=76    FunctionExecuteNode.SignatureExecuteNode@6b46066e  |Tier 1|Count/Thres        400/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:06.627|Src n/a",
+          "[engine] opt done   engine=1  id=76    FunctionExecuteNode.SignatureExecuteNode@6b46066e  |Tier 1|Time     7(   5+2   )ms|AST    3|Inlined   0Y   0N|IR    124/   269|CodeSize     926|Addr 0x6c809a1c0000|CompId 5729   |UTC 2026-09-25T22:44:06.634|Src n/a",
+          "[engine] opt done   engine=1  id=77    CallSignatureNode.CallSignatureRootNode@59784b75   |Tier 1|Time     9(   7+2   )ms|AST   11|Inlined   0Y   1N|IR    140/   403|CodeSize    1464|Addr 0x524e5f640000|CompId 5728   |UTC 2026-09-25T22:44:06.637|Src n/a",
+          "[engine] opt done   engine=1  id=21    PhpRootGen@25ba095c                                |Tier 2|Time    15(   5+10  )ms|AST    2|Inlined   0Y   0N|IR    335/  1245|CodeSize    4926|Addr 0x723761fb0000|CompId 5726   |UTC 2026-09-25T22:44:06.640|Src n/a",
+          "[engine] opt unque. engine=1  id=83    PhpRootGen@26f3a5f4(resume_bci=1536)               |Tier 1|Count/Thres      10000/      400|Queue: Size    0 Change  0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:06.645|Src n/a|Reason Non permanent bailout: jdk.graal.compiler.core.common.RetryableBailoutException: Assumption invalidated while compiling code: IsolatedObjectConstant[Object]",
+          "[engine] opt queued engine=1  id=74    CallSignatureNode.CallSignatureRootNode@2b3919b3   |Tier 1|Count/Thres        400/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:06.735|Src n/a",
+          "[engine] opt start  engine=1  id=74    CallSignatureNode.CallSignatureRootNode@2b3919b3   |Tier 1|Priority    439851|Rate 1,932346|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:06.735|Src n/a|Bonuses first tier",
+          "[engine] opt start  engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@1553a9ef  |Tier 1|Priority    439394|Rate 1,929297|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:06.735|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@1553a9ef  |Tier 1|Count/Thres        400/      400|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:06.735|Src n/a",
+          "[engine] opt queued engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@399e937       |Tier 1|Count/Thres        400/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:06.739|Src n/a",
+          "[engine] opt start  engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@399e937       |Tier 1|Priority    540154|Rate 2,601032|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:06.739|Src n/a|Bonuses first tier",
+          "[engine] opt done   engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@1553a9ef  |Tier 1|Time     5(   3+2   )ms|AST    4|Inlined   0Y   0N|IR    132/   310|CodeSize    1081|Addr 0x6b09781a0000|CompId 5731   |UTC 2026-09-25T22:44:06.741|Src n/a",
+          "[engine] opt start  engine=1  id=86    PhpRootGen@4ec7ad1f(resume_bci=1760)               |Tier 1|Priority   1769258|Rate 10,79505|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:06.743|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=86    PhpRootGen@4ec7ad1f(resume_bci=1760)               |Tier 1|Count/Thres        400/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:06.743|Src n/a",
+          "[engine] opt done   engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@399e937       |Tier 1|Time     7(   3+4   )ms|AST   23|Inlined   0Y   0N|IR    125/   395|CodeSize    1658|Addr 0x27e633a10000|CompId 5732   |UTC 2026-09-25T22:44:06.746|Src n/a",
+          "[engine] opt done   engine=1  id=74    CallSignatureNode.CallSignatureRootNode@2b3919b3   |Tier 1|Time    11(   5+7   )ms|AST   12|Inlined   0Y   1N|IR    146/   483|CodeSize    1949|Addr 0x2cd8d84c0000|CompId 5730   |UTC 2026-09-25T22:44:06.746|Src n/a",
+          "[engine] opt done   engine=1  id=86    PhpRootGen@4ec7ad1f(resume_bci=1760)               |Tier 1|Time    57(  21+35  )ms|AST    1|Inlined   0Y   0N|IR   1755/  4845|CodeSize   20649|Addr 0x2c5d8b080000|CompId 5733   |UTC 2026-09-25T22:44:06.800|Src n/a",
+          "[engine] opt queued engine=1  id=85    PhpRootGen@4ec7ad1f(resume_bci=1142)               |Tier 1|Count/Thres        400/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:07.106|Src n/a",
+          "[engine] opt start  engine=1  id=85    PhpRootGen@4ec7ad1f(resume_bci=1142)               |Tier 1|Priority    299872|Rate 0,999150|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:07.106|Src n/a|Bonuses first tier",
+          "[engine] opt done   engine=1  id=85    PhpRootGen@4ec7ad1f(resume_bci=1142)               |Tier 1|Time    88(  28+60  )ms|AST    1|Inlined   0Y   0N|IR   2763/  7680|CodeSize   32749|Addr 0x534484bd0000|CompId 5734   |UTC 2026-09-25T22:44:07.195|Src n/a",
+          "[engine] opt queued engine=1  id=74    CallSignatureNode.CallSignatureRootNode@2b3919b3   |Tier 2|Count/Thres      10000/    10000|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:07.328|Src n/a",
+          "[engine] opt start  engine=1  id=74    CallSignatureNode.CallSignatureRootNode@2b3919b3   |Tier 2|Priority    135017|Rate 12,50170|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:07.328|Src n/a|Bonuses",
+          "[engine] opt queued engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@1553a9ef  |Tier 2|Count/Thres      10000/    10000|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:07.328|Src n/a",
+          "[engine] opt start  engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@1553a9ef  |Tier 2|Priority    134998|Rate 12,49984|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:07.328|Src n/a|Bonuses",
+          "[engine] opt queued engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@399e937       |Tier 2|Count/Thres      10000/    10000|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:07.331|Src n/a",
+          "[engine] opt start  engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@399e937       |Tier 2|Priority    143986|Rate 13,39868|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:07.331|Src n/a|Bonuses",
+          "[engine] opt done   engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@1553a9ef  |Tier 2|Time     5(   2+3   )ms|AST    4|Inlined   0Y   0N|IR     74/   188|CodeSize     646|Addr 0x75803a510000|CompId 5736   |UTC 2026-09-25T22:44:07.333|Src n/a",
+          "[engine] opt done   engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@399e937       |Tier 2|Time     4(   1+3   )ms|AST   23|Inlined   0Y   0N|IR     64/   333|CodeSize    1532|Addr 0x185ff5f00000|CompId 5737   |UTC 2026-09-25T22:44:07.335|Src n/a",
+          "[engine] opt done   engine=1  id=74    CallSignatureNode.CallSignatureRootNode@2b3919b3   |Tier 2|Time     8(   4+4   )ms|AST   12|Inlined   1Y   0N|IR    108/   263|CodeSize     825|Addr 0x579ba5c70000|CompId 5735   |UTC 2026-09-25T22:44:07.336|Src n/a",
+          "[engine] opt queued engine=1  id=86    PhpRootGen@4ec7ad1f(resume_bci=1760)               |Tier 2|Count/Thres      10000/    10000|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:07.361|Src n/a",
+          "[engine] opt start  engine=1  id=86    PhpRootGen@4ec7ad1f(resume_bci=1760)               |Tier 2|Priority    162839|Rate 15,28394|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:07.361|Src n/a|Bonuses",
+          "[engine] opt done   engine=1  id=86    PhpRootGen@4ec7ad1f(resume_bci=1760)               |Tier 2|Time    59(  11+48  )ms|AST    1|Inlined   0Y   0N|IR   1672/  3783|CodeSize   15655|Addr 0x6f144e540000|CompId 5738   |UTC 2026-09-25T22:44:07.420|Src n/a",
+          "[engine] opt inval. engine=1  id=86    PhpRootGen@4ec7ad1f(resume_bci=1760)                                                                                                                                              |UTC 2026-09-25T22:44:12.493|Src n/a|Reason null",
+          "[engine] opt deopt  engine=1  id=86    PhpRootGen@4ec7ad1f(resume_bci=1760)               |Invalidated  true|                                                                                                            |UTC 2026-09-25T22:44:12.494|Src n/a|Reason unknown",
+          "[engine] opt queued engine=1  id=86    PhpRootGen@4ec7ad1f(resume_bci=1760)               |Tier 1|Count/Thres      11141/      400|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.494|Src n/a",
+          "[engine] opt start  engine=1  id=86    PhpRootGen@4ec7ad1f(resume_bci=1760)               |Tier 1|Priority  12220505|Rate 1,925053|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.494|Src n/a|Bonuses first tier",
+          "[engine] opt inval. engine=1  id=85    PhpRootGen@4ec7ad1f(resume_bci=1142)                                                                                                                                              |UTC 2026-09-25T22:44:12.498|Src n/a|Reason null",
+          "[engine] opt deopt  engine=1  id=85    PhpRootGen@4ec7ad1f(resume_bci=1142)               |Invalidated  true|                                                                                                            |UTC 2026-09-25T22:44:12.498|Src n/a|Reason unknown",
+          "[engine] opt queued engine=1  id=85    PhpRootGen@4ec7ad1f(resume_bci=1142)               |Tier 1|Count/Thres       8182/      400|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.499|Src n/a",
+          "[engine] opt start  engine=1  id=85    PhpRootGen@4ec7ad1f(resume_bci=1142)               |Tier 1|Priority   7402135|Rate 1,412494|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.499|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=89    PhpRootGen@25ba095c(resume_bci=168)                |Tier 1|Count/Thres        400/      400|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.513|Src n/a",
+          "[engine] opt start  engine=1  id=89    PhpRootGen@25ba095c(resume_bci=168)                |Tier 1|Priority  41372947|Rate 274,8196|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.513|Src n/a|Bonuses first tier",
+          "[engine] opt done   engine=1  id=89    PhpRootGen@25ba095c(resume_bci=168)                |Tier 1|Time    10(   5+5   )ms|AST    1|Inlined   0Y   0N|IR    351/   790|CodeSize    2933|Addr 0x1fc0d0110000|CompId 5741   |UTC 2026-09-25T22:44:12.523|Src n/a",
+          "[engine] opt done   engine=1  id=86    PhpRootGen@4ec7ad1f(resume_bci=1760)               |Tier 1|Time    48(  15+33  )ms|AST    1|Inlined   0Y   0N|IR   1893/  5280|CodeSize   22903|Addr 0x3ca799330000|CompId 5739   |UTC 2026-09-25T22:44:12.542|Src n/a",
+          "[engine] opt unque. engine=1  id=85    PhpRootGen@4ec7ad1f(resume_bci=1142)               |Tier 1|Count/Thres       8192/      400|Queue: Size    0 Change  0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.560|Src n/a|Reason Polyglot engine was closed."
+        ],
+        "payload_events": [
+          "[engine] opt unque. engine=1  id=83    PhpRootGen@26f3a5f4(resume_bci=1536)               |Tier 1|Count/Thres      10000/      400|Queue: Size    0 Change  0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:06.645|Src n/a|Reason Non permanent bailout: jdk.graal.compiler.core.common.RetryableBailoutException: Assumption invalidated while compiling code: IsolatedObjectConstant[Object]",
+          "[engine] opt queued engine=1  id=74    CallSignatureNode.CallSignatureRootNode@2b3919b3   |Tier 1|Count/Thres        400/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:06.735|Src n/a",
+          "[engine] opt start  engine=1  id=74    CallSignatureNode.CallSignatureRootNode@2b3919b3   |Tier 1|Priority    439851|Rate 1,932346|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:06.735|Src n/a|Bonuses first tier",
+          "[engine] opt start  engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@1553a9ef  |Tier 1|Priority    439394|Rate 1,929297|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:06.735|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@1553a9ef  |Tier 1|Count/Thres        400/      400|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:06.735|Src n/a",
+          "[engine] opt queued engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@399e937       |Tier 1|Count/Thres        400/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:06.739|Src n/a",
+          "[engine] opt start  engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@399e937       |Tier 1|Priority    540154|Rate 2,601032|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:06.739|Src n/a|Bonuses first tier",
+          "[engine] opt done   engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@1553a9ef  |Tier 1|Time     5(   3+2   )ms|AST    4|Inlined   0Y   0N|IR    132/   310|CodeSize    1081|Addr 0x6b09781a0000|CompId 5731   |UTC 2026-09-25T22:44:06.741|Src n/a",
+          "[engine] opt start  engine=1  id=86    PhpRootGen@4ec7ad1f(resume_bci=1760)               |Tier 1|Priority   1769258|Rate 10,79505|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:06.743|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=86    PhpRootGen@4ec7ad1f(resume_bci=1760)               |Tier 1|Count/Thres        400/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:06.743|Src n/a",
+          "[engine] opt done   engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@399e937       |Tier 1|Time     7(   3+4   )ms|AST   23|Inlined   0Y   0N|IR    125/   395|CodeSize    1658|Addr 0x27e633a10000|CompId 5732   |UTC 2026-09-25T22:44:06.746|Src n/a",
+          "[engine] opt done   engine=1  id=74    CallSignatureNode.CallSignatureRootNode@2b3919b3   |Tier 1|Time    11(   5+7   )ms|AST   12|Inlined   0Y   1N|IR    146/   483|CodeSize    1949|Addr 0x2cd8d84c0000|CompId 5730   |UTC 2026-09-25T22:44:06.746|Src n/a",
+          "[engine] opt done   engine=1  id=86    PhpRootGen@4ec7ad1f(resume_bci=1760)               |Tier 1|Time    57(  21+35  )ms|AST    1|Inlined   0Y   0N|IR   1755/  4845|CodeSize   20649|Addr 0x2c5d8b080000|CompId 5733   |UTC 2026-09-25T22:44:06.800|Src n/a",
+          "[engine] opt queued engine=1  id=85    PhpRootGen@4ec7ad1f(resume_bci=1142)               |Tier 1|Count/Thres        400/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:07.106|Src n/a",
+          "[engine] opt start  engine=1  id=85    PhpRootGen@4ec7ad1f(resume_bci=1142)               |Tier 1|Priority    299872|Rate 0,999150|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:07.106|Src n/a|Bonuses first tier",
+          "[engine] opt done   engine=1  id=85    PhpRootGen@4ec7ad1f(resume_bci=1142)               |Tier 1|Time    88(  28+60  )ms|AST    1|Inlined   0Y   0N|IR   2763/  7680|CodeSize   32749|Addr 0x534484bd0000|CompId 5734   |UTC 2026-09-25T22:44:07.195|Src n/a",
+          "[engine] opt queued engine=1  id=74    CallSignatureNode.CallSignatureRootNode@2b3919b3   |Tier 2|Count/Thres      10000/    10000|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:07.328|Src n/a",
+          "[engine] opt start  engine=1  id=74    CallSignatureNode.CallSignatureRootNode@2b3919b3   |Tier 2|Priority    135017|Rate 12,50170|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:07.328|Src n/a|Bonuses",
+          "[engine] opt queued engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@1553a9ef  |Tier 2|Count/Thres      10000/    10000|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:07.328|Src n/a",
+          "[engine] opt start  engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@1553a9ef  |Tier 2|Priority    134998|Rate 12,49984|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:07.328|Src n/a|Bonuses",
+          "[engine] opt queued engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@399e937       |Tier 2|Count/Thres      10000/    10000|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:07.331|Src n/a",
+          "[engine] opt start  engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@399e937       |Tier 2|Priority    143986|Rate 13,39868|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:07.331|Src n/a|Bonuses",
+          "[engine] opt done   engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@1553a9ef  |Tier 2|Time     5(   2+3   )ms|AST    4|Inlined   0Y   0N|IR     74/   188|CodeSize     646|Addr 0x75803a510000|CompId 5736   |UTC 2026-09-25T22:44:07.333|Src n/a",
+          "[engine] opt done   engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@399e937       |Tier 2|Time     4(   1+3   )ms|AST   23|Inlined   0Y   0N|IR     64/   333|CodeSize    1532|Addr 0x185ff5f00000|CompId 5737   |UTC 2026-09-25T22:44:07.335|Src n/a",
+          "[engine] opt done   engine=1  id=74    CallSignatureNode.CallSignatureRootNode@2b3919b3   |Tier 2|Time     8(   4+4   )ms|AST   12|Inlined   1Y   0N|IR    108/   263|CodeSize     825|Addr 0x579ba5c70000|CompId 5735   |UTC 2026-09-25T22:44:07.336|Src n/a",
+          "[engine] opt queued engine=1  id=86    PhpRootGen@4ec7ad1f(resume_bci=1760)               |Tier 2|Count/Thres      10000/    10000|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:07.361|Src n/a",
+          "[engine] opt start  engine=1  id=86    PhpRootGen@4ec7ad1f(resume_bci=1760)               |Tier 2|Priority    162839|Rate 15,28394|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:07.361|Src n/a|Bonuses",
+          "[engine] opt done   engine=1  id=86    PhpRootGen@4ec7ad1f(resume_bci=1760)               |Tier 2|Time    59(  11+48  )ms|AST    1|Inlined   0Y   0N|IR   1672/  3783|CodeSize   15655|Addr 0x6f144e540000|CompId 5738   |UTC 2026-09-25T22:44:07.420|Src n/a",
+          "[engine] opt inval. engine=1  id=86    PhpRootGen@4ec7ad1f(resume_bci=1760)                                                                                                                                              |UTC 2026-09-25T22:44:12.493|Src n/a|Reason null",
+          "[engine] opt deopt  engine=1  id=86    PhpRootGen@4ec7ad1f(resume_bci=1760)               |Invalidated  true|                                                                                                            |UTC 2026-09-25T22:44:12.494|Src n/a|Reason unknown",
+          "[engine] opt queued engine=1  id=86    PhpRootGen@4ec7ad1f(resume_bci=1760)               |Tier 1|Count/Thres      11141/      400|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.494|Src n/a",
+          "[engine] opt start  engine=1  id=86    PhpRootGen@4ec7ad1f(resume_bci=1760)               |Tier 1|Priority  12220505|Rate 1,925053|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.494|Src n/a|Bonuses first tier",
+          "[engine] opt inval. engine=1  id=85    PhpRootGen@4ec7ad1f(resume_bci=1142)                                                                                                                                              |UTC 2026-09-25T22:44:12.498|Src n/a|Reason null",
+          "[engine] opt deopt  engine=1  id=85    PhpRootGen@4ec7ad1f(resume_bci=1142)               |Invalidated  true|                                                                                                            |UTC 2026-09-25T22:44:12.498|Src n/a|Reason unknown",
+          "[engine] opt queued engine=1  id=85    PhpRootGen@4ec7ad1f(resume_bci=1142)               |Tier 1|Count/Thres       8182/      400|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.499|Src n/a",
+          "[engine] opt start  engine=1  id=85    PhpRootGen@4ec7ad1f(resume_bci=1142)               |Tier 1|Priority   7402135|Rate 1,412494|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.499|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=89    PhpRootGen@25ba095c(resume_bci=168)                |Tier 1|Count/Thres        400/      400|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.513|Src n/a",
+          "[engine] opt start  engine=1  id=89    PhpRootGen@25ba095c(resume_bci=168)                |Tier 1|Priority  41372947|Rate 274,8196|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.513|Src n/a|Bonuses first tier",
+          "[engine] opt done   engine=1  id=89    PhpRootGen@25ba095c(resume_bci=168)                |Tier 1|Time    10(   5+5   )ms|AST    1|Inlined   0Y   0N|IR    351/   790|CodeSize    2933|Addr 0x1fc0d0110000|CompId 5741   |UTC 2026-09-25T22:44:12.523|Src n/a"
+        ],
+        "payload_invalidations": 2
+      },
+      "peer_gc_log": {
+        "events": 12,
+        "total_pause_ms": 27.594,
+        "max_pause_ms": 2.934,
+        "entries": [
+          {
+            "reported_end_utc": "2026-09-25T22:44:07.133+0000",
+            "pause_ms": 2.934
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:07.654+0000",
+            "pause_ms": 2.136
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:08.075+0000",
+            "pause_ms": 2.378
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:08.505+0000",
+            "pause_ms": 1.947
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:08.951+0000",
+            "pause_ms": 2.262
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:09.358+0000",
+            "pause_ms": 1.996
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:09.828+0000",
+            "pause_ms": 2.15
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:10.378+0000",
+            "pause_ms": 1.951
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:10.897+0000",
+            "pause_ms": 2.37
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:11.401+0000",
+            "pause_ms": 2.843
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:11.939+0000",
+            "pause_ms": 2.54
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:12.459+0000",
+            "pause_ms": 2.087
+          }
+        ]
+      }
+    },
+    {
+      "runtime": "graalphp",
+      "repetition": 1,
+      "parked": 10000,
+      "requests": 131072,
+      "seconds": 5.67965,
+      "requests_per_second": 23077.48,
+      "cpu_us_per_request": 45.896,
+      "rss_mib": {
+        "samples": 221,
+        "mean": 122.33560166855203,
+        "p20": 108.59375,
+        "p50": 110.3671875,
+        "p90": 171.4765625,
+        "p95": 205.21484375,
+        "p99": 227.18359375,
+        "max": 227.18359375
+      },
+      "control_observation_delays_ms": {
+        "/begin": 0.0898,
+        "/suspended": 0.1241,
+        "/end": 0.2357
+      },
+      "latency_ms": {
+        "samples": 8192,
+        "mean": 2.6811878540039062,
+        "p20": 2.1598,
+        "p50": 2.3489,
+        "p90": 3.3541,
+        "p95": 3.6525,
+        "p99": 4.9359,
+        "max": 26.4585
+      },
+      "timeline": {
+        "clock_uncertainty_ms": 7.834,
+        "bins": [
+          {
+            "start_seconds": 0.0,
+            "latency_ms": {
+              "samples": 548,
+              "mean": 2.6882001824817516,
+              "p20": 2.2286,
+              "p50": 2.3279,
+              "p90": 2.9561,
+              "p95": 3.841,
+              "p99": 11.5775,
+              "max": 26.4585
+            }
+          },
+          {
+            "start_seconds": 0.5,
+            "latency_ms": {
+              "samples": 835,
+              "mean": 2.3702359281437126,
+              "p20": 2.1522,
+              "p50": 2.2267,
+              "p90": 2.4635,
+              "p95": 2.6888,
+              "p99": 4.3648,
+              "max": 20.705
+            }
+          },
+          {
+            "start_seconds": 1.0,
+            "latency_ms": {
+              "samples": 833,
+              "mean": 2.3584938775510205,
+              "p20": 2.1306,
+              "p50": 2.2045,
+              "p90": 2.3676,
+              "p95": 2.4512,
+              "p99": 3.5649,
+              "max": 22.1636
+            }
+          },
+          {
+            "start_seconds": 1.5,
+            "latency_ms": {
+              "samples": 872,
+              "mean": 2.2495211009174314,
+              "p20": 2.111,
+              "p50": 2.1467,
+              "p90": 2.3254,
+              "p95": 2.4306,
+              "p99": 4.5771,
+              "max": 20.6665
+            }
+          },
+          {
+            "start_seconds": 2.0,
+            "latency_ms": {
+              "samples": 825,
+              "mean": 2.4008294545454545,
+              "p20": 2.1378,
+              "p50": 2.1964,
+              "p90": 2.3419,
+              "p95": 2.4715,
+              "p99": 4.6053,
+              "max": 21.7792
+            }
+          },
+          {
+            "start_seconds": 2.5,
+            "latency_ms": {
+              "samples": 890,
+              "mean": 2.2359880898876403,
+              "p20": 2.1315,
+              "p50": 2.1686,
+              "p90": 2.3204,
+              "p95": 2.385,
+              "p99": 2.5528,
+              "max": 8.2261
+            }
+          },
+          {
+            "start_seconds": 3.0,
+            "latency_ms": {
+              "samples": 705,
+              "mean": 2.8013958865248227,
+              "p20": 2.5942,
+              "p50": 2.7088,
+              "p90": 3.0391,
+              "p95": 3.1837,
+              "p99": 5.2397,
+              "max": 8.4626
+            }
+          },
+          {
+            "start_seconds": 3.5,
+            "latency_ms": {
+              "samples": 672,
+              "mean": 3.027237351190476,
+              "p20": 2.7096,
+              "p50": 2.8652,
+              "p90": 3.3346,
+              "p95": 4.1013,
+              "p99": 5.7422,
+              "max": 8.8524
+            }
+          },
+          {
+            "start_seconds": 4.0,
+            "latency_ms": {
+              "samples": 598,
+              "mean": 3.3444066889632107,
+              "p20": 2.9249,
+              "p50": 3.221,
+              "p90": 3.8713,
+              "p95": 4.2959,
+              "p99": 4.8197,
+              "max": 12.3009
+            }
+          },
+          {
+            "start_seconds": 4.5,
+            "latency_ms": {
+              "samples": 601,
+              "mean": 3.2697392678868553,
+              "p20": 2.9107,
+              "p50": 3.2183,
+              "p90": 3.7742,
+              "p95": 4.2211,
+              "p99": 4.7492,
+              "max": 9.4585
+            }
+          },
+          {
+            "start_seconds": 5.0,
+            "latency_ms": {
+              "samples": 616,
+              "mean": 3.236682305194805,
+              "p20": 2.8804,
+              "p50": 3.1526,
+              "p90": 3.642,
+              "p95": 3.789,
+              "p99": 4.4471,
+              "max": 9.4019
+            }
+          },
+          {
+            "start_seconds": 5.5,
+            "latency_ms": {
+              "samples": 197,
+              "mean": 3.2839406091370558,
+              "p20": 2.9433,
+              "p50": 3.1214,
+              "p90": 3.6625,
+              "p95": 4.7523,
+              "p99": 7.262,
+              "max": 7.3055
+            }
+          }
+        ],
+        "slowest": [
+          {
+            "client": "13",
+            "iteration": "125",
+            "guest_start_ns": "241912931220300",
+            "duration_ns": "26458500",
+            "start_elapsed_lower_ns": "433336400",
+            "start_elapsed_upper_ns": "441170400"
+          },
+          {
+            "client": "60",
+            "iteration": "124",
+            "guest_start_ns": "241912929830300",
+            "duration_ns": "25872600",
+            "start_elapsed_lower_ns": "431946400",
+            "start_elapsed_upper_ns": "439780400"
+          },
+          {
+            "client": "44",
+            "iteration": "124",
+            "guest_start_ns": "241912929600100",
+            "duration_ns": "25824600",
+            "start_elapsed_lower_ns": "431716200",
+            "start_elapsed_upper_ns": "439550200"
+          },
+          {
+            "client": "28",
+            "iteration": "124",
+            "guest_start_ns": "241912928992300",
+            "duration_ns": "25477600",
+            "start_elapsed_lower_ns": "431108400",
+            "start_elapsed_upper_ns": "438942400"
+          },
+          {
+            "client": "27",
+            "iteration": "523",
+            "guest_start_ns": "241913908163500",
+            "duration_ns": "22163600",
+            "start_elapsed_lower_ns": "1410279600",
+            "start_elapsed_upper_ns": "1418113600"
+          },
+          {
+            "client": "43",
+            "iteration": "923",
+            "guest_start_ns": "241914851079200",
+            "duration_ns": "21779200",
+            "start_elapsed_lower_ns": "2353195300",
+            "start_elapsed_upper_ns": "2361029300"
+          },
+          {
+            "client": "12",
+            "iteration": "924",
+            "guest_start_ns": "241914851048900",
+            "duration_ns": "21774900",
+            "start_elapsed_lower_ns": "2353165000",
+            "start_elapsed_upper_ns": "2360999000"
+          },
+          {
+            "client": "54",
+            "iteration": "790",
+            "guest_start_ns": "241914534010000",
+            "duration_ns": "21540900",
+            "start_elapsed_lower_ns": "2036126100",
+            "start_elapsed_upper_ns": "2043960100"
+          },
+          {
+            "client": "26",
+            "iteration": "922",
+            "guest_start_ns": "241914850085100",
+            "duration_ns": "21437400",
+            "start_elapsed_lower_ns": "2352201200",
+            "start_elapsed_upper_ns": "2360035200"
+          },
+          {
+            "client": "53",
+            "iteration": "789",
+            "guest_start_ns": "241914533618200",
+            "duration_ns": "21381800",
+            "start_elapsed_lower_ns": "2035734300",
+            "start_elapsed_upper_ns": "2043568300"
+          }
+        ]
+      },
+      "gc_log": {
+        "events": 16,
+        "total_pause_ms": 220.97,
+        "max_pause_ms": 42.923,
+        "entries": [
+          {
+            "reported_uptime_seconds": 0.107,
+            "pause_ms": 42.923
+          },
+          {
+            "reported_uptime_seconds": 0.438,
+            "pause_ms": 21.393
+          },
+          {
+            "reported_uptime_seconds": 0.775,
+            "pause_ms": 17.514
+          },
+          {
+            "reported_uptime_seconds": 1.095,
+            "pause_ms": 17.548
+          },
+          {
+            "reported_uptime_seconds": 1.412,
+            "pause_ms": 18.116
+          },
+          {
+            "reported_uptime_seconds": 1.72,
+            "pause_ms": 18.119
+          },
+          {
+            "reported_uptime_seconds": 2.038,
+            "pause_ms": 18.438
+          },
+          {
+            "reported_uptime_seconds": 2.355,
+            "pause_ms": 18.796
+          },
+          {
+            "reported_uptime_seconds": 2.66,
+            "pause_ms": 5.752
+          },
+          {
+            "reported_uptime_seconds": 2.957,
+            "pause_ms": 5.428
+          },
+          {
+            "reported_uptime_seconds": 3.323,
+            "pause_ms": 5.496
+          },
+          {
+            "reported_uptime_seconds": 3.715,
+            "pause_ms": 5.585
+          },
+          {
+            "reported_uptime_seconds": 4.136,
+            "pause_ms": 8.4
+          },
+          {
+            "reported_uptime_seconds": 4.588,
+            "pause_ms": 6.063
+          },
+          {
+            "reported_uptime_seconds": 5.029,
+            "pause_ms": 5.58
+          },
+          {
+            "reported_uptime_seconds": 5.457,
+            "pause_ms": 5.819
+          }
+        ]
+      },
+      "jit_log": {
+        "tier1_done": 9,
+        "tier2_done": 4,
+        "invalidations": 2,
+        "events": [
+          "[engine] opt queued engine=1  id=21    PhpRootGen@24309a5d                                |Tier 1|Count/Thres        400/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.707|Src n/a",
+          "[engine] opt start  engine=1  id=21    PhpRootGen@24309a5d                                |Tier 1|Priority 121044620|Rate 805,9641|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.707|Src n/a|Bonuses first tier",
+          "[engine] opt start  engine=1  id=83    PhpRootGen@37bae0ba(resume_bci=1536)               |Tier 1|Priority 152434263|Rate 1015,228|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.719|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=83    PhpRootGen@37bae0ba(resume_bci=1536)               |Tier 1|Count/Thres        400/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.719|Src n/a",
+          "[engine] opt queued engine=1  id=77    CallSignatureNode.CallSignatureRootNode@210107ff   |Tier 1|Count/Thres        400/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.721|Src n/a",
+          "[engine] opt start  engine=1  id=77    CallSignatureNode.CallSignatureRootNode@210107ff   |Tier 1|Priority   1861654|Rate 11,41103|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.721|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=76    FunctionExecuteNode.SignatureExecuteNode@36f28080  |Tier 1|Count/Thres        400/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.721|Src n/a",
+          "[engine] opt start  engine=1  id=76    FunctionExecuteNode.SignatureExecuteNode@36f28080  |Tier 1|Priority   1854928|Rate 11,36618|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.721|Src n/a|Bonuses first tier",
+          "[engine] opt done   engine=1  id=76    FunctionExecuteNode.SignatureExecuteNode@36f28080  |Tier 1|Time     6(   4+2   )ms|AST    3|Inlined   0Y   0N|IR    124/   269|CodeSize     926|Addr 0x2a6cc1ca0000|CompId 5728   |UTC 2026-09-25T22:44:12.726|Src n/a",
+          "[engine] opt done   engine=1  id=77    CallSignatureNode.CallSignatureRootNode@210107ff   |Tier 1|Time     9(   6+2   )ms|AST   11|Inlined   0Y   1N|IR    140/   403|CodeSize    1464|Addr 0x1ac5040c0000|CompId 5727   |UTC 2026-09-25T22:44:12.729|Src n/a",
+          "[engine] opt done   engine=1  id=21    PhpRootGen@24309a5d                                |Tier 1|Time    16(   9+7   )ms|AST    2|Inlined   0Y   0N|IR    396/  1439|CodeSize    5827|Addr 0x4367f4480000|CompId 5725   |UTC 2026-09-25T22:44:12.731|Src n/a",
+          "[engine] opt unque. engine=1  id=83    PhpRootGen@37bae0ba(resume_bci=1536)               |Tier 1|Count/Thres      10000/      400|Queue: Size    0 Change  0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.780|Src n/a|Reason Non permanent bailout: jdk.graal.compiler.core.common.RetryableBailoutException: Assumption invalidated while compiling code: IsolatedObjectConstant[Object]",
+          "[engine] opt queued engine=1  id=74    CallSignatureNode.CallSignatureRootNode@2437040d   |Tier 1|Count/Thres        400/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.808|Src n/a",
+          "[engine] opt start  engine=1  id=74    CallSignatureNode.CallSignatureRootNode@2437040d   |Tier 1|Priority    635966|Rate 3,239774|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.808|Src n/a|Bonuses first tier",
+          "[engine] opt start  engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@3646ff1f  |Tier 1|Priority    634613|Rate 3,230754|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.808|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@3646ff1f  |Tier 1|Count/Thres        400/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.808|Src n/a",
+          "[engine] opt queued engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@11959315      |Tier 1|Count/Thres        400/      400|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.811|Src n/a",
+          "[engine] opt start  engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@11959315      |Tier 1|Priority    633180|Rate 3,221203|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.811|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=86    PhpRootGen@4e3aa5c7(resume_bci=1760)               |Tier 1|Count/Thres        400/      400|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.813|Src n/a",
+          "[engine] opt start  engine=1  id=86    PhpRootGen@4e3aa5c7(resume_bci=1760)               |Tier 1|Priority   3379052|Rate 21,52701|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.813|Src n/a|Bonuses first tier",
+          "[engine] opt done   engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@3646ff1f  |Tier 1|Time     6(   3+3   )ms|AST    4|Inlined   0Y   0N|IR    132/   310|CodeSize    1081|Addr 0x00b8a9f10000|CompId 5730   |UTC 2026-09-25T22:44:12.814|Src n/a",
+          "[engine] opt done   engine=1  id=74    CallSignatureNode.CallSignatureRootNode@2437040d   |Tier 1|Time     7(   3+3   )ms|AST   12|Inlined   0Y   1N|IR    146/   483|CodeSize    1949|Addr 0x4541db340000|CompId 5729   |UTC 2026-09-25T22:44:12.815|Src n/a",
+          "[engine] opt done   engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@11959315      |Tier 1|Time     7(   3+4   )ms|AST   23|Inlined   0Y   0N|IR    125/   395|CodeSize    1658|Addr 0x316e0d310000|CompId 5731   |UTC 2026-09-25T22:44:12.818|Src n/a",
+          "[engine] opt done   engine=1  id=86    PhpRootGen@4e3aa5c7(resume_bci=1760)               |Tier 1|Time    39(  14+25  )ms|AST    1|Inlined   0Y   0N|IR   1755/  4845|CodeSize   20735|Addr 0x65a2ab160000|CompId 5732   |UTC 2026-09-25T22:44:12.852|Src n/a",
+          "[engine] opt queued engine=1  id=85    PhpRootGen@4e3aa5c7(resume_bci=1142)               |Tier 1|Count/Thres        400/      400|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:13.029|Src n/a",
+          "[engine] opt start  engine=1  id=85    PhpRootGen@4e3aa5c7(resume_bci=1142)               |Tier 1|Priority    405620|Rate 1,704136|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:13.030|Src n/a|Bonuses first tier",
+          "[engine] opt done   engine=1  id=85    PhpRootGen@4e3aa5c7(resume_bci=1142)               |Tier 1|Time    60(  18+43  )ms|AST    1|Inlined   0Y   0N|IR   2763/  7680|CodeSize   32708|Addr 0x1861b03e0000|CompId 5733   |UTC 2026-09-25T22:44:13.090|Src n/a",
+          "[engine] opt queued engine=1  id=74    CallSignatureNode.CallSignatureRootNode@2437040d   |Tier 2|Count/Thres      10000/    10000|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:13.199|Src n/a",
+          "[engine] opt start  engine=1  id=74    CallSignatureNode.CallSignatureRootNode@2437040d   |Tier 2|Priority    204491|Rate 19,44910|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:13.199|Src n/a|Bonuses",
+          "[engine] opt queued engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@3646ff1f  |Tier 2|Count/Thres      10000/    10000|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:13.199|Src n/a",
+          "[engine] opt start  engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@3646ff1f  |Tier 2|Priority    204458|Rate 19,44580|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:13.199|Src n/a|Bonuses",
+          "[engine] opt queued engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@11959315      |Tier 2|Count/Thres      10000/    10000|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:13.200|Src n/a",
+          "[engine] opt start  engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@11959315      |Tier 2|Priority    205003|Rate 19,50037|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:13.200|Src n/a|Bonuses",
+          "[engine] opt done   engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@3646ff1f  |Tier 2|Time     4(   1+3   )ms|AST    4|Inlined   0Y   0N|IR     74/   188|CodeSize     646|Addr 0x5e4df5170000|CompId 5735   |UTC 2026-09-25T22:44:13.203|Src n/a",
+          "[engine] opt done   engine=1  id=74    CallSignatureNode.CallSignatureRootNode@2437040d   |Tier 2|Time     5(   2+2   )ms|AST   12|Inlined   1Y   0N|IR    108/   263|CodeSize     825|Addr 0x60529d0b0000|CompId 5734   |UTC 2026-09-25T22:44:13.204|Src n/a",
+          "[engine] opt done   engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@11959315      |Tier 2|Time     4(   1+3   )ms|AST   23|Inlined   0Y   0N|IR     64/   333|CodeSize    1532|Addr 0x740038950000|CompId 5736   |UTC 2026-09-25T22:44:13.204|Src n/a",
+          "[engine] opt queued engine=1  id=86    PhpRootGen@4e3aa5c7(resume_bci=1760)               |Tier 2|Count/Thres      10000/    10000|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:13.226|Src n/a",
+          "[engine] opt start  engine=1  id=86    PhpRootGen@4e3aa5c7(resume_bci=1760)               |Tier 2|Priority    241900|Rate 23,19006|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:13.226|Src n/a|Bonuses",
+          "[engine] opt done   engine=1  id=86    PhpRootGen@4e3aa5c7(resume_bci=1760)               |Tier 2|Time    57(  10+46  )ms|AST    1|Inlined   0Y   0N|IR   1672/  3783|CodeSize   15619|Addr 0x03c0fd970000|CompId 5737   |UTC 2026-09-25T22:44:13.283|Src n/a",
+          "[engine] opt inval. engine=1  id=86    PhpRootGen@4e3aa5c7(resume_bci=1760)                                                                                                                                              |UTC 2026-09-25T22:44:18.306|Src n/a|Reason null",
+          "[engine] opt deopt  engine=1  id=86    PhpRootGen@4e3aa5c7(resume_bci=1760)               |Invalidated  true|                                                                                                            |UTC 2026-09-25T22:44:18.306|Src n/a|Reason unknown",
+          "[engine] opt start  engine=1  id=86    PhpRootGen@4e3aa5c7(resume_bci=1760)               |Tier 1|Priority  12980407|Rate 2,055382|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.306|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=86    PhpRootGen@4e3aa5c7(resume_bci=1760)               |Tier 1|Count/Thres      11329/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.306|Src n/a",
+          "[engine] opt inval. engine=1  id=85    PhpRootGen@4e3aa5c7(resume_bci=1142)                                                                                                                                              |UTC 2026-09-25T22:44:18.313|Src n/a|Reason null",
+          "[engine] opt deopt  engine=1  id=85    PhpRootGen@4e3aa5c7(resume_bci=1142)               |Invalidated  true|                                                                                                            |UTC 2026-09-25T22:44:18.313|Src n/a|Reason unknown",
+          "[engine] opt queued engine=1  id=85    PhpRootGen@4e3aa5c7(resume_bci=1142)               |Tier 1|Count/Thres       8189/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.314|Src n/a",
+          "[engine] opt start  engine=1  id=85    PhpRootGen@4e3aa5c7(resume_bci=1142)               |Tier 1|Priority   7627254|Rate 1,483740|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.314|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=89    PhpRootGen@24309a5d(resume_bci=168)                |Tier 1|Count/Thres        400/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.323|Src n/a",
+          "[engine] opt start  engine=1  id=89    PhpRootGen@24309a5d(resume_bci=168)                |Tier 1|Priority  36346911|Rate 241,3127|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.323|Src n/a|Bonuses first tier",
+          "[engine] opt done   engine=1  id=89    PhpRootGen@24309a5d(resume_bci=168)                |Tier 1|Time    14(   8+7   )ms|AST    1|Inlined   0Y   0N|IR    351/   790|CodeSize    2933|Addr 0x369acf950000|CompId 5740   |UTC 2026-09-25T22:44:18.337|Src n/a",
+          "[engine] opt unque. engine=1  id=85    PhpRootGen@4e3aa5c7(resume_bci=1142)               |Tier 1|Count/Thres       8192/      400|Queue: Size    0 Change  0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.361|Src n/a|Reason Polyglot engine was closed.",
+          "[engine] opt unque. engine=1  id=86    PhpRootGen@4e3aa5c7(resume_bci=1760)               |Tier 1|Count/Thres      11476/      400|Queue: Size    0 Change  0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.361|Src n/a|Reason Polyglot engine was closed."
+        ],
+        "payload_events": [
+          "[engine] opt unque. engine=1  id=83    PhpRootGen@37bae0ba(resume_bci=1536)               |Tier 1|Count/Thres      10000/      400|Queue: Size    0 Change  0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.780|Src n/a|Reason Non permanent bailout: jdk.graal.compiler.core.common.RetryableBailoutException: Assumption invalidated while compiling code: IsolatedObjectConstant[Object]",
+          "[engine] opt queued engine=1  id=74    CallSignatureNode.CallSignatureRootNode@2437040d   |Tier 1|Count/Thres        400/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.808|Src n/a",
+          "[engine] opt start  engine=1  id=74    CallSignatureNode.CallSignatureRootNode@2437040d   |Tier 1|Priority    635966|Rate 3,239774|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.808|Src n/a|Bonuses first tier",
+          "[engine] opt start  engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@3646ff1f  |Tier 1|Priority    634613|Rate 3,230754|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.808|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@3646ff1f  |Tier 1|Count/Thres        400/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.808|Src n/a",
+          "[engine] opt queued engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@11959315      |Tier 1|Count/Thres        400/      400|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.811|Src n/a",
+          "[engine] opt start  engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@11959315      |Tier 1|Priority    633180|Rate 3,221203|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.811|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=86    PhpRootGen@4e3aa5c7(resume_bci=1760)               |Tier 1|Count/Thres        400/      400|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.813|Src n/a",
+          "[engine] opt start  engine=1  id=86    PhpRootGen@4e3aa5c7(resume_bci=1760)               |Tier 1|Priority   3379052|Rate 21,52701|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:12.813|Src n/a|Bonuses first tier",
+          "[engine] opt done   engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@3646ff1f  |Tier 1|Time     6(   3+3   )ms|AST    4|Inlined   0Y   0N|IR    132/   310|CodeSize    1081|Addr 0x00b8a9f10000|CompId 5730   |UTC 2026-09-25T22:44:12.814|Src n/a",
+          "[engine] opt done   engine=1  id=74    CallSignatureNode.CallSignatureRootNode@2437040d   |Tier 1|Time     7(   3+3   )ms|AST   12|Inlined   0Y   1N|IR    146/   483|CodeSize    1949|Addr 0x4541db340000|CompId 5729   |UTC 2026-09-25T22:44:12.815|Src n/a",
+          "[engine] opt done   engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@11959315      |Tier 1|Time     7(   3+4   )ms|AST   23|Inlined   0Y   0N|IR    125/   395|CodeSize    1658|Addr 0x316e0d310000|CompId 5731   |UTC 2026-09-25T22:44:12.818|Src n/a",
+          "[engine] opt done   engine=1  id=86    PhpRootGen@4e3aa5c7(resume_bci=1760)               |Tier 1|Time    39(  14+25  )ms|AST    1|Inlined   0Y   0N|IR   1755/  4845|CodeSize   20735|Addr 0x65a2ab160000|CompId 5732   |UTC 2026-09-25T22:44:12.852|Src n/a",
+          "[engine] opt queued engine=1  id=85    PhpRootGen@4e3aa5c7(resume_bci=1142)               |Tier 1|Count/Thres        400/      400|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:13.029|Src n/a",
+          "[engine] opt start  engine=1  id=85    PhpRootGen@4e3aa5c7(resume_bci=1142)               |Tier 1|Priority    405620|Rate 1,704136|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:13.030|Src n/a|Bonuses first tier",
+          "[engine] opt done   engine=1  id=85    PhpRootGen@4e3aa5c7(resume_bci=1142)               |Tier 1|Time    60(  18+43  )ms|AST    1|Inlined   0Y   0N|IR   2763/  7680|CodeSize   32708|Addr 0x1861b03e0000|CompId 5733   |UTC 2026-09-25T22:44:13.090|Src n/a",
+          "[engine] opt queued engine=1  id=74    CallSignatureNode.CallSignatureRootNode@2437040d   |Tier 2|Count/Thres      10000/    10000|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:13.199|Src n/a",
+          "[engine] opt start  engine=1  id=74    CallSignatureNode.CallSignatureRootNode@2437040d   |Tier 2|Priority    204491|Rate 19,44910|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:13.199|Src n/a|Bonuses",
+          "[engine] opt queued engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@3646ff1f  |Tier 2|Count/Thres      10000/    10000|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:13.199|Src n/a",
+          "[engine] opt start  engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@3646ff1f  |Tier 2|Priority    204458|Rate 19,44580|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:13.199|Src n/a|Bonuses",
+          "[engine] opt queued engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@11959315      |Tier 2|Count/Thres      10000/    10000|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:13.200|Src n/a",
+          "[engine] opt start  engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@11959315      |Tier 2|Priority    205003|Rate 19,50037|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:13.200|Src n/a|Bonuses",
+          "[engine] opt done   engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@3646ff1f  |Tier 2|Time     4(   1+3   )ms|AST    4|Inlined   0Y   0N|IR     74/   188|CodeSize     646|Addr 0x5e4df5170000|CompId 5735   |UTC 2026-09-25T22:44:13.203|Src n/a",
+          "[engine] opt done   engine=1  id=74    CallSignatureNode.CallSignatureRootNode@2437040d   |Tier 2|Time     5(   2+2   )ms|AST   12|Inlined   1Y   0N|IR    108/   263|CodeSize     825|Addr 0x60529d0b0000|CompId 5734   |UTC 2026-09-25T22:44:13.204|Src n/a",
+          "[engine] opt done   engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@11959315      |Tier 2|Time     4(   1+3   )ms|AST   23|Inlined   0Y   0N|IR     64/   333|CodeSize    1532|Addr 0x740038950000|CompId 5736   |UTC 2026-09-25T22:44:13.204|Src n/a",
+          "[engine] opt queued engine=1  id=86    PhpRootGen@4e3aa5c7(resume_bci=1760)               |Tier 2|Count/Thres      10000/    10000|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:13.226|Src n/a",
+          "[engine] opt start  engine=1  id=86    PhpRootGen@4e3aa5c7(resume_bci=1760)               |Tier 2|Priority    241900|Rate 23,19006|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:13.226|Src n/a|Bonuses",
+          "[engine] opt done   engine=1  id=86    PhpRootGen@4e3aa5c7(resume_bci=1760)               |Tier 2|Time    57(  10+46  )ms|AST    1|Inlined   0Y   0N|IR   1672/  3783|CodeSize   15619|Addr 0x03c0fd970000|CompId 5737   |UTC 2026-09-25T22:44:13.283|Src n/a",
+          "[engine] opt inval. engine=1  id=86    PhpRootGen@4e3aa5c7(resume_bci=1760)                                                                                                                                              |UTC 2026-09-25T22:44:18.306|Src n/a|Reason null",
+          "[engine] opt deopt  engine=1  id=86    PhpRootGen@4e3aa5c7(resume_bci=1760)               |Invalidated  true|                                                                                                            |UTC 2026-09-25T22:44:18.306|Src n/a|Reason unknown",
+          "[engine] opt start  engine=1  id=86    PhpRootGen@4e3aa5c7(resume_bci=1760)               |Tier 1|Priority  12980407|Rate 2,055382|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.306|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=86    PhpRootGen@4e3aa5c7(resume_bci=1760)               |Tier 1|Count/Thres      11329/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.306|Src n/a",
+          "[engine] opt inval. engine=1  id=85    PhpRootGen@4e3aa5c7(resume_bci=1142)                                                                                                                                              |UTC 2026-09-25T22:44:18.313|Src n/a|Reason null",
+          "[engine] opt deopt  engine=1  id=85    PhpRootGen@4e3aa5c7(resume_bci=1142)               |Invalidated  true|                                                                                                            |UTC 2026-09-25T22:44:18.313|Src n/a|Reason unknown",
+          "[engine] opt queued engine=1  id=85    PhpRootGen@4e3aa5c7(resume_bci=1142)               |Tier 1|Count/Thres       8189/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.314|Src n/a",
+          "[engine] opt start  engine=1  id=85    PhpRootGen@4e3aa5c7(resume_bci=1142)               |Tier 1|Priority   7627254|Rate 1,483740|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.314|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=89    PhpRootGen@24309a5d(resume_bci=168)                |Tier 1|Count/Thres        400/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.323|Src n/a",
+          "[engine] opt start  engine=1  id=89    PhpRootGen@24309a5d(resume_bci=168)                |Tier 1|Priority  36346911|Rate 241,3127|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.323|Src n/a|Bonuses first tier"
+        ],
+        "payload_invalidations": 2
+      },
+      "peer_gc_log": {
+        "events": 11,
+        "total_pause_ms": 15.35,
+        "max_pause_ms": 2.366,
+        "entries": [
+          {
+            "reported_end_utc": "2026-09-25T22:44:13.158+0000",
+            "pause_ms": 2.366
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:13.582+0000",
+            "pause_ms": 2.358
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:13.997+0000",
+            "pause_ms": 2.138
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:14.424+0000",
+            "pause_ms": 1.712
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:14.848+0000",
+            "pause_ms": 0.817
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:15.271+0000",
+            "pause_ms": 0.901
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:15.691+0000",
+            "pause_ms": 0.915
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:16.203+0000",
+            "pause_ms": 0.961
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:16.758+0000",
+            "pause_ms": 1.138
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:17.379+0000",
+            "pause_ms": 1.008
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:17.962+0000",
+            "pause_ms": 1.036
+          }
+        ]
+      }
+    },
+    {
+      "runtime": "graalphp",
+      "repetition": 2,
+      "parked": 10000,
+      "requests": 131072,
+      "seconds": 5.457624,
+      "requests_per_second": 24016.311,
+      "cpu_us_per_request": 45.419,
+      "rss_mib": {
+        "samples": 212,
+        "mean": 132.5856611143868,
+        "p20": 110.328125,
+        "p50": 112.32421875,
+        "p90": 186.859375,
+        "p95": 210.19140625,
+        "p99": 233.2265625,
+        "max": 233.2265625
+      },
+      "control_observation_delays_ms": {
+        "/begin": 0.1201,
+        "/suspended": 0.1576,
+        "/end": 0.1788
+      },
+      "latency_ms": {
+        "samples": 8192,
+        "mean": 2.574279284667969,
+        "p20": 2.1599,
+        "p50": 2.306,
+        "p90": 3.0074,
+        "p95": 3.1176,
+        "p99": 3.9971,
+        "max": 22.0012
+      },
+      "timeline": {
+        "clock_uncertainty_ms": 7.6403,
+        "bins": [
+          {
+            "start_seconds": 0.0,
+            "latency_ms": {
+              "samples": 573,
+              "mean": 2.5007029668411866,
+              "p20": 2.1869,
+              "p50": 2.2635,
+              "p90": 2.5345,
+              "p95": 2.7168,
+              "p99": 10.9026,
+              "max": 21.7364
+            }
+          },
+          {
+            "start_seconds": 0.5,
+            "latency_ms": {
+              "samples": 871,
+              "mean": 2.2892818599311138,
+              "p20": 2.1156,
+              "p50": 2.1838,
+              "p90": 2.3314,
+              "p95": 2.4099,
+              "p99": 2.7822,
+              "max": 20.3918
+            }
+          },
+          {
+            "start_seconds": 1.0,
+            "latency_ms": {
+              "samples": 825,
+              "mean": 2.4165894545454547,
+              "p20": 2.1398,
+              "p50": 2.1895,
+              "p90": 2.3438,
+              "p95": 2.4525,
+              "p99": 5.5663,
+              "max": 22.0012
+            }
+          },
+          {
+            "start_seconds": 1.5,
+            "latency_ms": {
+              "samples": 862,
+              "mean": 2.3337255220417634,
+              "p20": 2.1454,
+              "p50": 2.1929,
+              "p90": 2.3624,
+              "p95": 2.4229,
+              "p99": 2.5971,
+              "max": 21.4525
+            }
+          },
+          {
+            "start_seconds": 2.0,
+            "latency_ms": {
+              "samples": 843,
+              "mean": 2.3311905100830366,
+              "p20": 2.1261,
+              "p50": 2.1628,
+              "p90": 2.3126,
+              "p95": 2.378,
+              "p99": 2.8868,
+              "max": 21.9984
+            }
+          },
+          {
+            "start_seconds": 2.5,
+            "latency_ms": {
+              "samples": 884,
+              "mean": 2.226083031674208,
+              "p20": 2.1425,
+              "p50": 2.1841,
+              "p90": 2.2941,
+              "p95": 2.3429,
+              "p99": 2.4917,
+              "max": 8.4654
+            }
+          },
+          {
+            "start_seconds": 3.0,
+            "latency_ms": {
+              "samples": 657,
+              "mean": 3.0369759512937593,
+              "p20": 2.8276,
+              "p50": 2.9537,
+              "p90": 3.319,
+              "p95": 3.473,
+              "p99": 6.0857,
+              "max": 8.7233
+            }
+          },
+          {
+            "start_seconds": 3.5,
+            "latency_ms": {
+              "samples": 680,
+              "mean": 2.9223345588235294,
+              "p20": 2.7495,
+              "p50": 2.8954,
+              "p90": 3.0747,
+              "p95": 3.2082,
+              "p99": 3.6547,
+              "max": 11.4301
+            }
+          },
+          {
+            "start_seconds": 4.0,
+            "latency_ms": {
+              "samples": 686,
+              "mean": 2.8943594752186588,
+              "p20": 2.7149,
+              "p50": 2.8434,
+              "p90": 3.0339,
+              "p95": 3.0928,
+              "p99": 4.1337,
+              "max": 8.6368
+            }
+          },
+          {
+            "start_seconds": 4.5,
+            "latency_ms": {
+              "samples": 692,
+              "mean": 2.8781933526011563,
+              "p20": 2.6872,
+              "p50": 2.7791,
+              "p90": 3.0832,
+              "p95": 3.1837,
+              "p99": 8.2354,
+              "max": 8.3713
+            }
+          },
+          {
+            "start_seconds": 5.0,
+            "latency_ms": {
+              "samples": 619,
+              "mean": 2.8489479806138935,
+              "p20": 2.6096,
+              "p50": 2.7559,
+              "p90": 3.1157,
+              "p95": 3.2003,
+              "p99": 3.9515,
+              "max": 8.3925
+            }
+          }
+        ],
+        "slowest": [
+          {
+            "client": "7",
+            "iteration": "391",
+            "guest_start_ns": "241919338017000",
+            "duration_ns": "22001200",
+            "start_elapsed_lower_ns": "1064637900",
+            "start_elapsed_upper_ns": "1072278200"
+          },
+          {
+            "client": "29",
+            "iteration": "925",
+            "guest_start_ns": "241920601177200",
+            "duration_ns": "21998400",
+            "start_elapsed_lower_ns": "2327798100",
+            "start_elapsed_upper_ns": "2335438400"
+          },
+          {
+            "client": "55",
+            "iteration": "391",
+            "guest_start_ns": "241919337985800",
+            "duration_ns": "21995100",
+            "start_elapsed_lower_ns": "1064606700",
+            "start_elapsed_upper_ns": "1072247000"
+          },
+          {
+            "client": "23",
+            "iteration": "391",
+            "guest_start_ns": "241919337609100",
+            "duration_ns": "21917300",
+            "start_elapsed_lower_ns": "1064230000",
+            "start_elapsed_upper_ns": "1071870300"
+          },
+          {
+            "client": "60",
+            "iteration": "924",
+            "guest_start_ns": "241920600528700",
+            "duration_ns": "21889800",
+            "start_elapsed_lower_ns": "2327149600",
+            "start_elapsed_upper_ns": "2334789900"
+          },
+          {
+            "client": "31",
+            "iteration": "127",
+            "guest_start_ns": "241918715440400",
+            "duration_ns": "21736400",
+            "start_elapsed_lower_ns": "442061300",
+            "start_elapsed_upper_ns": "449701600"
+          },
+          {
+            "client": "46",
+            "iteration": "126",
+            "guest_start_ns": "241918714663200",
+            "duration_ns": "21657300",
+            "start_elapsed_lower_ns": "441284100",
+            "start_elapsed_upper_ns": "448924400"
+          },
+          {
+            "client": "55",
+            "iteration": "791",
+            "guest_start_ns": "241920288411200",
+            "duration_ns": "21597700",
+            "start_elapsed_lower_ns": "2015032100",
+            "start_elapsed_upper_ns": "2022672400"
+          },
+          {
+            "client": "34",
+            "iteration": "658",
+            "guest_start_ns": "241919972283400",
+            "duration_ns": "21452500",
+            "start_elapsed_lower_ns": "1698904300",
+            "start_elapsed_upper_ns": "1706544600"
+          },
+          {
+            "client": "30",
+            "iteration": "126",
+            "guest_start_ns": "241918713386900",
+            "duration_ns": "21424600",
+            "start_elapsed_lower_ns": "440007800",
+            "start_elapsed_upper_ns": "447648100"
+          }
+        ]
+      },
+      "gc_log": {
+        "events": 16,
+        "total_pause_ms": 222.314,
+        "max_pause_ms": 47.487,
+        "entries": [
+          {
+            "reported_uptime_seconds": 0.12,
+            "pause_ms": 47.487
+          },
+          {
+            "reported_uptime_seconds": 0.447,
+            "pause_ms": 18.768
+          },
+          {
+            "reported_uptime_seconds": 0.755,
+            "pause_ms": 17.404
+          },
+          {
+            "reported_uptime_seconds": 1.069,
+            "pause_ms": 18.054
+          },
+          {
+            "reported_uptime_seconds": 1.388,
+            "pause_ms": 18.275
+          },
+          {
+            "reported_uptime_seconds": 1.703,
+            "pause_ms": 18.445
+          },
+          {
+            "reported_uptime_seconds": 2.021,
+            "pause_ms": 18.541
+          },
+          {
+            "reported_uptime_seconds": 2.333,
+            "pause_ms": 19.156
+          },
+          {
+            "reported_uptime_seconds": 2.632,
+            "pause_ms": 5.979
+          },
+          {
+            "reported_uptime_seconds": 2.933,
+            "pause_ms": 5.43
+          },
+          {
+            "reported_uptime_seconds": 3.313,
+            "pause_ms": 5.52
+          },
+          {
+            "reported_uptime_seconds": 3.723,
+            "pause_ms": 7.539
+          },
+          {
+            "reported_uptime_seconds": 4.11,
+            "pause_ms": 5.491
+          },
+          {
+            "reported_uptime_seconds": 4.5,
+            "pause_ms": 5.433
+          },
+          {
+            "reported_uptime_seconds": 4.881,
+            "pause_ms": 5.336
+          },
+          {
+            "reported_uptime_seconds": 5.269,
+            "pause_ms": 5.456
+          }
+        ]
+      },
+      "jit_log": {
+        "tier1_done": 10,
+        "tier2_done": 6,
+        "invalidations": 3,
+        "events": [
+          "[engine] opt start  engine=1  id=21    PhpRootGen@65ffc6ee                                |Tier 1|Priority 111425964|Rate 741,8397|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.479|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=21    PhpRootGen@65ffc6ee                                |Tier 1|Count/Thres        400/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.479|Src n/a",
+          "[engine] opt done   engine=1  id=21    PhpRootGen@65ffc6ee                                |Tier 1|Time    16(   8+8   )ms|AST    2|Inlined   0Y   0N|IR    396/  1439|CodeSize    5827|Addr 0x2f4092380000|CompId 5725   |UTC 2026-09-25T22:44:18.495|Src n/a",
+          "[engine] opt queued engine=1  id=21    PhpRootGen@65ffc6ee                                |Tier 2|Count/Thres      10000/    10000|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.498|Src n/a",
+          "[engine] opt start  engine=1  id=21    PhpRootGen@65ffc6ee                                |Tier 2|Priority   4847765|Rate 483,7765|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.498|Src n/a|Bonuses",
+          "[engine] opt queued engine=1  id=83    PhpRootGen@2f37141b(resume_bci=1536)               |Tier 1|Count/Thres        400/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.499|Src n/a",
+          "[engine] opt start  engine=1  id=83    PhpRootGen@2f37141b(resume_bci=1536)               |Tier 1|Priority 133959099|Rate 892,0606|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.499|Src n/a|Bonuses first tier",
+          "[engine] opt start  engine=1  id=77    CallSignatureNode.CallSignatureRootNode@121354f    |Tier 1|Priority   1545546|Rate 9,303645|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.500|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=77    CallSignatureNode.CallSignatureRootNode@121354f    |Tier 1|Count/Thres        400/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.500|Src n/a",
+          "[engine] opt start  engine=1  id=76    FunctionExecuteNode.SignatureExecuteNode@2b4dc815  |Tier 1|Priority   1539027|Rate 9,260181|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.500|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=76    FunctionExecuteNode.SignatureExecuteNode@2b4dc815  |Tier 1|Count/Thres        400/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.500|Src n/a",
+          "[engine] opt done   engine=1  id=76    FunctionExecuteNode.SignatureExecuteNode@2b4dc815  |Tier 1|Time     7(   5+2   )ms|AST    3|Inlined   0Y   0N|IR    124/   269|CodeSize     926|Addr 0x733a01a80000|CompId 5729   |UTC 2026-09-25T22:44:18.507|Src n/a",
+          "[engine] opt done   engine=1  id=77    CallSignatureNode.CallSignatureRootNode@121354f    |Tier 1|Time     9(   7+2   )ms|AST   11|Inlined   0Y   1N|IR    140/   403|CodeSize    1464|Addr 0x235172fb0000|CompId 5728   |UTC 2026-09-25T22:44:18.509|Src n/a",
+          "[engine] opt done   engine=1  id=21    PhpRootGen@65ffc6ee                                |Tier 2|Time    15(   5+10  )ms|AST    2|Inlined   0Y   0N|IR    335/  1245|CodeSize    4926|Addr 0x58e1d7280000|CompId 5726   |UTC 2026-09-25T22:44:18.514|Src n/a",
+          "[engine] opt unque. engine=1  id=83    PhpRootGen@2f37141b(resume_bci=1536)               |Tier 1|Count/Thres      10000/      400|Queue: Size    0 Change  0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.566|Src n/a|Reason Non permanent bailout: jdk.graal.compiler.core.common.RetryableBailoutException: Assumption invalidated while compiling code: IsolatedObjectConstant[Object]",
+          "[engine] opt queued engine=1  id=74    CallSignatureNode.CallSignatureRootNode@21d2d0b8   |Tier 1|Count/Thres        400/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.592|Src n/a",
+          "[engine] opt start  engine=1  id=74    CallSignatureNode.CallSignatureRootNode@21d2d0b8   |Tier 1|Priority    591482|Rate 2,943215|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.592|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@14ad4cb9  |Tier 1|Count/Thres        400/      400|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.593|Src n/a",
+          "[engine] opt start  engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@14ad4cb9  |Tier 1|Priority    590528|Rate 2,936858|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.593|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@1cc170f0      |Tier 1|Count/Thres        400/      400|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.594|Src n/a",
+          "[engine] opt start  engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@1cc170f0      |Tier 1|Priority    592641|Rate 2,950945|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.594|Src n/a|Bonuses first tier",
+          "[engine] opt done   engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@14ad4cb9  |Tier 1|Time     3(   2+2   )ms|AST    4|Inlined   0Y   0N|IR    132/   310|CodeSize    1081|Addr 0x10c684870000|CompId 5731   |UTC 2026-09-25T22:44:18.596|Src n/a",
+          "[engine] opt queued engine=1  id=86    PhpRootGen@4cb490c4(resume_bci=1760)               |Tier 1|Count/Thres        400/      400|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.596|Src n/a",
+          "[engine] opt start  engine=1  id=86    PhpRootGen@4cb490c4(resume_bci=1760)               |Tier 1|Priority   3640685|Rate 23,27123|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.596|Src n/a|Bonuses first tier",
+          "[engine] opt done   engine=1  id=74    CallSignatureNode.CallSignatureRootNode@21d2d0b8   |Tier 1|Time     6(   3+3   )ms|AST   12|Inlined   0Y   1N|IR    146/   483|CodeSize    1949|Addr 0x012e81d90000|CompId 5730   |UTC 2026-09-25T22:44:18.598|Src n/a",
+          "[engine] opt done   engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@1cc170f0      |Tier 1|Time     5(   2+2   )ms|AST   23|Inlined   0Y   0N|IR    125/   395|CodeSize    1658|Addr 0x3c36b0ed0000|CompId 5732   |UTC 2026-09-25T22:44:18.599|Src n/a",
+          "[engine] opt done   engine=1  id=86    PhpRootGen@4cb490c4(resume_bci=1760)               |Tier 1|Time    36(  12+25  )ms|AST    1|Inlined   0Y   0N|IR   1755/  4845|CodeSize   20735|Addr 0x258daf5c0000|CompId 5733   |UTC 2026-09-25T22:44:18.633|Src n/a",
+          "[engine] opt queued engine=1  id=85    PhpRootGen@4cb490c4(resume_bci=1142)               |Tier 1|Count/Thres        400/      400|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.812|Src n/a",
+          "[engine] opt start  engine=1  id=85    PhpRootGen@4cb490c4(resume_bci=1142)               |Tier 1|Priority    407140|Rate 1,714267|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.812|Src n/a|Bonuses first tier",
+          "[engine] opt done   engine=1  id=85    PhpRootGen@4cb490c4(resume_bci=1142)               |Tier 1|Time    56(  16+40  )ms|AST    1|Inlined   0Y   0N|IR   2763/  7680|CodeSize   32708|Addr 0x1c698ec20000|CompId 5734   |UTC 2026-09-25T22:44:18.868|Src n/a",
+          "[engine] opt queued engine=1  id=74    CallSignatureNode.CallSignatureRootNode@21d2d0b8   |Tier 2|Count/Thres      10000/    10000|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.956|Src n/a",
+          "[engine] opt queued engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@14ad4cb9  |Tier 2|Count/Thres      10000/    10000|Queue: Size    2 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.956|Src n/a",
+          "[engine] opt start  engine=1  id=74    CallSignatureNode.CallSignatureRootNode@21d2d0b8   |Tier 2|Priority    210379|Rate 20,03792|Queue: Size    1 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.956|Src n/a|Bonuses",
+          "[engine] opt start  engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@14ad4cb9  |Tier 2|Priority    210350|Rate 20,03501|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.956|Src n/a|Bonuses",
+          "[engine] opt queued engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@1cc170f0      |Tier 2|Count/Thres      10000/    10000|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.957|Src n/a",
+          "[engine] opt start  engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@1cc170f0      |Tier 2|Priority    210672|Rate 20,06727|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.957|Src n/a|Bonuses",
+          "[engine] opt done   engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@14ad4cb9  |Tier 2|Time     4(   1+3   )ms|AST    4|Inlined   0Y   0N|IR     74/   188|CodeSize     646|Addr 0x29d02b2c0000|CompId 5736   |UTC 2026-09-25T22:44:18.960|Src n/a",
+          "[engine] opt done   engine=1  id=74    CallSignatureNode.CallSignatureRootNode@21d2d0b8   |Tier 2|Time     4(   2+2   )ms|AST   12|Inlined   1Y   0N|IR    108/   263|CodeSize     825|Addr 0x243f4fdf0000|CompId 5735   |UTC 2026-09-25T22:44:18.960|Src n/a",
+          "[engine] opt done   engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@1cc170f0      |Tier 2|Time     4(   1+3   )ms|AST   23|Inlined   0Y   0N|IR     64/   333|CodeSize    1532|Addr 0x3250d2cb0000|CompId 5737   |UTC 2026-09-25T22:44:18.962|Src n/a",
+          "[engine] opt queued engine=1  id=86    PhpRootGen@4cb490c4(resume_bci=1760)               |Tier 2|Count/Thres      10000/    10000|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.981|Src n/a",
+          "[engine] opt start  engine=1  id=86    PhpRootGen@4cb490c4(resume_bci=1760)               |Tier 2|Priority    259179|Rate 24,91795|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.981|Src n/a|Bonuses",
+          "[engine] opt done   engine=1  id=86    PhpRootGen@4cb490c4(resume_bci=1760)               |Tier 2|Time    52(  10+42  )ms|AST    1|Inlined   0Y   0N|IR   1672/  3783|CodeSize   15619|Addr 0x76aa1a000000|CompId 5738   |UTC 2026-09-25T22:44:19.033|Src n/a",
+          "[engine] opt inval. engine=1  id=86    PhpRootGen@4cb490c4(resume_bci=1760)                                                                                                                                              |UTC 2026-09-25T22:44:21.768|Src n/a|Reason null",
+          "[engine] opt deopt  engine=1  id=86    PhpRootGen@4cb490c4(resume_bci=1760)               |Invalidated  true|                                                                                                            |UTC 2026-09-25T22:44:21.769|Src n/a|Reason unknown",
+          "[engine] opt queued engine=1  id=86    PhpRootGen@4cb490c4(resume_bci=1760)               |Tier 1|Count/Thres      11395/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:21.769|Src n/a",
+          "[engine] opt start  engine=1  id=86    PhpRootGen@4cb490c4(resume_bci=1760)               |Tier 1|Priority  19538950|Rate 3,572520|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:21.769|Src n/a|Bonuses first tier",
+          "[engine] opt done   engine=1  id=86    PhpRootGen@4cb490c4(resume_bci=1760)               |Tier 1|Time    65(  18+48  )ms|AST    1|Inlined   0Y   0N|IR   1816/  5189|CodeSize   22351|Addr 0x72b694180000|CompId 5739   |UTC 2026-09-25T22:44:21.835|Src n/a",
+          "[engine] opt start  engine=1  id=86    PhpRootGen@4cb490c4(resume_bci=1760)               |Tier 2|Priority     62500|Rate 3,906213|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:21.840|Src n/a|Bonuses",
+          "[engine] opt queued engine=1  id=86    PhpRootGen@4cb490c4(resume_bci=1760)               |Tier 2|Count/Thres      12739/    10000|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:21.840|Src n/a",
+          "[engine] opt done   engine=1  id=86    PhpRootGen@4cb490c4(resume_bci=1760)               |Tier 2|Time   105(  21+83  )ms|AST    1|Inlined   0Y   0N|IR   1688/  4080|CodeSize   17289|Addr 0x6461b18e0000|CompId 5740   |UTC 2026-09-25T22:44:21.945|Src n/a",
+          "[engine] opt inval. engine=1  id=86    PhpRootGen@4cb490c4(resume_bci=1760)                                                                                                                                              |UTC 2026-09-25T22:44:23.865|Src n/a|Reason null",
+          "[engine] opt deopt  engine=1  id=86    PhpRootGen@4cb490c4(resume_bci=1760)               |Invalidated  true|                                                                                                            |UTC 2026-09-25T22:44:23.866|Src n/a|Reason unknown",
+          "[engine] opt queued engine=1  id=86    PhpRootGen@4cb490c4(resume_bci=1760)               |Tier 1|Count/Thres      14708/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:23.866|Src n/a",
+          "[engine] opt start  engine=1  id=86    PhpRootGen@4cb490c4(resume_bci=1760)               |Tier 1|Priority  20859791|Rate 2,782031|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:23.866|Src n/a|Bonuses first tier",
+          "[engine] opt inval. engine=1  id=85    PhpRootGen@4cb490c4(resume_bci=1142)                                                                                                                                              |UTC 2026-09-25T22:44:23.870|Src n/a|Reason null",
+          "[engine] opt deopt  engine=1  id=85    PhpRootGen@4cb490c4(resume_bci=1142)               |Invalidated  true|                                                                                                            |UTC 2026-09-25T22:44:23.870|Src n/a|Reason unknown",
+          "[engine] opt queued engine=1  id=85    PhpRootGen@4cb490c4(resume_bci=1142)               |Tier 1|Count/Thres       8189/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:23.871|Src n/a",
+          "[engine] opt start  engine=1  id=85    PhpRootGen@4cb490c4(resume_bci=1142)               |Tier 1|Priority   7822471|Rate 1,547310|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:23.871|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=89    PhpRootGen@65ffc6ee(resume_bci=168)                |Tier 1|Count/Thres        400/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:23.878|Src n/a",
+          "[engine] opt start  engine=1  id=89    PhpRootGen@65ffc6ee(resume_bci=168)                |Tier 1|Priority  68254426|Rate 454,0295|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:23.878|Src n/a|Bonuses first tier",
+          "[engine] opt done   engine=1  id=89    PhpRootGen@65ffc6ee(resume_bci=168)                |Tier 1|Time    13(   8+5   )ms|AST    1|Inlined   0Y   0N|IR    351/   790|CodeSize    2933|Addr 0x35ad9fbd0000|CompId 5743   |UTC 2026-09-25T22:44:23.890|Src n/a",
+          "[engine] opt unque. engine=1  id=85    PhpRootGen@4cb490c4(resume_bci=1142)               |Tier 1|Count/Thres       8192/      400|Queue: Size    0 Change  0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:23.920|Src n/a|Reason Polyglot engine was closed.",
+          "[engine] opt unque. engine=1  id=86    PhpRootGen@4cb490c4(resume_bci=1760)               |Tier 1|Count/Thres      14822/      400|Queue: Size    0 Change  0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:23.920|Src n/a|Reason Polyglot engine was closed."
+        ],
+        "payload_events": [
+          "[engine] opt unque. engine=1  id=83    PhpRootGen@2f37141b(resume_bci=1536)               |Tier 1|Count/Thres      10000/      400|Queue: Size    0 Change  0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.566|Src n/a|Reason Non permanent bailout: jdk.graal.compiler.core.common.RetryableBailoutException: Assumption invalidated while compiling code: IsolatedObjectConstant[Object]",
+          "[engine] opt queued engine=1  id=74    CallSignatureNode.CallSignatureRootNode@21d2d0b8   |Tier 1|Count/Thres        400/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.592|Src n/a",
+          "[engine] opt start  engine=1  id=74    CallSignatureNode.CallSignatureRootNode@21d2d0b8   |Tier 1|Priority    591482|Rate 2,943215|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.592|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@14ad4cb9  |Tier 1|Count/Thres        400/      400|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.593|Src n/a",
+          "[engine] opt start  engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@14ad4cb9  |Tier 1|Priority    590528|Rate 2,936858|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.593|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@1cc170f0      |Tier 1|Count/Thres        400/      400|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.594|Src n/a",
+          "[engine] opt start  engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@1cc170f0      |Tier 1|Priority    592641|Rate 2,950945|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.594|Src n/a|Bonuses first tier",
+          "[engine] opt done   engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@14ad4cb9  |Tier 1|Time     3(   2+2   )ms|AST    4|Inlined   0Y   0N|IR    132/   310|CodeSize    1081|Addr 0x10c684870000|CompId 5731   |UTC 2026-09-25T22:44:18.596|Src n/a",
+          "[engine] opt queued engine=1  id=86    PhpRootGen@4cb490c4(resume_bci=1760)               |Tier 1|Count/Thres        400/      400|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.596|Src n/a",
+          "[engine] opt start  engine=1  id=86    PhpRootGen@4cb490c4(resume_bci=1760)               |Tier 1|Priority   3640685|Rate 23,27123|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.596|Src n/a|Bonuses first tier",
+          "[engine] opt done   engine=1  id=74    CallSignatureNode.CallSignatureRootNode@21d2d0b8   |Tier 1|Time     6(   3+3   )ms|AST   12|Inlined   0Y   1N|IR    146/   483|CodeSize    1949|Addr 0x012e81d90000|CompId 5730   |UTC 2026-09-25T22:44:18.598|Src n/a",
+          "[engine] opt done   engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@1cc170f0      |Tier 1|Time     5(   2+2   )ms|AST   23|Inlined   0Y   0N|IR    125/   395|CodeSize    1658|Addr 0x3c36b0ed0000|CompId 5732   |UTC 2026-09-25T22:44:18.599|Src n/a",
+          "[engine] opt done   engine=1  id=86    PhpRootGen@4cb490c4(resume_bci=1760)               |Tier 1|Time    36(  12+25  )ms|AST    1|Inlined   0Y   0N|IR   1755/  4845|CodeSize   20735|Addr 0x258daf5c0000|CompId 5733   |UTC 2026-09-25T22:44:18.633|Src n/a",
+          "[engine] opt queued engine=1  id=85    PhpRootGen@4cb490c4(resume_bci=1142)               |Tier 1|Count/Thres        400/      400|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.812|Src n/a",
+          "[engine] opt start  engine=1  id=85    PhpRootGen@4cb490c4(resume_bci=1142)               |Tier 1|Priority    407140|Rate 1,714267|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.812|Src n/a|Bonuses first tier",
+          "[engine] opt done   engine=1  id=85    PhpRootGen@4cb490c4(resume_bci=1142)               |Tier 1|Time    56(  16+40  )ms|AST    1|Inlined   0Y   0N|IR   2763/  7680|CodeSize   32708|Addr 0x1c698ec20000|CompId 5734   |UTC 2026-09-25T22:44:18.868|Src n/a",
+          "[engine] opt queued engine=1  id=74    CallSignatureNode.CallSignatureRootNode@21d2d0b8   |Tier 2|Count/Thres      10000/    10000|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.956|Src n/a",
+          "[engine] opt queued engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@14ad4cb9  |Tier 2|Count/Thres      10000/    10000|Queue: Size    2 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.956|Src n/a",
+          "[engine] opt start  engine=1  id=74    CallSignatureNode.CallSignatureRootNode@21d2d0b8   |Tier 2|Priority    210379|Rate 20,03792|Queue: Size    1 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.956|Src n/a|Bonuses",
+          "[engine] opt start  engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@14ad4cb9  |Tier 2|Priority    210350|Rate 20,03501|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.956|Src n/a|Bonuses",
+          "[engine] opt queued engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@1cc170f0      |Tier 2|Count/Thres      10000/    10000|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.957|Src n/a",
+          "[engine] opt start  engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@1cc170f0      |Tier 2|Priority    210672|Rate 20,06727|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.957|Src n/a|Bonuses",
+          "[engine] opt done   engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@14ad4cb9  |Tier 2|Time     4(   1+3   )ms|AST    4|Inlined   0Y   0N|IR     74/   188|CodeSize     646|Addr 0x29d02b2c0000|CompId 5736   |UTC 2026-09-25T22:44:18.960|Src n/a",
+          "[engine] opt done   engine=1  id=74    CallSignatureNode.CallSignatureRootNode@21d2d0b8   |Tier 2|Time     4(   2+2   )ms|AST   12|Inlined   1Y   0N|IR    108/   263|CodeSize     825|Addr 0x243f4fdf0000|CompId 5735   |UTC 2026-09-25T22:44:18.960|Src n/a",
+          "[engine] opt done   engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@1cc170f0      |Tier 2|Time     4(   1+3   )ms|AST   23|Inlined   0Y   0N|IR     64/   333|CodeSize    1532|Addr 0x3250d2cb0000|CompId 5737   |UTC 2026-09-25T22:44:18.962|Src n/a",
+          "[engine] opt queued engine=1  id=86    PhpRootGen@4cb490c4(resume_bci=1760)               |Tier 2|Count/Thres      10000/    10000|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.981|Src n/a",
+          "[engine] opt start  engine=1  id=86    PhpRootGen@4cb490c4(resume_bci=1760)               |Tier 2|Priority    259179|Rate 24,91795|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:18.981|Src n/a|Bonuses",
+          "[engine] opt done   engine=1  id=86    PhpRootGen@4cb490c4(resume_bci=1760)               |Tier 2|Time    52(  10+42  )ms|AST    1|Inlined   0Y   0N|IR   1672/  3783|CodeSize   15619|Addr 0x76aa1a000000|CompId 5738   |UTC 2026-09-25T22:44:19.033|Src n/a",
+          "[engine] opt inval. engine=1  id=86    PhpRootGen@4cb490c4(resume_bci=1760)                                                                                                                                              |UTC 2026-09-25T22:44:21.768|Src n/a|Reason null",
+          "[engine] opt deopt  engine=1  id=86    PhpRootGen@4cb490c4(resume_bci=1760)               |Invalidated  true|                                                                                                            |UTC 2026-09-25T22:44:21.769|Src n/a|Reason unknown",
+          "[engine] opt queued engine=1  id=86    PhpRootGen@4cb490c4(resume_bci=1760)               |Tier 1|Count/Thres      11395/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:21.769|Src n/a",
+          "[engine] opt start  engine=1  id=86    PhpRootGen@4cb490c4(resume_bci=1760)               |Tier 1|Priority  19538950|Rate 3,572520|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:21.769|Src n/a|Bonuses first tier",
+          "[engine] opt done   engine=1  id=86    PhpRootGen@4cb490c4(resume_bci=1760)               |Tier 1|Time    65(  18+48  )ms|AST    1|Inlined   0Y   0N|IR   1816/  5189|CodeSize   22351|Addr 0x72b694180000|CompId 5739   |UTC 2026-09-25T22:44:21.835|Src n/a",
+          "[engine] opt start  engine=1  id=86    PhpRootGen@4cb490c4(resume_bci=1760)               |Tier 2|Priority     62500|Rate 3,906213|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:21.840|Src n/a|Bonuses",
+          "[engine] opt queued engine=1  id=86    PhpRootGen@4cb490c4(resume_bci=1760)               |Tier 2|Count/Thres      12739/    10000|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:21.840|Src n/a",
+          "[engine] opt done   engine=1  id=86    PhpRootGen@4cb490c4(resume_bci=1760)               |Tier 2|Time   105(  21+83  )ms|AST    1|Inlined   0Y   0N|IR   1688/  4080|CodeSize   17289|Addr 0x6461b18e0000|CompId 5740   |UTC 2026-09-25T22:44:21.945|Src n/a",
+          "[engine] opt inval. engine=1  id=86    PhpRootGen@4cb490c4(resume_bci=1760)                                                                                                                                              |UTC 2026-09-25T22:44:23.865|Src n/a|Reason null",
+          "[engine] opt deopt  engine=1  id=86    PhpRootGen@4cb490c4(resume_bci=1760)               |Invalidated  true|                                                                                                            |UTC 2026-09-25T22:44:23.866|Src n/a|Reason unknown",
+          "[engine] opt queued engine=1  id=86    PhpRootGen@4cb490c4(resume_bci=1760)               |Tier 1|Count/Thres      14708/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:23.866|Src n/a",
+          "[engine] opt start  engine=1  id=86    PhpRootGen@4cb490c4(resume_bci=1760)               |Tier 1|Priority  20859791|Rate 2,782031|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:23.866|Src n/a|Bonuses first tier",
+          "[engine] opt inval. engine=1  id=85    PhpRootGen@4cb490c4(resume_bci=1142)                                                                                                                                              |UTC 2026-09-25T22:44:23.870|Src n/a|Reason null",
+          "[engine] opt deopt  engine=1  id=85    PhpRootGen@4cb490c4(resume_bci=1142)               |Invalidated  true|                                                                                                            |UTC 2026-09-25T22:44:23.870|Src n/a|Reason unknown",
+          "[engine] opt queued engine=1  id=85    PhpRootGen@4cb490c4(resume_bci=1142)               |Tier 1|Count/Thres       8189/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:23.871|Src n/a",
+          "[engine] opt start  engine=1  id=85    PhpRootGen@4cb490c4(resume_bci=1142)               |Tier 1|Priority   7822471|Rate 1,547310|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:23.871|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=89    PhpRootGen@65ffc6ee(resume_bci=168)                |Tier 1|Count/Thres        400/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:23.878|Src n/a",
+          "[engine] opt start  engine=1  id=89    PhpRootGen@65ffc6ee(resume_bci=168)                |Tier 1|Priority  68254426|Rate 454,0295|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:23.878|Src n/a|Bonuses first tier"
+        ],
+        "payload_invalidations": 3
+      },
+      "peer_gc_log": {
+        "events": 11,
+        "total_pause_ms": 9.426,
+        "max_pause_ms": 1.146,
+        "entries": [
+          {
+            "reported_end_utc": "2026-09-25T22:44:18.704+0000",
+            "pause_ms": 0.834
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:19.129+0000",
+            "pause_ms": 1.146
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:19.569+0000",
+            "pause_ms": 0.76
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:19.991+0000",
+            "pause_ms": 0.833
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:20.417+0000",
+            "pause_ms": 0.805
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:20.854+0000",
+            "pause_ms": 0.767
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:21.260+0000",
+            "pause_ms": 0.81
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:21.746+0000",
+            "pause_ms": 0.828
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:22.306+0000",
+            "pause_ms": 0.794
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:22.834+0000",
+            "pause_ms": 0.962
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:23.355+0000",
+            "pause_ms": 0.887
+          }
+        ]
+      }
+    },
+    {
+      "runtime": "graalphp-before",
+      "repetition": 2,
+      "parked": 10000,
+      "requests": 131072,
+      "seconds": 5.392642,
+      "requests_per_second": 24305.71,
+      "cpu_us_per_request": 43.035,
+      "rss_mib": {
+        "samples": 210,
+        "mean": 225.36456473214287,
+        "p20": 232.44140625,
+        "p50": 233.9765625,
+        "p90": 238.26953125,
+        "p95": 239.29296875,
+        "p99": 239.29296875,
+        "max": 240.07421875
+      },
+      "control_observation_delays_ms": {
+        "/begin": 0.1689,
+        "/suspended": 0.1821,
+        "/end": 0.1065
+      },
+      "latency_ms": {
+        "samples": 8192,
+        "mean": 2.5463133666992186,
+        "p20": 2.1438,
+        "p50": 2.2752,
+        "p90": 2.9599,
+        "p95": 3.0313,
+        "p99": 5.1156,
+        "max": 22.1215
+      },
+      "timeline": {
+        "clock_uncertainty_ms": 7.5956,
+        "bins": [
+          {
+            "start_seconds": 0.0,
+            "latency_ms": {
+              "samples": 587,
+              "mean": 2.3721482112436116,
+              "p20": 2.1357,
+              "p50": 2.175,
+              "p90": 2.3736,
+              "p95": 2.572,
+              "p99": 9.0411,
+              "max": 21.4791
+            }
+          },
+          {
+            "start_seconds": 0.5,
+            "latency_ms": {
+              "samples": 873,
+              "mean": 2.284102863688431,
+              "p20": 2.1179,
+              "p50": 2.1851,
+              "p90": 2.3459,
+              "p95": 2.4153,
+              "p99": 2.8569,
+              "max": 19.8797
+            }
+          },
+          {
+            "start_seconds": 1.0,
+            "latency_ms": {
+              "samples": 848,
+              "mean": 2.336789150943396,
+              "p20": 2.1103,
+              "p50": 2.147,
+              "p90": 2.3311,
+              "p95": 2.4144,
+              "p99": 2.6211,
+              "max": 20.695
+            }
+          },
+          {
+            "start_seconds": 1.5,
+            "latency_ms": {
+              "samples": 854,
+              "mean": 2.4667811475409835,
+              "p20": 2.137,
+              "p50": 2.1762,
+              "p90": 2.3541,
+              "p95": 2.4696,
+              "p99": 20.8412,
+              "max": 22.1215
+            }
+          },
+          {
+            "start_seconds": 2.0,
+            "latency_ms": {
+              "samples": 836,
+              "mean": 2.2558989234449762,
+              "p20": 2.1337,
+              "p50": 2.1807,
+              "p90": 2.3461,
+              "p95": 2.3906,
+              "p99": 2.6596,
+              "max": 21.8704
+            }
+          },
+          {
+            "start_seconds": 2.5,
+            "latency_ms": {
+              "samples": 893,
+              "mean": 2.2495163493840984,
+              "p20": 2.1291,
+              "p50": 2.1575,
+              "p90": 2.2341,
+              "p95": 2.2897,
+              "p99": 7.7351,
+              "max": 8.044
+            }
+          },
+          {
+            "start_seconds": 3.0,
+            "latency_ms": {
+              "samples": 701,
+              "mean": 2.8586469329529245,
+              "p20": 2.67,
+              "p50": 2.8617,
+              "p90": 3.0291,
+              "p95": 3.1143,
+              "p99": 3.6613,
+              "max": 8.5559
+            }
+          },
+          {
+            "start_seconds": 3.5,
+            "latency_ms": {
+              "samples": 693,
+              "mean": 2.8761256854256856,
+              "p20": 2.6389,
+              "p50": 2.8259,
+              "p90": 3.0357,
+              "p95": 3.1351,
+              "p99": 5.3451,
+              "max": 8.4703
+            }
+          },
+          {
+            "start_seconds": 4.0,
+            "latency_ms": {
+              "samples": 695,
+              "mean": 2.8755404316546764,
+              "p20": 2.6736,
+              "p50": 2.7842,
+              "p90": 3.0158,
+              "p95": 3.0567,
+              "p99": 8.0825,
+              "max": 8.4174
+            }
+          },
+          {
+            "start_seconds": 4.5,
+            "latency_ms": {
+              "samples": 687,
+              "mean": 2.9174097525473073,
+              "p20": 2.6315,
+              "p50": 2.8342,
+              "p90": 3.084,
+              "p95": 3.1523,
+              "p99": 8.035,
+              "max": 8.5199
+            }
+          },
+          {
+            "start_seconds": 5.0,
+            "latency_ms": {
+              "samples": 525,
+              "mean": 2.8383251428571428,
+              "p20": 2.6085,
+              "p50": 2.7436,
+              "p90": 2.996,
+              "p95": 3.1478,
+              "p99": 4.7362,
+              "max": 8.1187
+            }
+          }
+        ],
+        "slowest": [
+          {
+            "client": "6",
+            "iteration": "790",
+            "guest_start_ns": "241925811765400",
+            "duration_ns": "22121500",
+            "start_elapsed_lower_ns": "1994697200",
+            "start_elapsed_upper_ns": "2002292800"
+          },
+          {
+            "client": "38",
+            "iteration": "790",
+            "guest_start_ns": "241925811729000",
+            "duration_ns": "22120200",
+            "start_elapsed_lower_ns": "1994660800",
+            "start_elapsed_upper_ns": "2002256400"
+          },
+          {
+            "client": "37",
+            "iteration": "789",
+            "guest_start_ns": "241925810373700",
+            "duration_ns": "21875300",
+            "start_elapsed_lower_ns": "1993305500",
+            "start_elapsed_upper_ns": "2000901100"
+          },
+          {
+            "client": "11",
+            "iteration": "923",
+            "guest_start_ns": "241926127537900",
+            "duration_ns": "21870400",
+            "start_elapsed_lower_ns": "2310469700",
+            "start_elapsed_upper_ns": "2318065300"
+          },
+          {
+            "client": "12",
+            "iteration": "924",
+            "guest_start_ns": "241926127387700",
+            "duration_ns": "21849300",
+            "start_elapsed_lower_ns": "2310319500",
+            "start_elapsed_upper_ns": "2317915100"
+          },
+          {
+            "client": "53",
+            "iteration": "789",
+            "guest_start_ns": "241925810233600",
+            "duration_ns": "21721500",
+            "start_elapsed_lower_ns": "1993165400",
+            "start_elapsed_upper_ns": "2000761000"
+          },
+          {
+            "client": "21",
+            "iteration": "789",
+            "guest_start_ns": "241925810425400",
+            "duration_ns": "21717800",
+            "start_elapsed_lower_ns": "1993357200",
+            "start_elapsed_upper_ns": "2000952800"
+          },
+          {
+            "client": "60",
+            "iteration": "124",
+            "guest_start_ns": "241924246532700",
+            "duration_ns": "21479100",
+            "start_elapsed_lower_ns": "429464500",
+            "start_elapsed_upper_ns": "437060100"
+          },
+          {
+            "client": "44",
+            "iteration": "124",
+            "guest_start_ns": "241924246167300",
+            "duration_ns": "21359000",
+            "start_elapsed_lower_ns": "429099100",
+            "start_elapsed_upper_ns": "436694700"
+          },
+          {
+            "client": "32",
+            "iteration": "656",
+            "guest_start_ns": "241925491156100",
+            "duration_ns": "21248200",
+            "start_elapsed_lower_ns": "1674087900",
+            "start_elapsed_upper_ns": "1681683500"
+          }
+        ]
+      },
+      "gc_log": {
+        "events": 16,
+        "total_pause_ms": 221.76999999999998,
+        "max_pause_ms": 51.282,
+        "entries": [
+          {
+            "reported_uptime_seconds": 0.123,
+            "pause_ms": 51.282
+          },
+          {
+            "reported_uptime_seconds": 0.433,
+            "pause_ms": 18.339
+          },
+          {
+            "reported_uptime_seconds": 0.74,
+            "pause_ms": 16.982
+          },
+          {
+            "reported_uptime_seconds": 1.051,
+            "pause_ms": 17.54
+          },
+          {
+            "reported_uptime_seconds": 1.356,
+            "pause_ms": 17.732
+          },
+          {
+            "reported_uptime_seconds": 1.676,
+            "pause_ms": 18.283
+          },
+          {
+            "reported_uptime_seconds": 1.998,
+            "pause_ms": 19.105
+          },
+          {
+            "reported_uptime_seconds": 2.314,
+            "pause_ms": 19.017
+          },
+          {
+            "reported_uptime_seconds": 2.611,
+            "pause_ms": 5.712
+          },
+          {
+            "reported_uptime_seconds": 2.912,
+            "pause_ms": 5.422
+          },
+          {
+            "reported_uptime_seconds": 3.273,
+            "pause_ms": 5.506
+          },
+          {
+            "reported_uptime_seconds": 3.655,
+            "pause_ms": 5.49
+          },
+          {
+            "reported_uptime_seconds": 4.039,
+            "pause_ms": 5.534
+          },
+          {
+            "reported_uptime_seconds": 4.421,
+            "pause_ms": 5.29
+          },
+          {
+            "reported_uptime_seconds": 4.818,
+            "pause_ms": 5.249
+          },
+          {
+            "reported_uptime_seconds": 5.195,
+            "pause_ms": 5.287
+          }
+        ]
+      },
+      "jit_log": {
+        "tier1_done": 10,
+        "tier2_done": 5,
+        "invalidations": 2,
+        "events": [
+          "[engine] opt start  engine=1  id=21    PhpRootGen@e65554b                                 |Tier 1|Priority  94385903|Rate 628,2393|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.025|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=21    PhpRootGen@e65554b                                 |Tier 1|Count/Thres        400/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.025|Src n/a",
+          "[engine] opt done   engine=1  id=21    PhpRootGen@e65554b                                 |Tier 1|Time    16(   8+8   )ms|AST    2|Inlined   0Y   0N|IR    396/  1439|CodeSize    5827|Addr 0x30782d710000|CompId 5725   |UTC 2026-09-25T22:44:24.041|Src n/a",
+          "[engine] opt queued engine=1  id=21    PhpRootGen@e65554b                                 |Tier 2|Count/Thres      10000/    10000|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.044|Src n/a",
+          "[engine] opt start  engine=1  id=21    PhpRootGen@e65554b                                 |Tier 2|Priority   4839168|Rate 482,9168|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.044|Src n/a|Bonuses",
+          "[engine] opt queued engine=1  id=83    PhpRootGen@15f0685d(resume_bci=1536)               |Tier 1|Count/Thres        400/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.045|Src n/a",
+          "[engine] opt start  engine=1  id=83    PhpRootGen@15f0685d(resume_bci=1536)               |Tier 1|Priority 138526383|Rate 922,5092|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.045|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=77    CallSignatureNode.CallSignatureRootNode@58b751d    |Tier 1|Count/Thres        400/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.046|Src n/a",
+          "[engine] opt start  engine=1  id=77    CallSignatureNode.CallSignatureRootNode@58b751d    |Tier 1|Priority   1554405|Rate 9,362704|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.046|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=76    FunctionExecuteNode.SignatureExecuteNode@28f796de  |Tier 1|Count/Thres        400/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.046|Src n/a",
+          "[engine] opt start  engine=1  id=76    FunctionExecuteNode.SignatureExecuteNode@28f796de  |Tier 1|Priority   1549707|Rate 9,331383|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.046|Src n/a|Bonuses first tier",
+          "[engine] opt done   engine=1  id=76    FunctionExecuteNode.SignatureExecuteNode@28f796de  |Tier 1|Time     7(   5+2   )ms|AST    3|Inlined   0Y   0N|IR    124/   269|CodeSize     926|Addr 0x4cb90f030000|CompId 5729   |UTC 2026-09-25T22:44:24.053|Src n/a",
+          "[engine] opt done   engine=1  id=77    CallSignatureNode.CallSignatureRootNode@58b751d    |Tier 1|Time     9(   7+2   )ms|AST   11|Inlined   0Y   1N|IR    140/   403|CodeSize    1464|Addr 0x415931ac0000|CompId 5728   |UTC 2026-09-25T22:44:24.055|Src n/a",
+          "[engine] opt done   engine=1  id=21    PhpRootGen@e65554b                                 |Tier 2|Time    15(   5+10  )ms|AST    2|Inlined   0Y   0N|IR    335/  1245|CodeSize    4926|Addr 0x5dbff4a40000|CompId 5726   |UTC 2026-09-25T22:44:24.060|Src n/a",
+          "[engine] opt unque. engine=1  id=83    PhpRootGen@15f0685d(resume_bci=1536)               |Tier 1|Count/Thres      10000/      400|Queue: Size    0 Change  0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.115|Src n/a|Reason Non permanent bailout: jdk.graal.compiler.core.common.RetryableBailoutException: Assumption invalidated while compiling code: IsolatedObjectConstant[Object]",
+          "[engine] opt queued engine=1  id=74    CallSignatureNode.CallSignatureRootNode@50f9fcdc   |Tier 1|Count/Thres        400/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.141|Src n/a",
+          "[engine] opt start  engine=1  id=74    CallSignatureNode.CallSignatureRootNode@50f9fcdc   |Tier 1|Priority    581413|Rate 2,876088|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.141|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@276908c7  |Tier 1|Count/Thres        400/      400|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.141|Src n/a",
+          "[engine] opt start  engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@276908c7  |Tier 1|Priority    580575|Rate 2,870503|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.141|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@6680ed2d      |Tier 1|Count/Thres        400/      400|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.143|Src n/a",
+          "[engine] opt start  engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@6680ed2d      |Tier 1|Priority    581492|Rate 2,876615|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.143|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=86    PhpRootGen@247c60cc(resume_bci=1760)               |Tier 1|Count/Thres        400/      400|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.145|Src n/a",
+          "[engine] opt start  engine=1  id=86    PhpRootGen@247c60cc(resume_bci=1760)               |Tier 1|Priority   3745591|Rate 23,97061|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.145|Src n/a|Bonuses first tier",
+          "[engine] opt done   engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@276908c7  |Tier 1|Time     4(   2+2   )ms|AST    4|Inlined   0Y   0N|IR    132/   310|CodeSize    1081|Addr 0x1f7888e70000|CompId 5731   |UTC 2026-09-25T22:44:24.145|Src n/a",
+          "[engine] opt done   engine=1  id=74    CallSignatureNode.CallSignatureRootNode@50f9fcdc   |Tier 1|Time     6(   3+3   )ms|AST   12|Inlined   0Y   1N|IR    146/   483|CodeSize    1949|Addr 0x44faa2c80000|CompId 5730   |UTC 2026-09-25T22:44:24.148|Src n/a",
+          "[engine] opt done   engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@6680ed2d      |Tier 1|Time     5(   3+2   )ms|AST   23|Inlined   0Y   0N|IR    125/   395|CodeSize    1658|Addr 0x11c84ab20000|CompId 5732   |UTC 2026-09-25T22:44:24.148|Src n/a",
+          "[engine] opt done   engine=1  id=86    PhpRootGen@247c60cc(resume_bci=1760)               |Tier 1|Time    35(  11+24  )ms|AST    1|Inlined   0Y   0N|IR   1755/  4845|CodeSize   20728|Addr 0x4f4d3ec40000|CompId 5733   |UTC 2026-09-25T22:44:24.180|Src n/a",
+          "[engine] opt queued engine=1  id=85    PhpRootGen@247c60cc(resume_bci=1142)               |Tier 1|Count/Thres        400/      400|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.350|Src n/a",
+          "[engine] opt start  engine=1  id=85    PhpRootGen@247c60cc(resume_bci=1142)               |Tier 1|Priority    420209|Rate 1,801399|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.350|Src n/a|Bonuses first tier",
+          "[engine] opt done   engine=1  id=85    PhpRootGen@247c60cc(resume_bci=1142)               |Tier 1|Time    55(  16+38  )ms|AST    1|Inlined   0Y   0N|IR   2763/  7680|CodeSize   32708|Addr 0x485d53010000|CompId 5734   |UTC 2026-09-25T22:44:24.405|Src n/a",
+          "[engine] opt queued engine=1  id=74    CallSignatureNode.CallSignatureRootNode@50f9fcdc   |Tier 2|Count/Thres      10000/    10000|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.492|Src n/a",
+          "[engine] opt queued engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@276908c7  |Tier 2|Count/Thres      10000/    10000|Queue: Size    2 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.492|Src n/a",
+          "[engine] opt start  engine=1  id=74    CallSignatureNode.CallSignatureRootNode@50f9fcdc   |Tier 2|Priority    213867|Rate 20,38678|Queue: Size    1 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.492|Src n/a|Bonuses",
+          "[engine] opt start  engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@276908c7  |Tier 2|Priority    213833|Rate 20,38337|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.492|Src n/a|Bonuses",
+          "[engine] opt queued engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@6680ed2d      |Tier 2|Count/Thres      10000/    10000|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.494|Src n/a",
+          "[engine] opt start  engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@6680ed2d      |Tier 2|Priority    214053|Rate 20,40539|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.494|Src n/a|Bonuses",
+          "[engine] opt done   engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@276908c7  |Tier 2|Time     4(   1+3   )ms|AST    4|Inlined   0Y   0N|IR     74/   188|CodeSize     646|Addr 0x068818ce0000|CompId 5736   |UTC 2026-09-25T22:44:24.496|Src n/a",
+          "[engine] opt done   engine=1  id=74    CallSignatureNode.CallSignatureRootNode@50f9fcdc   |Tier 2|Time     5(   2+3   )ms|AST   12|Inlined   1Y   0N|IR    108/   263|CodeSize     825|Addr 0x2b9db6ad0000|CompId 5735   |UTC 2026-09-25T22:44:24.497|Src n/a",
+          "[engine] opt done   engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@6680ed2d      |Tier 2|Time     4(   1+3   )ms|AST   23|Inlined   0Y   0N|IR     64/   333|CodeSize    1532|Addr 0x7cbf3bd20000|CompId 5737   |UTC 2026-09-25T22:44:24.498|Src n/a",
+          "[engine] opt queued engine=1  id=86    PhpRootGen@247c60cc(resume_bci=1760)               |Tier 2|Count/Thres      10000/    10000|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.518|Src n/a",
+          "[engine] opt start  engine=1  id=86    PhpRootGen@247c60cc(resume_bci=1760)               |Tier 2|Priority    266399|Rate 25,63996|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.518|Src n/a|Bonuses",
+          "[engine] opt done   engine=1  id=86    PhpRootGen@247c60cc(resume_bci=1760)               |Tier 2|Time    50(  10+39  )ms|AST    1|Inlined   0Y   0N|IR   1672/  3783|CodeSize   15619|Addr 0x02c2b08b0000|CompId 5738   |UTC 2026-09-25T22:44:24.568|Src n/a",
+          "[engine] opt inval. engine=1  id=86    PhpRootGen@247c60cc(resume_bci=1760)                                                                                                                                              |UTC 2026-09-25T22:44:29.343|Src n/a|Reason null",
+          "[engine] opt deopt  engine=1  id=86    PhpRootGen@247c60cc(resume_bci=1760)               |Invalidated  true|                                                                                                            |UTC 2026-09-25T22:44:29.344|Src n/a|Reason unknown",
+          "[engine] opt queued engine=1  id=86    PhpRootGen@247c60cc(resume_bci=1760)               |Tier 1|Count/Thres      11322/      400|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:29.344|Src n/a",
+          "[engine] opt start  engine=1  id=86    PhpRootGen@247c60cc(resume_bci=1760)               |Tier 1|Priority  13463986|Rate 2,171168|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:29.344|Src n/a|Bonuses first tier",
+          "[engine] opt inval. engine=1  id=85    PhpRootGen@247c60cc(resume_bci=1142)                                                                                                                                              |UTC 2026-09-25T22:44:29.346|Src n/a|Reason null",
+          "[engine] opt deopt  engine=1  id=85    PhpRootGen@247c60cc(resume_bci=1142)               |Invalidated  true|                                                                                                            |UTC 2026-09-25T22:44:29.346|Src n/a|Reason unknown",
+          "[engine] opt queued engine=1  id=85    PhpRootGen@247c60cc(resume_bci=1142)               |Tier 1|Count/Thres       8190/      400|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:29.349|Src n/a",
+          "[engine] opt start  engine=1  id=85    PhpRootGen@247c60cc(resume_bci=1142)               |Tier 1|Priority   7890338|Rate 1,569097|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:29.349|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=89    PhpRootGen@e65554b(resume_bci=168)                 |Tier 1|Count/Thres        400/      400|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:29.356|Src n/a",
+          "[engine] opt start  engine=1  id=89    PhpRootGen@e65554b(resume_bci=168)                 |Tier 1|Priority  38577052|Rate 256,1803|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:29.356|Src n/a|Bonuses first tier",
+          "[engine] opt done   engine=1  id=89    PhpRootGen@e65554b(resume_bci=168)                 |Tier 1|Time    10(   5+5   )ms|AST    1|Inlined   0Y   0N|IR    351/   790|CodeSize    2933|Addr 0x731dff130000|CompId 5741   |UTC 2026-09-25T22:44:29.367|Src n/a",
+          "[engine] opt done   engine=1  id=86    PhpRootGen@247c60cc(resume_bci=1760)               |Tier 1|Time    43(  17+26  )ms|AST    1|Inlined   0Y   0N|IR   1893/  5280|CodeSize   22871|Addr 0x5187d2a10000|CompId 5739   |UTC 2026-09-25T22:44:29.386|Src n/a",
+          "[engine] opt unque. engine=1  id=85    PhpRootGen@247c60cc(resume_bci=1142)               |Tier 1|Count/Thres       8192/      400|Queue: Size    0 Change  0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:29.389|Src n/a|Reason Polyglot engine was closed.",
+          "[engine] opt unque. engine=1  id=86    PhpRootGen@247c60cc(resume_bci=1760)               |Tier 1|Count/Thres      11421/      400|Queue: Size    0 Change  0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:29.389|Src n/a|Reason Polyglot engine was closed."
+        ],
+        "payload_events": [
+          "[engine] opt unque. engine=1  id=83    PhpRootGen@15f0685d(resume_bci=1536)               |Tier 1|Count/Thres      10000/      400|Queue: Size    0 Change  0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.115|Src n/a|Reason Non permanent bailout: jdk.graal.compiler.core.common.RetryableBailoutException: Assumption invalidated while compiling code: IsolatedObjectConstant[Object]",
+          "[engine] opt queued engine=1  id=74    CallSignatureNode.CallSignatureRootNode@50f9fcdc   |Tier 1|Count/Thres        400/      400|Queue: Size    0 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.141|Src n/a",
+          "[engine] opt start  engine=1  id=74    CallSignatureNode.CallSignatureRootNode@50f9fcdc   |Tier 1|Priority    581413|Rate 2,876088|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.141|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@276908c7  |Tier 1|Count/Thres        400/      400|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.141|Src n/a",
+          "[engine] opt start  engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@276908c7  |Tier 1|Priority    580575|Rate 2,870503|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.141|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@6680ed2d      |Tier 1|Count/Thres        400/      400|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.143|Src n/a",
+          "[engine] opt start  engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@6680ed2d      |Tier 1|Priority    581492|Rate 2,876615|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.143|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=86    PhpRootGen@247c60cc(resume_bci=1760)               |Tier 1|Count/Thres        400/      400|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.145|Src n/a",
+          "[engine] opt start  engine=1  id=86    PhpRootGen@247c60cc(resume_bci=1760)               |Tier 1|Priority   3745591|Rate 23,97061|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.145|Src n/a|Bonuses first tier",
+          "[engine] opt done   engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@276908c7  |Tier 1|Time     4(   2+2   )ms|AST    4|Inlined   0Y   0N|IR    132/   310|CodeSize    1081|Addr 0x1f7888e70000|CompId 5731   |UTC 2026-09-25T22:44:24.145|Src n/a",
+          "[engine] opt done   engine=1  id=74    CallSignatureNode.CallSignatureRootNode@50f9fcdc   |Tier 1|Time     6(   3+3   )ms|AST   12|Inlined   0Y   1N|IR    146/   483|CodeSize    1949|Addr 0x44faa2c80000|CompId 5730   |UTC 2026-09-25T22:44:24.148|Src n/a",
+          "[engine] opt done   engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@6680ed2d      |Tier 1|Time     5(   3+2   )ms|AST   23|Inlined   0Y   0N|IR    125/   395|CodeSize    1658|Addr 0x11c84ab20000|CompId 5732   |UTC 2026-09-25T22:44:24.148|Src n/a",
+          "[engine] opt done   engine=1  id=86    PhpRootGen@247c60cc(resume_bci=1760)               |Tier 1|Time    35(  11+24  )ms|AST    1|Inlined   0Y   0N|IR   1755/  4845|CodeSize   20728|Addr 0x4f4d3ec40000|CompId 5733   |UTC 2026-09-25T22:44:24.180|Src n/a",
+          "[engine] opt queued engine=1  id=85    PhpRootGen@247c60cc(resume_bci=1142)               |Tier 1|Count/Thres        400/      400|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.350|Src n/a",
+          "[engine] opt start  engine=1  id=85    PhpRootGen@247c60cc(resume_bci=1142)               |Tier 1|Priority    420209|Rate 1,801399|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.350|Src n/a|Bonuses first tier",
+          "[engine] opt done   engine=1  id=85    PhpRootGen@247c60cc(resume_bci=1142)               |Tier 1|Time    55(  16+38  )ms|AST    1|Inlined   0Y   0N|IR   2763/  7680|CodeSize   32708|Addr 0x485d53010000|CompId 5734   |UTC 2026-09-25T22:44:24.405|Src n/a",
+          "[engine] opt queued engine=1  id=74    CallSignatureNode.CallSignatureRootNode@50f9fcdc   |Tier 2|Count/Thres      10000/    10000|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.492|Src n/a",
+          "[engine] opt queued engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@276908c7  |Tier 2|Count/Thres      10000/    10000|Queue: Size    2 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.492|Src n/a",
+          "[engine] opt start  engine=1  id=74    CallSignatureNode.CallSignatureRootNode@50f9fcdc   |Tier 2|Priority    213867|Rate 20,38678|Queue: Size    1 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.492|Src n/a|Bonuses",
+          "[engine] opt start  engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@276908c7  |Tier 2|Priority    213833|Rate 20,38337|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.492|Src n/a|Bonuses",
+          "[engine] opt queued engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@6680ed2d      |Tier 2|Count/Thres      10000/    10000|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.494|Src n/a",
+          "[engine] opt start  engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@6680ed2d      |Tier 2|Priority    214053|Rate 20,40539|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.494|Src n/a|Bonuses",
+          "[engine] opt done   engine=1  id=73    FunctionExecuteNode.SignatureExecuteNode@276908c7  |Tier 2|Time     4(   1+3   )ms|AST    4|Inlined   0Y   0N|IR     74/   188|CodeSize     646|Addr 0x068818ce0000|CompId 5736   |UTC 2026-09-25T22:44:24.496|Src n/a",
+          "[engine] opt done   engine=1  id=74    CallSignatureNode.CallSignatureRootNode@50f9fcdc   |Tier 2|Time     5(   2+3   )ms|AST   12|Inlined   1Y   0N|IR    108/   263|CodeSize     825|Addr 0x2b9db6ad0000|CompId 5735   |UTC 2026-09-25T22:44:24.497|Src n/a",
+          "[engine] opt done   engine=1  id=71    LibFFIClosure.VoidRetClosureRootNode@6680ed2d      |Tier 2|Time     4(   1+3   )ms|AST   23|Inlined   0Y   0N|IR     64/   333|CodeSize    1532|Addr 0x7cbf3bd20000|CompId 5737   |UTC 2026-09-25T22:44:24.498|Src n/a",
+          "[engine] opt queued engine=1  id=86    PhpRootGen@247c60cc(resume_bci=1760)               |Tier 2|Count/Thres      10000/    10000|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.518|Src n/a",
+          "[engine] opt start  engine=1  id=86    PhpRootGen@247c60cc(resume_bci=1760)               |Tier 2|Priority    266399|Rate 25,63996|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:24.518|Src n/a|Bonuses",
+          "[engine] opt done   engine=1  id=86    PhpRootGen@247c60cc(resume_bci=1760)               |Tier 2|Time    50(  10+39  )ms|AST    1|Inlined   0Y   0N|IR   1672/  3783|CodeSize   15619|Addr 0x02c2b08b0000|CompId 5738   |UTC 2026-09-25T22:44:24.568|Src n/a",
+          "[engine] opt inval. engine=1  id=86    PhpRootGen@247c60cc(resume_bci=1760)                                                                                                                                              |UTC 2026-09-25T22:44:29.343|Src n/a|Reason null",
+          "[engine] opt deopt  engine=1  id=86    PhpRootGen@247c60cc(resume_bci=1760)               |Invalidated  true|                                                                                                            |UTC 2026-09-25T22:44:29.344|Src n/a|Reason unknown",
+          "[engine] opt queued engine=1  id=86    PhpRootGen@247c60cc(resume_bci=1760)               |Tier 1|Count/Thres      11322/      400|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:29.344|Src n/a",
+          "[engine] opt start  engine=1  id=86    PhpRootGen@247c60cc(resume_bci=1760)               |Tier 1|Priority  13463986|Rate 2,171168|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:29.344|Src n/a|Bonuses first tier",
+          "[engine] opt inval. engine=1  id=85    PhpRootGen@247c60cc(resume_bci=1142)                                                                                                                                              |UTC 2026-09-25T22:44:29.346|Src n/a|Reason null",
+          "[engine] opt deopt  engine=1  id=85    PhpRootGen@247c60cc(resume_bci=1142)               |Invalidated  true|                                                                                                            |UTC 2026-09-25T22:44:29.346|Src n/a|Reason unknown",
+          "[engine] opt queued engine=1  id=85    PhpRootGen@247c60cc(resume_bci=1142)               |Tier 1|Count/Thres       8190/      400|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:29.349|Src n/a",
+          "[engine] opt start  engine=1  id=85    PhpRootGen@247c60cc(resume_bci=1142)               |Tier 1|Priority   7890338|Rate 1,569097|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:29.349|Src n/a|Bonuses first tier",
+          "[engine] opt queued engine=1  id=89    PhpRootGen@e65554b(resume_bci=168)                 |Tier 1|Count/Thres        400/      400|Queue: Size    1 Change +1  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:29.356|Src n/a",
+          "[engine] opt start  engine=1  id=89    PhpRootGen@e65554b(resume_bci=168)                 |Tier 1|Priority  38577052|Rate 256,1803|Queue: Size    0 Change +0  Load  1,00 Time     0us                                   |UTC 2026-09-25T22:44:29.356|Src n/a|Bonuses first tier",
+          "[engine] opt done   engine=1  id=89    PhpRootGen@e65554b(resume_bci=168)                 |Tier 1|Time    10(   5+5   )ms|AST    1|Inlined   0Y   0N|IR    351/   790|CodeSize    2933|Addr 0x731dff130000|CompId 5741   |UTC 2026-09-25T22:44:29.367|Src n/a"
+        ],
+        "payload_invalidations": 2
+      },
+      "peer_gc_log": {
+        "events": 11,
+        "total_pause_ms": 8.793,
+        "max_pause_ms": 0.942,
+        "entries": [
+          {
+            "reported_end_utc": "2026-09-25T22:44:24.516+0000",
+            "pause_ms": 0.906
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:24.931+0000",
+            "pause_ms": 0.775
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:25.362+0000",
+            "pause_ms": 0.708
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:25.793+0000",
+            "pause_ms": 0.714
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:26.217+0000",
+            "pause_ms": 0.922
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:26.642+0000",
+            "pause_ms": 0.828
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:27.064+0000",
+            "pause_ms": 0.746
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:27.587+0000",
+            "pause_ms": 0.782
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:28.111+0000",
+            "pause_ms": 0.942
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:28.648+0000",
+            "pause_ms": 0.721
+          },
+          {
+            "reported_end_utc": "2026-09-25T22:44:29.161+0000",
+            "pause_ms": 0.749
+          }
+        ]
+      }
+    }
+  ],
+  "groups": [
+    {
+      "runtime": "graalphp",
+      "parked": 10000,
+      "trials": 2,
+      "requests_per_second": {
+        "median": 23546.8955,
+        "min": 23077.48,
+        "max": 24016.311,
+        "trials": [
+          23077.48,
+          24016.311
+        ]
+      },
+      "seconds": {
+        "median": 5.568637,
+        "min": 5.457624,
+        "max": 5.67965,
+        "trials": [
+          5.67965,
+          5.457624
+        ]
+      },
+      "cpu_us_per_request": {
+        "median": 45.6575,
+        "min": 45.419,
+        "max": 45.896,
+        "trials": [
+          45.896,
+          45.419
+        ]
+      },
+      "rss_mib_pooled": {
+        "samples": 433,
+        "mean": 127.35410652424942,
+        "p20": 108.59375,
+        "p50": 111.29296875,
+        "p90": 186.859375,
+        "p95": 206.43359375,
+        "p99": 233.2265625,
+        "max": 233.2265625
+      },
+      "rss_p50_mib_per_trial": {
+        "median": 111.345703125,
+        "min": 110.3671875,
+        "max": 112.32421875,
+        "trials": [
+          110.3671875,
+          112.32421875
+        ]
+      },
+      "latency_ms_pooled": {
+        "samples": 16384,
+        "mean": 2.6277335693359376,
+        "p20": 2.1599,
+        "p50": 2.3269,
+        "p90": 3.1705,
+        "p95": 3.4246,
+        "p99": 4.7542,
+        "max": 26.4585
+      },
+      "p99_ms_per_trial": {
+        "median": 4.4665,
+        "min": 3.9971,
+        "max": 4.9359,
+        "trials": [
+          4.9359,
+          3.9971
+        ]
+      }
+    },
+    {
+      "runtime": "graalphp-before",
+      "parked": 10000,
+      "trials": 2,
+      "requests_per_second": {
+        "median": 23024.8245,
+        "min": 21743.939,
+        "max": 24305.71,
+        "trials": [
+          21743.939,
+          24305.71
+        ]
+      },
+      "seconds": {
+        "median": 5.7103105,
+        "min": 5.392642,
+        "max": 6.027979,
+        "trials": [
+          6.027979,
+          5.392642
+        ]
+      },
+      "cpu_us_per_request": {
+        "median": 45.896,
+        "min": 43.035,
+        "max": 48.757,
+        "trials": [
+          48.757,
+          43.035
+        ]
+      },
+      "rss_mib_pooled": {
+        "samples": 442,
+        "mean": 224.2721737132353,
+        "p20": 232.65234375,
+        "p50": 234.2890625,
+        "p90": 238.26953125,
+        "p95": 239.29296875,
+        "p99": 239.58203125,
+        "max": 240.359375
+      },
+      "rss_p50_mib_per_trial": {
+        "median": 234.20703125,
+        "min": 233.9765625,
+        "max": 234.4375,
+        "trials": [
+          234.4375,
+          233.9765625
+        ]
+      },
+      "latency_ms_pooled": {
+        "samples": 16384,
+        "mean": 2.6814676025390627,
+        "p20": 2.1806,
+        "p50": 2.5317,
+        "p90": 3.0656,
+        "p95": 3.2915,
+        "p99": 5.6993,
+        "max": 27.4667
+      },
+      "p99_ms_per_trial": {
+        "median": 5.4300999999999995,
+        "min": 5.1156,
+        "max": 5.7446,
+        "trials": [
+          5.7446,
+          5.1156
+        ]
+      }
+    }
+  ],
+  "completed_trials": 4,
+  "payload_requests": 524288,
+  "latency_samples": 32768,
+  "failures": null
+}

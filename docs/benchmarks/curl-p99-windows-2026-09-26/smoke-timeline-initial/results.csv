@@ -1,0 +1,7 @@
+runtime,repetition,parked,clients,phase,requests,seconds,requests_per_second,cpu_seconds,cpu_us_per_request,rss_mib,private_commit_mib,peak_rss_mib,distinct_peer_endpoints,user_us_per_request,kernel_us_per_request
+graalphp,1,10,0,startup,0,0.043061,0.000,0.031250,0.000,19.184,42.133,19.184,0,0.000,0.000
+graalphp,1,10,0,suspended,0,0.089707,0.000,0.031250,0.000,19.746,42.133,19.746,0,0.000,0.000
+graalphp,1,10,4,curl,128,0.109621,1167.658,0.046875,366.211,20.801,43.172,20.801,4,366.211,0.000
+trueasync,1,10,0,startup,0,0.040978,0.000,0.031250,0.000,20.563,11.660,20.563,0,0.000,0.000
+trueasync,1,10,0,suspended,0,0.044023,0.000,0.031250,0.000,20.789,31.742,20.789,0,0.000,0.000
+trueasync,1,10,4,curl,128,0.065597,1951.303,0.031250,244.141,20.867,25.738,20.867,4,244.141,0.000

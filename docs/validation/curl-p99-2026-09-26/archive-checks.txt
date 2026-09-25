@@ -1,0 +1,5 @@
+PASS all five archived summaries reproduced exactly from raw data.
+PASS all 70 source/tooling/product SHA256 entries match.
+PASS product sources, dependency pins and build scripts unchanged from HEAD.
+PASS 229 changed/new files UTF-8/LF, no BOM or private home paths; 109 relative Markdown links resolve.
+PASS git diff --check.

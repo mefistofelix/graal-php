@@ -7,12 +7,14 @@ certificano soltanto il risultato descritto, non un'intera milestone del design.
 
 ## Punto di ripresa
 
-L'ultimo intervento runtime è concluso: riduzione RAM dei compilatori inattivi e
-benchmark da freddo. Non c'è una build interrotta da riprendere. In assenza di
-nuove indicazioni, la continuazione proposta è **PERF-01**, per capire il costo
-sulle latenze mantenendo il guadagno RAM. Non è un ordine di rimandare tutte le
-feature: la priorità generale resta la base linguaggio/TrueAsync/threading/FFI;
-valutare le loro interazioni prima di implementare un singolo requisito.
+Completato il blocco tooling/diagnostica di **PERF-01**: confronto sullo stesso
+eseguibile, timeline con incertezza esplicita e tracce GC/JIT anche del peer.
+[Rapporto del 26 settembre](docs/curl-p99.md). Il p99 con 10.000 sospese resta
+più alto nell'A/B; nessuna correzione runtime è stata introdotta. Proseguire
+separando allocazioni/GC e invalidazioni dalle interferenze del peer, quindi
+misurare il lifetime effettivo dei compiler worker. Nessuna build interrotta.
+La priorità generale resta linguaggio/TrueAsync/threading/FFI: questo lavoro
+non è un ordine di rimandare tutte le feature.
 
 ## Concluso e da non rifare da zero
 
@@ -27,20 +29,27 @@ valutare le loro interazioni prima di implementare un singolo requisito.
   copie del body: [rapporto](docs/curl-runtime-costs.md).
 - [x] Default CLI `CompilerIdleDelay=500`, campagna cURL da freddo con RAM,
   throughput/CPU e p20/p50/p90/p95/p99; niente warmup scartato:
-  [risultati correnti](docs/curl-memory.md).
+  [risultati del 25 settembre](docs/curl-memory.md).
 - [x] Istruzioni, priorità e stato persistente per riprendere da un'altra sessione.
 - [x] Git locale su `main` e repository GitHub pubblico
   [mefistofelix/graal-php](https://github.com/mefistofelix/graal-php).
 
+- [x] Tooling PERF-01: opzioni A/B separate, timeline e clock bounds, confine
+  wall-time corretto, CPU temporale e report ricalcolabile; 26 controlli Java,
+  7 test Python e 44/44 prove A/B/diagnostiche. Nessun fix runtime implicito.
+
 ## Prestazioni e memoria: seguito dell'ultimo lavoro
 
-- [ ] **PERF-01 — Spiegare e ridurre il costo del p99.** L'A/B da freddo ha ridotto
-  RSS p50 del 46,2%/38,5%, ma aumentato il p99 campionato del 4,0%/11,2%.
-  Isolare attività/riavvii del compilatore, GC, allocazioni e riprese guest;
-  l'attribuzione causale del p99 non è ancora dimostrata. Valutare NMT o profili
-  separati, esplicitando cosa non coprono. Completamento: confronto da freddo
-  riproducibile, RAM e latenza insieme, costo CPU e compromessi riportati;
-  non disabilitare il JIT per ottenere un numero migliore.
+- [ ] **PERF-01 — Spiegare e ridurre il costo del p99.** L'A/B sullo stesso
+  eseguibile del 26 settembre conferma RSS p50 −47,18%/−41,86%, con p99
+  −2,41%/+10,42% per 1.000/10.000 sospese; quattro ripetizioni con intervalli
+  sovrapposti. Le 12 prove diagnostiche mostrano GC e invalidazioni, oltre a
+  pause della JVM del peer. [Evidenze e limiti](docs/curl-p99.md).
+  Ancora da isolare allocazioni/GC e riprese guest senza gli array aggiuntivi
+  della timeline, controllare il peer e misurare creazione/distruzione dei
+  compiler worker. TraceCompilationDetails non misura quel lifetime; NMT non
+  eseguito. Completamento: causa e modifica verificate da freddo con RAM,
+  latenza, CPU e compromessi insieme; non disabilitare il JIT.
 - [ ] **PERF-02 — Coprire durate e carichi reali diversi.** Aggiungere scenari
   brevi, lunghi e intermittenti interamente misurati, senza warmup nascosto;
   distinguere startup, prime richieste, lavoro e shutdown. Oggi il confronto

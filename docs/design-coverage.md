@@ -1,9 +1,10 @@
 # Copertura del design — 25 settembre 2026
 
 Per la ripresa operativa vedere [TODO](../TODO.md) e
-[stato di consegna](handoff.md); per metodo e RAM correnti,
-[benchmark da freddo](curl-memory.md). I risultati delle verifiche precedenti
-restano distinti in [validation.md](validation.md).
+[stato di consegna](handoff.md); per metodo e RAM,
+[benchmark da freddo](curl-memory.md) e [indagine p99 del 26 settembre](curl-p99.md).
+Quest'ultima aggiorna solo il tooling di misura, non la copertura runtime qui
+riportata. Le verifiche restano distinte in [validation.md](validation.md).
 
 Questa versione è un runtime eseguibile Windows e Linux, con target semantico PHP 8.6.
 Scheduler PHP e callback libuv condividono il thread proprietario; la patch

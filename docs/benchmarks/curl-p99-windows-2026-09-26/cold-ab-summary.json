@@ -1,0 +1,1495 @@
+{
+  "method": "Fresh processes; no discarded warmup; nearest-rank pooled quantiles; controls kept separate. Timeline bins use bounded clock-alignment midpoints, not exact event timestamps. Native GC/JIT totals cover the complete child log including shutdown; payload JIT and optional peer GC are filtered between suspended/end control UTC receipts. No exact Native Image GC clock alignment or compiler-worker lifetime tracing. Logs are diagnostics, not causal attribution.",
+  "trials": [
+    {
+      "runtime": "graalphp-before-untimed",
+      "repetition": 1,
+      "parked": 1000,
+      "requests": 131072,
+      "seconds": 5.656671,
+      "requests_per_second": 23171.226,
+      "cpu_us_per_request": 44.107,
+      "rss_mib": {
+        "samples": 217,
+        "mean": 142.89154305875576,
+        "p20": 145.2578125,
+        "p50": 146.703125,
+        "p90": 153.6796875,
+        "p95": 153.73046875,
+        "p99": 153.73046875,
+        "max": 153.73046875
+      },
+      "control_observation_delays_ms": {
+        "/begin": 17.8934,
+        "/suspended": 0.1596,
+        "/end": 0.1731
+      }
+    },
+    {
+      "runtime": "graalphp-before",
+      "repetition": 1,
+      "parked": 1000,
+      "requests": 131072,
+      "seconds": 5.276564,
+      "requests_per_second": 24840.408,
+      "cpu_us_per_request": 42.2,
+      "rss_mib": {
+        "samples": 205,
+        "mean": 190.94826600609755,
+        "p20": 197.203125,
+        "p50": 198.1796875,
+        "p90": 201.23828125,
+        "p95": 201.35546875,
+        "p99": 201.359375,
+        "max": 201.359375
+      },
+      "control_observation_delays_ms": {
+        "/begin": 0.1221,
+        "/suspended": 0.0663,
+        "/end": 0.185
+      },
+      "latency_ms": {
+        "samples": 8192,
+        "mean": 2.551364245605469,
+        "p20": 2.1831,
+        "p50": 2.3414,
+        "p90": 3.0297,
+        "p95": 3.0963,
+        "p99": 4.8282,
+        "max": 15.1882
+      }
+    },
+    {
+      "runtime": "graalphp-untimed",
+      "repetition": 1,
+      "parked": 1000,
+      "requests": 131072,
+      "seconds": 5.033363,
+      "requests_per_second": 26040.642,
+      "cpu_us_per_request": 40.174,
+      "rss_mib": {
+        "samples": 195,
+        "mean": 86.26574519230769,
+        "p20": 74.23046875,
+        "p50": 77.6328125,
+        "p90": 124.56640625,
+        "p95": 149.69140625,
+        "p99": 152.39453125,
+        "max": 152.39453125
+      },
+      "control_observation_delays_ms": {
+        "/begin": 0.1117,
+        "/suspended": 0.0949,
+        "/end": 0.0942
+      }
+    },
+    {
+      "runtime": "graalphp",
+      "repetition": 1,
+      "parked": 1000,
+      "requests": 131072,
+      "seconds": 5.167076,
+      "requests_per_second": 25366.764,
+      "cpu_us_per_request": 41.008,
+      "rss_mib": {
+        "samples": 201,
+        "mean": 95.37365904850746,
+        "p20": 79.83984375,
+        "p50": 80.76171875,
+        "p90": 165.69921875,
+        "p95": 190.1015625,
+        "p99": 201.296875,
+        "max": 201.37890625
+      },
+      "control_observation_delays_ms": {
+        "/begin": 0.1168,
+        "/suspended": 0.0661,
+        "/end": 0.1208
+      },
+      "latency_ms": {
+        "samples": 8192,
+        "mean": 2.4995390625,
+        "p20": 2.1699,
+        "p50": 2.2657,
+        "p90": 3.0293,
+        "p95": 3.1339,
+        "p99": 3.8433,
+        "max": 14.5796
+      }
+    },
+    {
+      "runtime": "graalphp-before-untimed",
+      "repetition": 1,
+      "parked": 10000,
+      "requests": 131072,
+      "seconds": 5.3578,
+      "requests_per_second": 24463.771,
+      "cpu_us_per_request": 41.962,
+      "rss_mib": {
+        "samples": 208,
+        "mean": 174.3467735877404,
+        "p20": 174.640625,
+        "p50": 175.83203125,
+        "p90": 185.13671875,
+        "p95": 185.5078125,
+        "p99": 185.5078125,
+        "max": 185.5078125
+      },
+      "control_observation_delays_ms": {
+        "/begin": 0.1586,
+        "/suspended": 0.1785,
+        "/end": 0.145
+      }
+    },
+    {
+      "runtime": "graalphp-before",
+      "repetition": 1,
+      "parked": 10000,
+      "requests": 131072,
+      "seconds": 5.397081,
+      "requests_per_second": 24285.722,
+      "cpu_us_per_request": 42.796,
+      "rss_mib": {
+        "samples": 209,
+        "mean": 216.29878139952154,
+        "p20": 222.05078125,
+        "p50": 222.4765625,
+        "p90": 229.7421875,
+        "p95": 230.23828125,
+        "p99": 230.23828125,
+        "max": 230.23828125
+      },
+      "control_observation_delays_ms": {
+        "/begin": 0.1219,
+        "/suspended": 0.1324,
+        "/end": 0.138
+      },
+      "latency_ms": {
+        "samples": 8192,
+        "mean": 2.5665141845703126,
+        "p20": 2.1966,
+        "p50": 2.3345,
+        "p90": 2.9773,
+        "p95": 3.063,
+        "p99": 4.0086,
+        "max": 20.3967
+      }
+    },
+    {
+      "runtime": "graalphp-untimed",
+      "repetition": 1,
+      "parked": 10000,
+      "requests": 131072,
+      "seconds": 5.244365,
+      "requests_per_second": 24992.92,
+      "cpu_us_per_request": 41.008,
+      "rss_mib": {
+        "samples": 204,
+        "mean": 111.67367493872548,
+        "p20": 99.21875,
+        "p50": 102.04296875,
+        "p90": 156.7734375,
+        "p95": 157.1640625,
+        "p99": 178.24609375,
+        "max": 178.24609375
+      },
+      "control_observation_delays_ms": {
+        "/begin": 0.084,
+        "/suspended": 0.1292,
+        "/end": 0.1227
+      }
+    },
+    {
+      "runtime": "graalphp",
+      "repetition": 1,
+      "parked": 10000,
+      "requests": 131072,
+      "seconds": 5.362301,
+      "requests_per_second": 24443.239,
+      "cpu_us_per_request": 43.631,
+      "rss_mib": {
+        "samples": 209,
+        "mean": 125.27244691985646,
+        "p20": 104.4296875,
+        "p50": 109.921875,
+        "p90": 176.33203125,
+        "p95": 202.21875,
+        "p99": 225.8515625,
+        "max": 225.8515625
+      },
+      "control_observation_delays_ms": {
+        "/begin": 0.0991,
+        "/suspended": 0.1226,
+        "/end": 0.109
+      },
+      "latency_ms": {
+        "samples": 8192,
+        "mean": 2.550381530761719,
+        "p20": 2.1367,
+        "p50": 2.2593,
+        "p90": 3.0212,
+        "p95": 3.1027,
+        "p99": 4.9086,
+        "max": 20.796
+      }
+    },
+    {
+      "runtime": "graalphp",
+      "repetition": 2,
+      "parked": 1000,
+      "requests": 131072,
+      "seconds": 5.143211,
+      "requests_per_second": 25484.467,
+      "cpu_us_per_request": 41.723,
+      "rss_mib": {
+        "samples": 201,
+        "mean": 94.99659903606965,
+        "p20": 79.8359375,
+        "p50": 80.76171875,
+        "p90": 165.1953125,
+        "p95": 190.12109375,
+        "p99": 201.31640625,
+        "max": 201.7109375
+      },
+      "control_observation_delays_ms": {
+        "/begin": 0.0694,
+        "/suspended": 0.0743,
+        "/end": 0.1376
+      },
+      "latency_ms": {
+        "samples": 8192,
+        "mean": 2.483343896484375,
+        "p20": 2.147,
+        "p50": 2.2801,
+        "p90": 2.9772,
+        "p95": 3.0597,
+        "p99": 4.3664,
+        "max": 15.151
+      }
+    },
+    {
+      "runtime": "graalphp-untimed",
+      "repetition": 2,
+      "parked": 1000,
+      "requests": 131072,
+      "seconds": 4.998056,
+      "requests_per_second": 26224.596,
+      "cpu_us_per_request": 39.101,
+      "rss_mib": {
+        "samples": 195,
+        "mean": 86.58004807692308,
+        "p20": 74.3359375,
+        "p50": 77.73828125,
+        "p90": 124.5859375,
+        "p95": 151.0390625,
+        "p99": 153.78125,
+        "max": 153.78125
+      },
+      "control_observation_delays_ms": {
+        "/begin": 0.1137,
+        "/suspended": 0.0616,
+        "/end": 0.0973
+      }
+    },
+    {
+      "runtime": "graalphp-before",
+      "repetition": 2,
+      "parked": 1000,
+      "requests": 131072,
+      "seconds": 5.178712,
+      "requests_per_second": 25309.77,
+      "cpu_us_per_request": 41.366,
+      "rss_mib": {
+        "samples": 202,
+        "mean": 190.96627475247524,
+        "p20": 197.1796875,
+        "p50": 198.08984375,
+        "p90": 201.2890625,
+        "p95": 201.296875,
+        "p99": 201.296875,
+        "max": 201.296875
+      },
+      "control_observation_delays_ms": {
+        "/begin": 0.1186,
+        "/suspended": 0.0738,
+        "/end": 0.1005
+      },
+      "latency_ms": {
+        "samples": 8192,
+        "mean": 2.505625402832031,
+        "p20": 2.1587,
+        "p50": 2.3216,
+        "p90": 2.961,
+        "p95": 3.0294,
+        "p99": 4.1866,
+        "max": 14.7446
+      }
+    },
+    {
+      "runtime": "graalphp-before-untimed",
+      "repetition": 2,
+      "parked": 1000,
+      "requests": 131072,
+      "seconds": 4.958297,
+      "requests_per_second": 26434.883,
+      "cpu_us_per_request": 39.101,
+      "rss_mib": {
+        "samples": 195,
+        "mean": 143.57740384615386,
+        "p20": 145.31640625,
+        "p50": 146.26953125,
+        "p90": 153.78125,
+        "p95": 153.82421875,
+        "p99": 153.82421875,
+        "max": 153.82421875
+      },
+      "control_observation_delays_ms": {
+        "/begin": 0.0748,
+        "/suspended": 0.0634,
+        "/end": 0.088
+      }
+    },
+    {
+      "runtime": "graalphp",
+      "repetition": 2,
+      "parked": 10000,
+      "requests": 131072,
+      "seconds": 5.261956,
+      "requests_per_second": 24909.366,
+      "cpu_us_per_request": 42.2,
+      "rss_mib": {
+        "samples": 204,
+        "mean": 120.00712316176471,
+        "p20": 103.8203125,
+        "p50": 104.64453125,
+        "p90": 180.2890625,
+        "p95": 202.27734375,
+        "p99": 225.953125,
+        "max": 225.953125
+      },
+      "control_observation_delays_ms": {
+        "/begin": 0.108,
+        "/suspended": 0.1243,
+        "/end": 0.1562
+      },
+      "latency_ms": {
+        "samples": 8192,
+        "mean": 2.5056155151367188,
+        "p20": 2.1427,
+        "p50": 2.2683,
+        "p90": 2.964,
+        "p95": 3.032,
+        "p99": 3.7606,
+        "max": 20.24
+      }
+    },
+    {
+      "runtime": "graalphp-untimed",
+      "repetition": 2,
+      "parked": 10000,
+      "requests": 131072,
+      "seconds": 5.176241,
+      "requests_per_second": 25321.852,
+      "cpu_us_per_request": 40.412,
+      "rss_mib": {
+        "samples": 201,
+        "mean": 111.89093594527363,
+        "p20": 98.7421875,
+        "p50": 100.4296875,
+        "p90": 156.69921875,
+        "p95": 157.1640625,
+        "p99": 183.046875,
+        "max": 183.046875
+      },
+      "control_observation_delays_ms": {
+        "/begin": 0.2795,
+        "/suspended": 0.121,
+        "/end": 0.1576
+      }
+    },
+    {
+      "runtime": "graalphp-before",
+      "repetition": 2,
+      "parked": 10000,
+      "requests": 131072,
+      "seconds": 5.29147,
+      "requests_per_second": 24770.434,
+      "cpu_us_per_request": 42.915,
+      "rss_mib": {
+        "samples": 205,
+        "mean": 214.71482469512196,
+        "p20": 220.375,
+        "p50": 221.0390625,
+        "p90": 227.8671875,
+        "p95": 227.99609375,
+        "p99": 228.18359375,
+        "max": 228.18359375
+      },
+      "control_observation_delays_ms": {
+        "/begin": 0.103,
+        "/suspended": 0.1339,
+        "/end": 0.143
+      },
+      "latency_ms": {
+        "samples": 8192,
+        "mean": 2.4939522827148437,
+        "p20": 2.1158,
+        "p50": 2.2406,
+        "p90": 2.9376,
+        "p95": 3.0353,
+        "p99": 4.2318,
+        "max": 21.2091
+      }
+    },
+    {
+      "runtime": "graalphp-before-untimed",
+      "repetition": 2,
+      "parked": 10000,
+      "requests": 131072,
+      "seconds": 5.123049,
+      "requests_per_second": 25584.767,
+      "cpu_us_per_request": 40.412,
+      "rss_mib": {
+        "samples": 200,
+        "mean": 174.4083203125,
+        "p20": 174.60546875,
+        "p50": 175.52734375,
+        "p90": 185.2578125,
+        "p95": 185.265625,
+        "p99": 185.265625,
+        "max": 185.7578125
+      },
+      "control_observation_delays_ms": {
+        "/begin": 0.1033,
+        "/suspended": 0.1231,
+        "/end": 0.1283
+      }
+    },
+    {
+      "runtime": "graalphp-before-untimed",
+      "repetition": 3,
+      "parked": 1000,
+      "requests": 131072,
+      "seconds": 4.94859,
+      "requests_per_second": 26486.736,
+      "cpu_us_per_request": 39.697,
+      "rss_mib": {
+        "samples": 193,
+        "mean": 152.4304566062176,
+        "p20": 146.984375,
+        "p50": 153.21875,
+        "p90": 167.9921875,
+        "p95": 168.0078125,
+        "p99": 168.0078125,
+        "max": 168.05859375
+      },
+      "control_observation_delays_ms": {
+        "/begin": 0.1022,
+        "/suspended": 0.0645,
+        "/end": 0.0949
+      }
+    },
+    {
+      "runtime": "graalphp-before",
+      "repetition": 3,
+      "parked": 1000,
+      "requests": 131072,
+      "seconds": 5.08473,
+      "requests_per_second": 25777.573,
+      "cpu_us_per_request": 41.842,
+      "rss_mib": {
+        "samples": 198,
+        "mean": 197.7801846590909,
+        "p20": 197.41796875,
+        "p50": 200.97265625,
+        "p90": 231.06640625,
+        "p95": 231.34375,
+        "p99": 231.75390625,
+        "max": 231.80078125
+      },
+      "control_observation_delays_ms": {
+        "/begin": 0.1536,
+        "/suspended": 0.0642,
+        "/end": 0.1216
+      },
+      "latency_ms": {
+        "samples": 8192,
+        "mean": 2.462104748535156,
+        "p20": 2.121,
+        "p50": 2.2371,
+        "p90": 2.9644,
+        "p95": 3.0682,
+        "p99": 4.7802,
+        "max": 14.8296
+      }
+    },
+    {
+      "runtime": "graalphp-untimed",
+      "repetition": 3,
+      "parked": 1000,
+      "requests": 131072,
+      "seconds": 4.893604,
+      "requests_per_second": 26784.351,
+      "cpu_us_per_request": 38.147,
+      "rss_mib": {
+        "samples": 192,
+        "mean": 86.30330403645833,
+        "p20": 74.7578125,
+        "p50": 77.6953125,
+        "p90": 124.6953125,
+        "p95": 151.09375,
+        "p99": 153.796875,
+        "max": 153.796875
+      },
+      "control_observation_delays_ms": {
+        "/begin": 0.0948,
+        "/suspended": 0.1274,
+        "/end": 0.0897
+      }
+    },
+    {
+      "runtime": "graalphp",
+      "repetition": 3,
+      "parked": 1000,
+      "requests": 131072,
+      "seconds": 5.034663,
+      "requests_per_second": 26033.916,
+      "cpu_us_per_request": 40.293,
+      "rss_mib": {
+        "samples": 196,
+        "mean": 95.9130859375,
+        "p20": 79.81640625,
+        "p50": 80.75,
+        "p90": 179.63671875,
+        "p95": 198.390625,
+        "p99": 201.8125,
+        "max": 201.8125
+      },
+      "control_observation_delays_ms": {
+        "/begin": 0.1006,
+        "/suspended": 0.0585,
+        "/end": 0.0893
+      },
+      "latency_ms": {
+        "samples": 8192,
+        "mean": 2.435091015625,
+        "p20": 2.1301,
+        "p50": 2.2365,
+        "p90": 2.902,
+        "p95": 3.0248,
+        "p99": 4.1736,
+        "max": 16.0287
+      }
+    },
+    {
+      "runtime": "graalphp-before-untimed",
+      "repetition": 3,
+      "parked": 10000,
+      "requests": 131072,
+      "seconds": 5.247251,
+      "requests_per_second": 24979.176,
+      "cpu_us_per_request": 40.531,
+      "rss_mib": {
+        "samples": 204,
+        "mean": 174.13373161764707,
+        "p20": 174.6796875,
+        "p50": 175.2109375,
+        "p90": 185.35546875,
+        "p95": 185.453125,
+        "p99": 185.453125,
+        "max": 185.453125
+      },
+      "control_observation_delays_ms": {
+        "/begin": 0.1109,
+        "/suspended": 0.115,
+        "/end": 0.2045
+      }
+    },
+    {
+      "runtime": "graalphp-before",
+      "repetition": 3,
+      "parked": 10000,
+      "requests": 131072,
+      "seconds": 5.361525,
+      "requests_per_second": 24446.774,
+      "cpu_us_per_request": 43.273,
+      "rss_mib": {
+        "samples": 208,
+        "mean": 223.73491962139423,
+        "p20": 222.58984375,
+        "p50": 228.72265625,
+        "p90": 246.0078125,
+        "p95": 246.0078125,
+        "p99": 249.05859375,
+        "max": 251.33984375
+      },
+      "control_observation_delays_ms": {
+        "/begin": 0.1172,
+        "/suspended": 0.1685,
+        "/end": 0.1396
+      },
+      "latency_ms": {
+        "samples": 8192,
+        "mean": 2.5500196411132814,
+        "p20": 2.1283,
+        "p50": 2.3311,
+        "p90": 2.9636,
+        "p95": 3.066,
+        "p99": 4.6439,
+        "max": 21.81
+      }
+    },
+    {
+      "runtime": "graalphp-untimed",
+      "repetition": 3,
+      "parked": 10000,
+      "requests": 131072,
+      "seconds": 5.226799,
+      "requests_per_second": 25076.918,
+      "cpu_us_per_request": 41.842,
+      "rss_mib": {
+        "samples": 203,
+        "mean": 117.68372844827586,
+        "p20": 100.890625,
+        "p50": 108.81640625,
+        "p90": 156.67578125,
+        "p95": 160.140625,
+        "p99": 183.05859375,
+        "max": 183.05859375
+      },
+      "control_observation_delays_ms": {
+        "/begin": 0.1422,
+        "/suspended": 0.1236,
+        "/end": 0.1252
+      }
+    },
+    {
+      "runtime": "graalphp",
+      "repetition": 3,
+      "parked": 10000,
+      "requests": 131072,
+      "seconds": 5.329458,
+      "requests_per_second": 24593.869,
+      "cpu_us_per_request": 42.558,
+      "rss_mib": {
+        "samples": 207,
+        "mean": 120.04657306763285,
+        "p20": 104.4375,
+        "p50": 105.28515625,
+        "p90": 181.58984375,
+        "p95": 202.84765625,
+        "p99": 225.875,
+        "max": 225.88671875
+      },
+      "control_observation_delays_ms": {
+        "/begin": 0.0983,
+        "/suspended": 0.1729,
+        "/end": 0.1106
+      },
+      "latency_ms": {
+        "samples": 8192,
+        "mean": 2.5392853881835937,
+        "p20": 2.1234,
+        "p50": 2.2501,
+        "p90": 3.0066,
+        "p95": 3.0627,
+        "p99": 4.7565,
+        "max": 20.6388
+      }
+    },
+    {
+      "runtime": "graalphp",
+      "repetition": 4,
+      "parked": 1000,
+      "requests": 131072,
+      "seconds": 5.094829,
+      "requests_per_second": 25726.476,
+      "cpu_us_per_request": 41.008,
+      "rss_mib": {
+        "samples": 199,
+        "mean": 95.25661510678393,
+        "p20": 79.86328125,
+        "p50": 80.8046875,
+        "p90": 177.16796875,
+        "p95": 198.265625,
+        "p99": 201.35546875,
+        "max": 201.35546875
+      },
+      "control_observation_delays_ms": {
+        "/begin": 0.0817,
+        "/suspended": 0.0473,
+        "/end": 0.1321
+      },
+      "latency_ms": {
+        "samples": 8192,
+        "mean": 2.461380432128906,
+        "p20": 2.1201,
+        "p50": 2.2592,
+        "p90": 2.9469,
+        "p95": 3.0263,
+        "p99": 4.5089,
+        "max": 15.2232
+      }
+    },
+    {
+      "runtime": "graalphp-untimed",
+      "repetition": 4,
+      "parked": 1000,
+      "requests": 131072,
+      "seconds": 4.867145,
+      "requests_per_second": 26929.956,
+      "cpu_us_per_request": 38.385,
+      "rss_mib": {
+        "samples": 190,
+        "mean": 86.95844983552631,
+        "p20": 74.37109375,
+        "p50": 77.7734375,
+        "p90": 128.71484375,
+        "p95": 151.140625,
+        "p99": 153.859375,
+        "max": 153.859375
+      },
+      "control_observation_delays_ms": {
+        "/begin": 0.1203,
+        "/suspended": 0.0669,
+        "/end": 0.1031
+      }
+    },
+    {
+      "runtime": "graalphp-before",
+      "repetition": 4,
+      "parked": 1000,
+      "requests": 131072,
+      "seconds": 4.987733,
+      "requests_per_second": 26278.872,
+      "cpu_us_per_request": 39.935,
+      "rss_mib": {
+        "samples": 194,
+        "mean": 190.80547277706185,
+        "p20": 197.02734375,
+        "p50": 198.078125,
+        "p90": 201.25,
+        "p95": 201.37109375,
+        "p99": 201.37109375,
+        "max": 201.37109375
+      },
+      "control_observation_delays_ms": {
+        "/begin": 0.0959,
+        "/suspended": 0.0675,
+        "/end": 0.1012
+      },
+      "latency_ms": {
+        "samples": 8192,
+        "mean": 2.408357958984375,
+        "p20": 2.1265,
+        "p50": 2.218,
+        "p90": 2.8554,
+        "p95": 3.0049,
+        "p99": 3.4676,
+        "max": 14.9822
+      }
+    },
+    {
+      "runtime": "graalphp-before-untimed",
+      "repetition": 4,
+      "parked": 1000,
+      "requests": 131072,
+      "seconds": 4.859697,
+      "requests_per_second": 26971.229,
+      "cpu_us_per_request": 37.789,
+      "rss_mib": {
+        "samples": 191,
+        "mean": 143.38195353403142,
+        "p20": 145.25,
+        "p50": 146.1875,
+        "p90": 153.69921875,
+        "p95": 153.76171875,
+        "p99": 153.76171875,
+        "max": 154.078125
+      },
+      "control_observation_delays_ms": {
+        "/begin": 0.0608,
+        "/suspended": 0.095,
+        "/end": 0.0768
+      }
+    },
+    {
+      "runtime": "graalphp",
+      "repetition": 4,
+      "parked": 10000,
+      "requests": 131072,
+      "seconds": 5.311104,
+      "requests_per_second": 24678.863,
+      "cpu_us_per_request": 43.154,
+      "rss_mib": {
+        "samples": 206,
+        "mean": 123.36445691747574,
+        "p20": 104.6328125,
+        "p50": 105.3046875,
+        "p90": 201.24609375,
+        "p95": 230.5,
+        "p99": 253.6171875,
+        "max": 253.6171875
+      },
+      "control_observation_delays_ms": {
+        "/begin": 0.0758,
+        "/suspended": 0.0998,
+        "/end": 0.1451
+      },
+      "latency_ms": {
+        "samples": 8192,
+        "mean": 2.5304681518554686,
+        "p20": 2.1376,
+        "p50": 2.2629,
+        "p90": 2.9494,
+        "p95": 3.0467,
+        "p99": 4.509,
+        "max": 20.7458
+      }
+    },
+    {
+      "runtime": "graalphp-untimed",
+      "repetition": 4,
+      "parked": 10000,
+      "requests": 131072,
+      "seconds": 5.147664,
+      "requests_per_second": 25462.425,
+      "cpu_us_per_request": 40.77,
+      "rss_mib": {
+        "samples": 200,
+        "mean": 112.3292578125,
+        "p20": 98.7421875,
+        "p50": 102.03125,
+        "p90": 156.69140625,
+        "p95": 156.97265625,
+        "p99": 182.97265625,
+        "max": 182.97265625
+      },
+      "control_observation_delays_ms": {
+        "/begin": 0.1243,
+        "/suspended": 0.1596,
+        "/end": 0.0935
+      }
+    },
+    {
+      "runtime": "graalphp-before",
+      "repetition": 4,
+      "parked": 10000,
+      "requests": 131072,
+      "seconds": 5.349019,
+      "requests_per_second": 24503.931,
+      "cpu_us_per_request": 43.869,
+      "rss_mib": {
+        "samples": 208,
+        "mean": 222.71281550480768,
+        "p20": 222.41015625,
+        "p50": 228.1015625,
+        "p90": 242.2421875,
+        "p95": 242.515625,
+        "p99": 245.515625,
+        "max": 252.05859375
+      },
+      "control_observation_delays_ms": {
+        "/begin": 0.0969,
+        "/suspended": 0.134,
+        "/end": 0.0824
+      },
+      "latency_ms": {
+        "samples": 8192,
+        "mean": 2.5530887329101564,
+        "p20": 2.1426,
+        "p50": 2.2726,
+        "p90": 3.0087,
+        "p95": 3.0507,
+        "p99": 4.1452,
+        "max": 20.577
+      }
+    },
+    {
+      "runtime": "graalphp-before-untimed",
+      "repetition": 4,
+      "parked": 10000,
+      "requests": 131072,
+      "seconds": 5.147074,
+      "requests_per_second": 25465.34,
+      "cpu_us_per_request": 40.412,
+      "rss_mib": {
+        "samples": 201,
+        "mean": 173.3445467972637,
+        "p20": 174.671875,
+        "p50": 175.25,
+        "p90": 185.0234375,
+        "p95": 185.4140625,
+        "p99": 185.4140625,
+        "max": 185.4140625
+      },
+      "control_observation_delays_ms": {
+        "/begin": 0.1129,
+        "/suspended": 0.0971,
+        "/end": 0.0729
+      }
+    }
+  ],
+  "groups": [
+    {
+      "runtime": "graalphp",
+      "parked": 1000,
+      "trials": 4,
+      "requests_per_second": {
+        "median": 25605.4715,
+        "min": 25366.764,
+        "max": 26033.916,
+        "trials": [
+          25366.764,
+          25484.467,
+          26033.916,
+          25726.476
+        ]
+      },
+      "seconds": {
+        "median": 5.11902,
+        "min": 5.034663,
+        "max": 5.167076,
+        "trials": [
+          5.167076,
+          5.143211,
+          5.034663,
+          5.094829
+        ]
+      },
+      "cpu_us_per_request": {
+        "median": 41.008,
+        "min": 40.293,
+        "max": 41.723,
+        "trials": [
+          41.008,
+          41.723,
+          40.293,
+          41.008
+        ]
+      },
+      "rss_mib_pooled": {
+        "samples": 797,
+        "mean": 95.38199890213299,
+        "p20": 79.83984375,
+        "p50": 80.8046875,
+        "p90": 177.16796875,
+        "p95": 190.76171875,
+        "p99": 201.35546875,
+        "max": 201.8125
+      },
+      "rss_p50_mib_per_trial": {
+        "median": 80.76171875,
+        "min": 80.75,
+        "max": 80.8046875,
+        "trials": [
+          80.76171875,
+          80.76171875,
+          80.75,
+          80.8046875
+        ]
+      },
+      "latency_ms_pooled": {
+        "samples": 32768,
+        "mean": 2.4698386016845704,
+        "p20": 2.1424,
+        "p50": 2.2598,
+        "p90": 2.9727,
+        "p95": 3.0556,
+        "p99": 4.3295,
+        "max": 16.0287
+      },
+      "p99_ms_per_trial": {
+        "median": 4.27,
+        "min": 3.8433,
+        "max": 4.5089,
+        "trials": [
+          3.8433,
+          4.3664,
+          4.1736,
+          4.5089
+        ]
+      }
+    },
+    {
+      "runtime": "graalphp",
+      "parked": 10000,
+      "trials": 4,
+      "requests_per_second": {
+        "median": 24636.366,
+        "min": 24443.239,
+        "max": 24909.366,
+        "trials": [
+          24443.239,
+          24909.366,
+          24593.869,
+          24678.863
+        ]
+      },
+      "seconds": {
+        "median": 5.320281,
+        "min": 5.261956,
+        "max": 5.362301,
+        "trials": [
+          5.362301,
+          5.261956,
+          5.329458,
+          5.311104
+        ]
+      },
+      "cpu_us_per_request": {
+        "median": 42.856,
+        "min": 42.2,
+        "max": 43.631,
+        "trials": [
+          43.631,
+          42.2,
+          42.558,
+          43.154
+        ]
+      },
+      "rss_mib_pooled": {
+        "samples": 826,
+        "mean": 122.18657782233656,
+        "p20": 104.4296875,
+        "p50": 105.3046875,
+        "p90": 181.65234375,
+        "p95": 203.30078125,
+        "p99": 230.5,
+        "max": 253.6171875
+      },
+      "rss_p50_mib_per_trial": {
+        "median": 105.294921875,
+        "min": 104.64453125,
+        "max": 109.921875,
+        "trials": [
+          109.921875,
+          104.64453125,
+          105.28515625,
+          105.3046875
+        ]
+      },
+      "latency_ms_pooled": {
+        "samples": 32768,
+        "mean": 2.531437646484375,
+        "p20": 2.1344,
+        "p50": 2.2607,
+        "p90": 2.9912,
+        "p95": 3.0565,
+        "p99": 4.5911,
+        "max": 20.796
+      },
+      "p99_ms_per_trial": {
+        "median": 4.63275,
+        "min": 3.7606,
+        "max": 4.9086,
+        "trials": [
+          4.9086,
+          3.7606,
+          4.7565,
+          4.509
+        ]
+      }
+    },
+    {
+      "runtime": "graalphp-before",
+      "parked": 1000,
+      "trials": 4,
+      "requests_per_second": {
+        "median": 25543.6715,
+        "min": 24840.408,
+        "max": 26278.872,
+        "trials": [
+          24840.408,
+          25309.77,
+          25777.573,
+          26278.872
+        ]
+      },
+      "seconds": {
+        "median": 5.131721000000001,
+        "min": 4.987733,
+        "max": 5.276564,
+        "trials": [
+          5.276564,
+          5.178712,
+          5.08473,
+          4.987733
+        ]
+      },
+      "cpu_us_per_request": {
+        "median": 41.604,
+        "min": 39.935,
+        "max": 42.2,
+        "trials": [
+          42.2,
+          41.366,
+          41.842,
+          39.935
+        ]
+      },
+      "rss_mib_pooled": {
+        "samples": 799,
+        "mean": 192.61116434605756,
+        "p20": 197.1953125,
+        "p50": 198.1796875,
+        "p90": 201.30859375,
+        "p95": 220.34375,
+        "p99": 231.34375,
+        "max": 231.80078125
+      },
+      "rss_p50_mib_per_trial": {
+        "median": 198.134765625,
+        "min": 198.078125,
+        "max": 200.97265625,
+        "trials": [
+          198.1796875,
+          198.08984375,
+          200.97265625,
+          198.078125
+        ]
+      },
+      "latency_ms_pooled": {
+        "samples": 32768,
+        "mean": 2.481863088989258,
+        "p20": 2.1432,
+        "p50": 2.2811,
+        "p90": 2.9747,
+        "p95": 3.0578,
+        "p99": 4.4363,
+        "max": 15.1882
+      },
+      "p99_ms_per_trial": {
+        "median": 4.4834,
+        "min": 3.4676,
+        "max": 4.8282,
+        "trials": [
+          4.8282,
+          4.1866,
+          4.7802,
+          3.4676
+        ]
+      }
+    },
+    {
+      "runtime": "graalphp-before",
+      "parked": 10000,
+      "trials": 4,
+      "requests_per_second": {
+        "median": 24475.3525,
+        "min": 24285.722,
+        "max": 24770.434,
+        "trials": [
+          24285.722,
+          24770.434,
+          24446.774,
+          24503.931
+        ]
+      },
+      "seconds": {
+        "median": 5.355272,
+        "min": 5.29147,
+        "max": 5.397081,
+        "trials": [
+          5.397081,
+          5.29147,
+          5.361525,
+          5.349019
+        ]
+      },
+      "cpu_us_per_request": {
+        "median": 43.094,
+        "min": 42.796,
+        "max": 43.869,
+        "trials": [
+          42.796,
+          42.915,
+          43.273,
+          43.869
+        ]
+      },
+      "rss_mib_pooled": {
+        "samples": 830,
+        "mean": 219.3784497364458,
+        "p20": 220.92578125,
+        "p50": 223.0625,
+        "p90": 242.515625,
+        "p95": 245.69140625,
+        "p99": 246.23046875,
+        "max": 252.05859375
+      },
+      "rss_p50_mib_per_trial": {
+        "median": 225.2890625,
+        "min": 221.0390625,
+        "max": 228.72265625,
+        "trials": [
+          222.4765625,
+          221.0390625,
+          228.72265625,
+          228.1015625
+        ]
+      },
+      "latency_ms_pooled": {
+        "samples": 32768,
+        "mean": 2.5408937103271483,
+        "p20": 2.1475,
+        "p50": 2.2977,
+        "p90": 2.9765,
+        "p95": 3.0526,
+        "p99": 4.1578,
+        "max": 21.81
+      },
+      "p99_ms_per_trial": {
+        "median": 4.1884999999999994,
+        "min": 4.0086,
+        "max": 4.6439,
+        "trials": [
+          4.0086,
+          4.2318,
+          4.6439,
+          4.1452
+        ]
+      }
+    },
+    {
+      "runtime": "graalphp-before-untimed",
+      "parked": 1000,
+      "trials": 4,
+      "requests_per_second": {
+        "median": 26460.809500000003,
+        "min": 23171.226,
+        "max": 26971.229,
+        "trials": [
+          23171.226,
+          26434.883,
+          26486.736,
+          26971.229
+        ]
+      },
+      "seconds": {
+        "median": 4.9534435000000006,
+        "min": 4.859697,
+        "max": 5.656671,
+        "trials": [
+          5.656671,
+          4.958297,
+          4.94859,
+          4.859697
+        ]
+      },
+      "cpu_us_per_request": {
+        "median": 39.399,
+        "min": 37.789,
+        "max": 44.107,
+        "trials": [
+          44.107,
+          39.101,
+          39.697,
+          37.789
+        ]
+      },
+      "rss_mib_pooled": {
+        "samples": 796,
+        "mean": 145.49006261777637,
+        "p20": 145.265625,
+        "p50": 147.17578125,
+        "p90": 153.82421875,
+        "p95": 167.52734375,
+        "p99": 168.0078125,
+        "max": 168.05859375
+      },
+      "rss_p50_mib_per_trial": {
+        "median": 146.486328125,
+        "min": 146.1875,
+        "max": 153.21875,
+        "trials": [
+          146.703125,
+          146.26953125,
+          153.21875,
+          146.1875
+        ]
+      }
+    },
+    {
+      "runtime": "graalphp-before-untimed",
+      "parked": 10000,
+      "trials": 4,
+      "requests_per_second": {
+        "median": 25222.258,
+        "min": 24463.771,
+        "max": 25584.767,
+        "trials": [
+          24463.771,
+          25584.767,
+          24979.176,
+          25465.34
+        ]
+      },
+      "seconds": {
+        "median": 5.1971625,
+        "min": 5.123049,
+        "max": 5.3578,
+        "trials": [
+          5.3578,
+          5.123049,
+          5.247251,
+          5.147074
+        ]
+      },
+      "cpu_us_per_request": {
+        "median": 40.4715,
+        "min": 40.412,
+        "max": 41.962,
+        "trials": [
+          41.962,
+          40.412,
+          40.531,
+          40.412
+        ]
+      },
+      "rss_mib_pooled": {
+        "samples": 813,
+        "mean": 174.060674200492,
+        "p20": 174.64453125,
+        "p50": 175.52734375,
+        "p90": 185.25,
+        "p95": 185.35546875,
+        "p99": 185.5078125,
+        "max": 185.7578125
+      },
+      "rss_p50_mib_per_trial": {
+        "median": 175.388671875,
+        "min": 175.2109375,
+        "max": 175.83203125,
+        "trials": [
+          175.83203125,
+          175.52734375,
+          175.2109375,
+          175.25
+        ]
+      }
+    },
+    {
+      "runtime": "graalphp-untimed",
+      "parked": 1000,
+      "trials": 4,
+      "requests_per_second": {
+        "median": 26504.4735,
+        "min": 26040.642,
+        "max": 26929.956,
+        "trials": [
+          26040.642,
+          26224.596,
+          26784.351,
+          26929.956
+        ]
+      },
+      "seconds": {
+        "median": 4.94583,
+        "min": 4.867145,
+        "max": 5.033363,
+        "trials": [
+          5.033363,
+          4.998056,
+          4.893604,
+          4.867145
+        ]
+      },
+      "cpu_us_per_request": {
+        "median": 38.742999999999995,
+        "min": 38.147,
+        "max": 40.174,
+        "trials": [
+          40.174,
+          39.101,
+          38.147,
+          38.385
+        ]
+      },
+      "rss_mib_pooled": {
+        "samples": 772,
+        "mean": 86.52496053270725,
+        "p20": 74.37109375,
+        "p50": 77.73828125,
+        "p90": 124.6953125,
+        "p95": 149.69140625,
+        "p99": 153.78125,
+        "max": 153.859375
+      },
+      "rss_p50_mib_per_trial": {
+        "median": 77.716796875,
+        "min": 77.6328125,
+        "max": 77.7734375,
+        "trials": [
+          77.6328125,
+          77.73828125,
+          77.6953125,
+          77.7734375
+        ]
+      }
+    },
+    {
+      "runtime": "graalphp-untimed",
+      "parked": 10000,
+      "trials": 4,
+      "requests_per_second": {
+        "median": 25199.385000000002,
+        "min": 24992.92,
+        "max": 25462.425,
+        "trials": [
+          24992.92,
+          25321.852,
+          25076.918,
+          25462.425
+        ]
+      },
+      "seconds": {
+        "median": 5.20152,
+        "min": 5.147664,
+        "max": 5.244365,
+        "trials": [
+          5.244365,
+          5.176241,
+          5.226799,
+          5.147664
+        ]
+      },
+      "cpu_us_per_request": {
+        "median": 40.889,
+        "min": 40.412,
+        "max": 41.842,
+        "trials": [
+          41.008,
+          40.412,
+          41.842,
+          40.77
+        ]
+      },
+      "rss_mib_pooled": {
+        "samples": 808,
+        "mean": 113.39994585396039,
+        "p20": 99.171875,
+        "p50": 102.04296875,
+        "p90": 156.69921875,
+        "p95": 157.1640625,
+        "p99": 183.046875,
+        "max": 183.05859375
+      },
+      "rss_p50_mib_per_trial": {
+        "median": 102.037109375,
+        "min": 100.4296875,
+        "max": 108.81640625,
+        "trials": [
+          102.04296875,
+          100.4296875,
+          108.81640625,
+          102.03125
+        ]
+      }
+    }
+  ],
+  "completed_trials": 32,
+  "payload_requests": 4194304,
+  "latency_samples": 131072,
+  "failures": null
+}

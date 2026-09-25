@@ -13,11 +13,14 @@ import java.util.concurrent.atomic.LongAdder;
 /** Direct cURL throughput. All process counters are sampled outside the PHP runtime. */
 public final class CurlBenchmark {
     private static final byte[] BODY = "r".repeat(1024).getBytes(StandardCharsets.US_ASCII);
-    private record Control(String path, CompletableFuture<Void> release) {}
+    private record Control(String path, long receivedNanos, Instant receivedAt, CompletableFuture<Void> release) {}
     private record RuntimeSpec(String name, List<String> command, int latencyEvery) {
         RuntimeSpec(String name, List<String> command) { this(name, command, LATENCY_EVERY); }
     }
-    private record MemorySample(long nanos, long rss, long commit) {}
+    private record MemorySample(long nanos, long rss, long commit, long cpuNanos) {}
+    record Timing(int client, int iteration, long start, long duration) {}
+    record Clock(long before, long after) {}
+    private static final boolean TIMELINE = "1".equals(System.getenv("GRAALPHP_BENCH_TIMELINE"));
     private static final boolean PROFILE = "1".equals(System.getenv("GRAALPHP_BENCH_PROFILE"));
     private static final int LATENCY_EVERY = Integer.parseInt(Objects.requireNonNullElse(System.getenv("GRAALPHP_BENCH_LATENCY_EVERY"), "0"));
     private static final String HEADER = "runtime,repetition,parked,clients,phase,requests,seconds,requests_per_second,cpu_seconds,cpu_us_per_request,rss_mib,private_commit_mib,peak_rss_mib,distinct_peer_endpoints,user_us_per_request,kernel_us_per_request\n";
@@ -31,6 +34,8 @@ public final class CurlBenchmark {
         if (delay < 0 || repetitions < 1 || iterations < 1 || clients < 1) throw new IllegalArgumentException("Positive repetitions, iterations and clients required");
         if (Arrays.stream(populations).anyMatch(count -> count < 0)) throw new IllegalArgumentException("Negative parked population");
         if (LATENCY_EVERY < 0) throw new IllegalArgumentException("Negative latency sampling interval");
+        if (TIMELINE && (LATENCY_EVERY == 0 || "1".equals(System.getenv("GRAALPHP_BENCH_LATENCY_CONTROL"))))
+            throw new IllegalArgumentException("Timeline diagnostics require positive sampling and no untimed controls");
         System.setProperty("sun.net.httpserver.maxIdleConnections", "4096");
         Path root = Path.of("").toAbsolutePath();
         Path output = Files.createTempDirectory(root.resolve("build"), "curl-benchmark-");
@@ -53,7 +58,11 @@ public final class CurlBenchmark {
         }
         if (baseline != null && !baseline.isBlank()) {
             var compared = new ArrayList<RuntimeSpec>();
-            compared.add(new RuntimeSpec("graalphp-before", List.of(root.resolve(baseline).toString())));
+            var baselineCommand = new ArrayList<>(List.of(root.resolve(baseline).toString()));
+            String baselineOptions = System.getenv("GRAALPHP_BENCH_BASELINE_VM_OPTIONS");
+            if (baselineOptions != null && !baselineOptions.isBlank())
+                baselineCommand.addAll(baselineOptions.lines().filter(option -> !option.isBlank()).toList());
+            compared.add(new RuntimeSpec("graalphp-before", baselineCommand));
             compared.add(runtimes.getFirst());
             if ("1".equals(System.getenv("GRAALPHP_BENCH_WITH_TRUEASYNC"))) compared.add(runtimes.get(1));
             runtimes = compared;
@@ -83,6 +92,7 @@ public final class CurlBenchmark {
         Files.writeString(output.resolve("latency.csv"), "runtime,repetition,parked,sample_every,samples,mean_ms,p20_ms,p50_ms,p90_ms,p95_ms,p99_ms,max_ms\n");
         Files.writeString(output.resolve("memory.csv"), "runtime,repetition,parked,samples,rss_p20_mib,rss_p50_mib,rss_p90_mib,rss_p95_mib,rss_p99_mib,rss_max_mib,commit_p50_mib,commit_p99_mib,commit_max_mib\n");
         Files.writeString(output.resolve("phases.csv"), "runtime,repetition,parked,phase,clients,start,end\n");
+        Files.writeString(output.resolve("events.csv"), "runtime,repetition,parked,event,received_elapsed_ns,observed_elapsed_ns,received_utc\n");
         Files.writeString(output.resolve("environment.txt"), "Direct cURL; ordinary provider forced with GRAALPHP_CURL_PROVIDER=standard\n"
                 + "No WebSocket, PHP HTTP server, SQLite or FFI extension/workload\n"
                 + "Payload=1024 bytes; independent HTTP/1.1 keep-alive peer; " + delay + "ms response delay; validates every body\n"
@@ -92,8 +102,11 @@ public final class CurlBenchmark {
                 + "Metrics=external Windows process CPU, working set (RSS), private commit; sampled peak every 25ms\n"
                 + "Memory distribution=external samples from process launch to work completion, including endpoints; raw timestamps retained; quantiles nearest rank\n"
                 + "Latency=hrtime(true) around curl_exec including guest resumption; validation/recording after timestamp; closed-loop load\n"
+                + "Timeline diagnostics=" + TIMELINE + "; additional guest arrays only when enabled; never pool with ordinary latency measurements\n"
+                + "Clock alignment=guest timestamps bracket suspended control; host receipt gives offset bounds, not assumed shared clock origins\n"
                 + "Latency sampling interval=" + LATENCY_EVERY + "; per-client offset=client index modulo interval; no samples discarded; raw samples emitted after end\n"
                 + "Measurement boundary=before process launch to peer receives end; includes bootstrap, coroutine creation, payload requests and parked release; excludes sample printing and final runtime shutdown\n"
+                + "Wall-time endpoints=peer control receipt; CPU/RSS endpoints=external observation immediately afterward; both timestamps in events.csv\n"
                 + "Control calls return immediately; startup and suspended rows are cumulative snapshots from launch\n"
                 + "Startup=first cURL control submission; suspended=after parked coroutines are ready, before first payload\n"
                 + "Script=" + Objects.requireNonNullElse(System.getenv("GRAALPHP_BENCH_SCRIPT"), "tests/php/curl-benchmark.php") + "\n"
@@ -131,6 +144,7 @@ public final class CurlBenchmark {
                     "BENCH_ITERATIONS", Integer.toString(iterations), "BENCH_PARKED", Integer.toString(parked),
                     "GRAALPHP_CURL_PROVIDER", "standard", "GRAALPHP_REACTOR", "libuv", "GRAALPHP_TIMEOUT_MS", "180000"));
             builder.environment().put("BENCH_LATENCY_EVERY", Integer.toString(runtime.latencyEvery));
+            builder.environment().put("BENCH_TIMELINE", TIMELINE ? "1" : "0");
             long launch = System.nanoTime();
             Instant trafficStart = Instant.now();
             Process process = builder.start();
@@ -138,7 +152,7 @@ public final class CurlBenchmark {
             boolean completed = false;
             try (var sampler = new NetworkBenchmark.Sampler(process.pid())) {
                 var before = new NetworkBenchmark.Resources(0, 0, 0, 0, 0, 0);
-                long begin = launch, peak = 0;
+                long begin = launch, peak = 0, suspendedReceived = 0;
                 var memory = new ArrayList<MemorySample>();
                 long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(180);
                 while (process.isAlive() && System.nanoTime() < deadline) {
@@ -146,25 +160,28 @@ public final class CurlBenchmark {
                     if (!completed) {
                         var current = sampler.read();
                         peak = Math.max(peak, current.resident());
-                        memory.add(new MemorySample(System.nanoTime() - begin, current.resident(), current.privateCommit()));
+                        memory.add(new MemorySample(System.nanoTime() - begin, current.resident(), current.privateCommit(), current.cpuNanos()));
                     }
                     if (control == null) continue;
+                    Files.writeString(output.resolve("events.csv"), runtime.name + "," + repetition + "," + parked + "," + control.path
+                            + "," + (control.receivedNanos - launch) + "," + (System.nanoTime() - launch) + "," + control.receivedAt + "\n", StandardOpenOption.APPEND);
                     switch (control.path) {
                         case "/begin", "/suspended" -> {
+                            if (control.path.equals("/suspended")) suspendedReceived = control.receivedNanos;
                             var current = sampler.read();
                             peak = Math.max(peak, current.resident());
-                            memory.add(new MemorySample(System.nanoTime() - begin, current.resident(), current.privateCommit()));
+                            memory.add(new MemorySample(System.nanoTime() - begin, current.resident(), current.privateCommit(), current.cpuNanos()));
                             save(output, runtime, repetition, parked, 0, control.path.equals("/begin") ? "startup" : "suspended",
-                                    0, begin, before, current, peak, 0);
+                                    0, control.receivedNanos - begin, before, current, peak, 0);
                         }
                         case "/end" -> {
                             var after = sampler.read();
-                            memory.add(new MemorySample(System.nanoTime() - begin, after.resident(), after.privateCommit()));
+                            memory.add(new MemorySample(System.nanoTime() - begin, after.resident(), after.privateCommit(), after.cpuNanos()));
                             peak = Math.max(peak, after.resident());
-                            Instant trafficEnd = Instant.now();
+                            Instant trafficEnd = control.receivedAt;
                             long count = fixture.requests.sum();
                             if (count != (long) clients * iterations) throw new AssertionError("Peer request count: " + count);
-                            save(output, runtime, repetition, parked, clients, "curl", count, begin, before, after, peak, fixture.peers.size());
+                            save(output, runtime, repetition, parked, clients, "curl", count, control.receivedNanos - begin, before, after, peak, fixture.peers.size());
                             Files.writeString(output.resolve("phases.csv"), runtime.name + "," + repetition + "," + parked + ",curl," + clients
                                     + "," + trafficStart + "," + trafficEnd + "\n", StandardOpenOption.APPEND);
                             completed = true;
@@ -181,6 +198,7 @@ public final class CurlBenchmark {
                 if (!text.contains("8.22.0")) throw new AssertionError("Unexpected cURL version: " + text);
                 saveMemory(output, runtime, repetition, parked, memory);
                 saveLatency(output, runtime, repetition, parked, clients, iterations, text);
+                if (TIMELINE) saveTimeline(output, runtime, repetition, parked, clients, iterations, text, launch, suspendedReceived);
                 Files.writeString(output.resolve("environment.txt"), runtime.name + " run=" + repetition + " parked=" + parked + " "
                         + text.lines().filter(line -> line.startsWith("VERSION ")).findFirst().orElseThrow() + "\n", StandardOpenOption.APPEND);
             } catch (Exception | AssertionError error) {
@@ -199,11 +217,7 @@ public final class CurlBenchmark {
             int clients, int iterations, String log) throws IOException {
         long[] samples = log.lines().filter(line -> line.startsWith("LATENCY "))
                 .mapToLong(line -> Long.parseLong(line.substring(8))).toArray();
-        long expected = 0;
-        if (runtime.latencyEvery > 0) for (int client = 0; client < clients; client++) {
-            int offset = client % runtime.latencyEvery;
-            if (offset < iterations) expected += 1L + (iterations - 1 - offset) / runtime.latencyEvery;
-        }
+        long expected = expectedSamples(clients, iterations, runtime.latencyEvery);
         if (samples.length != expected || Arrays.stream(samples).anyMatch(value -> value < 0))
             throw new AssertionError("Invalid latency samples: " + samples.length + ", expected " + expected);
         if (samples.length == 0) return;
@@ -219,11 +233,72 @@ public final class CurlBenchmark {
         Files.writeString(output.resolve("latency.csv"), row, StandardOpenOption.APPEND);
         System.out.print("LATENCY " + row);
     }
+    static long expectedSamples(int clients, int iterations, int interval) {
+        if (clients < 1 || iterations < 1 || interval < 0) throw new IllegalArgumentException("Invalid sampling configuration");
+        long expected = 0;
+        if (interval > 0) for (int client = 0; client < clients; client++) {
+            int offset = client % interval;
+            if (offset < iterations) expected += 1L + (iterations - 1 - offset) / interval;
+        }
+        return expected;
+    }
+    static Clock timelineClock(String log) {
+        var lines = log.lines().filter(line -> line.startsWith("CLOCK ")).toList();
+        if (lines.size() != 1) throw new AssertionError("Expected one clock bracket");
+        String[] fields = lines.getFirst().split(" ");
+        if (fields.length != 3) throw new AssertionError("Invalid clock bracket");
+        var clock = new Clock(Long.parseLong(fields[1]), Long.parseLong(fields[2]));
+        if (clock.after < clock.before) throw new AssertionError("Reversed clock bracket");
+        return clock;
+    }
+    static List<Timing> timelineSamples(String log, int clients, int iterations, int interval) {
+        if (interval <= 0) throw new IllegalArgumentException("Timeline requires sampling");
+        var clock = timelineClock(log);
+        long[] durations = log.lines().filter(line -> line.startsWith("LATENCY "))
+                .mapToLong(line -> Long.parseLong(line.substring(8))).toArray();
+        var samples = log.lines().filter(line -> line.startsWith("TIMELINE ")).map(line -> {
+            String[] fields = line.split(" ");
+            if (fields.length != 5) throw new AssertionError("Invalid timeline sample");
+            return new Timing(Integer.parseInt(fields[1]), Integer.parseInt(fields[2]), Long.parseLong(fields[3]), Long.parseLong(fields[4]));
+        }).toList();
+        if (samples.size() != expectedSamples(clients, iterations, interval) || samples.size() != durations.length)
+            throw new AssertionError("Unexpected timeline sample count");
+        int index = 0;
+        for (int client = 0; client < clients; client++) {
+            long previousEnd = clock.after;
+            for (long iteration = client % interval; iteration < iterations; iteration += interval) {
+                var sample = samples.get(index);
+                if (sample.client != client || sample.iteration != iteration || sample.duration < 0
+                        || sample.duration != durations[index] || sample.start < previousEnd)
+                    throw new AssertionError("Invalid timeline ordering, identity or duration at sample " + index);
+                previousEnd = Math.addExact(sample.start, sample.duration);
+                index++;
+            }
+        }
+        return samples;
+    }
+    private static void saveTimeline(Path output, RuntimeSpec runtime, int repetition, int parked,
+            int clients, int iterations, String log, long launch, long suspendedReceived) throws IOException {
+        var clock = timelineClock(log);
+        var samples = timelineSamples(log, clients, iterations, runtime.latencyEvery);
+        long anchor = suspendedReceived - launch;
+        String suffix = runtime.name + "-" + repetition + "-" + parked + ".csv";
+        Files.writeString(output.resolve("clock-" + suffix), "host_suspended_elapsed_ns,guest_before_ns,guest_after_ns,uncertainty_ns\n"
+                + anchor + "," + clock.before + "," + clock.after + "," + Math.subtractExact(clock.after, clock.before) + "\n");
+        var raw = new StringBuilder("client,iteration,guest_start_ns,duration_ns,start_elapsed_lower_ns,start_elapsed_upper_ns\n");
+        for (var sample : samples) {
+            long lower = Math.addExact(anchor, Math.subtractExact(sample.start, clock.after));
+            long upper = Math.addExact(anchor, Math.subtractExact(sample.start, clock.before));
+            raw.append(sample.client).append(',').append(sample.iteration).append(',').append(sample.start).append(',')
+                    .append(sample.duration).append(',').append(lower).append(',').append(upper).append('\n');
+        }
+        Files.writeString(output.resolve("timeline-" + suffix), raw);
+    }
     private static void saveMemory(Path output, RuntimeSpec runtime, int repetition, int parked,
             List<MemorySample> samples) throws IOException {
         if (samples.isEmpty()) throw new AssertionError("No memory samples");
-        var raw = new StringBuilder("elapsed_ns,rss_bytes,private_commit_bytes\n");
-        for (var sample : samples) raw.append(sample.nanos).append(',').append(sample.rss).append(',').append(sample.commit).append('\n');
+        var raw = new StringBuilder("elapsed_ns,rss_bytes,private_commit_bytes,cpu_ns\n");
+        for (var sample : samples) raw.append(sample.nanos).append(',').append(sample.rss).append(',').append(sample.commit).append(',').append(sample.cpuNanos).append('\n');
         Files.writeString(output.resolve("memory-" + runtime.name + "-" + repetition + "-" + parked + ".csv"), raw);
         long[] rss = samples.stream().mapToLong(MemorySample::rss).sorted().toArray();
         long[] commit = samples.stream().mapToLong(MemorySample::commit).sorted().toArray();
@@ -235,8 +310,8 @@ public final class CurlBenchmark {
         Files.writeString(output.resolve("memory.csv"), row, StandardOpenOption.APPEND);
     }
     private static void save(Path output, RuntimeSpec runtime, int repetition, int parked, int clients, String phase, long requests,
-            long begin, NetworkBenchmark.Resources before, NetworkBenchmark.Resources after, long peak, int peers) throws IOException {
-        double seconds = (System.nanoTime() - begin) / 1e9, cpu = (after.cpuNanos() - before.cpuNanos()) / 1e9;
+            long elapsedNanos, NetworkBenchmark.Resources before, NetworkBenchmark.Resources after, long peak, int peers) throws IOException {
+        double seconds = elapsedNanos / 1e9, cpu = (after.cpuNanos() - before.cpuNanos()) / 1e9;
         String row = String.format(Locale.ROOT, "%s,%d,%d,%d,%s,%d,%.6f,%.3f,%.6f,%.3f,%.3f,%.3f,%.3f,%d,%.3f,%.3f%n",
                 runtime.name, repetition, parked, clients, phase, requests, seconds, requests / seconds, cpu,
                 requests == 0 ? 0 : cpu * 1e6 / requests, after.resident() / 1048576.0, after.privateCommit() / 1048576.0, peak / 1048576.0, peers,
@@ -259,7 +334,7 @@ public final class CurlBenchmark {
                     if (exchange.getRequestURI().getPath().equals("/payload")) {
                         requests.increment(); peers.add(exchange.getRemoteAddress()); if (delay > 0) Thread.sleep(delay);
                     } else {
-                        var control = new Control(exchange.getRequestURI().getPath(), new CompletableFuture<>());
+                        var control = new Control(exchange.getRequestURI().getPath(), System.nanoTime(), Instant.now(), new CompletableFuture<>());
                         controls.add(control); control.release.get(10, TimeUnit.SECONDS);
                         body = "ok".getBytes(StandardCharsets.US_ASCII);
                     }

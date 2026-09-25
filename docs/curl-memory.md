@@ -1,5 +1,8 @@
 # cURL: memoria e avvio a freddo
 
+Seguito: [indagine p99 del 26 settembre](curl-p99.md), con A/B sullo stesso
+eseguibile e diagnostica separata. I dati storici sotto restano invariati.
+
 Campagna Windows del 25 settembre 2026. La CLI usa ora
 `engine.CompilerIdleDelay=500`: dopo 500 ms senza lavoro, Graal può terminare
 i worker del compilatore e liberare i relativi isolati di compilazione.

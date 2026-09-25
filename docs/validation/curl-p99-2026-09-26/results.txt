@@ -1,0 +1,51 @@
+PERF-01 tooling and same-image investigation, 2026-09-26 Europe/Rome
+Raw campaign timestamps: 2026-09-25 UTC.
+
+PASS same-image Windows A/B: 32/32 trials, 4194304 payload requests,
+131072 sampled durations. Four alternating repetitions, 1000/10000 parked,
+64 clients, 2048 requests per client, paired timed/untimed controls.
+Both variants run the same production binary with explicit CompilerIdleDelay
+10000 or 500. JIT remains enabled. No warmup or payload requests discarded.
+RSS p50 -47.18%/-41.86%; pooled p99 -2.41%/+10.42%; untimed median throughput
++0.17%/-0.09%; untimed median CPU per request -1.67%/+1.03%.
+Per-trial p99 ranges overlap. Four repetitions do not establish statistical
+significance or equivalence. No comparison pooled with historical campaigns.
+
+PASS separate timeline/JIT/GC diagnostics: 8/8 trials, 1048576 requests,
+65536 durations. Tier 1 and Tier 2 compilations observed in both variants.
+Native GC logs include startup and final shutdown; timeline arrays perturb
+allocations. Compilation-task traces do not measure compiler-worker lifetime.
+Guest/host alignment uncertainty 2.12-7.72ms; Native GC clock origin not calibrated.
+
+PASS separate peer-GC diagnostics: 4/4 trials, 524288 requests, 32768 durations.
+The shared driver/HTTP-peer JVM records 11-12 completed pauses per trial
+between suspended/end controls; 8.793-27.594ms total per trial.
+Peer GC is a measured confounder, not proof of the source of the A/B delta.
+
+TOTAL full-sized trials: 44/44, 5767168 requests, 229376 latency samples.
+No failed or omitted full-sized trials. No concurrent builds or test suites.
+Fresh PHP process and HttpServer instance per trial; driver/peer JVM reused
+within each campaign. Raw CSVs, child logs, driver output and environment retained.
+New archive text normalized to UTF-8/LF, trailing horizontal log whitespace
+trimmed and personal workspace prefixes removed; measurements unchanged. Historical evidence not rewritten.
+
+PASS 6/6 protocol smoke trials on Windows Native Image GraalPHP and TrueAsync:
+ordinary, initial begin-clock timeline, final suspended-clock timeline.
+The initial timeline bracket was too wide for useful alignment, not a runtime
+failure; it is retained separately and excluded from performance results.
+PASS 26 deterministic Java benchmark accounting/validation checks.
+PASS 7 Python report calculation and parsing tests.
+PASS all per-trial latency/RSS/commit quantiles independently recomputed from CSV;
+counts, CPU monotonicity/endpoints, event order and wall-time boundaries checked.
+PASS timeline durations and clock bounds recomputed from raw data.
+See checks.txt for actual test output and Java version.
+
+No product source, dependency version, runtime default or executable changed.
+Windows executable: 90210304 bytes, SHA256
+911359acdf1069bdd382f1749da3ad33000a2dfbc7c2ca7cf57d54b47e95a712
+Linux executable: 92932904 bytes, SHA256
+efa0d5740382d7fcfa90d4c89a8bd271119d9a18f25f9cb5743c73ca53f4de9f
+No Native Image rebuild or new Linux execution. Full language, cURL functional,
+TrueAsync differential, WebSocket, SQLite and FFI suites not rerun here.
+No NMT, compiler-worker lifetime or causal allocation attribution completed.
+PERF-01 remains open: instrumentation/A-B block completed, no p99 runtime fix.
