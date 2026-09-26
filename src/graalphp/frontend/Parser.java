@@ -46,11 +46,12 @@ public final class Parser {
                 take(";");
             } else if (at("function")) {
                 functions.add(function(false));
-            } else if (at("class")) {
+            } else if (atTypeDeclaration()) {
                 int start = peek().start;
                 var declaration = classDeclaration();
                 // Only declarations whose inheritance is known here can be bound early.
-                if (declaration.parent() == null || classes.stream().anyMatch(parent -> parent.name().equalsIgnoreCase(declaration.parent()))) {
+                if (declaration.interfaces().isEmpty() && declaration.traits().isEmpty()
+                        && (declaration.parent() == null || classes.stream().anyMatch(parent -> parent.name().equalsIgnoreCase(declaration.parent())))) {
                     classes.add(declaration);
                 } else {
                     statements.add(new Statement(start, previous().end - start, new DeclareClass(declaration)));
@@ -62,44 +63,137 @@ public final class Parser {
         return new Unit(source, List.copyOf(statements), List.copyOf(functions), List.copyOf(classes));
     }
 
+    private boolean atTypeDeclaration() {
+        return at("class") || at("interface") || at("trait") || at("abstract") || at("final");
+    }
+
     private ClassDeclaration classDeclaration() {
-        take("class");
+        boolean abstractType = false;
+        boolean finalType = false;
+        while (at("abstract") || at("final")) {
+            if (accept("abstract")) { if (abstractType) fail("Repeated abstract modifier"); abstractType = true; }
+            else { take("final"); if (finalType) fail("Repeated final modifier"); finalType = true; }
+        }
+        TypeKind kind;
+        if (accept("interface")) kind = TypeKind.INTERFACE;
+        else if (accept("trait")) kind = TypeKind.TRAIT;
+        else { take("class"); kind = TypeKind.CLASS; }
+        if (abstractType && finalType || kind != TypeKind.CLASS && (abstractType || finalType)) fail("Invalid type modifiers");
         String name = declared(identifier());
-        String parent = accept("extends") ? qualified(identifier(), false) : null;
+        String parent = null;
+        var interfaces = new ArrayList<String>();
+        if (accept("extends")) {
+            if (kind == TypeKind.INTERFACE) {
+                do { interfaces.add(qualified(identifier(), false)); } while (accept(","));
+            } else if (kind == TypeKind.CLASS) parent = qualified(identifier(), false);
+            else fail("A trait cannot extend a class");
+        }
+        if (accept("implements")) {
+            if (kind != TypeKind.CLASS) fail("Only classes can implement interfaces");
+            do { interfaces.add(qualified(identifier(), false)); } while (accept(","));
+        }
         var properties = new ArrayList<PropertyDeclaration>();
         var methods = new ArrayList<MethodDeclaration>();
+        var traits = new ArrayList<TraitUse>();
+        var constants = new ArrayList<ClassConstantDeclaration>();
         take("{");
         while (!accept("}")) {
+            if (accept("use")) {
+                if (kind == TypeKind.INTERFACE) fail("Interfaces cannot use traits");
+                traits.add(traitUse());
+                continue;
+            }
             String visibility = "public";
             boolean shared = false;
-            while (at("public") || at("private") || at("protected") || at("static")) {
-                if (accept("static")) shared = true;
-                else visibility = tokens.get(position++).text;
+            boolean abstractMethod = false;
+            boolean finalMember = false;
+            var modifiers = new java.util.HashSet<String>();
+            while (List.of("public", "private", "protected", "static", "abstract", "final", "var").contains(peek().text)) {
+                String modifier = tokens.get(position++).text;
+                if (!modifiers.add(modifier)) fail("Repeated member modifier " + modifier);
+                switch (modifier) {
+                    case "static" -> shared = true;
+                    case "abstract" -> abstractMethod = true;
+                    case "final" -> finalMember = true;
+                    case "var" -> visibility = "public";
+                    default -> visibility = modifier;
+                }
             }
+            long visibilityCount = modifiers.stream().filter(value -> List.of("public", "private", "protected", "var").contains(value)).count();
+            if (visibilityCount > 1) fail("Multiple visibility modifiers");
             if (at("function")) {
-                methods.add(new MethodDeclaration(function(true), shared, visibility));
+                boolean signatureOnly = kind == TypeKind.INTERFACE || abstractMethod;
+                if (kind == TypeKind.INTERFACE && (!visibility.equals("public") || finalMember || abstractMethod)) fail("Invalid interface method modifiers");
+                if (signatureOnly && finalMember) fail("An abstract method cannot be final");
+                if (abstractMethod && kind == TypeKind.CLASS && (!abstractType || visibility.equals("private"))) fail("Invalid abstract class method");
+                methods.add(new MethodDeclaration(function(true, signatureOnly), shared, visibility, signatureOnly, finalMember));
+            } else if (accept("const")) {
+                if (shared || abstractMethod) fail("Invalid constant modifiers");
+                String constantType = position + 1 < tokens.size() && tokens.get(position + 1).text.equals("=") ? null : type();
+                do {
+                    String constantName = identifier(); take("=");
+                    constants.add(new ClassConstantDeclaration(constantName, expression(0), visibility, finalMember, constantType));
+                } while (accept(","));
+                take(";");
             } else {
-                String type = peek().text.startsWith("$") ? null : type();
+                if (kind == TypeKind.INTERFACE || abstractMethod || finalMember) fail("Unsupported property declaration modifiers");
+                String propertyType = peek().text.startsWith("$") ? null : type();
                 do {
                     String property = variableName();
                     Expression value = accept("=") ? expression(0) : null;
-                    properties.add(new PropertyDeclaration(property, value, shared, visibility, type));
+                    properties.add(new PropertyDeclaration(property, value, shared, visibility, propertyType));
                 } while (accept(","));
                 take(";");
             }
         }
-        return new ClassDeclaration(name, parent, List.copyOf(properties), List.copyOf(methods));
+        return new ClassDeclaration(name, parent, List.copyOf(properties), List.copyOf(methods), kind,
+                abstractType || kind == TypeKind.INTERFACE, finalType, List.copyOf(interfaces),
+                List.copyOf(traits), List.copyOf(constants));
     }
 
-    private Function function(boolean method) {
+    private TraitUse traitUse() {
+        var names = new ArrayList<String>();
+        do { names.add(qualified(identifier(), false)); } while (accept(","));
+        var adaptations = new ArrayList<TraitAdaptation>();
+        if (accept(";")) return new TraitUse(List.copyOf(names), List.of());
+        take("{");
+        while (!accept("}")) {
+            String first = identifier();
+            String trait = null;
+            String method = first;
+            if (accept("::")) { trait = qualified(first, false); method = identifier(); }
+            var excluded = new ArrayList<String>();
+            String alias = null;
+            String visibility = null;
+            boolean finalMethod = false;
+            if (accept("insteadof")) {
+                if (trait == null) fail("Trait precedence requires a qualified method");
+                do { excluded.add(qualified(identifier(), false)); } while (accept(","));
+            } else {
+                take("as");
+                if (at("public") || at("protected") || at("private")) visibility = tokens.get(position++).text;
+                finalMethod = accept("final");
+                if (!at(";")) alias = identifier();
+                if (alias == null && visibility == null && !finalMethod) fail("Empty trait alias");
+            }
+            take(";");
+            adaptations.add(new TraitAdaptation(trait, method, List.copyOf(excluded), alias, visibility, finalMethod));
+        }
+        return new TraitUse(List.copyOf(names), List.copyOf(adaptations));
+    }
+
+    private Function function(boolean method) { return function(method, false); }
+
+    private Function function(boolean method, boolean signatureOnly) {
         int start = take("function").start;
         String name = identifier();
         if (!method) name = declared(name);
         var parameters = parameters();
         String returnType = accept(":") ? type() : null;
-        var body = block();
-        return new Function(name, parameters, ((Block) body.form()).statements(), start,
-                previous().end - start, returnType);
+        List<Statement> body;
+        if (signatureOnly) { take(";"); body = List.of(); }
+        else body = ((Block) block().form()).statements();
+        return new Function(name, parameters, body, start, previous().end - start, returnType);
     }
 
     private List<Parameter> parameters() {
@@ -121,12 +215,26 @@ public final class Parser {
 
     private String type() {
         boolean nullable = accept("?");
-        String name = identifier();
-        if (!List.of("int", "float", "string", "bool", "array", "object", "callable", "mixed", "void",
-                "never", "null", "true", "false", "self", "parent", "static").contains(name)) {
-            name = qualified(name, false);
+        String result = intersectionType();
+        while (accept("|")) result += "|" + intersectionType();
+        if (nullable && (result.contains("|") || result.contains("&"))) fail("Nullable shorthand requires one type");
+        return nullable ? "?" + result : result;
+    }
+
+    private String intersectionType() {
+        String result = typeAtom();
+        while (at("&") && position + 1 < tokens.size()
+                && !tokens.get(position + 1).text.startsWith("$") && !tokens.get(position + 1).text.equals("...")) {
+            take("&"); result += "&" + typeAtom();
         }
-        return nullable ? "?" + name : name;
+        return result;
+    }
+
+    private String typeAtom() {
+        if (accept("(")) { String nested = type(); take(")"); return "(" + nested + ")"; }
+        String name = identifier();
+        return List.of("int", "float", "string", "bool", "array", "object", "callable", "iterable", "mixed", "void",
+                "never", "null", "true", "false", "self", "parent", "static").contains(name) ? name : qualified(name, false);
     }
 
     private Statement block() {
@@ -153,7 +261,7 @@ public final class Parser {
         int start = peek().start;
         Form form;
         if (at("{")) return block();
-        if (at("class")) {
+        if (atTypeDeclaration()) {
             var declaration = classDeclaration();
             return new Statement(start, previous().end - start, new DeclareClass(declaration));
         }
@@ -236,6 +344,12 @@ public final class Parser {
                 left = at("(") ? new MethodCall(left, member, arguments()) : new Property(left, member);
                 continue;
             }
+            if (accept("::")) {
+                String member = identifier();
+                if (at("(")) fail("Dynamic static method names are not implemented");
+                left = new ClassConstant(left, member);
+                continue;
+            }
             if (at("(")) { left = new DynamicCall(left, arguments()); continue; }
             if (at("++") || at("--")) {
                 String increment = tokens.get(position++).text;
@@ -253,6 +367,12 @@ public final class Parser {
             int precedence = precedence(operator);
             if (precedence < minimum) break;
             position++;
+            if (operator.equals("instanceof")) {
+                Expression type = peek().text.startsWith("$") || at("(") ? expression(precedence + 1)
+                        : new Literal(qualified(identifier(), false));
+                left = new InstanceOf(left, type);
+                continue;
+            }
             boolean assignment = precedence == 1;
             boolean reference = operator.equals("=") && accept("&");
             var right = expression(assignment || operator.equals("??") ? precedence : precedence + 1);
@@ -315,8 +435,8 @@ public final class Parser {
             String type = qualified(name, false);
             if (peek().text.startsWith("$")) return new StaticProperty(type, variableName());
             String member = identifier();
-            if (member.equals("class")) return new Literal(type);
-            return new StaticCall(type, member, arguments());
+            if (member.equals("class")) return List.of("self", "parent", "static").contains(type) ? new ClassName(type) : new Literal(type);
+            return at("(") ? new StaticCall(type, member, arguments()) : new ClassConstant(new Literal(type), member);
         }
         if (at("(")) return new Call(qualified(name, true), arguments(), !namespace.isEmpty() && !name.contains("\\")
                 && !functionAliases.containsKey(name.toLowerCase(java.util.Locale.ROOT)));
@@ -368,6 +488,7 @@ public final class Parser {
             case "??" -> 3; case "||" -> 4; case "&&" -> 5;
             case "==", "!=", "===", "!==" -> 6;
             case "<", "<=", ">", ">=" -> 7;
+            case "instanceof" -> 11;
             case "." -> 8; case "+", "-" -> 9; case "*", "/", "%" -> 10;
             default -> -1;
         };

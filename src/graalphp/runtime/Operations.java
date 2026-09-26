@@ -160,6 +160,8 @@ public final class Operations {
     }
     @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
     private static Object builtin(Activation activation, String name, Argument[] args, IndirectCallNode call) {
+        Object diagnostic = Diagnostics.function(activation, name, args);
+        if (diagnostic != AsyncApi.UNHANDLED) return diagnostic;
         Object loading = ClassLoading.function(activation, name, args, call);
         if (loading != AsyncApi.UNHANDLED) return loading;
         Object multi = CurlMultiApi.function(activation, name, args, call);

@@ -25,6 +25,7 @@ public final class NativeCallback implements TruffleObject, AutoCloseable {
     }
     Object invokeResumable(Activation caller, Object[] values, com.oracle.truffle.api.nodes.IndirectCallNode call) {
         if (closed) throw new PhpError("Callback outlived its request");
+        if (owner.request.fatalFailure != null) throw owner.request.fatalFailure;
         var arguments = java.util.Arrays.stream(values).map(v -> new Argument(v, null)).toArray(Argument[]::new);
         try {
             var child = new Activation(caller.request, invocation.function(), caller.task, false, arguments);
@@ -36,6 +37,7 @@ public final class NativeCallback implements TruffleObject, AutoCloseable {
     @ExportMessage @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
     Object execute(Object[] values) throws UnsupportedMessageException {
         if (closed) throw new PhpError("Callback outlived its request");
+        if (owner.request.fatalFailure != null) throw owner.request.fatalFailure;
         if (Thread.currentThread() != thread) {
             Object[] copied = values.clone();
             var result = owner.request.scheduler.dispatch(() -> executeLocal(copied));
@@ -55,6 +57,7 @@ public final class NativeCallback implements TruffleObject, AutoCloseable {
     }
     private Object executeLocal(Object[] values) throws UnsupportedMessageException {
         if (closed) throw new PhpError("Callback outlived its request");
+        if (owner.request.fatalFailure != null) throw owner.request.fatalFailure;
         var arguments = new Argument[values.length];
         var interop = InteropLibrary.getUncached();
         for (int i = 0; i < values.length; i++) {

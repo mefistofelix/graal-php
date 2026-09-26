@@ -9,7 +9,7 @@ import java.util.concurrent.CompletableFuture;
 import static graalphp.runtime.Execution.*;
 
 /** Call-scoped C stacks and closures; PHP callbacks remain on the calling task. */
-public final class NativeInvocation implements TruffleObject, AutoCloseable {
+public final class NativeInvocation implements TruffleObject, Drainable {
     public static final String SOURCE = """
         function native_invoke($call) {
             try {
@@ -199,6 +199,7 @@ public final class NativeInvocation implements TruffleObject, AutoCloseable {
             default -> throw new PhpError("Unknown native bridge operation");
         };
     }
+    @Override public void beginShutdown() { abort(); }
     @Override public void close() {
         if (closed) return;
         if (worker != null && !worker.completion.isDone()) throw new PhpError("Native worker is still active; preserving callback roots");

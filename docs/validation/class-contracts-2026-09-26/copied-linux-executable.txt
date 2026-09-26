@@ -1,0 +1,8 @@
+> build/graalphp-linux-x64 --version; examples/class-contracts.php in default and --interpreter modes
+GraalPHP 0.1 | PHP 8.6 subset | Truffle 25.4.4.1.1
+Hello from a trait
+contract satisfied
+Hello from a trait
+contract satisfied
+
+exit=0

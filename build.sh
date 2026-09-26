@@ -124,16 +124,18 @@ case "${1:-build}" in
         "$jdk/bin/java" -cp "build/classes:build/test-classes:$deps/*" graalphp.lab.ValueModelTest
         "$jdk/bin/java" -cp "build/classes:build/test-classes:$deps/*" graalphp.runtime.CycleCollectorTest
         ;;
-    autoload-test)
+    autoload-test|class-test)
         # Oracles are explicit: do not silently compare a different PHP release.
         : "${PHP_ORACLE:?Set PHP_ORACLE to a PHP 8.6 executable}"
         : "${TRUEASYNC_ORACLE:?Set TRUEASYNC_ORACLE to the pinned TrueAsync executable}"
+        language_test=AutoloadTest
+        if [[ "$1" == class-test ]]; then language_test=ClassContractsTest; fi
         mkdir -p build/test-classes
-        "$jdk/bin/javac" --release 25 -proc:none -cp "build/classes:$deps/*" -d build/test-classes tests/graalphp/AutoloadTest.java
+        "$jdk/bin/javac" --release 25 -proc:none -cp "build/classes:$deps/*" -d build/test-classes "tests/graalphp/$language_test.java"
         autoload_executable=
         if [[ "${2:-}" == native ]]; then autoload_executable="$PWD/build/graalphp"; fi
         "$jdk/bin/java" --enable-native-access=ALL-UNNAMED -cp "build/classes:build/test-classes:$deps/*" \
-            graalphp.AutoloadTest "$PHP_ORACLE" "$TRUEASYNC_ORACLE" "$autoload_executable"
+            "graalphp.$language_test" "$PHP_ORACLE" "$TRUEASYNC_ORACLE" "$autoload_executable" "${3:-}"
         ;;
     oracle)
         "${PHP_ORACLE:-php}" -n -r 'if (PHP_MAJOR_VERSION !== 8 || PHP_MINOR_VERSION !== 6) exit(1);'
@@ -176,12 +178,17 @@ case "${1:-build}" in
         if [[ $# -gt 1 && "$2" == native ]]; then native_arguments=("$PWD/build/graalphp"); fi
         "$jdk/bin/java" --enable-native-access=ALL-UNNAMED -cp "build/classes:build/test-classes:$deps/*" graalphp.TrueAsyncTest "$PWD/tools/$archive/php" "${native_arguments[@]}"
         ;;
-    ffi-bridge-test)
+    ffi-bridge-test|ffi-fatal-test)
         build_native_libraries
         TMPDIR="$PWD/build/xmake-tmp-953d954" tools/xmake-953d954-linux-x64 -P "$PWD" -F "$PWD/xmake.lua" -y ffi-bridge-fixture
         mkdir -p build/test-classes
-        "$jdk/bin/javac" --release 25 -proc:none -cp "build/classes:$deps/*" -d build/test-classes tests/graalphp/NativeBridgeTest.java
-        if [[ "${2:-}" == native ]]; then
+        "$jdk/bin/javac" --release 25 -proc:none -cp "build/classes:$deps/*" -d build/test-classes tests/graalphp/NativeBridgeTest.java tests/graalphp/NativeBridgeFatalTest.java
+        if [[ "$1" == ffi-fatal-test ]]; then
+            fatal_executable=
+            if [[ "${2:-}" == native ]]; then fatal_executable="$PWD/build/graalphp"; fi
+            "$jdk/bin/java" --enable-native-access=ALL-UNNAMED -cp "build/classes:build/test-classes:$deps/*" \
+                graalphp.NativeBridgeFatalTest "$PWD/build/libffi-bridge-fixture.so" "$fatal_executable"
+        elif [[ "${2:-}" == native ]]; then
             "$jdk/bin/native-image" -O1 -march=compatibility \
                 --initialize-at-build-time=graalphp.truffle,graalphp.runtime \
                 --enable-native-access=ALL-UNNAMED -J-Xmx6g --parallelism=8 \

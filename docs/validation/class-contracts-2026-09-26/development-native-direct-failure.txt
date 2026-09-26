@@ -1,0 +1,553 @@
+using lock build\toolchain.lock
+already installed 12 packages in build\toolchain
+[100%]: build ok, spent 1.063s
+[100%]: build ok, spent 1.078s
+========================================================================================================================
+GraalVM Native Image: Generating 'graalphp.exe' (executable)...
+========================================================================================================================
+For detailed information and explanations on the build output, visit:
+https://github.com/oracle/graal/blob/master/docs/reference-manual/native-image/BuildOutput.md
+------------------------------------------------------------------------------------------------------------------------
+[1/8] Initializing...                                                                                   (5,6s @ 0,29GiB)
+ Builder configuration:
+ - Java version: 25.0.4.1.1+1-LTS, vendor version: Oracle GraalVM 25.4.4.1.1+1.1
+ - Graal compiler: optimization level: 3, target machine: compatibility, PGO: ML-inferred
+ - C compiler: cl.exe (microsoft, x64, 19.50.35739)
+ - Assertions: disabled, system assertions: disabled
+ - 9 user-specific feature(s):
+   - com.oracle.svm.enterprise.truffle.EnterpriseTruffleFeature: Provides enterprise extensions for the Truffle runtime.
+   - com.oracle.svm.enterprise.truffle.compiler.EnterpriseTruffleCompilerFeature: Provides additional optimizations and isolated compilation for Truffle.
+   - com.oracle.svm.truffle.TruffleBaseFeature: Provides internal support for Truffle
+   - com.oracle.svm.truffle.TruffleFeature: Provides internal support for Truffle runtime compilation
+   - com.oracle.svm.truffle.nfi.TruffleNFIFeature
+   - com.oracle.svm.truffle.nfi.windows.WindowsTruffleNFIFeature
+   - com.oracle.truffle.api.impl.TruffleAPIFeature: Provides basic support for Truffle
+   - com.oracle.truffle.api.object.DynamicObjectFeature: Provides support for DynamicObject
+   - org.graalvm.home.HomeFinderFeature: Finds GraalVM paths and its version number
+ Image configuration:
+ - Garbage collector: Serial GC (max heap size: 80% of RAM)
+ - Assertions: disabled (class-specific config may apply), system assertions: disabled
+------------------------------------------------------------------------------------------------------------------------
+Build resources:
+ - 6.00GiB of memory (38.1% of system memory, set via '-Xmx6g')
+ - 8 thread(s) (50,0% of 16 available processor(s), set via '--parallelism=8')
+
+=== Found 22 compilation blocklist violations ===
+
+Blocklisted method
+   java.lang.StringBuffer.charAt(int) (target: java.lang.CharSequence.charAt(int))
+trace:
+  at com.oracle.svm.core.jni.access.JNIReflectionDictionary$1.equals(JNIReflectionDictionary.java:88) [bci: 8]
+  at org.graalvm.collections.EconomicMapImpl.compareKeys(EconomicMapImpl.java:274) [bci: 46]
+  at org.graalvm.collections.EconomicMapImpl.findHash(EconomicMapImpl.java:284) [bci: 26]
+  at org.graalvm.collections.EconomicMapImpl.find(EconomicMapImpl.java:250) [bci: 9]
+  at org.graalvm.collections.EconomicMapImpl.put(EconomicMapImpl.java:424) [bci: 6]
+  at jdk.graal.compiler.util.EconomicHashMap.put(EconomicHashMap.java:152) [bci: 19]
+  at jdk.graal.compiler.nodes.extended.MembarNode.getDebugProperties(MembarNode.java:163) [bci: 13]
+  at jdk.graal.compiler.graph.Node.getDebugProperties(Node.java:1778) [bci: 8]
+  at jdk.graal.compiler.graph.Node.toString(Node.java:1843) [bci: 119]
+  at jdk.graal.compiler.graph.Node.toString(Node.java:1823) [bci: 4]
+  at java.util.Formatter$FormatSpecifier.printString(Formatter.java:3292) [bci: 89]
+  at java.util.Formatter$FormatSpecifier.print(Formatter.java:3170) [bci: 176]
+  at java.util.Formatter.format(Formatter.java:2767) [bci: 263]
+  at java.lang.String.format(String.java:4455) [bci: 9]
+  at jdk.internal.util.Preconditions.outOfBoundsMessage(Preconditions.java:251) [bci: 436]
+  at jdk.internal.util.Preconditions$4.apply(Preconditions.java:213) [bci: 6]
+  at jdk.internal.util.Preconditions$4.apply(Preconditions.java:210) [bci: 9]
+  at jdk.internal.util.Preconditions.outOfBounds(Preconditions.java:98) [bci: 16]
+  at jdk.internal.util.Preconditions.checkFromToIndex(Preconditions.java:349) [bci: 18]
+  at java.lang.String.substring(String.java:2899) [bci: 8]
+  at java.lang.String.substring(String.java:2872) [bci: 6]
+  at graalphp.runtime.ObjectModel.resolve(ObjectModel.java:106) [bci: 11]
+  at graalphp.truffle.PhpRoot$ResolvedClassName.run(PhpRoot.java:72) [bci: 5]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.handleResolvedClassName_(PhpRootGen.java:5040) [bci: 102]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.continueAt(PhpRootGen.java:3922) [bci: 2014]
+  at graalphp.truffle.PhpRootGen.continueAt(PhpRootGen.java:1048) [bci: 30]
+  at graalphp.truffle.PhpRootGen$ContinuationRootNodeImpl.execute(PhpRootGen.java:39155) [bci: 264]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.executeRootNode(OptimizedCallTarget.java:812) [bci: 5]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.callInlined(OptimizedCallTarget.java:590) [bci: 23]
+  [Root]
+Blocklisted method
+   com.oracle.svm.core.windows.headers.SynchAPI.SetEvent(WinBase$HANDLE) (target: com.oracle.svm.core.windows.headers.SynchAPI.SetEvent(WinBase$HANDLE))
+trace:
+  at com.oracle.svm.core.thread.PlatformThreads.interruptSleep(PlatformThreads.java:1203) [bci: 40]
+  at com.oracle.svm.core.thread.Target_java_lang_Thread.interrupt0(Target_java_lang_Thread.java:320) [bci: 6]
+  at java.lang.Thread.interrupt(Thread.java:1595) [bci: 6]
+  at java.io.PrintWriter.write(PrintWriter.java:464) [bci: 26]
+  at java.io.PrintWriter.append(PrintWriter.java:1132) [bci: 2]
+  at java.io.PrintWriter.append(PrintWriter.java:61) [bci: 2]
+  at java.util.Formatter$FormatSpecifier.appendJustified(Formatter.java:3338) [bci: 64]
+  at java.util.Formatter$FormatSpecifier.print(Formatter.java:3319) [bci: 53]
+  at java.util.Formatter$FormatSpecifier.print(Formatter.java:3179) [bci: 213]
+  at java.util.Formatter.format(Formatter.java:2767) [bci: 263]
+  at java.lang.String.format(String.java:4455) [bci: 9]
+  at jdk.internal.util.Preconditions.outOfBoundsMessage(Preconditions.java:251) [bci: 436]
+  at jdk.internal.util.Preconditions$4.apply(Preconditions.java:213) [bci: 6]
+  at jdk.internal.util.Preconditions$4.apply(Preconditions.java:210) [bci: 9]
+  at jdk.internal.util.Preconditions.outOfBounds(Preconditions.java:98) [bci: 16]
+  at jdk.internal.util.Preconditions.checkFromToIndex(Preconditions.java:349) [bci: 18]
+  at java.lang.String.substring(String.java:2899) [bci: 8]
+  at java.lang.String.substring(String.java:2872) [bci: 6]
+  at graalphp.runtime.ObjectModel.resolve(ObjectModel.java:106) [bci: 11]
+  at graalphp.truffle.PhpRoot$ResolvedClassName.run(PhpRoot.java:72) [bci: 5]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.handleResolvedClassName_(PhpRootGen.java:5040) [bci: 102]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.continueAt(PhpRootGen.java:3922) [bci: 2014]
+  at graalphp.truffle.PhpRootGen.continueAt(PhpRootGen.java:1048) [bci: 30]
+  at graalphp.truffle.PhpRootGen$ContinuationRootNodeImpl.execute(PhpRootGen.java:39155) [bci: 264]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.executeRootNode(OptimizedCallTarget.java:812) [bci: 5]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.callInlined(OptimizedCallTarget.java:590) [bci: 23]
+  [Root]
+Blocklisted method
+   com.oracle.svm.core.windows.headers.SynchAPI.CreateEventA(PointerBase, int, int, PointerBase) (target: com.oracle.svm.core.windows.headers.SynchAPI.CreateEventA(PointerBase, int, int, PointerBase))
+trace:
+  at com.oracle.svm.core.thread.ThreadData.initializeParker(ThreadData.java:171) [bci: 1]
+  at com.oracle.svm.core.thread.PlatformThreads.unpark(PlatformThreads.java:1129) [bci: 31]
+  at com.oracle.svm.core.thread.Target_java_lang_Thread.interrupt0(Target_java_lang_Thread.java:326) [bci: 10]
+  at java.lang.Thread.interrupt(Thread.java:1595) [bci: 6]
+  at java.io.PrintWriter.write(PrintWriter.java:464) [bci: 26]
+  at java.io.PrintWriter.append(PrintWriter.java:1132) [bci: 2]
+  at java.io.PrintWriter.append(PrintWriter.java:61) [bci: 2]
+  at java.util.Formatter$FormatSpecifier.appendJustified(Formatter.java:3338) [bci: 64]
+  at java.util.Formatter$FormatSpecifier.print(Formatter.java:3319) [bci: 53]
+  at java.util.Formatter$FormatSpecifier.print(Formatter.java:3179) [bci: 213]
+  at java.util.Formatter.format(Formatter.java:2767) [bci: 263]
+  at java.lang.String.format(String.java:4455) [bci: 9]
+  at jdk.internal.util.Preconditions.outOfBoundsMessage(Preconditions.java:251) [bci: 436]
+  at jdk.internal.util.Preconditions$4.apply(Preconditions.java:213) [bci: 6]
+  at jdk.internal.util.Preconditions$4.apply(Preconditions.java:210) [bci: 9]
+  at jdk.internal.util.Preconditions.outOfBounds(Preconditions.java:98) [bci: 16]
+  at jdk.internal.util.Preconditions.checkFromToIndex(Preconditions.java:349) [bci: 18]
+  at java.lang.String.substring(String.java:2899) [bci: 8]
+  at java.lang.String.substring(String.java:2872) [bci: 6]
+  at graalphp.runtime.ObjectModel.resolve(ObjectModel.java:106) [bci: 11]
+  at graalphp.truffle.PhpRoot$ResolvedClassName.run(PhpRoot.java:72) [bci: 5]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.handleResolvedClassName_(PhpRootGen.java:5040) [bci: 102]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.continueAt(PhpRootGen.java:3922) [bci: 2014]
+  at graalphp.truffle.PhpRootGen.continueAt(PhpRootGen.java:1048) [bci: 30]
+  at graalphp.truffle.PhpRootGen$ContinuationRootNodeImpl.execute(PhpRootGen.java:39155) [bci: 264]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.executeRootNode(OptimizedCallTarget.java:812) [bci: 5]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.callInlined(OptimizedCallTarget.java:590) [bci: 23]
+  [Root]
+Blocklisted method
+   java.util.HashMap.getNode(Object) (target: java.util.HashMap.getNode(Object))
+trace:
+  at graalphp.runtime.Execution$Request.type(Execution.java:133) [bci: 33]
+  at graalphp.runtime.ObjectModel.resolve(ObjectModel.java:119) [bci: 134]
+  at graalphp.truffle.PhpRoot$ResolvedClassName.run(PhpRoot.java:72) [bci: 5]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.handleResolvedClassName_(PhpRootGen.java:5040) [bci: 102]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.continueAt(PhpRootGen.java:3922) [bci: 2014]
+  at graalphp.truffle.PhpRootGen.continueAt(PhpRootGen.java:1048) [bci: 30]
+  at graalphp.truffle.PhpRootGen$ContinuationRootNodeImpl.execute(PhpRootGen.java:39155) [bci: 264]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.executeRootNode(OptimizedCallTarget.java:812) [bci: 5]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.callInlined(OptimizedCallTarget.java:590) [bci: 23]
+  [Root]
+Blocklisted method
+   java.util.HashMap.put(Object, Object) (target: java.util.HashMap.put(Object, Object))
+trace:
+  at graalphp.runtime.Execution$Request.type(Execution.java:135) [bci: 69]
+  at graalphp.runtime.ObjectModel.resolve(ObjectModel.java:119) [bci: 134]
+  at graalphp.truffle.PhpRoot$ResolvedClassName.run(PhpRoot.java:72) [bci: 5]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.handleResolvedClassName_(PhpRootGen.java:5040) [bci: 102]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.continueAt(PhpRootGen.java:3922) [bci: 2014]
+  at graalphp.truffle.PhpRootGen.continueAt(PhpRootGen.java:1048) [bci: 30]
+  at graalphp.truffle.PhpRootGen$ContinuationRootNodeImpl.execute(PhpRootGen.java:39155) [bci: 264]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.executeRootNode(OptimizedCallTarget.java:812) [bci: 5]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.callInlined(OptimizedCallTarget.java:590) [bci: 23]
+  [Root]
+Blocklisted method
+   java.util.HashMap.get(Object) (target: java.util.Map.get(Object))
+trace:
+  at graalphp.runtime.ObjectModel.resolve(ObjectModel.java:119) [bci: 134]
+  at graalphp.truffle.PhpRoot$ResolvedClassName.run(PhpRoot.java:72) [bci: 5]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.handleResolvedClassName_(PhpRootGen.java:5040) [bci: 102]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.continueAt(PhpRootGen.java:3922) [bci: 2014]
+  at graalphp.truffle.PhpRootGen.continueAt(PhpRootGen.java:1048) [bci: 30]
+  at graalphp.truffle.PhpRootGen$ContinuationRootNodeImpl.execute(PhpRootGen.java:39155) [bci: 264]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.executeRootNode(OptimizedCallTarget.java:812) [bci: 5]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.callInlined(OptimizedCallTarget.java:590) [bci: 23]
+  [Root]
+Blocklisted method
+   com.oracle.svm.core.sboutlining.OutlinedSBMethodHolder.String_AA(Object, Object) (target: com.oracle.svm.core.sboutlining.OutlinedSBMethodHolder.String_AA(Object, Object))
+trace:
+  at graalphp.truffle.PhpRoot$ResolvedClassName.run(PhpRoot.java:72) [bci: 5]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.handleResolvedClassName_(PhpRootGen.java:5040) [bci: 102]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.continueAt(PhpRootGen.java:3922) [bci: 2014]
+  at graalphp.truffle.PhpRootGen.continueAt(PhpRootGen.java:1048) [bci: 30]
+  at graalphp.truffle.PhpRootGen$ContinuationRootNodeImpl.execute(PhpRootGen.java:39155) [bci: 264]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.executeRootNode(OptimizedCallTarget.java:812) [bci: 5]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.callInlined(OptimizedCallTarget.java:590) [bci: 23]
+  [Root]
+Blocklisted method
+   java.io.FileOutputStream.writeBytes(byte[], int, int, boolean) (target: java.io.FileOutputStream.writeBytes(byte[], int, int, boolean))
+trace:
+  at java.io.BufferedOutputStream.flush(BufferedOutputStream.java:203) [bci: 1]
+  at java.io.PrintStream.write(PrintStream.java:668) [bci: 50]
+  at java.io.PrintStream.print(PrintStream.java:748) [bci: 5]
+  at java.io.PrintStream.append(PrintStream.java:1338) [bci: 2]
+  at java.io.PrintStream.append(PrintStream.java:64) [bci: 2]
+  at java.util.Formatter$FormatSpecifier.appendJustified(Formatter.java:3338) [bci: 64]
+  at java.util.Formatter$FormatSpecifier.print(Formatter.java:3319) [bci: 53]
+  at java.util.Formatter$FormatSpecifier.print(Formatter.java:3179) [bci: 213]
+  at java.util.Formatter.format(Formatter.java:2767) [bci: 263]
+  at java.lang.String.format(String.java:4455) [bci: 9]
+  at jdk.internal.util.Preconditions.outOfBoundsMessage(Preconditions.java:251) [bci: 436]
+  at jdk.internal.util.Preconditions$4.apply(Preconditions.java:213) [bci: 6]
+  at jdk.internal.util.Preconditions$4.apply(Preconditions.java:210) [bci: 9]
+  at jdk.internal.util.Preconditions.outOfBounds(Preconditions.java:98) [bci: 16]
+  at jdk.internal.util.Preconditions.checkFromToIndex(Preconditions.java:349) [bci: 18]
+  at java.lang.String.substring(String.java:2899) [bci: 8]
+  at java.lang.String.substring(String.java:2872) [bci: 6]
+  at graalphp.runtime.ObjectModel.resolve(ObjectModel.java:106) [bci: 11]
+  at graalphp.truffle.PhpRoot$ResolvedClassName.run(PhpRoot.java:72) [bci: 5]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.handleResolvedClassName_(PhpRootGen.java:5040) [bci: 102]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.continueAt(PhpRootGen.java:3922) [bci: 2014]
+  at graalphp.truffle.PhpRootGen.continueAt(PhpRootGen.java:1048) [bci: 30]
+  at graalphp.truffle.PhpRootGen$ContinuationRootNodeImpl.execute(PhpRootGen.java:39155) [bci: 264]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.executeRootNode(OptimizedCallTarget.java:812) [bci: 5]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.callInlined(OptimizedCallTarget.java:590) [bci: 23]
+  [Root]
+Blocklisted method
+   java.lang.String.indexOf(int) (target: java.lang.String.indexOf(int))
+trace:
+  at java.io.PrintStream.print(PrintStream.java:748) [bci: 5]
+  at java.io.PrintStream.append(PrintStream.java:1338) [bci: 2]
+  at java.io.PrintStream.append(PrintStream.java:64) [bci: 2]
+  at java.util.Formatter$FormatSpecifier.appendJustified(Formatter.java:3338) [bci: 64]
+  at java.util.Formatter$FormatSpecifier.print(Formatter.java:3319) [bci: 53]
+  at java.util.Formatter$FormatSpecifier.print(Formatter.java:3179) [bci: 213]
+  at java.util.Formatter.format(Formatter.java:2767) [bci: 263]
+  at java.lang.String.format(String.java:4455) [bci: 9]
+  at jdk.internal.util.Preconditions.outOfBoundsMessage(Preconditions.java:251) [bci: 436]
+  at jdk.internal.util.Preconditions$4.apply(Preconditions.java:213) [bci: 6]
+  at jdk.internal.util.Preconditions$4.apply(Preconditions.java:210) [bci: 9]
+  at jdk.internal.util.Preconditions.outOfBounds(Preconditions.java:98) [bci: 16]
+  at jdk.internal.util.Preconditions.checkFromToIndex(Preconditions.java:349) [bci: 18]
+  at java.lang.String.substring(String.java:2899) [bci: 8]
+  at java.lang.String.substring(String.java:2872) [bci: 6]
+  at graalphp.runtime.ObjectModel.resolve(ObjectModel.java:106) [bci: 11]
+  at graalphp.truffle.PhpRoot$ResolvedClassName.run(PhpRoot.java:72) [bci: 5]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.handleResolvedClassName_(PhpRootGen.java:5040) [bci: 102]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.continueAt(PhpRootGen.java:3922) [bci: 2014]
+  at graalphp.truffle.PhpRootGen.continueAt(PhpRootGen.java:1048) [bci: 30]
+  at graalphp.truffle.PhpRootGen$ContinuationRootNodeImpl.execute(PhpRootGen.java:39155) [bci: 264]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.executeRootNode(OptimizedCallTarget.java:812) [bci: 5]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.callInlined(OptimizedCallTarget.java:590) [bci: 23]
+  [Root]
+Blocklisted method
+   java.lang.StringBuffer.append(char) (target: java.lang.StringBuffer.append(char))
+trace:
+  at java.io.PrintWriter.write(PrintWriter.java:462) [bci: 16]
+  at java.io.PrintWriter.append(PrintWriter.java:1132) [bci: 2]
+  at java.io.PrintWriter.append(PrintWriter.java:61) [bci: 2]
+  at java.util.Formatter$FormatSpecifier.appendJustified(Formatter.java:3338) [bci: 64]
+  at java.util.Formatter$FormatSpecifier.print(Formatter.java:3319) [bci: 53]
+  at java.util.Formatter$FormatSpecifier.print(Formatter.java:3179) [bci: 213]
+  at java.util.Formatter.format(Formatter.java:2767) [bci: 263]
+  at java.lang.String.format(String.java:4455) [bci: 9]
+  at jdk.internal.util.Preconditions.outOfBoundsMessage(Preconditions.java:251) [bci: 436]
+  at jdk.internal.util.Preconditions$4.apply(Preconditions.java:213) [bci: 6]
+  at jdk.internal.util.Preconditions$4.apply(Preconditions.java:210) [bci: 9]
+  at jdk.internal.util.Preconditions.outOfBounds(Preconditions.java:98) [bci: 16]
+  at jdk.internal.util.Preconditions.checkFromToIndex(Preconditions.java:349) [bci: 18]
+  at java.lang.String.substring(String.java:2899) [bci: 8]
+  at java.lang.String.substring(String.java:2872) [bci: 6]
+  at graalphp.runtime.ObjectModel.resolve(ObjectModel.java:106) [bci: 11]
+  at graalphp.truffle.PhpRoot$ResolvedClassName.run(PhpRoot.java:72) [bci: 5]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.handleResolvedClassName_(PhpRootGen.java:5040) [bci: 102]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.continueAt(PhpRootGen.java:3922) [bci: 2014]
+  at graalphp.truffle.PhpRootGen.continueAt(PhpRootGen.java:1048) [bci: 30]
+  at graalphp.truffle.PhpRootGen$ContinuationRootNodeImpl.execute(PhpRootGen.java:39155) [bci: 264]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.executeRootNode(OptimizedCallTarget.java:812) [bci: 5]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.callInlined(OptimizedCallTarget.java:590) [bci: 23]
+  [Root]
+Blocklisted method
+   java.util.HashMap.keySet() (target: java.util.HashMap.keySet())
+trace:
+  at java.lang.ConditionalSpecialCasing.lookUpTable(ConditionalSpecialCasing.java:154) [bci: 29]
+  at java.lang.StringUTF16.toLowerCaseEx(StringUTF16.java:1031) [bci: 169]
+  at java.lang.StringUTF16.toLowerCase(StringUTF16.java:977) [bci: 148]
+  at java.lang.String.toLowerCase(String.java:3705) [bci: 25]
+  at graalphp.runtime.Execution$Request.type(Execution.java:130) [bci: 4]
+  at graalphp.runtime.ObjectModel.resolve(ObjectModel.java:119) [bci: 134]
+  at graalphp.truffle.PhpRoot$ResolvedClassName.run(PhpRoot.java:72) [bci: 5]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.handleResolvedClassName_(PhpRootGen.java:5040) [bci: 102]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.continueAt(PhpRootGen.java:3922) [bci: 2014]
+  at graalphp.truffle.PhpRootGen.continueAt(PhpRootGen.java:1048) [bci: 30]
+  at graalphp.truffle.PhpRootGen$ContinuationRootNodeImpl.execute(PhpRootGen.java:39155) [bci: 264]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.executeRootNode(OptimizedCallTarget.java:812) [bci: 5]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.callInlined(OptimizedCallTarget.java:590) [bci: 23]
+  [Root]
+Blocklisted method
+   java.lang.Object.toString() (target: java.lang.Object.toString())
+trace:
+  at java.lang.String.format(String.java:4455) [bci: 12]
+  at jdk.internal.util.Preconditions.outOfBoundsMessage(Preconditions.java:251) [bci: 436]
+  at jdk.internal.util.Preconditions$4.apply(Preconditions.java:213) [bci: 6]
+  at jdk.internal.util.Preconditions$4.apply(Preconditions.java:210) [bci: 9]
+  at jdk.internal.util.Preconditions.outOfBounds(Preconditions.java:98) [bci: 16]
+  at jdk.internal.util.Preconditions.checkFromToIndex(Preconditions.java:349) [bci: 18]
+  at java.lang.String.substring(String.java:2899) [bci: 8]
+  at java.lang.String.substring(String.java:2872) [bci: 6]
+  at graalphp.runtime.ObjectModel.resolve(ObjectModel.java:106) [bci: 11]
+  at graalphp.truffle.PhpRoot$ResolvedClassName.run(PhpRoot.java:72) [bci: 5]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.handleResolvedClassName_(PhpRootGen.java:5040) [bci: 102]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.continueAt(PhpRootGen.java:3922) [bci: 2014]
+  at graalphp.truffle.PhpRootGen.continueAt(PhpRootGen.java:1048) [bci: 30]
+  at graalphp.truffle.PhpRootGen$ContinuationRootNodeImpl.execute(PhpRootGen.java:39155) [bci: 264]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.executeRootNode(OptimizedCallTarget.java:812) [bci: 5]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.callInlined(OptimizedCallTarget.java:590) [bci: 23]
+  [Root]
+Blocklisted method
+   java.util.HashMap.get(Object) (target: java.util.HashMap.get(Object))
+trace:
+  at java.lang.StringUTF16.toLowerCaseEx(StringUTF16.java:1031) [bci: 169]
+  at java.lang.StringUTF16.toLowerCase(StringUTF16.java:977) [bci: 148]
+  at java.lang.String.toLowerCase(String.java:3705) [bci: 25]
+  at graalphp.runtime.Execution$Request.type(Execution.java:130) [bci: 4]
+  at graalphp.runtime.ObjectModel.resolve(ObjectModel.java:119) [bci: 134]
+  at graalphp.truffle.PhpRoot$ResolvedClassName.run(PhpRoot.java:72) [bci: 5]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.handleResolvedClassName_(PhpRootGen.java:5040) [bci: 102]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.continueAt(PhpRootGen.java:3922) [bci: 2014]
+  at graalphp.truffle.PhpRootGen.continueAt(PhpRootGen.java:1048) [bci: 30]
+  at graalphp.truffle.PhpRootGen$ContinuationRootNodeImpl.execute(PhpRootGen.java:39155) [bci: 264]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.executeRootNode(OptimizedCallTarget.java:812) [bci: 5]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.callInlined(OptimizedCallTarget.java:590) [bci: 23]
+  [Root]
+Blocklisted method
+   java.util.concurrent.ConcurrentHashMap.toString() (target: java.lang.Object.toString())
+trace:
+  at java.util.Formatter$FormatSpecifier.print(Formatter.java:3170) [bci: 176]
+  at java.util.Formatter.format(Formatter.java:2767) [bci: 263]
+  at java.lang.String.format(String.java:4455) [bci: 9]
+  at jdk.internal.util.Preconditions.outOfBoundsMessage(Preconditions.java:251) [bci: 436]
+  at jdk.internal.util.Preconditions$4.apply(Preconditions.java:213) [bci: 6]
+  at jdk.internal.util.Preconditions$4.apply(Preconditions.java:210) [bci: 9]
+  at jdk.internal.util.Preconditions.outOfBounds(Preconditions.java:98) [bci: 16]
+  at jdk.internal.util.Preconditions.checkFromToIndex(Preconditions.java:349) [bci: 18]
+  at java.lang.String.substring(String.java:2899) [bci: 8]
+  at java.lang.String.substring(String.java:2872) [bci: 6]
+  at graalphp.runtime.ObjectModel.resolve(ObjectModel.java:106) [bci: 11]
+  at graalphp.truffle.PhpRoot$ResolvedClassName.run(PhpRoot.java:72) [bci: 5]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.handleResolvedClassName_(PhpRootGen.java:5040) [bci: 102]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.continueAt(PhpRootGen.java:3922) [bci: 2014]
+  at graalphp.truffle.PhpRootGen.continueAt(PhpRootGen.java:1048) [bci: 30]
+  at graalphp.truffle.PhpRootGen$ContinuationRootNodeImpl.execute(PhpRootGen.java:39155) [bci: 264]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.executeRootNode(OptimizedCallTarget.java:812) [bci: 5]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.callInlined(OptimizedCallTarget.java:590) [bci: 23]
+  [Root]
+Blocklisted method
+   java.math.BigDecimal.round(MathContext) (target: java.math.BigDecimal.round(MathContext))
+trace:
+  at java.util.Formatter$FormatSpecifier.print(Formatter.java:3934) [bci: 78]
+  at java.util.Formatter$FormatSpecifier.printFloat(Formatter.java:3211) [bci: 75]
+  at java.util.Formatter$FormatSpecifier.print(Formatter.java:3161) [bci: 146]
+  at java.util.Formatter.format(Formatter.java:2767) [bci: 263]
+  at java.lang.String.format(String.java:4455) [bci: 9]
+  at jdk.internal.util.Preconditions.outOfBoundsMessage(Preconditions.java:251) [bci: 436]
+  at jdk.internal.util.Preconditions$4.apply(Preconditions.java:213) [bci: 6]
+  at jdk.internal.util.Preconditions$4.apply(Preconditions.java:210) [bci: 9]
+  at jdk.internal.util.Preconditions.outOfBounds(Preconditions.java:98) [bci: 16]
+  at jdk.internal.util.Preconditions.checkFromToIndex(Preconditions.java:349) [bci: 18]
+  at java.lang.String.substring(String.java:2899) [bci: 8]
+  at java.lang.String.substring(String.java:2872) [bci: 6]
+  at graalphp.runtime.ObjectModel.resolve(ObjectModel.java:106) [bci: 11]
+  at graalphp.truffle.PhpRoot$ResolvedClassName.run(PhpRoot.java:72) [bci: 5]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.handleResolvedClassName_(PhpRootGen.java:5040) [bci: 102]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.continueAt(PhpRootGen.java:3922) [bci: 2014]
+  at graalphp.truffle.PhpRootGen.continueAt(PhpRootGen.java:1048) [bci: 30]
+  at graalphp.truffle.PhpRootGen$ContinuationRootNodeImpl.execute(PhpRootGen.java:39155) [bci: 264]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.executeRootNode(OptimizedCallTarget.java:812) [bci: 5]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.callInlined(OptimizedCallTarget.java:590) [bci: 23]
+  [Root]
+Blocklisted method
+   java.math.BigDecimal.signum() (target: java.math.BigDecimal.signum())
+trace:
+  at java.util.Formatter$FormatSpecifier.printFloat(Formatter.java:3211) [bci: 75]
+  at java.util.Formatter$FormatSpecifier.print(Formatter.java:3161) [bci: 146]
+  at java.util.Formatter.format(Formatter.java:2767) [bci: 263]
+  at java.lang.String.format(String.java:4455) [bci: 9]
+  at jdk.internal.util.Preconditions.outOfBoundsMessage(Preconditions.java:251) [bci: 436]
+  at jdk.internal.util.Preconditions$4.apply(Preconditions.java:213) [bci: 6]
+  at jdk.internal.util.Preconditions$4.apply(Preconditions.java:210) [bci: 9]
+  at jdk.internal.util.Preconditions.outOfBounds(Preconditions.java:98) [bci: 16]
+  at jdk.internal.util.Preconditions.checkFromToIndex(Preconditions.java:349) [bci: 18]
+  at java.lang.String.substring(String.java:2899) [bci: 8]
+  at java.lang.String.substring(String.java:2872) [bci: 6]
+  at graalphp.runtime.ObjectModel.resolve(ObjectModel.java:106) [bci: 11]
+  at graalphp.truffle.PhpRoot$ResolvedClassName.run(PhpRoot.java:72) [bci: 5]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.handleResolvedClassName_(PhpRootGen.java:5040) [bci: 102]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.continueAt(PhpRootGen.java:3922) [bci: 2014]
+  at graalphp.truffle.PhpRootGen.continueAt(PhpRootGen.java:1048) [bci: 30]
+  at graalphp.truffle.PhpRootGen$ContinuationRootNodeImpl.execute(PhpRootGen.java:39155) [bci: 264]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.executeRootNode(OptimizedCallTarget.java:812) [bci: 5]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.callInlined(OptimizedCallTarget.java:590) [bci: 23]
+  [Root]
+Blocklisted method
+   java.util.Vector.iterator() (target: java.util.AbstractCollection.iterator())
+trace:
+  at java.util.Formatter$FormatSpecifier.printHashCode(Formatter.java:3310) [bci: 10]
+  at java.util.Formatter$FormatSpecifier.print(Formatter.java:3173) [bci: 186]
+  at java.util.Formatter.format(Formatter.java:2767) [bci: 263]
+  at java.lang.String.format(String.java:4455) [bci: 9]
+  at jdk.internal.util.Preconditions.outOfBoundsMessage(Preconditions.java:251) [bci: 436]
+  at jdk.internal.util.Preconditions$4.apply(Preconditions.java:213) [bci: 6]
+  at jdk.internal.util.Preconditions$4.apply(Preconditions.java:210) [bci: 9]
+  at jdk.internal.util.Preconditions.outOfBounds(Preconditions.java:98) [bci: 16]
+  at jdk.internal.util.Preconditions.checkFromToIndex(Preconditions.java:349) [bci: 18]
+  at java.lang.String.substring(String.java:2899) [bci: 8]
+  at java.lang.String.substring(String.java:2872) [bci: 6]
+  at graalphp.runtime.ObjectModel.resolve(ObjectModel.java:106) [bci: 11]
+  at graalphp.truffle.PhpRoot$ResolvedClassName.run(PhpRoot.java:72) [bci: 5]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.handleResolvedClassName_(PhpRootGen.java:5040) [bci: 102]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.continueAt(PhpRootGen.java:3922) [bci: 2014]
+  at graalphp.truffle.PhpRootGen.continueAt(PhpRootGen.java:1048) [bci: 30]
+  at graalphp.truffle.PhpRootGen$ContinuationRootNodeImpl.execute(PhpRootGen.java:39155) [bci: 264]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.executeRootNode(OptimizedCallTarget.java:812) [bci: 5]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.callInlined(OptimizedCallTarget.java:590) [bci: 23]
+  [Root]
+Blocklisted method
+   java.math.BigInteger.toString(int) (target: java.math.BigInteger.toString(int))
+trace:
+  at java.util.Formatter$FormatSpecifier.printInteger(Formatter.java:3198) [bci: 121]
+  at java.util.Formatter$FormatSpecifier.print(Formatter.java:3155) [bci: 136]
+  at java.util.Formatter.format(Formatter.java:2767) [bci: 263]
+  at java.lang.String.format(String.java:4455) [bci: 9]
+  at jdk.internal.util.Preconditions.outOfBoundsMessage(Preconditions.java:251) [bci: 436]
+  at jdk.internal.util.Preconditions$4.apply(Preconditions.java:213) [bci: 6]
+  at jdk.internal.util.Preconditions$4.apply(Preconditions.java:210) [bci: 9]
+  at jdk.internal.util.Preconditions.outOfBounds(Preconditions.java:98) [bci: 16]
+  at jdk.internal.util.Preconditions.checkFromToIndex(Preconditions.java:349) [bci: 18]
+  at java.lang.String.substring(String.java:2899) [bci: 8]
+  at java.lang.String.substring(String.java:2872) [bci: 6]
+  at graalphp.runtime.ObjectModel.resolve(ObjectModel.java:106) [bci: 11]
+  at graalphp.truffle.PhpRoot$ResolvedClassName.run(PhpRoot.java:72) [bci: 5]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.handleResolvedClassName_(PhpRootGen.java:5040) [bci: 102]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.continueAt(PhpRootGen.java:3922) [bci: 2014]
+  at graalphp.truffle.PhpRootGen.continueAt(PhpRootGen.java:1048) [bci: 30]
+  at graalphp.truffle.PhpRootGen$ContinuationRootNodeImpl.execute(PhpRootGen.java:39155) [bci: 264]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.executeRootNode(OptimizedCallTarget.java:812) [bci: 5]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.callInlined(OptimizedCallTarget.java:590) [bci: 23]
+  [Root]
+Blocklisted method
+   com.oracle.svm.core.sboutlining.OutlinedSBMethodHolder.String_AIA(Object, int, Object) (target: com.oracle.svm.core.sboutlining.OutlinedSBMethodHolder.String_AIA(Object, int, Object))
+trace:
+  at java.util.Formatter$FormatSpecifier.printString(Formatter.java:3292) [bci: 89]
+  at java.util.Formatter$FormatSpecifier.print(Formatter.java:3170) [bci: 176]
+  at java.util.Formatter.format(Formatter.java:2767) [bci: 263]
+  at java.lang.String.format(String.java:4455) [bci: 9]
+  at jdk.internal.util.Preconditions.outOfBoundsMessage(Preconditions.java:251) [bci: 436]
+  at jdk.internal.util.Preconditions$4.apply(Preconditions.java:213) [bci: 6]
+  at jdk.internal.util.Preconditions$4.apply(Preconditions.java:210) [bci: 9]
+  at jdk.internal.util.Preconditions.outOfBounds(Preconditions.java:98) [bci: 16]
+  at jdk.internal.util.Preconditions.checkFromToIndex(Preconditions.java:349) [bci: 18]
+  at java.lang.String.substring(String.java:2899) [bci: 8]
+  at java.lang.String.substring(String.java:2872) [bci: 6]
+  at graalphp.runtime.ObjectModel.resolve(ObjectModel.java:106) [bci: 11]
+  at graalphp.truffle.PhpRoot$ResolvedClassName.run(PhpRoot.java:72) [bci: 5]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.handleResolvedClassName_(PhpRootGen.java:5040) [bci: 102]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.continueAt(PhpRootGen.java:3922) [bci: 2014]
+  at graalphp.truffle.PhpRootGen.continueAt(PhpRootGen.java:1048) [bci: 30]
+  at graalphp.truffle.PhpRootGen$ContinuationRootNodeImpl.execute(PhpRootGen.java:39155) [bci: 264]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.executeRootNode(OptimizedCallTarget.java:812) [bci: 5]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.callInlined(OptimizedCallTarget.java:590) [bci: 23]
+  [Root]
+Blocklisted method
+   java.lang.String.indexOf(int, int) (target: java.lang.String.indexOf(int, int))
+trace:
+  at java.util.Formatter.format(Formatter.java:2744) [bci: 11]
+  at java.lang.String.format(String.java:4455) [bci: 9]
+  at jdk.internal.util.Preconditions.outOfBoundsMessage(Preconditions.java:251) [bci: 436]
+  at jdk.internal.util.Preconditions$4.apply(Preconditions.java:213) [bci: 6]
+  at jdk.internal.util.Preconditions$4.apply(Preconditions.java:210) [bci: 9]
+  at jdk.internal.util.Preconditions.outOfBounds(Preconditions.java:98) [bci: 16]
+  at jdk.internal.util.Preconditions.checkFromToIndex(Preconditions.java:349) [bci: 18]
+  at java.lang.String.substring(String.java:2899) [bci: 8]
+  at java.lang.String.substring(String.java:2872) [bci: 6]
+  at graalphp.runtime.ObjectModel.resolve(ObjectModel.java:106) [bci: 11]
+  at graalphp.truffle.PhpRoot$ResolvedClassName.run(PhpRoot.java:72) [bci: 5]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.handleResolvedClassName_(PhpRootGen.java:5040) [bci: 102]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.continueAt(PhpRootGen.java:3922) [bci: 2014]
+  at graalphp.truffle.PhpRootGen.continueAt(PhpRootGen.java:1048) [bci: 30]
+  at graalphp.truffle.PhpRootGen$ContinuationRootNodeImpl.execute(PhpRootGen.java:39155) [bci: 264]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.executeRootNode(OptimizedCallTarget.java:812) [bci: 5]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.callInlined(OptimizedCallTarget.java:590) [bci: 23]
+  [Root]
+Blocklisted method
+   com.oracle.svm.core.sboutlining.OutlinedSBMethodHolder.String_AAAA(Object, Object, Object, Object) (target: com.oracle.svm.core.sboutlining.OutlinedSBMethodHolder.String_AAAA(Object, Object, Object, Object))
+trace:
+  at jdk.graal.compiler.graph.Node.toString(Node.java:1823) [bci: 4]
+  at java.util.Formatter$FormatSpecifier.printString(Formatter.java:3292) [bci: 89]
+  at java.util.Formatter$FormatSpecifier.print(Formatter.java:3170) [bci: 176]
+  at java.util.Formatter.format(Formatter.java:2767) [bci: 263]
+  at java.lang.String.format(String.java:4455) [bci: 9]
+  at jdk.internal.util.Preconditions.outOfBoundsMessage(Preconditions.java:251) [bci: 436]
+  at jdk.internal.util.Preconditions$4.apply(Preconditions.java:213) [bci: 6]
+  at jdk.internal.util.Preconditions$4.apply(Preconditions.java:210) [bci: 9]
+  at jdk.internal.util.Preconditions.outOfBounds(Preconditions.java:98) [bci: 16]
+  at jdk.internal.util.Preconditions.checkFromToIndex(Preconditions.java:349) [bci: 18]
+  at java.lang.String.substring(String.java:2899) [bci: 8]
+  at java.lang.String.substring(String.java:2872) [bci: 6]
+  at graalphp.runtime.ObjectModel.resolve(ObjectModel.java:106) [bci: 11]
+  at graalphp.truffle.PhpRoot$ResolvedClassName.run(PhpRoot.java:72) [bci: 5]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.handleResolvedClassName_(PhpRootGen.java:5040) [bci: 102]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.continueAt(PhpRootGen.java:3922) [bci: 2014]
+  at graalphp.truffle.PhpRootGen.continueAt(PhpRootGen.java:1048) [bci: 30]
+  at graalphp.truffle.PhpRootGen$ContinuationRootNodeImpl.execute(PhpRootGen.java:39155) [bci: 264]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.executeRootNode(OptimizedCallTarget.java:812) [bci: 5]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.callInlined(OptimizedCallTarget.java:590) [bci: 23]
+  [Root]
+Blocklisted method
+   java.util.List.of(Object[]) (target: java.util.List.of(Object[]))
+trace:
+  at jdk.internal.util.Preconditions.checkFromToIndex(Preconditions.java:349) [bci: 18]
+  at java.lang.String.substring(String.java:2899) [bci: 8]
+  at java.lang.String.substring(String.java:2872) [bci: 6]
+  at graalphp.runtime.ObjectModel.resolve(ObjectModel.java:106) [bci: 11]
+  at graalphp.truffle.PhpRoot$ResolvedClassName.run(PhpRoot.java:72) [bci: 5]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.handleResolvedClassName_(PhpRootGen.java:5040) [bci: 102]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.continueAt(PhpRootGen.java:3922) [bci: 2014]
+  at graalphp.truffle.PhpRootGen.continueAt(PhpRootGen.java:1048) [bci: 30]
+  at graalphp.truffle.PhpRootGen$ContinuationRootNodeImpl.execute(PhpRootGen.java:39155) [bci: 264]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.executeRootNode(OptimizedCallTarget.java:812) [bci: 5]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.callInlined(OptimizedCallTarget.java:590) [bci: 23]
+  [Root]
+[2/8] Performing analysis...  []                                                                       (11,5s @ 0,84GiB)
+    7.412 types,   9.024 fields, and  32.597 methods found reachable
+
+------------------------------------------------------------------------------------------------------------------------
+                       1,4s (7,4% of total time) in 222 GCs | Peak RSS: 1,70GiB | CPU load: 9,30
+------------------------------------------------------------------------------------------------------------------------
+Build artifacts:
+ build\svm_err_b_20260926T100552.517_pid21660.md (build_info, 40,44KiB)
+========================================================================================================================
+Failed generating 'graalphp' after 18,3s.
+
+The build process encountered an unexpected error:
+
+> com.oracle.svm.shared.util.VMError$HostedError: Blocklisted methods are reachable for runtime compilation
+
+Please inspect the generated error report at: 'build\svm_err_b_20260926T100552.517_pid21660.md'
+
+If you are unable to resolve this problem, please file an issue with the error report at:
+https://graalvm.org/support
+build\generated\graalphp\truffle\PhpRootGen.java:6048: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+build\generated\graalphp\truffle\PhpRootGen.java:7823: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+Note: src\graalphp\truffle\PhpContext.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+2 warnings
+WARNING: Unknown module: com.oracle.truffle.enterprise.svm specified to --add-exports
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by com.oracle.truffle.polyglot.JDKSupport in module org.graalvm.truffle (file:/build/deps/25.4.4.1.1/truffle-api-25.4.4.1.1.jar)
+WARNING: Use --enable-native-access=org.graalvm.truffle to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.oracle.truffle.api.object.DynamicObject (file:/build/deps/25.4.4.1.1/truffle-api-25.4.4.1.1.jar)
+WARNING: Please consider reporting this to the maintainers of class com.oracle.truffle.api.object.DynamicObject
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+
+ROOT_EXIT=1

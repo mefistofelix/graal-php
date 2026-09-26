@@ -33,9 +33,18 @@ public final class ClassLoading implements AutoCloseable {
             if ($name !== null) __class_require($name);
             return __autoload_register($callback, $prepend);
         }
-        function class_declare($definition, $parent) {
-            __class_require($parent);
+        function class_declare($definition) {
+            $index = 0;
+            while (($name = __class_dependency($definition, $index++)) !== null) __class_require($name);
             return __class_publish($definition);
+        }
+        function class_exists_query($name, $kind) {
+            __class_load($name);
+            return __class_kind($name, $kind);
+        }
+        function class_information($name, $operation, $argument = null) {
+            __class_load($name);
+            return __class_information($name, $operation, $argument);
         }
         function class_callable($state, $name) {
             try {
@@ -180,15 +189,22 @@ public final class ClassLoading implements AutoCloseable {
     @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
     public static Object declare(Activation caller, ObjectModel.Definition definition, IndirectCallNode call) {
         if (exists(caller.request, definition.name())) throw new PhpError("Error", "Cannot redeclare class " + definition.name());
-        if (definition.parent() == null || exists(caller.request, definition.parent())) return publish(caller, definition);
+        if (definition.dependencies().stream().allMatch(name -> exists(caller.request, name))) return publish(caller, definition);
         return Operations.invokeFunction(caller, caller.request.context.asyncFunction("class_declare"),
-                new Argument[] {new Argument(definition, null), new Argument(definition.parent(), null)}, call);
+                new Argument[] {new Argument(definition, null)}, call);
     }
     private static Object publish(Activation caller, ObjectModel.Definition definition) {
         if (exists(caller.request, definition.name())) throw new PhpError("Error", "Cannot redeclare class " + definition.name());
-        if (definition.parent() != null) caller.request.type(definition.parent());
-        caller.request.classes.put(key(definition.name()), definition);
-        return null;
+        String key = key(definition.name());
+        caller.request.classes.put(key, definition);
+        try {
+            caller.request.type(definition.name());
+            return null;
+        } catch (RuntimeException failure) {
+            caller.request.classes.remove(key);
+            caller.request.resolvedClasses.remove(key);
+            throw failure;
+        }
     }
     public static String callableClass(Object value) {
         value = PhpValues.unwrap(value);
@@ -213,13 +229,51 @@ public final class ClassLoading implements AutoCloseable {
     public static Object function(Activation caller, String function, Argument[] args, IndirectCallNode call) {
         var registry = caller.request.autoload;
         switch (function) {
-            case "class_exists": {
-                var ordered = CallArguments.builtin(function, args, List.of("class", "autoload"), 1, true);
+            case "class_exists", "interface_exists", "trait_exists": {
+                String kind = function.substring(0, function.indexOf('_'));
+                var ordered = CallArguments.builtin(function, args, List.of(kind, "autoload"), 1, true);
                 String name = name(ordered[0].value());
                 boolean autoload = (boolean) argument(ordered[1].value(), "bool");
-                if (exists(caller.request, name)) return true;
+                if (exists(caller.request, name)) return kind(caller.request, name, kind);
                 if (!autoload || !valid(name)) return false;
-                return load(caller, name, false, call);
+                return Operations.invokeFunction(caller, caller.request.context.asyncFunction("class_exists_query"),
+                        new Argument[] {new Argument(name, null), new Argument(kind, null)}, call);
+            }
+            case "is_a", "is_subclass_of": {
+                var ordered = CallArguments.builtin(function, args, List.of("object_or_class", "class", "allow_string"), 2, function.equals("is_subclass_of"));
+                Object value = PhpValues.unwrap(ordered[0].value());
+                boolean allowString = (boolean) argument(ordered[2].value(), "bool");
+                if (value instanceof String && !allowString)
+                    Diagnostics.deprecated(caller, "Calling " + function + "() with a string when $allow_string is false");
+                String target = name(ordered[1].value());
+                String source = value instanceof String text ? allowString ? name(text) : null : ObjectModel.className(value);
+                if (source == null) return false;
+                return information(caller, source, function, target, true, call);
+            }
+            case "class_parents", "class_implements", "class_uses": {
+                var ordered = CallArguments.builtin(function, args, List.of("object_or_class", "autoload"), 1, true);
+                Object value = PhpValues.unwrap(ordered[0].value());
+                String type = value instanceof String text ? name(text) : ObjectModel.className(value);
+                if (type == null) throw new PhpError("TypeError", "Expected an object or a class name");
+                return information(caller, type, function, null, (boolean) argument(ordered[1].value(), "bool"), call);
+            }
+            case "method_exists": {
+                var ordered = CallArguments.builtin(function, args, List.of("object_or_class", "method"), 2);
+                Object value = PhpValues.unwrap(ordered[0].value());
+                String type = value instanceof String text ? name(text) : ObjectModel.className(value);
+                if (type == null) throw new PhpError("TypeError", "Expected an object or a class name");
+                return information(caller, type, function, Operations.string(argument(ordered[1].value(), "string")), true, call);
+            }
+            case "get_declared_classes", "get_declared_interfaces", "get_declared_traits": {
+                CallArguments.builtin(function, args, List.of(), 0);
+                String kind = function.equals("get_declared_classes") ? "CLASS" : function.equals("get_declared_interfaces") ? "INTERFACE" : "TRAIT";
+                try (var scope = new PhpValues.Scope(caller.request.heap)) {
+                    var array = scope.variable(scope.emptyArray());
+                    for (var definition : caller.request.classes.values()) {
+                        if (definition.kind().name().equals(kind)) array.append().set(definition.name());
+                    }
+                    return caller.track(PhpValues.own(array.read()));
+                }
             }
             case "spl_autoload_call": {
                 var ordered = CallArguments.builtin(function, args, List.of("class"), 1);
@@ -267,6 +321,13 @@ public final class ClassLoading implements AutoCloseable {
                     return caller.track(PhpValues.own(array.read()));
                 }
             }
+            case "__class_kind": return kind(caller.request, Operations.string(args[0].value()), Operations.string(args[1].value()));
+            case "__class_information": return informationNow(caller, Operations.string(args[0].value()), Operations.string(args[1].value()), args[2].value());
+            case "__class_dependency": {
+                var dependencies = ((ObjectModel.Definition) args[0].value()).dependencies();
+                int index = Operations.number(args[1].value()).intValue();
+                return index < dependencies.size() ? dependencies.get(index) : null;
+            }
             case "__class_load": return load(caller, (String) args[0].value(), args.length > 1 && Operations.truth(args[1].value()), call);
             case "__class_require":
                 return Operations.invokeFunction(caller, caller.request.context.asyncFunction("class_require"), args, call);
@@ -305,6 +366,56 @@ public final class ClassLoading implements AutoCloseable {
                 return null;
             }
             default: return AsyncApi.UNHANDLED;
+        }
+    }
+
+    private static boolean kind(Request request, String name, String kind) {
+        var definition = request.classes.get(key(name));
+        return definition == null ? kind.equals("class") && BUILTINS.contains(key(name)) : definition.kind().name().equalsIgnoreCase(kind);
+    }
+
+    private static Object information(Activation caller, String name, String operation, Object argument, boolean autoload, IndirectCallNode call) {
+        if (exists(caller.request, name) || !autoload || !valid(name)) return informationNow(caller, name, operation, argument);
+        return Operations.invokeFunction(caller, caller.request.context.asyncFunction("class_information"),
+                new Argument[] {new Argument(name, null), new Argument(operation, null), new Argument(argument, null)}, call);
+    }
+
+    private static Object informationNow(Activation caller, String name, String operation, Object argument) {
+        if (!exists(caller.request, name)) return false;
+        if (operation.equals("is_a") || operation.equals("is_subclass_of")) {
+            String target = Operations.string(argument);
+            if (name.equalsIgnoreCase(target)) return operation.equals("is_a");
+            var definition = caller.request.classes.get(key(name));
+            if (definition != null && definition.kind() == graalphp.frontend.Ir.TypeKind.TRAIT) return false;
+            if (!exists(caller.request, target)) return false;
+            return TypeRelations.subtype(caller.request, name, target);
+        }
+        if (!caller.request.classes.containsKey(key(name))) return false;
+        var type = caller.request.type(name);
+        if (operation.equals("method_exists")) return type.method(Operations.string(argument)) != null;
+        var names = new java.util.LinkedHashMap<String, String>();
+        if (operation.equals("class_parents")) {
+            for (var current = type.parent; current != null; current = current.parent)
+                names.put(current.definition.name(), current.definition.name());
+        } else if (operation.equals("class_uses")) {
+            for (var use : type.definition.traits()) for (String used : use.names()) {
+                String canonical = caller.request.type(used).definition.name();
+                names.put(canonical, canonical);
+            }
+        } else if (operation.equals("class_implements")) collectInterfaces(type, names);
+        else throw new PhpError("Unknown class query " + operation);
+        try (var scope = new PhpValues.Scope(caller.request.heap)) {
+            var result = scope.variable(scope.emptyArray());
+            names.forEach((key, value) -> result.element(key).set(value));
+            return caller.track(PhpValues.own(result.read()));
+        }
+    }
+
+    private static void collectInterfaces(ObjectModel.RuntimeClass type, java.util.LinkedHashMap<String, String> names) {
+        if (type.parent != null) collectInterfaces(type.parent, names);
+        for (var contract : type.interfaces) {
+            names.putIfAbsent(contract.definition.name(), contract.definition.name());
+            collectInterfaces(contract, names);
         }
     }
 

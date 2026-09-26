@@ -16,6 +16,11 @@ public final class IntegrationTest {
     private static int scenarios;
     private IntegrationTest() {}
     public static void main(String[] arguments) throws Exception {
+        if (arguments.length == 1 && arguments[0].equals("--hosted-reactor")) {
+            hostedReactor();
+            System.out.println("PASS: " + scenarios + " hosted reactor assertions");
+            return;
+        }
         check("binary native values and PHP environment semantics", """
             $bytes = hex2bin('00ff80fe') . hex2bin('0041');
             graal_assert(hex2bin('invalid') === false);
@@ -93,6 +98,7 @@ public final class IntegrationTest {
         isolationAndHost();
         includesAndReload();
         autoloadIsolationAndReload();
+        classContractsReload();
         nativeCall();
         if (Files.exists(Path.of("build/graalphp-native.dll"))) nativeBundle();
         readFile();
@@ -236,6 +242,52 @@ public final class IntegrationTest {
             try { spl_autoload_register(); } catch (Error $error) { echo 'unsupported'; }
             """, "unsupported");
     }
+    private static void classContractsReload() throws Exception {
+        Path root = Files.createTempDirectory("graalphp-contracts-reload-").toAbsolutePath();
+        Path main = root.resolve("main.php");
+        Path definitions = root.resolve("definitions.php");
+        String oldDefinitions = "<?php interface I {function value():string;} trait T {function value():string{return 'old';}}";
+        String newDefinitions = oldDefinitions.replace("'old'", "'new'");
+        Files.writeString(definitions, oldDefinitions);
+        Files.writeString(main, """
+            <?php
+            spl_autoload_register(function($name){require_once __DIR__.'/definitions.php';});
+            host_call('contractGate');
+            class C implements I {use T;}
+            echo (new C)->value();
+            """);
+        var output = new ByteArrayOutputStream();
+        try (var context = Context.newBuilder("php").allowAllAccess(true).out(output)
+                .environment("GRAALPHP_ROOT", root.toString()).environment("GRAALPHP_WATCH", "1").build()) {
+            var entered = new CountDownLatch(1);
+            var release = new CountDownLatch(1);
+            context.getPolyglotBindings().putMember("contractGate", (ProxyExecutable) arguments -> {
+                entered.countDown();
+                try { if (!release.await(10, TimeUnit.SECONDS)) throw new AssertionError("Contract gate timeout"); }
+                catch (InterruptedException error) { Thread.currentThread().interrupt(); throw new AssertionError(error); }
+                return null;
+            });
+            var source = Source.newBuilder("php", main.toFile()).build();
+            var running = CompletableFuture.runAsync(() -> context.eval(source));
+            try {
+                if (!entered.await(10, TimeUnit.SECONDS)) throw new AssertionError("Contract request not started");
+                Files.writeString(definitions, newDefinitions);
+                String current = "";
+                long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
+                while (!current.equals("new") && System.nanoTime() < deadline) {
+                    current = context.eval("php", "require 'definitions.php'; class Probe implements I {use T;} return (new Probe)->value();").asString();
+                    if (!current.equals("new")) Thread.sleep(20);
+                }
+                equal("trait generation published", "new", current);
+            } finally { release.countDown(); }
+            running.get(10, TimeUnit.SECONDS);
+            equal("interface/trait composition uses pinned generation", "old", output.toString());
+            output.reset(); context.eval(source);
+            equal("next request links new trait implementation", "new", output.toString());
+            equal("class contracts do not leak into another request", true,
+                    context.eval("php", "return !interface_exists('I',false) && !trait_exists('T',false) && !class_exists('C',false);").asBoolean());
+        }
+    }
     private static void includesAndReload() throws Exception {
         Path root = Files.createTempDirectory("graalphp-reload-").toAbsolutePath();
         Path main = root.resolve("main.php"); Path library = root.resolve("library.php");
@@ -316,7 +368,7 @@ public final class IntegrationTest {
     }
     private static void rejection() {
         try (var context = Context.newBuilder("php").allowAllAccess(true).build()) {
-            try { context.eval("php", "trait Unsupported {}"); throw new AssertionError("Unsupported syntax accepted"); }
+            try { context.eval("php", "class Broken { public function } "); throw new AssertionError("Malformed syntax accepted"); }
             catch (PolyglotException error) { if (error.isInternalError()) throw error; scenarios++; }
         }
     }
@@ -528,11 +580,14 @@ public final class IntegrationTest {
         var scheduledDelays = new java.util.concurrent.CopyOnWriteArrayList<Long>();
         var output = new ByteArrayOutputStream();
         var uiSawPending = new CompletableFuture<Boolean>();
+        var socketWait = new CompletableFuture<Long>();
+        var socketPhase = new java.util.concurrent.atomic.AtomicBoolean();
         var driver = new EmbeddedPhp.Driver() {
             @Override public void post(Runnable work) { loop.execute(work); }
             @Override public EmbeddedPhp.Alarm schedule(long delay, Runnable work) {
                 scheduledDelays.add(delay);
                 var future = loop.schedule(work, delay, TimeUnit.NANOSECONDS);
+                if (socketPhase.get()) socketWait.complete(delay);
                 return () -> future.cancel(false);
             }
         };
@@ -555,11 +610,11 @@ public final class IntegrationTest {
             equal("host loop gets control during CPU-only PHP", true, uiSawPending.get(10, TimeUnit.SECONDS));
             equal("hosted PHP returns result", 42, ((Number) session.completion.get(15, TimeUnit.SECONDS)).intValue());
             equal("hosted PHP output", "199990000:7", output.toString());
-            equal("libuv wakes host without a polling timer", true,
-                    !scheduledDelays.isEmpty() && scheduledDelays.stream().allMatch(delay -> delay > TimeUnit.SECONDS.toNanos(10)));
             int port;
             try (var socket = new java.net.ServerSocket(0)) { port = socket.getLocalPort(); }
-            var server = loop.submit(() -> new EmbeddedPhp(Context.newBuilder("php").allowAllAccess(true), Source.create("php", """
+            socketPhase.set(true);
+            var server = loop.submit(() -> new EmbeddedPhp(Context.newBuilder("php").allowAllAccess(true)
+                    .environment("GRAALPHP_REACTOR", "libuv"), Source.create("php", """
                 $config = (new TrueAsync\\HttpServerConfig())->addListener('127.0.0.1', %d);
                 $server = new TrueAsync\\HttpServer($config);
                 $server->addHttpHandler(function($request, $response) use ($server) {
@@ -569,6 +624,9 @@ public final class IntegrationTest {
                 });
                 $server->start(); return 42;
                 """.formatted(port)), driver)).get(10, TimeUnit.SECONDS);
+            // No client connects until the host has actually entered an idle wait.
+            // Fast completions in the earlier phase are allowed to avoid an alarm entirely.
+            socketWait.get(10, TimeUnit.SECONDS);
             var client = java.net.http.HttpClient.newHttpClient();
             var request = java.net.http.HttpRequest.newBuilder(java.net.URI.create("http://127.0.0.1:" + port + "/"))
                     .timeout(java.time.Duration.ofSeconds(5)).build();
@@ -583,6 +641,8 @@ public final class IntegrationTest {
             }
             equal("host backend readiness dispatches TCP and shorter timer on the owner", "host-socket-ready", reply);
             equal("host socket loop drains on shutdown", 42, ((Number) server.completion.get(10, TimeUnit.SECONDS)).intValue());
+            equal("libuv wakes host without a polling timer; scheduled=" + scheduledDelays, true,
+                    !scheduledDelays.isEmpty() && scheduledDelays.stream().allMatch(delay -> delay > TimeUnit.SECONDS.toNanos(10)));
         } finally { loop.shutdownNow(); }
         var nativeOutput = new ByteArrayOutputStream();
         try (var context = Context.newBuilder("php").allowAllAccess(true).out(nativeOutput).environment("GRAALPHP_REACTOR", "libuv").build()) {

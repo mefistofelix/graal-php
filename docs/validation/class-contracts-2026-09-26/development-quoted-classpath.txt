@@ -1,0 +1,27 @@
+build\generated\graalphp\truffle\PhpRootGen.java:6048: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+build\generated\graalphp\truffle\PhpRootGen.java:7823: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+Note: src\graalphp\truffle\PhpContext.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+2 warnings
+GraalPHP 0.1 | PHP 8.6 subset | Truffle 25.4.4.1.1
+tests\graalphp\ClassContractsTest.java:3: error: package org.graalvm.polyglot does not exist
+import org.graalvm.polyglot.Context;
+                           ^
+tests\graalphp\ClassContractsTest.java:4: error: package org.graalvm.polyglot does not exist
+import org.graalvm.polyglot.Source;
+                           ^
+tests\graalphp\ClassContractsTest.java:430: error: cannot find symbol
+                var builder = Context.newBuilder("php").allowAllAccess(true).out(output).err(error)
+                              ^
+  symbol:   variable Context
+  location: class ClassContractsTest
+tests\graalphp\ClassContractsTest.java:434: error: cannot find symbol
+                    context.eval(Source.newBuilder("php", script.toFile()).build());
+                                 ^
+  symbol:   variable Source
+  location: class ClassContractsTest
+4 errors

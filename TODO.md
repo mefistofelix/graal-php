@@ -8,12 +8,12 @@ certificano soltanto il risultato descritto, non un'intera milestone del design.
 ## Punto di ripresa
 
 **L'utente ha rinviato le verifiche prestazionali.** Riprendere lo sviluppo
-funzionale, non PERF-01. Il blocco corrente di **LANG-01** introduce autoload con
-callback personalizzate, classi dichiarate a runtime e risoluzione sospendibile
-dei padri: [contratti e limiti](docs/autoload.md).
-Il seguito è completare i contratti delle classi, poi interfacce/trait e altre
-forme di dichiarazione, coordinandole con valori, TrueAsync e reload. Il loader
-SPL predefinito, include_path e il binding PHP completo tra unità restano aperti.
+funzionale, non PERF-01. Il blocco corrente di **LANG-01** estende l'autoload con
+[interfacce, trait e contratti delle classi](docs/class-contracts.md): precedenze,
+alias, firme, tipi composti e costanti, con fatal e shutdown nativo coordinati.
+Il seguito riguarda enum e ulteriori forme di dichiarazione, iteratori/builtin
+e lifetime, coordinati con TrueAsync e reload. Il loader SPL predefinito,
+include_path, binding completo fra unità e l'intero typing PHP restano aperti.
 Linguaggio/TrueAsync/threading/FFI precedono Composer applicativo, Compose e mobile.
 
 ## Concluso e da non rifare da zero
@@ -42,6 +42,13 @@ Linguaggio/TrueAsync/threading/FFI precedono Composer applicativo, Compose e mob
   ownership, sospensioni/cancellazione, costruzione dinamica e dichiarazioni
   condizionali; 38 programmi differenziali e test di isolamento/reload.
   Non comprende tutta la SPL né chiude LANG-01.
+
+- [x] Interfacce/trait, contratti astratti/finali, varianza, costanti e query
+  di classe: 93 programmi differenziali/di rifiuto semantico, reload fra
+  generazioni e fatal di dichiarazione. [Contratto](docs/class-contracts.md).
+  Drenaggio di callback C fatali separato dal cleanup guest; default statici dei
+  trait risolti sulla classe utilizzatrice e completamenti host pronti su post,
+  non allarmi a zero. LANG-01 resta aperto.
 
 ## Prestazioni e memoria: rinviate per richiesta dell'utente
 
@@ -94,8 +101,10 @@ Linguaggio/TrueAsync/threading/FFI precedono Composer applicativo, Compose e mob
 - [ ] **LANG-01 — Linguaggio e autoload.** Il nucleo con callback esplicite è
   implementato: [autoload](docs/autoload.md). Completare loader SPL predefinito,
   estensioni/include_path, callback builtin e diagnostica, binding tra unità e
-  regole complete di ereditarietà. Poi interfacce, trait, enum, attributi,
-  generatori/Fiber, unpacking, named arguments nei restanti builtin e typing.
+  regole complete di ereditarietà. Il nucleo interfacce/trait, classi astratte,
+  finalità, costanti e varianza è implementato in questo blocco, non tutto il
+  modello classi PHP. Restano enum, attributi, iteratori/builtin, generatori/Fiber,
+  unpacking, named arguments nei restanti builtin, readonly/hooks e typing completo.
   Pianificare blocchi coerenti con valori, sospensioni e reload; le feature
   usate da Composer sono prioritarie, eseguire Composer non lo è.
 - [ ] **FFI-01 — Modello C e callback generiche.** CData, puntatori/buffer con

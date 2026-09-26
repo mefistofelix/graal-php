@@ -1,0 +1,29 @@
+> cmd.exe /d /c build.bat
+src\graalphp\truffle\PhpRoot.java:219: error: incompatible types: Bind cannot be converted to Annotation
+                @Cached IndirectCallNode call, @Bind("$bytecodeNode") BytecodeNode bytecode, @Bind("$bytecodeIndex") int bci) {
+                                                ^
+src\graalphp\truffle\PhpRoot.java:219: error: incompatible types: Bind cannot be converted to Annotation
+                @Cached IndirectCallNode call, @Bind("$bytecodeNode") BytecodeNode bytecode, @Bind("$bytecodeIndex") int bci) {
+                                                                                              ^
+src\graalphp\truffle\PhpRoot.java:229: error: incompatible types: Bind cannot be converted to Annotation
+                @Bind("$bytecodeNode") BytecodeNode bytecode, @Bind("$bytecodeIndex") int bci) {
+                 ^
+src\graalphp\truffle\PhpRoot.java:229: error: incompatible types: Bind cannot be converted to Annotation
+                @Bind("$bytecodeNode") BytecodeNode bytecode, @Bind("$bytecodeIndex") int bci) {
+                                                               ^
+src\graalphp\truffle\PhpCompiler.java:18: error: package PhpRootGen does not exist
+    private final PhpRootGen.Builder builder;
+                            ^
+src\graalphp\truffle\PhpCompiler.java:26: error: package PhpRootGen does not exist
+    private PhpCompiler(PhpRootGen.Builder builder, PhpLanguage language, Source source, Path path, String owner, String functionName, String traitName) {
+                                  ^
+src\graalphp\truffle\PhpCompiler.java:78: error: cannot find symbol
+        var roots = PhpRootGen.create(language, BytecodeConfig.WITH_SOURCE, builder -> {
+                    ^
+  symbol:   variable PhpRootGen
+  location: class PhpCompiler
+Note: src\graalphp\truffle\PhpContext.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+7 errors
+
+exit=1

@@ -87,6 +87,7 @@ public final class Scheduler implements AutoCloseable {
     private final Thread owner = Thread.currentThread();
     private final ArrayDeque<Runnable> ready = new ArrayDeque<>();
     private final LinkedBlockingQueue<Runnable> incoming = new LinkedBlockingQueue<>();
+    private final java.util.Set<CompletableFuture<Object>> dispatches = java.util.concurrent.ConcurrentHashMap.newKeySet();
     private final PriorityQueue<Timer> timers = new PriorityQueue<>(Comparator.comparingLong(Timer::deadline));
     private final List<Task> tasks = new ArrayList<>();
     private final List<Future> external = new ArrayList<>();
@@ -259,12 +260,26 @@ public final class Scheduler implements AutoCloseable {
 
     public CompletableFuture<Object> dispatch(java.util.concurrent.Callable<Object> action) {
         var result = new CompletableFuture<Object>();
-        if (closed) { result.completeExceptionally(new PhpError("Request dispatcher is closed")); return result; }
+        if (closed || request.fatalFailure != null) {
+            result.completeExceptionally(request.fatalFailure == null ? new PhpError("Request dispatcher is closed") : request.fatalFailure);
+            return result;
+        }
+        dispatches.add(result);
+        result.whenComplete((value, error) -> dispatches.remove(result));
+        if (closed || request.fatalFailure != null) {
+            result.completeExceptionally(request.fatalFailure == null ? new PhpError("Request dispatcher is closed") : request.fatalFailure);
+            return result;
+        }
         enqueue(() -> {
+            if (result.isDone()) return;
             try { result.complete(action.call()); }
             catch (Exception error) { result.completeExceptionally(error); }
         });
         return result;
+    }
+
+    public void abortDispatches(PhpError reason) {
+        for (var result : dispatches) result.completeExceptionally(reason);
     }
 
     public Object run(Function main) {
@@ -313,7 +328,9 @@ public final class Scheduler implements AutoCloseable {
         return hasReady();
     }
     private void runAction(Future root, Runnable action) {
+        if (request.fatalFailure != null) throw request.fatalFailure;
         action.run();
+        if (request.fatalFailure != null) throw request.fatalFailure;
         if (root.completion.isCompletedExceptionally() && !rootScope.cancelled) cancelScope(rootScope, failure(root));
     }
     public long nextDeadline() {
@@ -511,6 +528,7 @@ public final class Scheduler implements AutoCloseable {
     @Override public void close() {
         if (closed) return;
         closed = true;
+        abortDispatches(new PhpError("Request dispatcher is closed"));
         for (var listener : List.copyOf(listeners)) listener.close();
         for (var action : ready) if (action instanceof Resume resume) PhpValues.drop(resume.value);
         for (var task : tasks) {

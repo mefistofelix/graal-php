@@ -51,6 +51,8 @@ public final class Execution {
     }
 
     /** Request data never lives in immutable code metadata or a thread-local. */
+    public interface Drainable extends AutoCloseable { void beginShutdown(); }
+
     public static final class Request implements AutoCloseable {
         public final PhpContext context;
         public final CodeRepository.Generation generation;
@@ -58,11 +60,14 @@ public final class Execution {
         public final PhpValues.Scope globals = new PhpValues.Scope(heap);
         public final Map<String, PhpValues.Location> variables = new HashMap<>();
         public final Map<String, Function> functions = new HashMap<>();
-        public final Map<String, ObjectModel.Definition> classes = new HashMap<>();
+        public final Map<String, ObjectModel.Definition> classes = new java.util.LinkedHashMap<>();
         public final Map<String, ObjectModel.RuntimeClass> resolvedClasses = new HashMap<>();
         private final Set<String> resolvingClasses = new HashSet<>();
         public final Set<Path> included = new HashSet<>();
         public final ClassLoading autoload = new ClassLoading();
+        public long errorReporting = 30719L;
+        public Diagnostics.LastError lastError;
+        public volatile PhpError fatalFailure;
         public final java.io.ByteArrayOutputStream output = new java.io.ByteArrayOutputStream();
         public final List<AutoCloseable> resources = new ArrayList<>();
         public final Scheduler scheduler;
@@ -129,10 +134,20 @@ public final class Execution {
             if (definition == null) throw new PhpError("Error", "Class \"" + name + "\" not found");
             if (!resolvingClasses.add(key)) throw new PhpError("Cyclic class inheritance: " + name);
             try {
-                var parent = definition.parent() == null ? null : type(definition.parent());
-                resolved = new ObjectModel.RuntimeClass(this, definition, parent);
+                var linked = ClassLinker.link(this, definition);
+                resolved = linked.type();
                 resolvedClasses.put(key, resolved);
-                return resolved;
+                try {
+                    linked.validateDefaults(this);
+                    if (definition.kind() != Ir.TypeKind.TRAIT) resolved.initializeStatics(this);
+                    return resolved;
+                } catch (RuntimeException error) {
+                    resolvedClasses.remove(key);
+                    throw error;
+                }
+            } catch (PhpError error) {
+                if (error.fatal) fatalFailure = error;
+                throw error;
             } finally { resolvingClasses.remove(key); }
         }
         public void install(Unit unit) {
@@ -142,10 +157,19 @@ public final class Execution {
                 if (functions.putIfAbsent(entry.getKey(), entry.getValue()) != null) throw new PhpError("Cannot redeclare " + entry.getKey());
             }
             classes.putAll(unit.classes);
+            for (var name : unit.classes.keySet()) type(name);
             if (unit.path != null) included.add(unit.path);
         }
         @Override public void close() {
             PhpError failure = null;
+            // Notify blocked native callbacks before joining their workers; retain all roots until drain completes.
+            scheduler.abortDispatches(fatalFailure == null ? new PhpError("Request is shutting down") : fatalFailure);
+            for (var resource : List.copyOf(resources)) {
+                if (resource instanceof Drainable drainable) {
+                    try { drainable.beginShutdown(); }
+                    catch (PhpError error) { if (failure == null) failure = error; else failure.addSuppressed(error); }
+                }
+            }
             // Native calls must finish before their callbacks and captured guest values are released.
             for (var pool : workers.values()) {
                 try { pool.close(); }
@@ -178,6 +202,8 @@ public final class Execution {
         public Scheduler.Task task;
         public Activation includedScope;
         public ObjectModel.RuntimeClass calledClass;
+        public com.oracle.truffle.api.bytecode.BytecodeNode diagnosticBytecode;
+        public int diagnosticBytecodeIndex = -1;
         public boolean synchronousCallback;
         public final boolean topLevel;
         private boolean closed;
@@ -197,14 +223,14 @@ public final class Execution {
                                 if (arguments[j].location == null) throw new PhpError("Variadic reference requires a variable");
                                 (arguments[j].name == null ? array.append() : array.element(arguments[j].name)).bind(arguments[j].location);
                             } else (arguments[j].name == null ? array.append() : array.element(arguments[j].name))
-                                    .set(ObjectModel.checkType(arguments[j].value, parameter.type()));
+                                    .set(ObjectModel.checkType(arguments[j].value, TypeRelations.contextual(parameter.type(), request, function.owner(), function.owner())));
                         }
                         break;
                     }
                     if (i >= arguments.length || arguments[i] == null) {
                         if (parameter.defaultValue() == null) throw new PhpError("Too few arguments for " + function.name);
-                        Object value = ObjectModel.constant(request, parameter.defaultValue());
-                        try { variable(parameter.name()).set(ObjectModel.checkType(value, parameter.type())); }
+                        Object value = ObjectModel.constant(request, parameter.defaultValue(), function.owner());
+                        try { variable(parameter.name()).set(ObjectModel.checkType(value, TypeRelations.contextual(parameter.type(), request, function.owner(), function.owner()))); }
                         finally { PhpValues.drop(value); }
                         continue;
                     }
@@ -213,7 +239,7 @@ public final class Execution {
                         if (argument.location == null) throw new PhpError("Argument " + parameter.name() + " must be a variable");
                         argument.close();
                         variable(parameter.name()).bind(argument.location);
-                    } else variable(parameter.name()).set(ObjectModel.checkType(argument.value, parameter.type()));
+                    } else variable(parameter.name()).set(ObjectModel.checkType(argument.value, TypeRelations.contextual(parameter.type(), request, function.owner(), function.owner())));
                 }
             } catch (RuntimeException error) { locals.close(); throw error; }
         }
@@ -222,6 +248,11 @@ public final class Execution {
             if (includedScope != null) return includedScope.variable(name);
             if (topLevel || Set.of("_GET", "_POST", "_SERVER", "_COOKIE", "_FILES", "_ENV", "_REQUEST", "_SESSION").contains(name)) return request.global(name);
             return variables.computeIfAbsent(name, key -> locals.variable(null));
+        }
+        public Activation at(com.oracle.truffle.api.bytecode.BytecodeNode bytecode, int bytecodeIndex) {
+            diagnosticBytecode = bytecode;
+            diagnosticBytecodeIndex = bytecodeIndex;
+            return this;
         }
         public Object track(Object value) {
             if (value instanceof PhpValues.Owned owned) owned.track(ownedTemporaries);

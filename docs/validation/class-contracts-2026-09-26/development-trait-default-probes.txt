@@ -1,0 +1,30 @@
+trait-static-self php exit=0
+7
+
+trait-static-self graal exit=1
+Undefined constant T::VALUE
+
+
+trait-static-parent php exit=0
+8
+
+trait-static-parent graal exit=1
+Class has no parent
+
+
+unused-trait-default php exit=0
+declared
+
+unused-trait-default graal exit=1
+Undefined constant T::MISSING
+
+
+direct-trait php exit=0
+
+Deprecated: Accessing static trait property T::$n is deprecated, it should only be accessed on a class using the trait in build\trait-default-probes\direct-trait\main.php on line 2
+3:
+Deprecated: Calling static trait method T::value is deprecated, it should only be called on a class using the trait in build\trait-default-probes\direct-trait\main.php on line 2
+4
+
+direct-trait graal exit=0
+3:4

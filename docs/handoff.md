@@ -13,12 +13,13 @@ di PHP; non sono completate tutte le milestone del design.
 
 **L'utente ha chiesto di continuare lo sviluppo funzionale e riverificare le
 performance più avanti.** Non riprendere automaticamente PERF-01. Il blocco
-corrente è il nucleo di [autoload personalizzato](autoload.md), con callback
-riprendibili, costruzione dinamica, dichiarazioni condizionali e caricamento
-dei padri prima della pubblicazione della classe figlia.
+corrente è [interfacce, trait e contratti delle classi](class-contracts.md),
+con composizione sospendibile delle dipendenze, firme astratte/finali,
+varianza, tipi composti e costanti. Gli errori fatali del linker interrompono
+il guest ma non il drenaggio delle risorse native.
 
-Il seguito funzionale è completare i contratti delle classi e le dichiarazioni
-mancanti (interfacce/trait in particolare), insieme a valori e TrueAsync. Il
+Il seguito funzionale riguarda enum, dichiarazioni e iteratori mancanti,
+insieme a valori e TrueAsync. Il
 loader SPL predefinito, include_path e il binding completo tra unità restano
 aperti: non dichiarare Composer funzionante. Shared-memory threading e FFI
 restano priorità successive; Composer applicativo, Compose e mobile sono rinviati.
@@ -26,11 +27,65 @@ Procedere nel lavoro già autorizzato senza riconfermare queste decisioni.
 
 Il default CLI `engine.CompilerIdleDelay=500` rimane invariato e il JIT attivo.
 La diagnostica precedente [cURL p99](curl-p99.md) resta storica: nessuna nuova
-misura RAM/CPU/throughput/p99 è stata eseguita per il blocco autoload. Quando
+misura RAM/CPU/throughput/p99 è stata eseguita per i blocchi autoload/classi. Quando
 si tornerà alle performance, mantenere il vincolo di nessun warmup escluso e
 separare GC/invalidazioni, peer e lifetime reale dei compiler worker.
 
-## Blocco funzionale: autoload, 26 settembre
+## Blocco funzionale: contratti delle classi, 26 settembre
+
+[Contratto e limiti](class-contracts.md),
+[evidenze](validation/class-contracts-2026-09-26/README.md),
+[esiti](validation/class-contracts-2026-09-26/results.txt),
+[hash](validation/class-contracts-2026-09-26/hashes.json).
+
+Interfacce, trait annidati, precedenze/alias, classi e metodi astratti/finali,
+varianza, proprietà/costanti ereditate e tipi composti condividono la pipeline
+Bytecode DSL. Il linker conserva definizioni immutabili e viste per richiesta;
+le dipendenze si caricano sulla coroutine corrente prima della pubblicazione.
+La cancellazione durante la composizione e il reload dei trait hanno test
+espliciti. `instanceof` non forza autoload; query e diagnostiche dichiarano i
+limiti del catalogo builtin invece di simulare reflection completa.
+
+La nuova suite contiene 93 programmi: 61 con output identico e 32 con rifiuto
+semantico richiesto. Questi ultimi non affermano identità delle diagnostiche o
+del codice numerico di uscita. Gli errori fatali non eseguono catch/finally guest;
+la richiesta conserva invece il cleanup Java/native. Il test nativo dedicato
+verifica quattro combinazioni di callback sincrona/async, immediata/sospesa.
+Il rapporto distingue i contatori C verificati su JVM dalle uscite CLI del
+prodotto. Il test FFI con 80 richieste esplicite di full GC rimane separato.
+
+La prima build Native Image ha rilevato un confine mancante nel percorso di
+risoluzione di `::class`; la risoluzione generica è ora un TruffleBoundary.
+Il wrapper Windows dei nuovi test usa chiamate a subroutine fuori da blocchi
+parentetici, affinché un fallimento nativo non restituisca successo. Il rifiuto
+è stato riprodotto: codice nonzero, binario precedente invariato e nessun test
+eseguito sul prodotto vecchio. Le prove fallite restano archiviate.
+
+I default statici dei trait ora vengono risolti nella classe utilizzatrice,
+non durante la sola dichiarazione del trait. L'accesso diretto al trait ha
+storage separato e diagnostica di deprecazione. Un'ulteriore regressione del
+driver host è stata riprodotta: completion pronta fra pump/deadline → allarme
+a zero. `EmbeddedPhp` riposta ora il lavoro immediato; il test controlla una
+vera attesa di rete e usa libuv esplicito in entrambi i contesti. Passano 12
+ripetizioni Windows del test mirato, senza rimuovere le precedenti fallite.
+
+Windows e Linux passano tutti i 93 programmi su JVM, Native Image e sullo
+stesso Native Image con `--interpreter`: 558 esecuzioni, non casi diversi.
+Passano inoltre 38 autoload e 82 TrueAsync in entrambe le modalità/piattaforme,
+83/77 integrazioni, 53 scenari dei valori, 256 grafi/1.280 fasi collector,
+50 asserzioni rete per prodotto e le suite cURL dedicate. Il driver host passa
+12 ripetizioni Windows e 6 Linux. Le quattro combinazioni fatal/C passano su
+JVM e prodotto CLI; 80 richieste di full GC per piattaforma nella suite JVM
+FFI ordinaria. Il runner Native Image dedicato al forced-GC non è stato
+ricostruito in questo blocco.
+
+I 92 file src/tests sono identici fra root e copia Linux; gli eseguibili sono
+ricostruiti in sequenza e il Linux finale è copiato e avviato dalla root.
+Il manifest ha 105 voci fra sorgenti, test, build script, esempi e prodotti.
+I conteggi dettagliati e i controlli non eseguiti sono nel registro del blocco. Le baseline pre-classi sono conservate localmente in
+`build/before-class-contracts-2026-09-26/`; non sono nuove misure prestazionali.
+
+## Blocco precedente: autoload, 26 settembre
 
 [Contratti e limiti](autoload.md),
 [esiti e prodotti](validation/autoload-2026-09-26/results.txt),
@@ -167,8 +222,8 @@ TrueAsync. Il confronto corrente è HTTP e non prova equivalenza dei backend TLS
 
 | File locale ricreabile | Byte | SHA-256 |
 | --- | ---: | --- |
-| `build/graalphp.exe` | 90.013.696 | `2f474e70d4b578a77aa188f300b604d1e1f542ecf6add5e89619c779d384b93d` |
-| `build/graalphp-linux-x64` | 93.260.584 | `543dfbba94a106189cd2869c956ad013c3ca2df0d0e8da682834167258555ff3` |
+| `build/graalphp.exe` | 90.165.248 | `49f6f9636a37d80c5c2d60d1abad7997547254481e28dd84c685076c63f2a7dc` |
+| `build/graalphp-linux-x64` | 93.326.120 | `504108f62c48f0bb6305b55133a0bcf73a76c6cb8a4594d7f1c6bb151b598b0d` |
 | `build/graalphp-before-memory.exe` | 90.161.152 | `f84539cde1b2976077f4b29c68d3737f1ab096add2e8662f78d0a5d328c36c53` |
 
 Le copie `build/before-autoload-2026-09-26/graalphp.exe` e
@@ -202,6 +257,9 @@ come checklist obbligatoria a ogni modifica:
 ./build.bat verify                  # integrazione/valori/differenziale TrueAsync
 ./build.bat autoload-test           # 38 programmi contro PHP/TrueAsync
 ./build.bat autoload-test native    # ricostruisce e verifica il prodotto
+./build.bat class-test              # 93 contratti classi/output/rifiuti
+./build.bat class-test native       # stessa suite sulla CLI ricostruita
+./build.bat ffi-fatal-test          # stack C drenati anche dopo un fatal
 ./build.bat ffi-bridge-test native  # callback e stack C; quando pertinenti
 ```
 

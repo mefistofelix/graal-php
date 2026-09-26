@@ -20,13 +20,17 @@ public final class PhpCompiler {
     private final Source source;
     private final Path path;
     private final String owner;
+    private final String functionName;
+    private final String traitName;
     private final ArrayDeque<Loop> loops = new ArrayDeque<>();
-    private PhpCompiler(PhpRootGen.Builder builder, PhpLanguage language, Source source, Path path, String owner) {
+    private PhpCompiler(PhpRootGen.Builder builder, PhpLanguage language, Source source, Path path, String owner, String functionName, String traitName) {
         this.builder = builder;
         this.language = language;
         this.source = source;
         this.path = path;
         this.owner = owner;
+        this.functionName = functionName;
+        this.traitName = traitName;
     }
 
     @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
@@ -39,7 +43,7 @@ public final class PhpCompiler {
             var compiled = function(language, source, path, function.name(), function.parameters(), function.body(), false, null, function.returnType());
             if (functions.putIfAbsent(key, compiled) != null) throw new PhpError("Cannot redeclare " + key);
         }
-        var classes = new HashMap<String, graalphp.runtime.ObjectModel.Definition>();
+        var classes = new java.util.LinkedHashMap<String, graalphp.runtime.ObjectModel.Definition>();
         for (var declaration : ir.classes()) {
             var definition = definition(language, source, path, declaration);
             if (classes.putIfAbsent(declaration.name().toLowerCase(java.util.Locale.ROOT), definition) != null) {
@@ -48,28 +52,33 @@ public final class PhpCompiler {
         }
         return new Execution.Unit(path, source.getCharacters().toString(),
                 function(language, source, path, source.getName(), List.of(), ir.statements(), true, null, null),
-                java.util.Map.copyOf(functions), java.util.Map.copyOf(classes));
+                java.util.Map.copyOf(functions), java.util.Collections.unmodifiableMap(classes));
     }
     private static graalphp.runtime.ObjectModel.Definition definition(PhpLanguage language, Source source, Path path, Ir.ClassDeclaration declaration) {
-        var methods = new HashMap<String, graalphp.runtime.ObjectModel.Method>();
+        var methods = new java.util.LinkedHashMap<String, graalphp.runtime.ObjectModel.Method>();
         for (var method : declaration.methods()) {
             var value = method.function();
             var compiled = function(language, source, path, value.name(), value.parameters(), value.body(),
-                    false, declaration.name(), value.returnType());
+                    false, declaration.name(), value.returnType(), declaration.kind() == Ir.TypeKind.TRAIT ? declaration.name() : null);
             String key = value.name().toLowerCase(java.util.Locale.ROOT);
-            if (methods.putIfAbsent(key, new graalphp.runtime.ObjectModel.Method(compiled, method.shared(), method.visibility())) != null) {
+            if (methods.putIfAbsent(key, new graalphp.runtime.ObjectModel.Method(compiled, method.shared(), method.visibility(), method.abstractMethod(), method.finalMethod())) != null) {
                 throw new PhpError("Cannot redeclare method " + declaration.name() + "::" + value.name());
             }
         }
         return new graalphp.runtime.ObjectModel.Definition(declaration.name(), declaration.parent(),
-                declaration.properties(), java.util.Map.copyOf(methods));
+                declaration.properties(), java.util.Collections.unmodifiableMap(methods), declaration.kind(), declaration.abstractType(),
+                declaration.finalType(), declaration.interfaces(), declaration.traits(), declaration.constants());
     }
     private static Execution.Function function(PhpLanguage language, Source source, Path path, String name,
             List<Ir.Parameter> parameters, List<Ir.Statement> body, boolean main, String owner, String returnType) {
+        return function(language, source, path, name, parameters, body, main, owner, returnType, null);
+    }
+    private static Execution.Function function(PhpLanguage language, Source source, Path path, String name,
+            List<Ir.Parameter> parameters, List<Ir.Statement> body, boolean main, String owner, String returnType, String traitName) {
         var roots = PhpRootGen.create(language, BytecodeConfig.WITH_SOURCE, builder -> {
             builder.beginRoot();
             builder.beginSource(source);
-            var compiler = new PhpCompiler(builder, language, source, path, owner);
+            var compiler = new PhpCompiler(builder, language, source, path, owner, name, traitName);
             for (var statement : body) compiler.statement(statement);
             builder.beginReturn();
             builder.beginCheckReturn();
@@ -107,7 +116,9 @@ public final class PhpCompiler {
             case Ir.DoWhile loop -> doLoop(loop);
             case Ir.Foreach loop -> foreach(loop);
             case Ir.Try guarded -> {
-                if (guarded.cleanup() != null) b.beginTryFinally(() -> statement(guarded.cleanup()));
+                if (guarded.cleanup() != null) b.beginTryFinally(() -> {
+                    b.beginIfThen(); b.emitCanRunCleanup(); statement(guarded.cleanup()); b.endIfThen();
+                });
                 if (guarded.handler() != null) b.beginTryCatch();
                 statement(guarded.body());
                 if (guarded.handler() != null) {
@@ -210,9 +221,21 @@ public final class PhpCompiler {
                 switch (constant.name()) {
                     case "__FILE__" -> b.emitLoadConstant(path == null ? source.getName() : path.toString());
                     case "__DIR__" -> b.emitLoadConstant(path == null ? "" : path.getParent().toString());
-                    case "__CLASS__" -> b.emitLoadConstant(owner == null ? "" : owner);
+                    case "__CLASS__" -> b.emitLexicalClass();
+                    case "__TRAIT__" -> b.emitLoadConstant(traitName == null ? "" : traitName);
+                    case "__FUNCTION__" -> b.emitLoadConstant(functionName);
+                    case "__METHOD__" -> b.emitLoadConstant(owner == null ? functionName : owner + "::" + functionName);
                     default -> b.emitNamedConstant(constant.name());
                 }
+            }
+            case Ir.ClassName name -> b.emitResolvedClassName(name.type());
+            case Ir.ClassConstant constant -> {
+                b.beginReadClassConstant(constant.name());
+                if (constant.name().equals("class")) expression(constant.type()); else ensureClass(constant.type());
+                b.endReadClassConstant();
+            }
+            case Ir.InstanceOf instance -> {
+                b.beginIsInstanceOf(); expression(instance.value()); expression(instance.type()); b.endIsInstanceOf();
             }
             case Ir.Index index -> {
                 if (isLocation(index)) { b.beginRead(); location(index); b.endRead(); }
@@ -261,7 +284,7 @@ public final class PhpCompiler {
             case Ir.DynamicConstruct construct -> construct(construct.type(), construct.arguments());
             case Ir.Closure closure -> {
                 var value = closure.function();
-                var compiled = function(language, source, path, value.name(), value.parameters(), value.body(), false, owner, value.returnType());
+                var compiled = function(language, source, path, value.name(), value.parameters(), value.body(), false, owner, value.returnType(), traitName);
                 b.emitCreateClosure(new graalphp.runtime.ObjectModel.ClosureTemplate(compiled, closure.captures(), closure.arrow()));
             }
             case Ir.ArrayLiteral array -> {

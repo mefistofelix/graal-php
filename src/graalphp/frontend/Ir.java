@@ -10,10 +10,19 @@ public final class Ir {
     public record Function(String name, List<Parameter> parameters, List<Statement> body, int start, int length,
                            String returnType) {}
     public record Parameter(String name, boolean reference, String type, Expression defaultValue, boolean variadic) {}
+    public enum TypeKind { CLASS, INTERFACE, TRAIT }
     public record ClassDeclaration(String name, String parent, List<PropertyDeclaration> properties,
-                                   List<MethodDeclaration> methods) {}
+                                   List<MethodDeclaration> methods, TypeKind kind, boolean abstractType,
+                                   boolean finalType, List<String> interfaces, List<TraitUse> traits,
+                                   List<ClassConstantDeclaration> constants) {}
+    public record TraitUse(List<String> names, List<TraitAdaptation> adaptations) {}
+    public record TraitAdaptation(String trait, String method, List<String> excluded, String alias,
+                                  String visibility, boolean finalMethod) {}
+    public record ClassConstantDeclaration(String name, Expression value, String visibility,
+                                           boolean finalConstant, String type) {}
     public record PropertyDeclaration(String name, Expression value, boolean shared, String visibility, String type) {}
-    public record MethodDeclaration(Function function, boolean shared, String visibility) {}
+    public record MethodDeclaration(Function function, boolean shared, String visibility,
+                                    boolean abstractMethod, boolean finalMethod) {}
     public record Capture(String name, boolean reference) {}
     public record Statement(int start, int length, Form form) {}
     public sealed interface Form permits ExpressionStatement, Echo, Return, If, While, Foreach, Try,
@@ -36,7 +45,7 @@ public final class Ir {
     public record Continue() implements Form {}
     public sealed interface Expression permits Literal, Variable, Index, Assign, Binary, Unary, Call, ArrayLiteral,
             CompoundAssign, Increment, Conditional, Coalesce, Property, StaticProperty, MethodCall, StaticCall,
-            Construct, DynamicConstruct, DynamicCall, Closure, Constant, NamedArgument {}
+            Construct, DynamicConstruct, DynamicCall, Closure, Constant, NamedArgument, ClassConstant, ClassName, InstanceOf {}
     public record NamedArgument(String name, Expression value) implements Expression {}
     public record Literal(Object value) implements Expression {}
     public record Variable(String name) implements Expression {}
@@ -55,6 +64,9 @@ public final class Ir {
     public record DynamicCall(Expression callable, List<Expression> arguments) implements Expression {}
     public record Closure(Function function, List<Capture> captures, boolean arrow) implements Expression {}
     public record Constant(String name) implements Expression {}
+    public record ClassConstant(Expression type, String name) implements Expression {}
+    public record ClassName(String type) implements Expression {}
+    public record InstanceOf(Expression value, Expression type) implements Expression {}
     public record Binary(String operator, Expression left, Expression right) implements Expression {}
     public record Unary(String operator, Expression value) implements Expression {}
     public record Call(String name, List<Expression> arguments, boolean globalFallback) implements Expression {

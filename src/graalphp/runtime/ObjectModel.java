@@ -13,9 +13,26 @@ import static graalphp.runtime.Execution.*;
 public final class ObjectModel {
     private ObjectModel() {}
 
-    public record Method(Function function, boolean shared, String visibility) {}
+    public record Method(Function function, boolean shared, String visibility, boolean abstractMethod,
+                         boolean finalMethod) {
+        public Method inClass(String owner) {
+            var rebound = new Function(function.name(), function.parameters(), function.target(), function.file(), owner, function.returnType());
+            return new Method(rebound, shared, visibility, abstractMethod, finalMethod);
+        }
+    }
     public record Definition(String name, String parent, List<Ir.PropertyDeclaration> properties,
-                             Map<String, Method> methods) implements com.oracle.truffle.api.interop.TruffleObject {}
+                             Map<String, Method> methods, Ir.TypeKind kind, boolean abstractType,
+                             boolean finalType, List<String> interfaces, List<Ir.TraitUse> traits,
+                             List<Ir.ClassConstantDeclaration> constants) implements com.oracle.truffle.api.interop.TruffleObject {
+        public List<String> dependencies() {
+            var dependencies = new java.util.ArrayList<String>();
+            if (parent != null) dependencies.add(parent);
+            for (var use : traits) dependencies.addAll(use.names());
+            dependencies.addAll(interfaces);
+            return List.copyOf(dependencies);
+        }
+    }
+    public record ClassConstant(Ir.ClassConstantDeclaration declaration, String owner) {}
     public record ClosureData(Function function, List<Ir.Capture> captures) {}
     public record ClosureTemplate(Function function, List<Ir.Capture> captures, boolean arrow) {}
     public record Invocation(Function function, PhpValues.PhpObject receiver, RuntimeClass calledClass,
@@ -25,27 +42,70 @@ public final class ObjectModel {
         public final Definition definition;
         public final RuntimeClass parent;
         public final PhpValues.PhpObject statics;
+        public final List<RuntimeClass> interfaces;
+        public final Map<String, Method> methods;
+        public final List<Method> requirements;
+        public final List<Ir.PropertyDeclaration> properties;
+        public final Map<String, ClassConstant> constants;
+        private final java.util.Set<String> initializedConstants = new java.util.HashSet<>();
+        private final java.util.Set<String> evaluatingConstants = new java.util.HashSet<>();
+        private boolean staticsInitialized;
 
-        RuntimeClass(Request request, Definition definition, RuntimeClass parent) {
+        RuntimeClass(Request request, Definition definition, RuntimeClass parent, List<RuntimeClass> interfaces,
+                     Map<String, Method> methods, List<Method> requirements,
+                     List<Ir.PropertyDeclaration> properties, Map<String, ClassConstant> constants) {
             this.definition = definition;
             this.parent = parent;
+            this.interfaces = List.copyOf(interfaces);
+            this.methods = java.util.Collections.unmodifiableMap(new LinkedHashMap<>(methods));
+            this.requirements = List.copyOf(requirements);
+            this.properties = List.copyOf(properties);
+            this.constants = java.util.Collections.unmodifiableMap(new LinkedHashMap<>(constants));
             statics = new PhpValues.PhpObject(request.heap, this);
             request.globals.variable(statics);
-            for (var property : definition.properties) {
+        }
+
+        void initializeStatics(Request request) {
+            if (staticsInitialized) return;
+            for (var property : properties) {
                 if (property.shared()) initialize(request, statics, definition.name, property);
             }
+            staticsInitialized = true;
         }
 
         public boolean isA(String name) {
-            return definition.name.equalsIgnoreCase(name) || parent != null && parent.isA(name);
+            if (definition.kind() == Ir.TypeKind.TRAIT) return false;
+            return definition.name.equalsIgnoreCase(name) || parent != null && parent.isA(name)
+                    || interfaces.stream().anyMatch(type -> type.isA(name));
         }
 
         public Method method(String name) {
-            var method = definition.methods.get(name.toLowerCase(Locale.ROOT));
+            var method = methods.get(name.toLowerCase(Locale.ROOT));
             return method != null ? method : parent == null ? null : parent.method(name);
+        }
+
+        Object constant(Request request, String name) {
+            var member = constants.get(name);
+            if (member == null) throw new PhpError("Error", "Undefined constant " + definition.name + "::" + name);
+            if (!member.owner.equals(definition.name)) return request.type(member.owner).constant(request, name);
+            String storage = "\0constant:" + name;
+            if (initializedConstants.contains(name)) return PhpValues.own(statics.field(storage).read());
+            if (!evaluatingConstants.add(name)) throw new PhpError("Error", "Cyclic class constant " + definition.name + "::" + name);
+            try {
+                Object value = ObjectModel.constant(request, member.declaration.value(), definition.name);
+                try {
+                    String declaredType = TypeRelations.contextual(member.declaration.type(), request, definition.name, definition.name);
+                    if (declaredType != null && !TypeRelations.accepts(PhpValues.unwrap(value), declaredType))
+                        throw new PhpError("TypeError", "Class constant does not satisfy type " + declaredType);
+                    statics.field(storage).set(PhpValues.unwrap(value));
+                    initializedConstants.add(name);
+                    return PhpValues.own(statics.field(storage).read());
+                } finally { PhpValues.drop(value); }
+            } finally { evaluatingConstants.remove(name); }
         }
     }
 
+    @TruffleBoundary
     public static RuntimeClass resolve(Activation caller, String name) {
         if (name.startsWith("\\")) name = name.substring(1);
         String lexical = caller.function.owner();
@@ -72,6 +132,8 @@ public final class ObjectModel {
         builtin = SqliteApi.allocate(caller, name);
         if (builtin != AsyncApi.UNHANDLED) return builtin;
         var type = resolve(caller, name);
+        if (type.definition.kind != Ir.TypeKind.CLASS || type.definition.abstractType)
+            throw new PhpError("Error", "Cannot instantiate " + type.definition.kind.name().toLowerCase(Locale.ROOT) + " " + type.definition.name);
         var object = new PhpValues.PhpObject(caller.request.heap, type);
         Object owned = caller.track(PhpValues.own(object));
         initializeObject(caller.request, object, type);
@@ -80,7 +142,7 @@ public final class ObjectModel {
 
     private static void initializeObject(Request request, PhpValues.PhpObject object, RuntimeClass type) {
         if (type.parent != null) initializeObject(request, object, type.parent);
-        for (var property : type.definition.properties) {
+        for (var property : type.properties) {
             if (!property.shared()) initialize(request, object, type.definition.name, property);
         }
     }
@@ -88,11 +150,11 @@ public final class ObjectModel {
     private static void initialize(Request request, PhpValues.PhpObject object, String owner, Ir.PropertyDeclaration property) {
         var location = object.field(storageName(owner, property));
         if (property.value() != null || property.type() == null) {
-            Object value = property.value() == null ? null : constant(request, property.value());
-            try { location.set(property.type() == null ? PhpValues.unwrap(value) : checkType(PhpValues.unwrap(value), property.type())); }
+            Object value = property.value() == null ? null : constant(request, property.value(), owner);
+            try { location.set(property.type() == null ? PhpValues.unwrap(value) : checkType(PhpValues.unwrap(value), TypeRelations.contextual(property.type(), request, owner, owner))); }
             finally { PhpValues.drop(value); }
         }
-        object.fieldType(storageName(owner, property), property.type());
+        object.fieldType(storageName(owner, property), TypeRelations.contextual(property.type(), request, owner, owner));
     }
 
     private static String storageName(String owner, Ir.PropertyDeclaration property) {
@@ -112,14 +174,14 @@ public final class ObjectModel {
                 || !(object.descriptor instanceof RuntimeClass type)) throw new PhpError("Property access requires an object");
         if (caller.function.owner() != null && type.isA(caller.function.owner())) {
             var lexical = caller.request.type(caller.function.owner());
-            for (var property : lexical.definition.properties) {
+            for (var property : lexical.properties) {
                 if (!property.shared() && property.visibility().equals("private") && property.name().equals(name)) {
                     return object.field(storageName(lexical.definition.name, property));
                 }
             }
         }
         for (var current = type; current != null; current = current.parent) {
-            for (var property : current.definition.properties) {
+            for (var property : current.properties) {
                 if (!property.shared() && property.name().equals(name)) {
                     access(caller, current, property.visibility());
                     return object.field(storageName(current.definition.name, property));
@@ -131,8 +193,14 @@ public final class ObjectModel {
 
     @TruffleBoundary
     public static PhpValues.Location staticProperty(Activation caller, String className, String name) {
-        for (var type = resolve(caller, className); type != null; type = type.parent) {
-            for (var property : type.definition.properties) {
+        var resolved = resolve(caller, className);
+        if (resolved.definition.kind == Ir.TypeKind.TRAIT) {
+            Diagnostics.deprecated(caller, "Accessing static trait property " + resolved.definition.name + "::$" + name
+                    + " is deprecated, it should only be accessed on a class using the trait");
+            resolved.initializeStatics(caller.request);
+        }
+        for (var type = resolved; type != null; type = type.parent) {
+            for (var property : type.properties) {
                 if (property.shared() && property.name().equals(name)) {
                     access(caller, type, property.visibility());
                     return type.statics.field(storageName(type.definition.name, property));
@@ -147,7 +215,7 @@ public final class ObjectModel {
         String scope = caller.function.owner();
         if (scope != null && (scope.equalsIgnoreCase(owner.definition.name)
                 || visibility.equals("protected") && (caller.request.type(scope).isA(owner.definition.name) || owner.isA(scope)))) return;
-        throw new PhpError("Cannot access " + visibility + " member of " + owner.definition.name);
+        throw new PhpError("Error", "Cannot access " + visibility + " member of " + owner.definition.name);
     }
 
     @TruffleBoundary
@@ -155,8 +223,13 @@ public final class ObjectModel {
         if (!(PhpValues.unwrap(value) instanceof PhpValues.PhpObject object)
                 || !(object.descriptor instanceof RuntimeClass type)) throw new PhpError("Method call requires an object");
         var method = type.method(name);
+        if (!constructor && caller.function.owner() != null && type.isA(caller.function.owner())) {
+            var lexical = caller.request.type(caller.function.owner()).methods.get(name.toLowerCase(Locale.ROOT));
+            if (lexical != null && lexical.visibility.equals("private")) method = lexical;
+        }
         if (method == null && constructor) return null;
         if (method == null) throw new PhpError("Undefined method " + type.definition.name + "::" + name);
+        if (method.abstractMethod) throw new PhpError("Error", "Cannot call abstract method " + method.function.owner() + "::" + name);
         access(caller, caller.request.type(method.function.owner()), method.visibility);
         return new Invocation(method.function, method.shared ? null : object, type, null);
     }
@@ -166,6 +239,7 @@ public final class ObjectModel {
         var type = resolve(caller, className);
         var method = type.method(name);
         if (method == null) throw new PhpError("Undefined method " + className + "::" + name);
+        if (method.abstractMethod) throw new PhpError("Error", "Cannot call abstract method " + method.function.owner() + "::" + name);
         access(caller, caller.request.type(method.function.owner()), method.visibility);
         PhpValues.PhpObject receiver = null;
         if (!method.shared) {
@@ -180,6 +254,8 @@ public final class ObjectModel {
 
     @TruffleBoundary
     public static Object closure(Activation caller, Function function, List<Ir.Capture> captures, boolean arrow) {
+        if (function.owner() != null && caller.function.owner() != null && !function.owner().equals(caller.function.owner()))
+            function = new Function(function.name(), function.parameters(), function.target(), function.file(), caller.function.owner(), function.returnType());
         var object = new PhpValues.PhpObject(caller.request.heap, new ClosureData(function, captures));
         Object owned = caller.track(PhpValues.own(object));
         if (arrow) {
@@ -230,6 +306,11 @@ public final class ObjectModel {
     public static Object invoke(Activation caller, Invocation invocation, Argument[] args, IndirectCallNode call) {
         try {
             if (invocation == null) return null;
+            if (invocation.calledClass != null && invocation.calledClass.definition.kind == Ir.TypeKind.TRAIT
+                    && invocation.environment == null && invocation.receiver == null) {
+                Diagnostics.deprecated(caller, "Calling static trait method " + invocation.calledClass.definition.name + "::" + invocation.function.name()
+                        + " is deprecated, it should only be called on a class using the trait");
+            }
             var child = new Activation(caller.request, invocation.function, caller.task, false, args);
             bind(child, invocation);
             return Operations.executeChild(caller, child, call);
@@ -253,36 +334,55 @@ public final class ObjectModel {
     }
 
     @TruffleBoundary
-    public static Object constant(Request request, Ir.Expression expression) {
+    public static Object constant(Request request, Ir.Expression expression) { return constant(request, expression, null); }
+
+    @TruffleBoundary
+    public static Object constant(Request request, Ir.Expression expression, String lexicalClass) {
         return switch (expression) {
             case Ir.Literal literal -> literal.value();
             case Ir.Unary unary -> {
-                var number = Operations.number(constant(request, unary.value()));
+                var number = Operations.number(constant(request, unary.value(), lexicalClass));
                 if (unary.operator().equals("+")) yield number;
                 if (unary.operator().equals("!")) yield !Operations.truth(number);
                 if (number instanceof Long value && value != Long.MIN_VALUE) yield -value;
                 yield -number.doubleValue();
             }
-            case Ir.Binary binary -> Operations.binary(binary.operator(), constant(request, binary.left()), constant(request, binary.right()));
+            case Ir.Binary binary -> Operations.binary(binary.operator(), constant(request, binary.left(), lexicalClass), constant(request, binary.right(), lexicalClass));
             case Ir.ArrayLiteral literal -> {
                 try (var scope = new PhpValues.Scope(request.heap)) {
                     var array = scope.variable(scope.emptyArray());
                     for (var entry : literal.entries()) {
                         if (entry.reference()) throw new PhpError("References are not allowed in constant expressions");
-                        Object key = entry.key() == null ? null : constant(request, entry.key());
-                        Object value = constant(request, entry.value());
+                        Object key = entry.key() == null ? null : constant(request, entry.key(), lexicalClass);
+                        Object value = constant(request, entry.value(), lexicalClass);
                         try { (entry.key() == null ? array.append() : array.element(PhpValues.unwrap(key))).set(PhpValues.unwrap(value)); }
                         finally { PhpValues.drop(key); PhpValues.drop(value); }
                     }
                     yield PhpValues.own(array.read());
                 }
             }
-            case Ir.Constant constant -> namedConstant(constant.name());
+            case Ir.Constant constant -> constant.name().equals("__CLASS__") ? (lexicalClass == null ? "" : lexicalClass) : namedConstant(constant.name());
+            case Ir.ClassName name -> TypeRelations.contextual(name.type(), request, lexicalClass, lexicalClass);
+            case Ir.ClassConstant constant -> {
+                if (!(constant.type() instanceof Ir.Literal literal) || !(literal.value() instanceof String name))
+                    throw new PhpError("Error", "Dynamic class name in constant expression");
+                String type = TypeRelations.contextual(name, request, lexicalClass, lexicalClass);
+                if (constant.name().equals("class")) yield type;
+                var runtimeClass = request.type(type);
+                var member = runtimeClass.constants.get(constant.name());
+                if (member == null) throw new PhpError("Error", "Undefined constant " + type + "::" + constant.name());
+                if (!member.declaration.visibility().equals("public") && (lexicalClass == null
+                        || !lexicalClass.equalsIgnoreCase(member.owner) && (member.declaration.visibility().equals("private")
+                        || !request.type(lexicalClass).isA(member.owner) && !request.type(member.owner).isA(lexicalClass))))
+                    throw new PhpError("Error", "Cannot access class constant " + type + "::" + constant.name());
+                yield runtimeClass.constant(request, constant.name());
+            }
             default -> throw new PhpError("Unsupported constant expression");
         };
     }
 
     public static Object namedConstant(String name) {
+        if (Diagnostics.CONSTANTS.containsKey(name)) return Diagnostics.CONSTANTS.get(name);
         if (CurlApi.CONSTANTS.containsKey(name)) return CurlApi.CONSTANTS.get(name);
         if (CurlMultiApi.CONSTANTS.containsKey(name)) return CurlMultiApi.CONSTANTS.get(name);
         if (SqliteApi.CONSTANTS.containsKey(name)) return SqliteApi.CONSTANTS.get(name);
@@ -298,44 +398,56 @@ public final class ObjectModel {
     }
 
     @TruffleBoundary
-    public static Object checkType(Object value, String declaredType) {
+    public static Object checkType(Object value, String declaredType) { return TypeRelations.check(value, declaredType); }
+
+    @TruffleBoundary
+    public static String className(Object value) {
         value = PhpValues.unwrap(value);
-        if (declaredType == null || declaredType.equals("mixed")) return value;
-        String builtinClass = AsyncApi.className(value);
-        if (builtinClass == null) builtinClass = NetworkApi.className(value);
-        if (builtinClass == null) builtinClass = SqliteApi.className(value);
-        if (value instanceof CurlApi.Handle) builtinClass = "CurlHandle";
-        if (value instanceof CurlMultiApi.Handle) builtinClass = "CurlMultiHandle";
-        if (builtinClass != null && (builtinClass.equalsIgnoreCase(declaredType)
-                || declaredType.equals("object") || declaredType.equalsIgnoreCase("Async\\Completable") && value instanceof Scheduler.Future)) return value;
-        String type = declaredType;
-        if (type.startsWith("?")) {
-            if (value == null) return null;
-            type = type.substring(1);
-        }
-        boolean valid = switch (type) {
-            case "null", "void" -> value == null;
-            case "never" -> false;
-            case "int" -> value instanceof Long;
-            case "float" -> value instanceof Double;
-            case "string" -> value instanceof String || value instanceof PhpString;
-            case "bool" -> value instanceof Boolean;
-            case "true" -> Boolean.TRUE.equals(value);
-            case "false" -> Boolean.FALSE.equals(value);
-            case "array" -> value instanceof PhpValues.PhpArray;
-            case "object" -> value instanceof PhpValues.PhpObject;
-            case "callable" -> value instanceof String || value instanceof PhpValues.PhpObject || value instanceof PhpValues.PhpArray;
-            default -> value instanceof PhpValues.PhpObject object && object.descriptor instanceof RuntimeClass clazz && clazz.isA(type);
-        };
-        if (valid) return value;
-        if (value != null && (value instanceof Number || value instanceof String || value instanceof Boolean)) {
-            switch (type) {
-                case "int": return Operations.number(value).longValue();
-                case "float": return Operations.number(value).doubleValue();
-                case "string": return Operations.string(value);
-                case "bool": return Operations.truth(value);
+        if (value instanceof PhpValues.PhpObject object)
+            return object.descriptor instanceof RuntimeClass type ? type.definition.name : object.descriptor instanceof ClosureData ? "Closure" : null;
+        String name = AsyncApi.className(value);
+        if (name == null) name = NetworkApi.className(value);
+        if (name == null) name = SqliteApi.className(value);
+        if (value instanceof CurlApi.Handle) return "CurlHandle";
+        if (value instanceof CurlMultiApi.Handle) return "CurlMultiHandle";
+        if (value instanceof FfiApi.Binding) return "FFI";
+        return name;
+    }
+
+    @TruffleBoundary
+    public static Object readClassConstant(Activation caller, Object value, String name) {
+        try {
+            Object raw = PhpValues.unwrap(value);
+            String className = raw instanceof String text ? text : className(raw);
+            if (className == null) throw new PhpError("Error", "Class constant access requires an object or class name");
+            if (name.equals("class")) {
+                if (raw instanceof String) throw new PhpError("TypeError", "Cannot use \"::class\" on string");
+                return className;
             }
-        }
-        throw new PhpError("Value does not satisfy type " + declaredType);
+            var type = resolve(caller, className);
+            if (type.definition.kind == Ir.TypeKind.TRAIT) throw new PhpError("Error", "Cannot access a trait constant directly");
+            var member = type.constants.get(name);
+            if (member == null) throw new PhpError("Error", "Undefined constant " + className + "::" + name);
+            access(caller, caller.request.type(member.owner), member.declaration.visibility());
+            return caller.track(type.constant(caller.request, name));
+        } finally { PhpValues.drop(value); }
+    }
+
+    @TruffleBoundary
+    public static boolean instanceOf(Activation caller, Object value, Object type) {
+        try {
+            Object rawType = PhpValues.unwrap(type);
+            String name = rawType instanceof String text ? text : className(rawType);
+            if (name == null) throw new PhpError("Error", "instanceof requires a class name or an object");
+            name = TypeRelations.contextual(name, caller.request, caller.function.owner(),
+                    caller.calledClass == null ? caller.function.owner() : caller.calledClass.definition.name);
+            if (name.startsWith("\\")) name = name.substring(1);
+            Object raw = PhpValues.unwrap(value);
+            if (raw instanceof PhpValues.PhpObject object && object.descriptor instanceof RuntimeClass runtimeClass)
+                return runtimeClass.isA(name);
+            if (raw instanceof PhpError error) return error.matches(name);
+            String actual = className(raw);
+            return actual != null && actual.equalsIgnoreCase(name);
+        } finally { PhpValues.drop(value); PhpValues.drop(type); }
     }
 }

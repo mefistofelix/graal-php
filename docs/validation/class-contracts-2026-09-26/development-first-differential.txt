@@ -1,0 +1,112 @@
+> cmd.exe /d /c build.bat
+GraalPHP 0.1 | PHP 8.6 subset | Truffle 25.4.4.1.1
+build\generated\graalphp\truffle\PhpRootGen.java:5951: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+build\generated\graalphp\truffle\PhpRootGen.java:7701: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+Note: src\graalphp\truffle\PhpContext.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+2 warnings
+
+exit=0
+> tools/graalvm-25.4.4.1.1+1.1/bin/javac.exe --release 25 -proc:none -cp build/classes;build/deps/25.4.4.1.1/* -d build/test-classes tests/graalphp/ClassContractsTest.java
+
+exit=0
+> tools/graalvm-25.4.4.1.1+1.1/bin/java.exe --enable-native-access=ALL-UNNAMED -cp build/classes;build/test-classes;build/deps/25.4.4.1.1/* graalphp.ClassContractsTest
+PASS declaration-kinds-and-timing oracle=0 target=0 mode=output
+PASS interface-methods-and-typing oracle=0 target=0 mode=output
+PASS multiple-interface-inheritance oracle=0 target=0 mode=output
+PASS interface-diamond oracle=0 target=0 mode=output
+PASS inherited-interface-implementation oracle=0 target=0 mode=output
+PASS abstract-class-contract oracle=0 target=0 mode=output
+PASS abstract-interface-carried-to-child oracle=0 target=0 mode=output
+PASS abstract-and-static-methods oracle=0 target=0 mode=output
+PASS covariant-return oracle=0 target=0 mode=output
+PASS contravariant-parameter oracle=0 target=0 mode=output
+PASS nullable-and-union-contracts oracle=0 target=0 mode=output
+PASS intersection-and-dnf-values oracle=0 target=0 mode=output
+PASS intersection-variance oracle=0 target=0 mode=output
+PASS self-parameter-and-return oracle=0 target=0 mode=output
+PASS late-static-return oracle=0 target=0 mode=output
+PASS reference-and-variadic-contract oracle=0 target=0 mode=output
+PASS constructor-signature-exception oracle=0 target=0 mode=output
+PASS private-method-lexical-dispatch oracle=0 target=0 mode=output
+PASS trait-basic-precedence oracle=0 target=0 mode=output
+PASS trait-conflict-resolution-and-alias oracle=0 target=0 mode=output
+PASS class-method-resolves-trait-collision oracle=0 target=0 mode=output
+PASS trait-visibility-alias oracle=0 target=0 mode=output
+PASS trait-nesting-and-shared-origin oracle=0 target=0 mode=output
+PASS trait-magic-constants-and-alias oracle=0 target=0 mode=output
+PASS trait-closure-private-scope oracle=0 target=0 mode=output
+PASS trait-self-types oracle=0 target=0 mode=output
+PASS trait-abstract-parent-implementation oracle=0 target=0 mode=output
+PASS trait-private-abstract-requirement oracle=0 target=0 mode=output
+PASS trait-properties-compatible-defaults oracle=0 target=0 mode=output
+PASS trait-static-storage-isolation oracle=0 target=0 mode=output
+PASS trait-private-property-rebinding oracle=0 target=0 mode=output
+PASS trait-final-overridden-by-using-class oracle=0 target=0 mode=output
+PASS class-constant-inheritance-and-visibility oracle=0 target=0 mode=output
+PASS typed-constant-and-array-copy oracle=0 target=0 mode=output
+PASS trait-constant-parent-precedence oracle=0 target=0 mode=output
+PASS trait-constant-composition oracle=0 target=0 mode=output
+PASS constant-default-and-self-reference oracle=0 target=0 mode=output
+FAIL dynamic-class-constants oracle=255 target=0 mode=output
+oracle=6:6:C:
+Fatal error: Uncaught TypeError: Cannot use "::class" on string in build\class-contracts-10287165700022941333\dynamic-class-constants\main.php:4
+Stack trace:
+#0 {main}
+  thrown in build\class-contracts-10287165700022941333\dynamic-class-constants\main.php on line 4
+
+actual=6:6:C:C
+PASS instanceof-no-autoload oracle=0 target=0 mode=output
+FAIL class-relationship-queries oracle=0 target=0 mode=output
+oracle=1:1:1:
+Deprecated: Calling is_a() with a string when $allow_string is false in build\class-contracts-10287165700022941333\class-relationship-queries\main.php on line 4
+1:1:1::1
+actual=1:1:1:1:1:1:1:1
+PASS class-metadata oracle=0 target=0 mode=output
+PASS interface-autoload-kind-check oracle=0 target=0 mode=output
+PASS dependency-autoload-order oracle=0 target=0 mode=output
+PASS conditional-interface-and-trait oracle=0 target=0 mode=output
+PASS namespace-trait-and-interface-aliases oracle=0 target=0 mode=output
+PASS async-method-interface-contract oracle=0 target=0 mode=output
+PASS async-trait-alias-and-closure oracle=0 target=0 mode=output
+PASS async-dependency-files oracle=0 target=0 mode=output
+PASS async-constant-autoload oracle=0 target=0 mode=output
+PASS async-interface-query oracle=0 target=0 mode=output
+PASS async-cancellation-during-composition oracle=0 target=0 mode=output
+PASS missing-interface-method oracle=255 target=1 mode=rejection:abstract
+PASS missing-abstract-parent-method oracle=255 target=1 mode=rejection:abstract
+PASS missing-trait-requirement oracle=255 target=1 mode=rejection:abstract
+PASS final-class-rejected oracle=255 target=1 mode=rejection:extend
+PASS final-method-rejected oracle=255 target=1 mode=rejection:final
+PASS final-trait-alias-rejected oracle=255 target=1 mode=rejection:final
+PASS visibility-narrowing-rejected oracle=255 target=1 mode=rejection:method
+PASS static-mismatch-rejected oracle=255 target=1 mode=rejection:compatible
+PASS parameter-narrowing-rejected oracle=255 target=1 mode=rejection:compatible
+PASS return-widening-rejected oracle=255 target=1 mode=rejection:compatible
+PASS extra-required-parameter-rejected oracle=255 target=1 mode=rejection:compatible
+PASS reference-mismatch-rejected oracle=255 target=1 mode=rejection:compatible
+PASS variadic-removal-rejected oracle=255 target=1 mode=rejection:compatible
+PASS trait-method-collision-rejected oracle=255 target=1 mode=rejection:collision
+PASS trait-property-conflict-rejected oracle=255 target=1 mode=rejection:incompatible
+PASS trait-property-type-conflict-rejected oracle=255 target=1 mode=rejection:incompatible
+PASS trait-constant-conflict-rejected oracle=255 target=1 mode=rejection:incompatible
+PASS final-constant-rejected oracle=255 target=1 mode=rejection:constant
+PASS interface-constant-ambiguity-rejected oracle=255 target=1 mode=rejection:constant
+PASS extends-interface-rejected oracle=255 target=1 mode=rejection:extend
+PASS implements-class-rejected oracle=255 target=1 mode=rejection:interface
+PASS use-class-rejected oracle=255 target=1 mode=rejection:trait
+PASS invalid-trait-precedence-rejected oracle=255 target=1 mode=rejection:trait
+PASS inherited-property-type-rejected oracle=255 target=1 mode=rejection:property
+Evidence: build\class-contracts-10287165700022941333
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime (file:/build/deps/25.4.4.1.1/truffle-runtime-25.4.4.1.1.jar)
+WARNING: Please consider reporting this to the maintainers of class com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Exception in thread "main" java.lang.AssertionError: 2 class contract cases failed
+	at graalphp.ClassContractsTest.main(ClassContractsTest.java:419)
+
+exit=1

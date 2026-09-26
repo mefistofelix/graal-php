@@ -1,0 +1,464 @@
+> tools\graalvm-25.4.4.1.1+1.1\bin\javac.exe --release 25 -proc:none -cp build/classes;build/test-classes;build/deps/25.4.4.1.1/* -d build/test-classes @build\class-contract-tests.sources
+
+exit=0
+> tools\graalvm-25.4.4.1.1+1.1\bin\java.exe --enable-native-access=ALL-UNNAMED -cp build/classes;build/test-classes;build/deps/25.4.4.1.1/* graalphp.IntegrationTest
+PASS: 83 integration scenarios (Truffle, async, reload, threads, NFI, host)
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime (file:/build/deps/25.4.4.1.1/truffle-runtime-25.4.4.1.1.jar)
+WARNING: Please consider reporting this to the maintainers of class com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+
+exit=0
+> tools\graalvm-25.4.4.1.1+1.1\bin\java.exe --enable-native-access=ALL-UNNAMED -cp build/classes;build/test-classes;build/deps/25.4.4.1.1/* graalphp.lab.ValueModelTest
+PASS: 53 semantic scenarios + storage/lifetime invariants
+
+exit=0
+> tools\graalvm-25.4.4.1.1+1.1\bin\java.exe --enable-native-access=ALL-UNNAMED -cp build/classes;build/test-classes;build/deps/25.4.4.1.1/* graalphp.runtime.CycleCollectorTest
+PASS: 256 ownership graphs, 1280 collection phases, exactly-once resource release
+
+exit=0
+> tools\graalvm-25.4.4.1.1+1.1\bin\java.exe --enable-native-access=ALL-UNNAMED -cp build/classes;build/test-classes;build/deps/25.4.4.1.1/* graalphp.TrueAsyncTest tools/trueasync-0.10.0/php.exe
+PASS curl-multi-empty-reference
+PASS curl-multi-membership
+PASS curl-multi-results-and-reuse
+PASS curl-multi-close-and-ownership
+PASS curl-multi-options-validation
+PASS curl-immediate-error-alias
+PASS named-arguments
+PASS thread-channel-buffered
+PASS named-reference-variadic
+PASS coroutine-result
+PASS capture-lifetime
+PASS scope-context
+PASS detached-scope-context
+PASS coroutine-private-context
+PASS scope-joins-descendants
+PASS detached-scope-reopens-after-descendants-finish
+PASS detached-scope-keeps-request-alive
+PASS timeout-cancels-wait-only
+PASS cancel-unwinds-finally
+PASS buffered-channel-close-drains
+PASS rendezvous-channel
+PASS channel-timeout-removes-waiter
+PASS future-array-cow
+PASS future-state
+PASS future-error
+PASS await-all-order-and-cow
+PASS await-errors-fill-null
+PASS await-first-success-errors
+PASS await-count-successes
+PASS await-race-keeps-other-tasks
+PASS await-fail-fast
+PASS await-combinator-timeout
+PASS await-empty-and-count-zero
+PASS await-duplicate-future
+PASS await-already-complete-no-yield
+PASS await-pending-same-token
+PASS protect-cancel-unwind
+PASS protect-context-and-return
+PASS cancel-reason-before-start
+PASS context-duplicate-and-unset
+PASS upstream-channel-001-channel_construct
+PASS upstream-channel-002-channel_buffered_basic
+PASS upstream-channel-007-channel_sendAsync
+PASS upstream-future-001-map-basic
+PASS upstream-future-002-map-chain
+PASS upstream-future-004-map-propagates-error
+PASS upstream-future-005-map-throws-exception
+PASS upstream-future-007-catch-basic
+PASS upstream-future-011-finally-on-success
+PASS upstream-future-012-finally-on-error
+PASS upstream-future-013-finally-throws-exception
+PASS upstream-future-014-map-catch-finally-chain
+PASS upstream-future-035-finally_exception_chain
+PASS upstream-await-005-awaitAnyOrFail_basic
+PASS upstream-await-006-awaitAnyOrFail_empty
+PASS upstream-await-007-awaitAnyOrFail_exception
+PASS upstream-await-008-awaitFirstSuccess_basic
+PASS upstream-await-011-awaitAllOrFail_exception
+PASS upstream-await-014-awaitAnyOfOrFail_basic
+PASS upstream-await-016-awaitAnyOf_basic
+PASS upstream-await-017-awaitAnyOf_all_success
+PASS upstream-await-045-awaitAnyOfOrFail_edge_cases
+PASS upstream-await-073-await_future_cancel_token_pre_completed
+PASS upstream-await-074-await_future_cancel_token_completed_during
+PASS upstream-await-075-await_future_cancel_token_pre_rejected
+PASS upstream-await-076-await_future_cancel_token_rejected_during
+PASS upstream-await-077-await_future_cancel_token_pre_rejected_cancellation
+PASS upstream-await-078-await_future_cancel_token_rejected_cancellation_during
+PASS upstream-await-079-await_completes_before_future_cancel_token
+PASS upstream-await-084-awaitAnyOrFail_already_completed_returns_immediately
+PASS upstream-await-093-awaitAnyOrFail_with_future_triggers
+PASS upstream-protect-001-protect_basic
+PASS upstream-protect-003-protect_nested
+PASS upstream-protect-007-protect_exception_in_closure
+PASS upstream-protect-008-protect_with_exception
+PASS upstream-protect-009-protect_with_spawn
+PASS upstream-protect-010-protect_with_await
+PASS upstream-scope-022-scope_awaitCompletion_basic
+PASS upstream-scope-041-scope_awaitCompletion_marks_future_used
+PASS upstream-scope-044-scope_awaitAfterCancellation_not_cancelled
+PASS upstream-scope-045-scope_awaitCompletion_self_deadlock
+PASS upstream-scope-051-scope_awaitCompletion_deadlock_from_grandchild
+PASS: 82 differential scenarios against TrueAsync 0.10.0
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime (file:/build/deps/25.4.4.1.1/truffle-runtime-25.4.4.1.1.jar)
+WARNING: Please consider reporting this to the maintainers of class com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+
+exit=0
+> tools\graalvm-25.4.4.1.1+1.1\bin\java.exe --enable-native-access=ALL-UNNAMED -cp build/classes;build/test-classes;build/deps/25.4.4.1.1/* graalphp.ClassContractsTest tools/php-8.6.0RC2/php.exe tools/trueasync-0.10.0/php.exe build\graalphp.exe --interpreter
+PASS declaration-kinds-and-timing oracle=0 target=0 mode=output
+PASS interface-methods-and-typing oracle=0 target=0 mode=output
+PASS multiple-interface-inheritance oracle=0 target=0 mode=output
+PASS interface-diamond oracle=0 target=0 mode=output
+PASS inherited-interface-implementation oracle=0 target=0 mode=output
+PASS abstract-class-contract oracle=0 target=0 mode=output
+PASS abstract-interface-carried-to-child oracle=0 target=0 mode=output
+PASS abstract-and-static-methods oracle=0 target=0 mode=output
+PASS covariant-return oracle=0 target=0 mode=output
+PASS contravariant-parameter oracle=0 target=0 mode=output
+PASS nullable-and-union-contracts oracle=0 target=0 mode=output
+PASS intersection-and-dnf-values oracle=0 target=0 mode=output
+PASS intersection-variance oracle=0 target=0 mode=output
+PASS self-parameter-and-return oracle=0 target=0 mode=output
+PASS late-static-return oracle=0 target=0 mode=output
+PASS reference-and-variadic-contract oracle=0 target=0 mode=output
+PASS constructor-signature-exception oracle=0 target=0 mode=output
+PASS private-method-lexical-dispatch oracle=0 target=0 mode=output
+PASS trait-basic-precedence oracle=0 target=0 mode=output
+PASS trait-conflict-resolution-and-alias oracle=0 target=0 mode=output
+PASS class-method-resolves-trait-collision oracle=0 target=0 mode=output
+PASS trait-visibility-alias oracle=0 target=0 mode=output
+PASS trait-nesting-and-shared-origin oracle=0 target=0 mode=output
+PASS trait-magic-constants-and-alias oracle=0 target=0 mode=output
+PASS trait-closure-private-scope oracle=0 target=0 mode=output
+PASS trait-self-types oracle=0 target=0 mode=output
+PASS trait-abstract-parent-implementation oracle=0 target=0 mode=output
+PASS trait-private-abstract-requirement oracle=0 target=0 mode=output
+PASS trait-properties-compatible-defaults oracle=0 target=0 mode=output
+PASS trait-static-storage-isolation oracle=0 target=0 mode=output
+PASS trait-private-property-rebinding oracle=0 target=0 mode=output
+PASS trait-final-overridden-by-using-class oracle=0 target=0 mode=output
+PASS class-constant-inheritance-and-visibility oracle=0 target=0 mode=output
+PASS typed-constant-and-array-copy oracle=0 target=0 mode=output
+PASS trait-constant-parent-precedence oracle=0 target=0 mode=output
+PASS trait-constant-composition oracle=0 target=0 mode=output
+PASS constant-default-and-self-reference oracle=0 target=0 mode=output
+PASS dynamic-class-constants oracle=0 target=0 mode=output
+PASS instanceof-no-autoload oracle=0 target=0 mode=output
+PASS class-relationship-queries oracle=0 target=0 mode=output
+PASS class-name-scope-and-late-binding oracle=0 target=0 mode=output
+PASS class-query-deprecation-record oracle=0 target=0 mode=output
+PASS class-query-deprecation-output oracle=0 target=0 mode=output
+PASS numeric-union-coercion oracle=0 target=0 mode=output
+PASS abstract-trait-alias-implemented oracle=0 target=0 mode=output
+PASS class-metadata oracle=0 target=0 mode=output
+PASS interface-autoload-kind-check oracle=0 target=0 mode=output
+PASS dependency-autoload-order oracle=0 target=0 mode=output
+PASS conditional-interface-and-trait oracle=0 target=0 mode=output
+PASS namespace-trait-and-interface-aliases oracle=0 target=0 mode=output
+PASS async-method-interface-contract oracle=0 target=0 mode=output
+PASS async-trait-alias-and-closure oracle=0 target=0 mode=output
+PASS async-dependency-files oracle=0 target=0 mode=output
+PASS async-constant-autoload oracle=0 target=0 mode=output
+PASS async-interface-query oracle=0 target=0 mode=output
+PASS async-cancellation-during-composition oracle=0 target=0 mode=output
+PASS fatal-declaration-bypasses-catch-finally oracle=255 target=1 mode=rejection:compatible
+PASS async-fatal-declaration-stops-request oracle=255 target=1 mode=rejection:compatible
+PASS abstract-trait-alias-missing oracle=255 target=1 mode=rejection:abstract
+PASS variadic-trailing-type-rejected oracle=255 target=1 mode=rejection:compatible
+PASS final-second-interface-constant-rejected oracle=255 target=1 mode=rejection:constant
+PASS interface-sibling-signatures-rejected oracle=255 target=1 mode=rejection:compatible
+PASS interface-constructor-signature-rejected oracle=255 target=1 mode=rejection:compatible
+PASS late-static-return-widening-rejected oracle=255 target=1 mode=rejection:compatible
+PASS missing-interface-method oracle=255 target=1 mode=rejection:abstract
+PASS missing-abstract-parent-method oracle=255 target=1 mode=rejection:abstract
+PASS missing-trait-requirement oracle=255 target=1 mode=rejection:abstract
+PASS final-class-rejected oracle=255 target=1 mode=rejection:extend
+PASS final-method-rejected oracle=255 target=1 mode=rejection:final
+PASS final-trait-alias-rejected oracle=255 target=1 mode=rejection:final
+PASS visibility-narrowing-rejected oracle=255 target=1 mode=rejection:method
+PASS static-mismatch-rejected oracle=255 target=1 mode=rejection:compatible
+PASS parameter-narrowing-rejected oracle=255 target=1 mode=rejection:compatible
+PASS return-widening-rejected oracle=255 target=1 mode=rejection:compatible
+PASS extra-required-parameter-rejected oracle=255 target=1 mode=rejection:compatible
+PASS reference-mismatch-rejected oracle=255 target=1 mode=rejection:compatible
+PASS variadic-removal-rejected oracle=255 target=1 mode=rejection:compatible
+PASS trait-method-collision-rejected oracle=255 target=1 mode=rejection:collision
+PASS trait-property-conflict-rejected oracle=255 target=1 mode=rejection:incompatible
+PASS trait-property-type-conflict-rejected oracle=255 target=1 mode=rejection:incompatible
+PASS trait-constant-conflict-rejected oracle=255 target=1 mode=rejection:incompatible
+PASS final-constant-rejected oracle=255 target=1 mode=rejection:constant
+PASS interface-constant-ambiguity-rejected oracle=255 target=1 mode=rejection:constant
+PASS extends-interface-rejected oracle=255 target=1 mode=rejection:extend
+PASS implements-class-rejected oracle=255 target=1 mode=rejection:interface
+PASS use-class-rejected oracle=255 target=1 mode=rejection:trait
+PASS invalid-trait-precedence-rejected oracle=255 target=1 mode=rejection:trait
+PASS inherited-property-type-rejected oracle=255 target=1 mode=rejection:property
+Evidence: build\class-contracts-12417428308903478512
+PASS: 88 class contract programs; 32 semantic rejections (diagnostic text not asserted identical)
+
+exit=0
+> tools\graalvm-25.4.4.1.1+1.1\bin\java.exe --enable-native-access=ALL-UNNAMED -cp build/classes;build/test-classes;build/deps/25.4.4.1.1/* graalphp.AutoloadTest tools/php-8.6.0RC2/php.exe tools/trueasync-0.10.0/php.exe build\graalphp.exe
+PASS empty-and-already-loaded oracle=0 target=0
+PASS queue-order-and-return-ignored oracle=0 target=0
+PASS function-identity oracle=0 target=0
+PASS static-callback-identity oracle=0 target=0
+PASS closure-and-object-lifetime oracle=0 target=0
+PASS private-method-registration oracle=0 target=0
+PASS invokable-loader oracle=0 target=0
+PASS list-is-a-snapshot oracle=0 target=0
+PASS live-append oracle=0 target=0
+PASS live-prepend oracle=0 target=0
+PASS remove-pending-and-current oracle=0 target=0
+PASS explicit-call-existing-and-recursion oracle=0 target=0
+PASS lookup-recursion-and-retry oracle=0 target=0
+PASS exception-unwinds-guard oracle=0 target=0
+PASS nested-loading oracle=0 target=0
+PASS namespace-and-alias oracle=0 target=0
+PASS dynamic-construction-and-argument-order oracle=0 target=0
+PASS dynamic-class-types oracle=0 target=0
+PASS remove-current-skips-next oracle=0 target=0
+PASS remove-earlier-keeps-next oracle=0 target=0
+PASS static-property-and-method oracle=0 target=0
+PASS callable-array-and-reference oracle=0 target=0
+PASS callable-string-leading-separator oracle=0 target=0
+PASS registration-loads-callback-class oracle=0 target=0
+PASS parent-loads-at-declaration oracle=0 target=0
+PASS late-parent-not-hoisted oracle=0 target=0
+PASS conditional-and-function-local-classes oracle=0 target=0
+PASS missing-parent-does-not-publish oracle=0 target=0
+PASS validation-and-named-arguments oracle=0 target=0
+PASS invalid-names-do-not-autoload oracle=0 target=0
+PASS include-loader-scope oracle=0 target=0
+PASS included-child-parent-and-once oracle=0 target=0
+PASS async-loader-and-constructor oracle=0 target=0
+PASS async-live-removal-roots oracle=0 target=0
+PASS async-same-name-suppressed oracle=0 target=0
+PASS async-cancellation-releases-guard oracle=0 target=0
+PASS async-callable-arguments oracle=0 target=0
+PASS async-inherited-include oracle=0 target=0
+Evidence: build\autoload-test-11522146850838890342
+PASS: 38 identical autoload programs
+
+exit=0
+> tools\graalvm-25.4.4.1.1+1.1\bin\java.exe --enable-native-access=ALL-UNNAMED -cp build/classes;build/test-classes;build/deps/25.4.4.1.1/* graalphp.TrueAsyncTest tools/trueasync-0.10.0/php.exe build\graalphp.exe
+PASS curl-multi-empty-reference
+PASS curl-multi-membership
+PASS curl-multi-results-and-reuse
+PASS curl-multi-close-and-ownership
+PASS curl-multi-options-validation
+PASS curl-immediate-error-alias
+PASS named-arguments
+PASS thread-channel-buffered
+PASS named-reference-variadic
+PASS coroutine-result
+PASS capture-lifetime
+PASS scope-context
+PASS detached-scope-context
+PASS coroutine-private-context
+PASS scope-joins-descendants
+PASS detached-scope-reopens-after-descendants-finish
+PASS detached-scope-keeps-request-alive
+PASS timeout-cancels-wait-only
+PASS cancel-unwinds-finally
+PASS buffered-channel-close-drains
+PASS rendezvous-channel
+PASS channel-timeout-removes-waiter
+PASS future-array-cow
+PASS future-state
+PASS future-error
+PASS await-all-order-and-cow
+PASS await-errors-fill-null
+PASS await-first-success-errors
+PASS await-count-successes
+PASS await-race-keeps-other-tasks
+PASS await-fail-fast
+PASS await-combinator-timeout
+PASS await-empty-and-count-zero
+PASS await-duplicate-future
+PASS await-already-complete-no-yield
+PASS await-pending-same-token
+PASS protect-cancel-unwind
+PASS protect-context-and-return
+PASS cancel-reason-before-start
+PASS context-duplicate-and-unset
+PASS upstream-channel-001-channel_construct
+PASS upstream-channel-002-channel_buffered_basic
+PASS upstream-channel-007-channel_sendAsync
+PASS upstream-future-001-map-basic
+PASS upstream-future-002-map-chain
+PASS upstream-future-004-map-propagates-error
+PASS upstream-future-005-map-throws-exception
+PASS upstream-future-007-catch-basic
+PASS upstream-future-011-finally-on-success
+PASS upstream-future-012-finally-on-error
+PASS upstream-future-013-finally-throws-exception
+PASS upstream-future-014-map-catch-finally-chain
+PASS upstream-future-035-finally_exception_chain
+PASS upstream-await-005-awaitAnyOrFail_basic
+PASS upstream-await-006-awaitAnyOrFail_empty
+PASS upstream-await-007-awaitAnyOrFail_exception
+PASS upstream-await-008-awaitFirstSuccess_basic
+PASS upstream-await-011-awaitAllOrFail_exception
+PASS upstream-await-014-awaitAnyOfOrFail_basic
+PASS upstream-await-016-awaitAnyOf_basic
+PASS upstream-await-017-awaitAnyOf_all_success
+PASS upstream-await-045-awaitAnyOfOrFail_edge_cases
+PASS upstream-await-073-await_future_cancel_token_pre_completed
+PASS upstream-await-074-await_future_cancel_token_completed_during
+PASS upstream-await-075-await_future_cancel_token_pre_rejected
+PASS upstream-await-076-await_future_cancel_token_rejected_during
+PASS upstream-await-077-await_future_cancel_token_pre_rejected_cancellation
+PASS upstream-await-078-await_future_cancel_token_rejected_cancellation_during
+PASS upstream-await-079-await_completes_before_future_cancel_token
+PASS upstream-await-084-awaitAnyOrFail_already_completed_returns_immediately
+PASS upstream-await-093-awaitAnyOrFail_with_future_triggers
+PASS upstream-protect-001-protect_basic
+PASS upstream-protect-003-protect_nested
+PASS upstream-protect-007-protect_exception_in_closure
+PASS upstream-protect-008-protect_with_exception
+PASS upstream-protect-009-protect_with_spawn
+PASS upstream-protect-010-protect_with_await
+PASS upstream-scope-022-scope_awaitCompletion_basic
+PASS upstream-scope-041-scope_awaitCompletion_marks_future_used
+PASS upstream-scope-044-scope_awaitAfterCancellation_not_cancelled
+PASS upstream-scope-045-scope_awaitCompletion_self_deadlock
+PASS upstream-scope-051-scope_awaitCompletion_deadlock_from_grandchild
+PASS: 82 differential scenarios against TrueAsync 0.10.0
+
+exit=0
+> tools\graalvm-25.4.4.1.1+1.1\bin\java.exe --enable-native-access=ALL-UNNAMED -cp build/classes;build/test-classes;build/deps/25.4.4.1.1/* graalphp.NativeBridgeFatalTest build/ffi-bridge-fixture.dll build\graalphp.exe
+PASS sync expected_exit=1 output=entered: no_shutdown_error=true
+PASS sync-suspended expected_exit=1 output=entered: no_shutdown_error=true
+PASS async expected_exit=1 output=entered: no_shutdown_error=true
+PASS async-suspended expected_exit=1 output=entered: no_shutdown_error=true
+Evidence: build\native-fatal-5851260871109150881
+PASS: 4 fatal native-callback scenarios; product CLI failure/shutdown checked; counters are covered by the JVM test
+
+exit=0
+> tools\graalvm-25.4.4.1.1+1.1\bin\java.exe --enable-native-access=ALL-UNNAMED -cp build/classes;build/test-classes;build/deps/25.4.4.1.1/* graalphp.NetworkIntegrationTest build\graalphp.exe
+PASS HTTP route
+PASS transaction rollback
+PASS ordinary curl TLS request
+PASS single-reader contract and cancellation
+PASS immediate curl failure, reuse and PHP 8 curl_close identity
+PASS curl cancellation task started
+PASS cancelled request reached HTTPS peer
+PASS curl cancellation and same-handle reuse before peer release
+PASS fragmented UTF-8 text
+PASS 64-bit frame length
+PASS fragmented binary, NUL and non-UTF-8 bytes
+PASS ping/pong
+PASS untrusted certificate rejected
+PASS curl deadline
+PASS explicit multi batch starts
+PASS two multi transfers reach the HTTPS barrier
+PASS HTTP progresses during explicit multi transfers
+PASS multi results, content, error queue, SQLite and close/reuse
+PASS native multi connection limit is respected
+PASS multi cancellation scenario starts
+PASS both cancellable multi requests reach the HTTPS peer
+PASS cancelling select preserves transfers and the other waiter
+PASS remove and same-handle reuse before peer release
+PASS surviving transfer completes, next multi starts
+PASS transfer is active before multi_close
+PASS multi_close wakes select and permits immediate reuse
+PASS eight reactor transfers reached the upstream concurrently
+PASS HTTP progresses while curl transfers are blocked
+PASS libuv ping progresses while curl transfers are blocked
+PASS 16 concurrent clients, 64 committed requests
+PASS curl concurrency exceeds the former four-worker pool
+WORKLOAD: 16 clients, 64 messages, 0.683 s, upstream peak concurrency 16
+PASS control frame between fragments
+PASS message after interleaved ping
+PASS close handshake
+PASS unmasked client frame
+PASS invalid text UTF-8
+PASS oversize frame rejected before allocation
+PASS invalid continuation
+PASS malformed upgrade rejected
+PASS server survives abrupt disconnect
+PASS persisted row count while serving
+PASS Chrome headers observed on the wire
+PASS TLS ClientHello contains Chrome cipher ordering and GREASE
+PASS profile changes TLS fingerprint beyond User-Agent
+PASS graceful stop route
+PASS idle connection drained within shutdown deadline
+PASS server exits without a live reactor/worker
+PASS fresh process reopens database
+PASS persisted values, rollback and SQLite binding types after restart
+PASS SQLite file format on disk
+PASS: 50 network assertions in 4.379 s; artifacts: build\network-native-10703143529908952013
+
+exit=0
+> tools\graalvm-25.4.4.1.1+1.1\bin\java.exe --enable-native-access=ALL-UNNAMED -cp build/classes;build/test-classes;build/deps/25.4.4.1.1/* graalphp.CurlIntegrationTest
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime (file:/build/deps/25.4.4.1.1/truffle-runtime-25.4.4.1.1.jar)
+WARNING: Please consider reporting this to the maintainers of class com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+VERSION libcurl/8.22.0 BoringSSL zlib/1.3.2 brotli/1.2.0 zstd/1.5.7 WinIDN nghttp2/1.63.0
+PASS curl assertions=96
+PASS independent peer: peak held requests=16; artifacts=build\curl-test-2624703118760087999
+
+exit=0
+> tools\graalvm-25.4.4.1.1+1.1\bin\java.exe --enable-native-access=ALL-UNNAMED -cp build/classes;build/test-classes;build/deps/25.4.4.1.1/* graalphp.CurlIntegrationTest build\graalphp.exe
+VERSION libcurl/8.22.0 BoringSSL zlib/1.3.2 brotli/1.2.0 zstd/1.5.7 WinIDN nghttp2/1.63.0
+PASS curl assertions=102
+PASS independent peer: peak held requests=16; artifacts=build\curl-test-10118009655410697643
+
+exit=0
+> build\graalphp.exe tests/php/ffi-bridge.php
+PASS transparent FFI: nested C stacks, owner coroutine/thread, all scalar ABIs, strings, void, GC, pool serialization, error/cancel drain, SQLite callback
+exit=0
+> tools\graalvm-25.4.4.1.1+1.1\bin\java.exe --enable-native-access=ALL-UNNAMED -jar build/graalphp.jar examples/class-contracts.php
+Hello from a trait
+contract satisfied
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime (file:/build/deps/25.4.4.1.1/truffle-runtime-25.4.4.1.1.jar)
+WARNING: Please consider reporting this to the maintainers of class com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+
+exit=0
+> build\graalphp.exe examples/class-contracts.php
+Hello from a trait
+contract satisfied
+
+exit=0
+> build\graalphp.exe --interpreter examples/class-contracts.php
+Hello from a trait
+contract satisfied
+
+exit=0
+> tools/trueasync-0.10.0/php.exe -n examples/class-contracts.php
+Hello from a trait
+contract satisfied
+
+exit=0
+> cmd.exe /d /c build.bat oracle
+Confronto in corso dei file BUILD\php-compat.txt e BUILD\GRAALPHP-COMPAT.TXT
+FC: nessuna differenza riscontrata
+
+Confronto in corso dei file BUILD\php-language.txt e BUILD\GRAALPHP-LANGUAGE.TXT
+FC: nessuna differenza riscontrata
+
+build\generated\graalphp\truffle\PhpRootGen.java:6048: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+build\generated\graalphp\truffle\PhpRootGen.java:7823: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+Note: src\graalphp\truffle\PhpContext.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+2 warnings
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime (file:/build/deps/25.4.4.1.1/truffle-runtime-25.4.4.1.1.jar)
+WARNING: Please consider reporting this to the maintainers of class com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime (file:/build/deps/25.4.4.1.1/truffle-runtime-25.4.4.1.1.jar)
+WARNING: Please consider reporting this to the maintainers of class com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+
+exit=0

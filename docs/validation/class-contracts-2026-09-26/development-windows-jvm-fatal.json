@@ -1,0 +1,26 @@
+{
+  "target": "Windows JVM",
+  "report": "PASS sync active=0 finished_delta=1 context_reused=true\nPASS sync-suspended active=0 finished_delta=1 context_reused=true\nPASS async active=0 finished_delta=1 context_reused=true\nPASS async-suspended active=0 finished_delta=1 context_reused=true\n",
+  "cases": [
+    {
+      "name": "async",
+      "stdout": "entered:",
+      "error": "Declaration of C::f must be compatible with I::f\n"
+    },
+    {
+      "name": "async-suspended",
+      "stdout": "entered:",
+      "error": "Declaration of C::f must be compatible with I::f\n"
+    },
+    {
+      "name": "sync",
+      "stdout": "entered:",
+      "error": "Declaration of C::f must be compatible with I::f\n"
+    },
+    {
+      "name": "sync-suspended",
+      "stdout": "entered:",
+      "error": "Declaration of C::f must be compatible with I::f\n"
+    }
+  ]
+}

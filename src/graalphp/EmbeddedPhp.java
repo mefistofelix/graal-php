@@ -49,10 +49,19 @@ public final class EmbeddedPhp {
             }
             if (runnable) { signal(); return; }
             long deadline = request.invokeMember("deadline").asLong();
+            long delay = deadline == Long.MAX_VALUE ? Long.MAX_VALUE : deadline - System.nanoTime();
+            // A completion may arrive after pump reports idle and before deadline is queried.
+            // Ready work belongs on the host queue, not on a zero-delay polling alarm.
+            if (delay <= 0) {
+                if (alarm != null) { alarm.cancel(); alarm = null; }
+                armedDeadline = Long.MAX_VALUE;
+                signal();
+                return;
+            }
             if (deadline != armedDeadline) {
                 if (alarm != null) alarm.cancel();
                 armedDeadline = deadline;
-                alarm = deadline == Long.MAX_VALUE ? null : driver.schedule(Math.max(0, deadline - System.nanoTime()), () -> {
+                alarm = deadline == Long.MAX_VALUE ? null : driver.schedule(delay, () -> {
                     // The driver may fire alarms on a timer thread; all pumping still goes through post.
                     alarmFired.set(true);
                     signal();

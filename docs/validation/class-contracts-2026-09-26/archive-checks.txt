@@ -1,0 +1,4 @@
+PASS final evidence replay: {"autoload": 152, "classes": 558, "fatal": 16, "output": 366, "rejection": 192}
+PASS all 105 source/test/build/example/product SHA256 entries match.
+PASS 218 changed/new files UTF-8/LF/no BOM/private paths/ANSI; 156 relative Markdown links resolve.
+PASS git diff --check; no benchmark source or native dependency pin changed.

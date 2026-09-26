@@ -1,0 +1,1219 @@
+{
+  "target": "windows-native-classes",
+  "reference": "Windows: PHP 8.6.0RC2 for synchronous cases; pinned TrueAsync 0.10.0 for asynchronous cases",
+  "report": "Target: graalphp.exe\nPHP 8.6.0RC2 (cli) (built: Sep 23 2026 09:53:34) (NTS Visual C++ 2026 x64)\nCopyright © The PHP Group and Contributors\nBuilt by The PHP Group\nZend Engine v4.6.0RC2, Copyright © Zend by Perforce\n    with Zend OPcache v8.6.0RC2, Copyright ©, by Zend by Perforce\nPHP 8.6.0-dev (cli) (built: Sep 12 2026 13:03:46) (ZTS Visual C++ 2026 x64 TrueAsync ABI v0.26.0)\nCopyright © The PHP Group and Contributors\nZend Engine v4.6.0-dev, Copyright © Zend by Perforce\n    with Zend OPcache v8.6.0-dev, Copyright ©, by Zend by Perforce\nPASS declaration-kinds-and-timing oracle=0 target=0 mode=output\nPASS interface-methods-and-typing oracle=0 target=0 mode=output\nPASS multiple-interface-inheritance oracle=0 target=0 mode=output\nPASS interface-diamond oracle=0 target=0 mode=output\nPASS inherited-interface-implementation oracle=0 target=0 mode=output\nPASS abstract-class-contract oracle=0 target=0 mode=output\nPASS abstract-interface-carried-to-child oracle=0 target=0 mode=output\nPASS abstract-and-static-methods oracle=0 target=0 mode=output\nPASS covariant-return oracle=0 target=0 mode=output\nPASS contravariant-parameter oracle=0 target=0 mode=output\nPASS nullable-and-union-contracts oracle=0 target=0 mode=output\nPASS intersection-and-dnf-values oracle=0 target=0 mode=output\nPASS intersection-variance oracle=0 target=0 mode=output\nPASS self-parameter-and-return oracle=0 target=0 mode=output\nPASS late-static-return oracle=0 target=0 mode=output\nPASS reference-and-variadic-contract oracle=0 target=0 mode=output\nPASS constructor-signature-exception oracle=0 target=0 mode=output\nPASS private-method-lexical-dispatch oracle=0 target=0 mode=output\nPASS trait-basic-precedence oracle=0 target=0 mode=output\nPASS trait-conflict-resolution-and-alias oracle=0 target=0 mode=output\nPASS class-method-resolves-trait-collision oracle=0 target=0 mode=output\nPASS trait-visibility-alias oracle=0 target=0 mode=output\nPASS trait-nesting-and-shared-origin oracle=0 target=0 mode=output\nPASS trait-magic-constants-and-alias oracle=0 target=0 mode=output\nPASS trait-closure-private-scope oracle=0 target=0 mode=output\nPASS trait-self-types oracle=0 target=0 mode=output\nPASS trait-abstract-parent-implementation oracle=0 target=0 mode=output\nPASS trait-private-abstract-requirement oracle=0 target=0 mode=output\nPASS trait-properties-compatible-defaults oracle=0 target=0 mode=output\nPASS trait-static-storage-isolation oracle=0 target=0 mode=output\nPASS trait-static-self-default oracle=0 target=0 mode=output\nPASS trait-static-parent-default oracle=0 target=0 mode=output\nPASS unused-trait-default-is-not-evaluated oracle=0 target=0 mode=output\nPASS direct-trait-static-deprecations oracle=0 target=0 mode=output\nPASS direct-trait-storage-is-independent oracle=0 target=0 mode=output\nPASS trait-private-property-rebinding oracle=0 target=0 mode=output\nPASS trait-final-overridden-by-using-class oracle=0 target=0 mode=output\nPASS class-constant-inheritance-and-visibility oracle=0 target=0 mode=output\nPASS typed-constant-and-array-copy oracle=0 target=0 mode=output\nPASS trait-constant-parent-precedence oracle=0 target=0 mode=output\nPASS trait-constant-composition oracle=0 target=0 mode=output\nPASS constant-default-and-self-reference oracle=0 target=0 mode=output\nPASS dynamic-class-constants oracle=0 target=0 mode=output\nPASS instanceof-no-autoload oracle=0 target=0 mode=output\nPASS class-relationship-queries oracle=0 target=0 mode=output\nPASS class-name-scope-and-late-binding oracle=0 target=0 mode=output\nPASS class-query-deprecation-record oracle=0 target=0 mode=output\nPASS class-query-deprecation-output oracle=0 target=0 mode=output\nPASS numeric-union-coercion oracle=0 target=0 mode=output\nPASS abstract-trait-alias-implemented oracle=0 target=0 mode=output\nPASS class-metadata oracle=0 target=0 mode=output\nPASS interface-autoload-kind-check oracle=0 target=0 mode=output\nPASS dependency-autoload-order oracle=0 target=0 mode=output\nPASS conditional-interface-and-trait oracle=0 target=0 mode=output\nPASS namespace-trait-and-interface-aliases oracle=0 target=0 mode=output\nPASS async-method-interface-contract oracle=0 target=0 mode=output\nPASS async-trait-alias-and-closure oracle=0 target=0 mode=output\nPASS async-dependency-files oracle=0 target=0 mode=output\nPASS async-constant-autoload oracle=0 target=0 mode=output\nPASS async-interface-query oracle=0 target=0 mode=output\nPASS async-cancellation-during-composition oracle=0 target=0 mode=output\nPASS fatal-declaration-bypasses-catch-finally oracle=255 target=1 mode=rejection:compatible\nPASS async-fatal-declaration-stops-request oracle=255 target=1 mode=rejection:compatible\nPASS abstract-trait-alias-missing oracle=255 target=1 mode=rejection:abstract\nPASS variadic-trailing-type-rejected oracle=255 target=1 mode=rejection:compatible\nPASS final-second-interface-constant-rejected oracle=255 target=1 mode=rejection:constant\nPASS interface-sibling-signatures-rejected oracle=255 target=1 mode=rejection:compatible\nPASS interface-constructor-signature-rejected oracle=255 target=1 mode=rejection:compatible\nPASS late-static-return-widening-rejected oracle=255 target=1 mode=rejection:compatible\nPASS missing-interface-method oracle=255 target=1 mode=rejection:abstract\nPASS missing-abstract-parent-method oracle=255 target=1 mode=rejection:abstract\nPASS missing-trait-requirement oracle=255 target=1 mode=rejection:abstract\nPASS final-class-rejected oracle=255 target=1 mode=rejection:extend\nPASS final-method-rejected oracle=255 target=1 mode=rejection:final\nPASS final-trait-alias-rejected oracle=255 target=1 mode=rejection:final\nPASS visibility-narrowing-rejected oracle=255 target=1 mode=rejection:method\nPASS static-mismatch-rejected oracle=255 target=1 mode=rejection:compatible\nPASS parameter-narrowing-rejected oracle=255 target=1 mode=rejection:compatible\nPASS return-widening-rejected oracle=255 target=1 mode=rejection:compatible\nPASS extra-required-parameter-rejected oracle=255 target=1 mode=rejection:compatible\nPASS reference-mismatch-rejected oracle=255 target=1 mode=rejection:compatible\nPASS variadic-removal-rejected oracle=255 target=1 mode=rejection:compatible\nPASS trait-method-collision-rejected oracle=255 target=1 mode=rejection:collision\nPASS trait-property-conflict-rejected oracle=255 target=1 mode=rejection:incompatible\nPASS trait-property-type-conflict-rejected oracle=255 target=1 mode=rejection:incompatible\nPASS trait-constant-conflict-rejected oracle=255 target=1 mode=rejection:incompatible\nPASS final-constant-rejected oracle=255 target=1 mode=rejection:constant\nPASS interface-constant-ambiguity-rejected oracle=255 target=1 mode=rejection:constant\nPASS extends-interface-rejected oracle=255 target=1 mode=rejection:extend\nPASS implements-class-rejected oracle=255 target=1 mode=rejection:interface\nPASS use-class-rejected oracle=255 target=1 mode=rejection:trait\nPASS invalid-trait-precedence-rejected oracle=255 target=1 mode=rejection:trait\nPASS inherited-property-type-rejected oracle=255 target=1 mode=rejection:property\nCases: 93; output comparisons: 61; semantic rejections: 32; failures: 0\n",
+  "cases": [
+    {
+      "name": "declaration-kinds-and-timing",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "11-:1:1:1:1:1:1",
+      "target_stdout": "11-:1:1:1:1:1:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "fbd76543d5e12721a40102c561d5fa51249cf749c003fed92039d690f072c225"
+      }
+    },
+    {
+      "name": "interface-methods-and-typing",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": ":hello worldGreeting:1",
+      "target_stdout": ":hello worldGreeting:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "22f6441727a094158adcc6263feeb0ada4c3f5e2459311304f3368c18d58b000"
+      }
+    },
+    {
+      "name": "multiple-interface-inheritance",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "123:1:1:1",
+      "target_stdout": "123:1:1:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "39ff1d2d18be0665751da05563f5102985322a37a7e70512c97797793a10848b"
+      }
+    },
+    {
+      "name": "interface-diamond",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "7:7",
+      "target_stdout": "7:7",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "81b959e96c43717c9439527511fc6dbf56c272b24401fab6584f67dbcb602d31"
+      }
+    },
+    {
+      "name": "inherited-interface-implementation",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "5:1",
+      "target_stdout": "5:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "a9164e991cc761a29a587c27aa5cb410631417455bd6fce21004638fd9787c40"
+      }
+    },
+    {
+      "name": "abstract-class-contract",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "9:1:abstract",
+      "target_stdout": "9:1:abstract",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "94f8644e0adca2239ffe5d055089f4179f662fe240ea07d7278597a3905b338f"
+      }
+    },
+    {
+      "name": "abstract-interface-carried-to-child",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "4",
+      "target_stdout": "4",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "0ea900718bb3c62bb200d115b6151c278e489832f9f40790ade988ff75d48044"
+      }
+    },
+    {
+      "name": "abstract-and-static-methods",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "6:9",
+      "target_stdout": "6:9",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "5e0a27a1e42f4bc4b49de089579366bafc6f396aadaeca9cb99d2cfa0fd6491a"
+      }
+    },
+    {
+      "name": "covariant-return",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "Cat",
+      "target_stdout": "Cat",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "71bbf3c36317dc143cbed6471940e76f748808f948cd89cec5c6947ecd93e977"
+      }
+    },
+    {
+      "name": "contravariant-parameter",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "42:42",
+      "target_stdout": "42:42",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "2deb4d8246451b92da84d223452a075bafe23c4968bed08e258ebf6ae332f07d"
+      }
+    },
+    {
+      "name": "nullable-and-union-contracts",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "value::value:x:007:7",
+      "target_stdout": "value::value:x:007:7",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "d57667c5319c592cfab9a260eec05fac0a66483265a1973e56431463e5c61390"
+      }
+    },
+    {
+      "name": "intersection-and-dnf-values",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "Both:Other:type",
+      "target_stdout": "Both:Other:type",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "bc0ae330c7f099e65f2d36d2efa7f54a29565376fec0fdb343667d9ca2bacabe"
+      }
+    },
+    {
+      "name": "intersection-variance",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "Both",
+      "target_stdout": "Both",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "0bcd4853e766f583e5661b33d3836ca8072f4cf4c353fb3efce62c9065a724cd"
+      }
+    },
+    {
+      "name": "self-parameter-and-return",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "C",
+      "target_stdout": "C",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "155943099676b211954bf722ec82e358163b9995160c8e02601bc0f6a2a46aad"
+      }
+    },
+    {
+      "name": "late-static-return",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "Child:Base",
+      "target_stdout": "Child:Base",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "3844fe20bc055f203acc2d3c9a2b4b4fd0fa727bfca9ff4fbc6485763a0864bc"
+      }
+    },
+    {
+      "name": "reference-and-variadic-contract",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "9:9",
+      "target_stdout": "9:9",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "3303e5df2cccba1e636e251cbe302a0ef7d6ad74aff1c54ed34cd7a2a3fdf0c9"
+      }
+    },
+    {
+      "name": "constructor-signature-exception",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "x2",
+      "target_stdout": "x2",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "012ef17a76c56213b37d8d4404a0d2373582ee0fe85c05e0fd944d37d53ab179"
+      }
+    },
+    {
+      "name": "private-method-lexical-dispatch",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "base:child",
+      "target_stdout": "base:child",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "ee91fdfc61f9f40265287d96a66862b8d1ea07bed670c3862e39083eba7ade20"
+      }
+    },
+    {
+      "name": "trait-basic-precedence",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "trait:class:parent",
+      "target_stdout": "trait:class:parent",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "2e0d35693055b56cbdfb24857facfc3bb3060d6c320e5f8ad94b76921479c4b5"
+      }
+    },
+    {
+      "name": "trait-conflict-resolution-and-alias",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "A:B",
+      "target_stdout": "A:B",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "3f2fc2bd80946a52ec45cccc8d588dc7b1fd9f3a46d29b658bb7d89dad70a5bc"
+      }
+    },
+    {
+      "name": "class-method-resolves-trait-collision",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "C",
+      "target_stdout": "C",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "0c262fab3db570ce29f5b2e5c20236fd7c15597bbedb1e58034a551932aeca66"
+      }
+    },
+    {
+      "name": "trait-visibility-alias",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "14:protected:private",
+      "target_stdout": "14:protected:private",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "1e72277b19b4328ead255a440184d931150e921ed7542c46023d8b3b9030825e"
+      }
+    },
+    {
+      "name": "trait-nesting-and-shared-origin",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "5",
+      "target_stdout": "5",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "bae56898ab97742e82b41629caa7fadeaab40ee681d059c4aa66b357fdba41f2"
+      }
+    },
+    {
+      "name": "trait-magic-constants-and-alias",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "C:T:T::value:value;C:T:T::value:value;D:T:T::value:value",
+      "target_stdout": "C:T:T::value:value;C:T:T::value:value;D:T:T::value:value",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "0883ba66f94987d9c48c24bb3500762609e9caff03a6e6a058c4f597666a8741"
+      }
+    },
+    {
+      "name": "trait-closure-private-scope",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "C:8",
+      "target_stdout": "C:8",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "0040bcc716db8eb52ed4091eac47980ba3ed0e3a8e383240c6dec7d3872e50b2"
+      }
+    },
+    {
+      "name": "trait-self-types",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "C:D:type",
+      "target_stdout": "C:D:type",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "38f6bf52b3b0e82dc05fd319c07dc1b9e262ff4e973e4a86fae0ce36dc9fadb5"
+      }
+    },
+    {
+      "name": "trait-abstract-parent-implementation",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "7",
+      "target_stdout": "7",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "489b3505b3670fa8a9c382268516c2f285ebd65ce1845e74a21d6c32d6cf7d5a"
+      }
+    },
+    {
+      "name": "trait-private-abstract-requirement",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "8",
+      "target_stdout": "8",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "257b2e8b6040754b7b2c8b69b5d26f7e230edca7cf92237778f544b888431a99"
+      }
+    },
+    {
+      "name": "trait-properties-compatible-defaults",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "2:2",
+      "target_stdout": "2:2",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "7c67b8b9d3583d0b867eb8db37548dca3ab822961922be7a15658ab1afe2ee5f"
+      }
+    },
+    {
+      "name": "trait-static-storage-isolation",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "2:3:2",
+      "target_stdout": "2:3:2",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "ba906f0680043e9dc5c6ba634f9115a6ded0524ddacd08e6864b1b853c8505e5"
+      }
+    },
+    {
+      "name": "trait-static-self-default",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "7:9",
+      "target_stdout": "7:9",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "4a011476324f687c3f8e34d40ec99f5f48179e4c633f1b213ecec545359c3621"
+      }
+    },
+    {
+      "name": "trait-static-parent-default",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "8",
+      "target_stdout": "8",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "4ed43cb5fee5bb14abbd1db6ef438b9189ac094c7edebb4eada3fd71c1b96d60"
+      }
+    },
+    {
+      "name": "unused-trait-default-is-not-evaluated",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "declared",
+      "target_stdout": "declared",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "a32a304b594456e535b13ed10f04563abb5e596f9010c21d363b936b95b27d08"
+      }
+    },
+    {
+      "name": "direct-trait-static-deprecations",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "\nDeprecated: Accessing static trait property T::$n is deprecated, it should only be accessed on a class using the trait in build\\class-contracts-6134466386305487904\\direct-trait-static-deprecations\\main.php on line 3\n3:\nDeprecated: Calling static trait method T::value is deprecated, it should only be called on a class using the trait in build\\class-contracts-6134466386305487904\\direct-trait-static-deprecations\\main.php on line 3\n4",
+      "target_stdout": "\nDeprecated: Accessing static trait property T::$n is deprecated, it should only be accessed on a class using the trait in build\\class-contracts-6134466386305487904\\direct-trait-static-deprecations\\main.php on line 3\n3:\nDeprecated: Calling static trait method T::value is deprecated, it should only be called on a class using the trait in build\\class-contracts-6134466386305487904\\direct-trait-static-deprecations\\main.php on line 3\n4",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "a381d66155613df52fd5bf3aa1c47cc4b30fdd990001acd7a752d744658c28e3"
+      }
+    },
+    {
+      "name": "direct-trait-storage-is-independent",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "7:1:7:9",
+      "target_stdout": "7:1:7:9",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "b364a7ea3f7b289ef59a1b7f5a2ea2a8552c778969ff917adc467c9a9a4bcc71"
+      }
+    },
+    {
+      "name": "trait-private-property-rebinding",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "9:2",
+      "target_stdout": "9:2",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "9154139b13b441cbd5c169bf9bafdb7b5ae5aba673bfbd2b06810ba7108d6181"
+      }
+    },
+    {
+      "name": "trait-final-overridden-by-using-class",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "2",
+      "target_stdout": "2",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "03dfebbfc18d2f194caf70d5aae07b774fb484a8aa0674af8e93e8b34da5b4f1"
+      }
+    },
+    {
+      "name": "class-constant-inheritance-and-visibility",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "9:13:7:private",
+      "target_stdout": "9:13:7:private",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "74822b8c6619bd80a330e2b182eac560e6028a4a022a580dd207ebd001b73d54"
+      }
+    },
+    {
+      "name": "typed-constant-and-array-copy",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "7:7:1:9",
+      "target_stdout": "7:7:1:9",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "a22fa6d46fcd1d2e05b23c445264f7a6987e6e82c55113ff5fc6ffb5121ca2f1"
+      }
+    },
+    {
+      "name": "trait-constant-parent-precedence",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "2:2",
+      "target_stdout": "2:2",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "4cf20ccff2d5bf1bf2b9b40644ed8f1339b01f8f545c2407f60aef168af5caa5"
+      }
+    },
+    {
+      "name": "trait-constant-composition",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "5",
+      "target_stdout": "5",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "aa00384a542ae7805628740084ba8d5233fcc7f07baca1d6f8c058c565ead77a"
+      }
+    },
+    {
+      "name": "constant-default-and-self-reference",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "7:7:7",
+      "target_stdout": "7:7:7",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "c6312bb9a6ba12a5b411774432516322cd974f729cbcd31e0b42f6d9134b1f26"
+      }
+    },
+    {
+      "name": "dynamic-class-constants",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "6:6:C:string-type",
+      "target_stdout": "6:6:C:string-type",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "1d36db5ae001b0bec1e1b258a8c0e51620e0581940561967c84fb89a77c83cfb"
+      }
+    },
+    {
+      "name": "instanceof-no-autoload",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "1:1:F:0:F",
+      "target_stdout": "1:1:F:0:F",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "3556a04aa8b78cc44120c38a474495a013bf7d0306ecdc1c2693dcc214ac5481"
+      }
+    },
+    {
+      "name": "class-relationship-queries",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "1:1:1:1:1:1::1",
+      "target_stdout": "1:1:1:1:1:1::1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "e9fd4d00637ba0a2af3b7e20831294b43761d770705305af2286ca5d16e38088"
+      }
+    },
+    {
+      "name": "class-name-scope-and-late-binding",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "C:Base:D",
+      "target_stdout": "C:Base:D",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "ef9541bb62c67c85d69d372f1f65f274d9c17685b5b96a4121ab7ffead3294ce"
+      }
+    },
+    {
+      "name": "class-query-deprecation-record",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "1:8192:Calling is_a() with a string when $allow_string is false:4:1:1",
+      "target_stdout": "1:8192:Calling is_a() with a string when $allow_string is false:4:1:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "0518395d2f2178db82af4fb7981932110f4082cde78af5129a9ad5cf0b5bc198"
+      }
+    },
+    {
+      "name": "class-query-deprecation-output",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "\nDeprecated: Calling is_a() with a string when $allow_string is false in build\\class-contracts-6134466386305487904\\class-query-deprecation-output\\main.php on line 3\n1",
+      "target_stdout": "\nDeprecated: Calling is_a() with a string when $allow_string is false in build\\class-contracts-6134466386305487904\\class-query-deprecation-output\\main.php on line 3\n1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "3550655896a2a383c149339f0431f0a284c7042f5d519dc7311ff79a8769b3e1"
+      }
+    },
+    {
+      "name": "numeric-union-coercion",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "float:type",
+      "target_stdout": "float:type",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "ded6fe7d350e6c38eac49ab2a24cfe14cca48797c4ce2097f3d3fb1cd006356e"
+      }
+    },
+    {
+      "name": "abstract-trait-alias-implemented",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "1:2",
+      "target_stdout": "1:2",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "7d56da9474e73a64ec794c8682072b0fa280b4c520cc8fd1309e41f8e6cf5963"
+      }
+    },
+    {
+      "name": "class-metadata",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "Base=Base;:A=A;B=B;:T=T;:1:1",
+      "target_stdout": "Base=Base;:A=A;B=B;:T=T;:1:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "5661605fc326d4feb24b893929785b6547e09da74a2a3573435751dc9f0ea9c3"
+      }
+    },
+    {
+      "name": "interface-autoload-kind-check",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "I:1:Wrong:1:1",
+      "target_stdout": "I:1:Wrong:1:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "c95abc4b2918a28748d0334e2f17902add103c08af6c2243d77c9787a6d3166c"
+      }
+    },
+    {
+      "name": "dependency-autoload-order",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "Base:T:I:1",
+      "target_stdout": "Base:T:I:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "e97a200c704e0d20948d614a2022205cddc832dc9a7069eb1145a5a04879ce8e"
+      }
+    },
+    {
+      "name": "conditional-interface-and-trait",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "1:1:5",
+      "target_stdout": "1:1:5",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "8ad6a95c797c1812c14417d5cb52d2e875b68c79e385dc3499ddd7ecf1e66a4c"
+      }
+    },
+    {
+      "name": "namespace-trait-and-interface-aliases",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "7:1",
+      "target_stdout": "7:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "2d97145c84b440a9c0994125ad61c00af110fb0d73795821e1dec702e49bbe6f"
+      }
+    },
+    {
+      "name": "async-method-interface-contract",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "7",
+      "target_stdout": "7",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "005521ec8a9867462b6ea94dd2a346aacdf0ddc9796f8a2a0f5156b60ea0548e"
+      }
+    },
+    {
+      "name": "async-trait-alias-and-closure",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "9:9",
+      "target_stdout": "9:9",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "76a680fd7b0ce33d828772bcaca50172a5622bcb223cf5f497ffe72e8401c117"
+      }
+    },
+    {
+      "name": "async-dependency-files",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "42:1",
+      "target_stdout": "42:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "C.php": "9a7fd6e41ca9bf11fc2cdee13e22267a4cddd3600f41ae5c5cf37e972f411e96",
+        "I.php": "1ea6b7209e713af79ede680ac6558395cdb16e4aa58159c5d4187e8534dcccfe",
+        "main.php": "bc826df3e08b4c0f520817f31245ce87acc3b5f1a3680237257be6b5e8a25fdb",
+        "T.php": "11607402804ae74426bcb9a8141105321432cbd0fb5d38bbeb4c12217276b95a"
+      }
+    },
+    {
+      "name": "async-constant-autoload",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "8",
+      "target_stdout": "8",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "d6be733b4380acfa444959e9d0b0dd70dd6d82249832e5330bdea21a60009a33"
+      }
+    },
+    {
+      "name": "async-interface-query",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "1:1",
+      "target_stdout": "1:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "e52512086f44cee84603141c905b2d4ba16bfdcc49df242ea6357a136ba29f5f"
+      }
+    },
+    {
+      "name": "async-cancellation-during-composition",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "1:finally:cancel:7:2",
+      "target_stdout": "1:finally:cancel:7:2",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "b6d5ffcd3337892d1e3fc1c5c50cb8362b6b6b2087a5eb72dfc4b38f9ae595d3"
+      }
+    },
+    {
+      "name": "fatal-declaration-bypasses-catch-finally",
+      "mode": "rejection:compatible",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Declaration of C::f(string $n) must be compatible with I::f(int $n) in build\\class-contracts-6134466386305487904\\fatal-declaration-bypasses-catch-finally\\main.php(2) : eval()'d code on line 1\nStack trace:\n#0 build\\class-contracts-6134466386305487904\\fatal-declaration-bypasses-catch-finally\\main.php(2): eval()\n#1 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "Declaration of C::f must be compatible with I::f\n",
+      "program_sha256": {
+        "main.php": "3d8366773f38519494b0fa4d58fbe3151f7ac7e7881d830f14fc779378fe8e01"
+      }
+    },
+    {
+      "name": "async-fatal-declaration-stops-request",
+      "mode": "rejection:compatible",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "Declaration of C::f must be compatible with I::f\n",
+      "program_sha256": {
+        "main.php": "eeeacd24890ea6729dd8bc3cb6086279dddc327b8954b498823f1944fb146c8f"
+      }
+    },
+    {
+      "name": "abstract-trait-alias-missing",
+      "mode": "rejection:abstract",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Class C contains 1 abstract method and must therefore be declared abstract or implement the remaining method (C::g) in build\\class-contracts-6134466386305487904\\abstract-trait-alias-missing\\main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "Class C must implement abstract method g\n",
+      "program_sha256": {
+        "main.php": "1e4a06c119478847480ea1e571acf6a31a9051d8b216655940d915980fc84c48"
+      }
+    },
+    {
+      "name": "variadic-trailing-type-rejected",
+      "mode": "rejection:compatible",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Declaration of C::f(int $a = 0, string ...$x) must be compatible with I::f(int ...$x) in build\\class-contracts-6134466386305487904\\variadic-trailing-type-rejected\\main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "Declaration of C::f must be compatible with I::f\n",
+      "program_sha256": {
+        "main.php": "5b1a44d1a2409bb4f1f7aea8ba260b27372abc380f447954bd4e9e5ad3fc7ace"
+      }
+    },
+    {
+      "name": "final-second-interface-constant-rejected",
+      "mode": "rejection:constant",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: C::X cannot override final constant B::X in build\\class-contracts-6134466386305487904\\final-second-interface-constant-rejected\\main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "Incompatible inherited constant C::X\n",
+      "program_sha256": {
+        "main.php": "cdc1bb8f819a05e9d2a765915a6d635a26616d7967e751bca676a3dbc6f06fd5"
+      }
+    },
+    {
+      "name": "interface-sibling-signatures-rejected",
+      "mode": "rejection:compatible",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Declaration of A::f(int $x) must be compatible with B::f(string $x) in build\\class-contracts-6134466386305487904\\interface-sibling-signatures-rejected\\main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "Declaration of A::f must be compatible with B::f\n",
+      "program_sha256": {
+        "main.php": "d5447a1ffcd29083f7e0fc8f6641bb9dfc422cc577e22edf27d9d29576ea915a"
+      }
+    },
+    {
+      "name": "interface-constructor-signature-rejected",
+      "mode": "rejection:compatible",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Declaration of C::__construct(string $n) must be compatible with I::__construct(int $n) in build\\class-contracts-6134466386305487904\\interface-constructor-signature-rejected\\main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "Declaration of C::__construct must be compatible with I::__construct\n",
+      "program_sha256": {
+        "main.php": "b8aa557fd58083b505d6af9f0e833647586e34e51ae74981ba219eaa5a99c0ed"
+      }
+    },
+    {
+      "name": "late-static-return-widening-rejected",
+      "mode": "rejection:compatible",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Declaration of C::f(): C must be compatible with Base::f(): static in build\\class-contracts-6134466386305487904\\late-static-return-widening-rejected\\main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "Declaration of C::f must be compatible with Base::f\n",
+      "program_sha256": {
+        "main.php": "3013571b05e42d94f4efb164898adb9d34cae1b19c0000dc022ebee861582d42"
+      }
+    },
+    {
+      "name": "missing-interface-method",
+      "mode": "rejection:abstract",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Class C contains 1 abstract method and must therefore be declared abstract or implement the remaining method (I::missing) in build\\class-contracts-6134466386305487904\\missing-interface-method\\main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "Class C must implement abstract method missing\n",
+      "program_sha256": {
+        "main.php": "f8513ca9ee7d6056c7edfbf635f5f7032d15d795cb785d1c1fa7e8c1608c2486"
+      }
+    },
+    {
+      "name": "missing-abstract-parent-method",
+      "mode": "rejection:abstract",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Class C contains 1 abstract method and must therefore be declared abstract or implement the remaining method (Base::missing) in build\\class-contracts-6134466386305487904\\missing-abstract-parent-method\\main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "Class C must implement abstract method missing\n",
+      "program_sha256": {
+        "main.php": "32b3be88b965c7c1bd42097245f18ecbe895e893aebd0eb6d03f15524a1010e8"
+      }
+    },
+    {
+      "name": "missing-trait-requirement",
+      "mode": "rejection:abstract",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Class C contains 1 abstract method and must therefore be declared abstract or implement the remaining method (C::missing) in build\\class-contracts-6134466386305487904\\missing-trait-requirement\\main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "Class C must implement abstract method missing\n",
+      "program_sha256": {
+        "main.php": "f21bc9228206ae26450d2c268d6357b1bb3fa0a9717eff6f882a6d7483b965e1"
+      }
+    },
+    {
+      "name": "final-class-rejected",
+      "mode": "rejection:extend",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Class Child cannot extend final class Base in build\\class-contracts-6134466386305487904\\final-class-rejected\\main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "Class Child cannot extend Base\n",
+      "program_sha256": {
+        "main.php": "61fff522436534b1720b1b4689fccc536c0ed53b41583427a40fd90be0d775db"
+      }
+    },
+    {
+      "name": "final-method-rejected",
+      "mode": "rejection:final",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Cannot override final method Base::value() in build\\class-contracts-6134466386305487904\\final-method-rejected\\main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "Cannot override final method Base::value\n",
+      "program_sha256": {
+        "main.php": "a28b569eb46a6ac2575646e51d04c8593956b85f2af6d2632f4ed4a21117291e"
+      }
+    },
+    {
+      "name": "final-trait-alias-rejected",
+      "mode": "rejection:final",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Cannot override final method Base::value() in build\\class-contracts-6134466386305487904\\final-trait-alias-rejected\\main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "Cannot override final method Base::value\n",
+      "program_sha256": {
+        "main.php": "5f1807931d0ef4841ea842c1e9735f0859df9af5232e25189a46b042966c0fc4"
+      }
+    },
+    {
+      "name": "visibility-narrowing-rejected",
+      "mode": "rejection:method",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Access level to Child::value() must be public (as in class Base) in build\\class-contracts-6134466386305487904\\visibility-narrowing-rejected\\main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "Incompatible inherited method Child::value\n",
+      "program_sha256": {
+        "main.php": "5e654b6b159cb7154e6a94b23fb018d52e3f0601eff3f382555c666b8d7f186f"
+      }
+    },
+    {
+      "name": "static-mismatch-rejected",
+      "mode": "rejection:compatible",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Cannot make static method I::value() non static in class C in build\\class-contracts-6134466386305487904\\static-mismatch-rejected\\main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "Declaration of C::value must be compatible with I::value\n",
+      "program_sha256": {
+        "main.php": "3c9fe83600598c6cf318826f9dccf1d5c157e5c001cb10739119db7414624366"
+      }
+    },
+    {
+      "name": "parameter-narrowing-rejected",
+      "mode": "rejection:compatible",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Declaration of C::value(Cat $x) must be compatible with I::value(Animal $x) in build\\class-contracts-6134466386305487904\\parameter-narrowing-rejected\\main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "Declaration of C::value must be compatible with I::value\n",
+      "program_sha256": {
+        "main.php": "886472cedab4baec6a97e70f86a3fb55aa78af74ba7268a2a8aafc560b1d2035"
+      }
+    },
+    {
+      "name": "return-widening-rejected",
+      "mode": "rejection:compatible",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Declaration of C::value(): Animal must be compatible with I::value(): Cat in build\\class-contracts-6134466386305487904\\return-widening-rejected\\main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "Declaration of C::value must be compatible with I::value\n",
+      "program_sha256": {
+        "main.php": "efe29e04b6dd54b91a76461f055186bdb053781245273bfbde55e32321e2b447"
+      }
+    },
+    {
+      "name": "extra-required-parameter-rejected",
+      "mode": "rejection:compatible",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Declaration of C::value($x, $y) must be compatible with I::value($x) in build\\class-contracts-6134466386305487904\\extra-required-parameter-rejected\\main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "Declaration of C::value must be compatible with I::value\n",
+      "program_sha256": {
+        "main.php": "da7622b07a1052733f9cdda77430395d37071b32956dc33025bb0fd2b9b6a407"
+      }
+    },
+    {
+      "name": "reference-mismatch-rejected",
+      "mode": "rejection:compatible",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Declaration of C::value($x) must be compatible with I::value(&$x) in build\\class-contracts-6134466386305487904\\reference-mismatch-rejected\\main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "Declaration of C::value must be compatible with I::value\n",
+      "program_sha256": {
+        "main.php": "b30db6857c8660ab2a93c3bfa5cdf776bd1fdcd944fe92dddcd9f46c15ef389f"
+      }
+    },
+    {
+      "name": "variadic-removal-rejected",
+      "mode": "rejection:compatible",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Declaration of C::value($x) must be compatible with I::value(...$x) in build\\class-contracts-6134466386305487904\\variadic-removal-rejected\\main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "Declaration of C::value must be compatible with I::value\n",
+      "program_sha256": {
+        "main.php": "fe0e92e4e97922747e21511e3e6903d7944855197b83af0d1486f6965885647a"
+      }
+    },
+    {
+      "name": "trait-method-collision-rejected",
+      "mode": "rejection:collision",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Trait method B::value has not been applied as C::value, because of collision with A::value in build\\class-contracts-6134466386305487904\\trait-method-collision-rejected\\main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "Trait method collision: C::value\n",
+      "program_sha256": {
+        "main.php": "2fe2615c51023f06e88897a15f6d7ee4fbe5eee25e997f330adfa13c47250f1c"
+      }
+    },
+    {
+      "name": "trait-property-conflict-rejected",
+      "mode": "rejection:incompatible",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: A and B define the same property ($n) in the composition of C. However, the definition differs and is considered incompatible. Class was composed in build\\class-contracts-6134466386305487904\\trait-property-conflict-rejected\\main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "Incompatible trait member C::n\n",
+      "program_sha256": {
+        "main.php": "dbf72ecb7c0f60e1ff4eba55a943d0557b2369a8691aaf9bbb82343f5f73b9c8"
+      }
+    },
+    {
+      "name": "trait-property-type-conflict-rejected",
+      "mode": "rejection:incompatible",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: C and A define the same property ($n) in the composition of C. However, the definition differs and is considered incompatible. Class was composed in build\\class-contracts-6134466386305487904\\trait-property-type-conflict-rejected\\main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "Incompatible trait property C::$n\n",
+      "program_sha256": {
+        "main.php": "a25e5c06e5c279b227790f9ab9e71af8263088484add1be4518e7f67e9db5a79"
+      }
+    },
+    {
+      "name": "trait-constant-conflict-rejected",
+      "mode": "rejection:incompatible",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: C and T define the same constant (VALUE) in the composition of C. However, the definition differs and is considered incompatible. Class was composed in build\\class-contracts-6134466386305487904\\trait-constant-conflict-rejected\\main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "Incompatible trait member C::VALUE\n",
+      "program_sha256": {
+        "main.php": "8a278a1ddbdf71e6dd087d2c94feb75cc08a929aaf0451325f2bbb08cdb66748"
+      }
+    },
+    {
+      "name": "final-constant-rejected",
+      "mode": "rejection:constant",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Child::VALUE cannot override final constant Base::VALUE in build\\class-contracts-6134466386305487904\\final-constant-rejected\\main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "Incompatible inherited constant Child::VALUE\n",
+      "program_sha256": {
+        "main.php": "895c68a9dec77eff7e24fa4e4fac633f904197e35c45ce438cb4349e3085a463"
+      }
+    },
+    {
+      "name": "interface-constant-ambiguity-rejected",
+      "mode": "rejection:constant",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Class C inherits both A::VALUE and B::VALUE, which is ambiguous in build\\class-contracts-6134466386305487904\\interface-constant-ambiguity-rejected\\main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "Ambiguous inherited constant C::VALUE\n",
+      "program_sha256": {
+        "main.php": "aa83bbb23df89a401ef37166e15957ed3b11a239d5d7af5185d430b23ab1a3a9"
+      }
+    },
+    {
+      "name": "extends-interface-rejected",
+      "mode": "rejection:extend",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Class C cannot extend interface I in build\\class-contracts-6134466386305487904\\extends-interface-rejected\\main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "Class C cannot extend I\n",
+      "program_sha256": {
+        "main.php": "e646511850a8562a110fa785d024ff1d70f062452b9c7eb8b9530df63d5a1417"
+      }
+    },
+    {
+      "name": "implements-class-rejected",
+      "mode": "rejection:interface",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: C cannot implement Base - it is not an interface in build\\class-contracts-6134466386305487904\\implements-class-rejected\\main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "Base is not an interface\n",
+      "program_sha256": {
+        "main.php": "8d37a36eb882dab897e93765bfe616849b0e6ae9cbe13521b95e7393b4938f41"
+      }
+    },
+    {
+      "name": "use-class-rejected",
+      "mode": "rejection:trait",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Uncaught Error: C cannot use Base - it is not a trait in build\\class-contracts-6134466386305487904\\use-class-rejected\\main.php:2\nStack trace:\n#0 {main}\n  thrown in build\\class-contracts-6134466386305487904\\use-class-rejected\\main.php on line 2\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "Base is not a trait\n",
+      "program_sha256": {
+        "main.php": "357bea14b2479b6a11999f9777db0a559f4170e5fddac3893b14c7136492f6ef"
+      }
+    },
+    {
+      "name": "invalid-trait-precedence-rejected",
+      "mode": "rejection:trait",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Could not find trait Missing in build\\class-contracts-6134466386305487904\\invalid-trait-precedence-rejected\\main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "Excluded trait is not used: Missing\n",
+      "program_sha256": {
+        "main.php": "4e6be1828bc6d8b477d4e06b26d62045ecc60e9ad54826512204aad8336e8650"
+      }
+    },
+    {
+      "name": "inherited-property-type-rejected",
+      "mode": "rejection:property",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Type of Child::$n must be int (as in class Base) in build\\class-contracts-6134466386305487904\\inherited-property-type-rejected\\main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "Incompatible inherited property Child::$n\n",
+      "program_sha256": {
+        "main.php": "b65533d5ac83d3261b8b3a8ca357468a3e2ad28a7ac072d425fa6d4fc29d412f"
+      }
+    }
+  ]
+}

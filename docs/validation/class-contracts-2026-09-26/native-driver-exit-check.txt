@@ -1,0 +1,10 @@
+> cmd.exe /d /v:on /c call tools\graalvm-25.4.4.1.1+1.1\bin\native-image.cmd --graalphp-invalid-build-option & echo DRIVER_STATUS=!errorlevel! & exit /b !errorlevel!
+Error: '--graalphp-invalid-build-option' is not a valid mainclass. Specify a valid classname for the class that contains the main method.
+DRIVER_STATUS=20
+
+exit=20
+
+> tools/graalvm-25.4.4.1.1+1.1/lib/svm/bin/native-image.exe --graalphp-invalid-build-option
+Error: '--graalphp-invalid-build-option' is not a valid mainclass. Specify a valid classname for the class that contains the main method.
+
+exit=20

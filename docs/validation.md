@@ -3,7 +3,36 @@
 Toolchain: Oracle GraalVM 25.4.4.1.1+1.1, Java 25.0.4.1.1, Truffle 25.4.4.1.1.
 Oracoli: PHP 8.6.0RC2 e TrueAsync 0.10.0 / PHP 8.6.0-dev / ABI v0.26.0.
 
-Il blocco funzionale corrente implementa [autoload personalizzato sospendibile](autoload.md)
+Il blocco funzionale corrente implementa [interfacce, trait e contratti delle
+classi](class-contracts.md), varianza/tipi composti e costanti, con fatal di
+dichiarazione e cleanup nativo coordinati. Passano **93/93 programmi su
+Windows/Linux JVM, Native Image e Native Image `--interpreter`**: 558 esecuzioni,
+61 programmi a output identico e 32 di rifiuto semantico per modalità. Per i
+rifiuti non viene dichiarata identità delle diagnostiche o del codice numerico
+di uscita. I file/righe e il testo delle deprecazioni testate sono invece
+confrontati nel corpus positivo.
+
+Regressioni finali: 38 autoload e 82 TrueAsync per entrambe le modalità su
+entrambe le piattaforme; 83/77 scenari integrati Windows/Linux, 53 scenari
+semantici e 256 grafi/1.280 fasi collector per piattaforma. Passano 50 asserzioni
+rete per prodotto e le suite cURL dedicate (conteggi osservati 98/100 Windows,
+104/104 Linux JVM/native). I conteggi cURL includono controlli di avanzamento,
+non una diversa quantità di feature. Il test mirato del dispatcher host passa
+12 ripetizioni Windows e 6 Linux dopo la correzione dell'allarme a zero.
+
+Passano le quattro combinazioni fatal durante callback C su JVM e CLI di
+ciascuna piattaforma. I contatori di drenaggio e il riuso del contesto sono
+verificati su JVM; la CLI verifica uscita e shutdown senza hang. La suite FFI
+JVM esegue 80 richieste di full GC per piattaforma; il runner Native Image
+dedicato al forced-GC non è ricostruito qui. Sorgenti/test identici in 92 file,
+105 hash complessivi, build native sequenziali e copia Linux avviata dalla root.
+**Nessun nuovo benchmark**, default JIT/GC invariati. Le precedenti verifiche e
+le prove fallite di sviluppo restano distinte.
+[Esiti](validation/class-contracts-2026-09-26/results.txt),
+[hash](validation/class-contracts-2026-09-26/hashes.json),
+[evidenze](validation/class-contracts-2026-09-26/README.md).
+
+Il blocco precedente implementa [autoload personalizzato sospendibile](autoload.md)
 e dichiarazioni runtime: **38/38 programmi su Windows/Linux, JVM/Native Image**,
 per 152 confronti con input identici. Windows usa PHP 8.6.0RC2 per i casi sincroni
 e TrueAsync per quelli asincroni; Linux usa il binario TrueAsync/PHP 8.6 per tutti

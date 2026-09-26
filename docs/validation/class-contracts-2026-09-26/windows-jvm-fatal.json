@@ -1,0 +1,30 @@
+{
+  "target": "windows-jvm-fatal",
+  "report": "PASS sync active=0 finished_delta=1 context_reused=true\nPASS sync-suspended active=0 finished_delta=1 context_reused=true\nPASS async active=0 finished_delta=1 context_reused=true\nPASS async-suspended active=0 finished_delta=1 context_reused=true\n",
+  "cases": [
+    {
+      "name": "async",
+      "stdout": "entered:",
+      "error": "Declaration of C::f must be compatible with I::f",
+      "program_sha256": "563cc7e679aa9abb4e8ed14b0a4a57cd884d5ffd5957cd0235102c9ae8f7c2af"
+    },
+    {
+      "name": "async-suspended",
+      "stdout": "entered:",
+      "error": "Declaration of C::f must be compatible with I::f",
+      "program_sha256": "6c09fe16df5646897f90a6726343cadda88bc30eeae3dde7dd27c3d9c3ef9319"
+    },
+    {
+      "name": "sync",
+      "stdout": "entered:",
+      "error": "Declaration of C::f must be compatible with I::f",
+      "program_sha256": "9781c9f1ddcb44e61fb2cb4eeb5e846780168f5d67173189daf26f6750af7c2a"
+    },
+    {
+      "name": "sync-suspended",
+      "stdout": "entered:",
+      "error": "Declaration of C::f must be compatible with I::f",
+      "program_sha256": "911ad6f0b476c80ae49bfa42989efd8b40e5df4b4eb2b1ba038a49b90ca76858"
+    }
+  ]
+}

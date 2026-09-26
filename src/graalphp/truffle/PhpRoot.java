@@ -50,14 +50,40 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
     }
     @Operation @ConstantOperand(type = String.class, name = "type") @ConstantOperand(type = String.class, name = "name")
     public static final class StaticProperty {
-        @Specialization static PhpValues.Location run(VirtualFrame frame, String type, String name) {
-            return ObjectModel.staticProperty(activation(frame), type, name);
+        @Specialization static PhpValues.Location run(VirtualFrame frame, String type, String name,
+                @com.oracle.truffle.api.dsl.Bind BytecodeNode bytecode, @com.oracle.truffle.api.dsl.Bind("$bytecodeIndex") int bci) {
+            return ObjectModel.staticProperty(activation(frame).at(bytecode, bci), type, name);
         }
     }
     @Operation @ConstantOperand(type = String.class, name = "name")
     public static final class NamedConstant {
         @Specialization @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
         static Object run(String name) { return ObjectModel.namedConstant(name); }
+    }
+    @Operation
+    public static final class LexicalClass {
+        @Specialization static String run(VirtualFrame frame) {
+            String owner = activation(frame).function.owner();
+            return owner == null ? "" : owner;
+        }
+    }
+    @Operation @ConstantOperand(type = String.class, name = "type")
+    public static final class ResolvedClassName {
+        @Specialization static String run(VirtualFrame frame, String type) {
+            return ObjectModel.resolve(activation(frame), type).definition.name();
+        }
+    }
+    @Operation @ConstantOperand(type = String.class, name = "name")
+    public static final class ReadClassConstant {
+        @Specialization static Object run(VirtualFrame frame, String name, Object type) {
+            return ObjectModel.readClassConstant(activation(frame), type, name);
+        }
+    }
+    @Operation
+    public static final class IsInstanceOf {
+        @Specialization static boolean run(VirtualFrame frame, Object value, Object type) {
+            return ObjectModel.instanceOf(activation(frame), value, type);
+        }
     }
     @Operation
     public static final class CreateObject {
@@ -85,7 +111,10 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
     }
     @Operation public static final class CheckReturn {
         @Specialization static Object run(VirtualFrame frame, Object value) {
-            Object checked = ObjectModel.checkType(value, activation(frame).function.returnType());
+            var caller = activation(frame);
+            String returnType = TypeRelations.contextual(caller.function.returnType(), caller.request, caller.function.owner(),
+                    caller.calledClass == null ? caller.function.owner() : caller.calledClass.definition.name());
+            Object checked = ObjectModel.checkType(value, returnType);
             if (checked == PhpValues.unwrap(value)) return value;
             PhpValues.drop(value);
             return checked;
@@ -187,17 +216,20 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
     @Operation @ConstantOperand(type = String.class, name = "name") @ConstantOperand(type = boolean.class, name = "globalFallback")
     public static final class Invoke {
         @Specialization static Object run(VirtualFrame frame, String name, boolean globalFallback, @Variadic Object[] arguments,
-                @Cached IndirectCallNode call) {
+                @Cached IndirectCallNode call, @com.oracle.truffle.api.dsl.Bind BytecodeNode bytecode, @com.oracle.truffle.api.dsl.Bind("$bytecodeIndex") int bci) {
             var args = java.util.Arrays.copyOf(arguments, arguments.length, Argument[].class);
-            return activation(frame).track(Operations.invoke(activation(frame), name, args, call, globalFallback));
+            var caller = activation(frame).at(bytecode, bci);
+            return caller.track(Operations.invoke(caller, name, args, call, globalFallback));
         }
     }
     @Operation @ConstantOperand(type = String.class, name = "kind") @ConstantOperand(type = String.class, name = "name")
     public static final class InvokeMember {
         @Specialization static Object run(VirtualFrame frame, String kind, String name, Object receiver,
-                @Variadic Object[] arguments, @Cached IndirectCallNode call) {
+                @Variadic Object[] arguments, @Cached IndirectCallNode call,
+                @com.oracle.truffle.api.dsl.Bind BytecodeNode bytecode, @com.oracle.truffle.api.dsl.Bind("$bytecodeIndex") int bci) {
             var args = java.util.Arrays.copyOf(arguments, arguments.length, Argument[].class);
-            return activation(frame).track(Operations.invokeMember(activation(frame), kind, name, receiver, args, call));
+            var caller = activation(frame).at(bytecode, bci);
+            return caller.track(Operations.invokeMember(caller, kind, name, receiver, args, call));
         }
     }
     @Operation public static final class Suspended {
@@ -249,6 +281,9 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
     @Operation @ConstantOperand(type = String.class, name = "name")
     public static final class Global {
         @Specialization static void run(VirtualFrame frame, String name) { activation(frame).global(name); }
+    }
+    @Operation public static final class CanRunCleanup {
+        @Specialization static boolean run(VirtualFrame frame) { return activation(frame).request.fatalFailure == null; }
     }
     @Operation public static final class Poll {
         @Specialization static Object run(VirtualFrame frame) {

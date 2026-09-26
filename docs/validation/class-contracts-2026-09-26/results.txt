@@ -1,0 +1,85 @@
+LANG-01 class contracts, traits, fatal cleanup and host-dispatch correctness
+2026-09-26
+
+FINAL LANGUAGE CORPUS
+PASS Windows JVM: 93/93 programs (61 identical-output, 32 semantic rejections).
+PASS Windows Native Image: 93/93, same programs.
+PASS Windows Native Image --interpreter: 93/93, same programs.
+PASS Linux JVM: 93/93, same programs.
+PASS Linux Native Image: 93/93, same programs.
+PASS Linux Native Image --interpreter: 93/93, same programs.
+TOTAL: 558 class-contract executions, 366 positive output comparisons and
+192 semantic rejection checks. These are 93 unique programs, not 558.
+For rejection checks, PHP's usual exit 255 and GraalPHP CLI exit 1 are not
+asserted equal, nor is diagnostic wording. The expected semantic category
+and absence of guest catch/finally/continuation after fatal are checked.
+Windows reference: PHP 8.6.0RC2 sync; pinned TrueAsync 0.10.0/PHP 8.6 async.
+Linux reference: pinned TrueAsync/PHP 8.6 for all cases, no stock Linux oracle.
+Exact reference version output and per-case outputs are retained in JSON.
+
+REGRESSIONS
+PASS existing autoload: 38/38 on Windows/Linux JVM and Native Image (152 checks).
+PASS Windows integration: 83 scenarios; Linux integration: 77 scenarios.
+The six DLL-conditional nativeBundle scenarios are Windows-specific; the
+lower Linux count is not a claim of equivalent execution of those six cases.
+PASS values: 53 semantic scenarios plus storage/lifetime invariants per platform.
+PASS collector: 256 ownership graphs / 1280 collection phases per platform.
+PASS TrueAsync: 82/82 on each Windows/Linux JVM and Native Image combination.
+PASS host-reactor focused repetitions: 12/12 Windows, 6/6 Linux; eight
+assertions each. A real socket idle wait is synchronized before client connect.
+PASS interface/trait reload: existing request composes its old generation;
+next request links the new implementation; definitions do not leak requests.
+
+FFI / NETWORK
+PASS four fatal native-callback scenarios on each platform/mode (16 checks).
+JVM checks: active C calls=0, finished delta=1, same context reused after fatal.
+Product CLI checks: expected exit=1, exact 'entered:' prefix, expected error,
+no user catch/finally/after execution, no shutdown error or timeout.
+PASS ordinary NativeBridgeTest on both JVMs: 80 full-GC requests each,
+nested C stacks, ABI/string/void callbacks, ownership and cancellation/drain.
+PASS tests/php/ffi-bridge.php on each product CLI; no forced host-GC flag there.
+Dedicated forced-GC Native Image runner was not rebuilt/run in this block.
+PASS network/TLS/WebSocket/cURL/SQLite: 50 assertions on each product CLI.
+PASS dedicated cURL corpus: Windows JVM 98/native 100 observed assertions;
+Linux JVM/native 104 observed assertions each. Counts include observed
+progress checks and are not interpreted as platform feature totals.
+Independent upstream barrier measured 16 simultaneously held requests in
+all four cURL runs; this is a functional concurrency assertion, not a benchmark.
+PASS class-contracts example on Windows/Linux JVM, native and --interpreter;
+reference TrueAsync output matches: 'Hello from a trait' / 'contract satisfied'.
+PASS final copied Linux executable: version, example default and interpreter.
+
+BUILD / SOURCE PARITY
+PASS sequential Windows and Linux Native Image product builds, normal -O3
+compatibility profile. Dependency pins and native library graph unchanged.
+PASS all 92 source/test files identical between root and build/linux-workspace.
+Manifest also covers root build scripts, four example files and products:
+105 SHA256 entries, independently checked before commit.
+Windows build/graalphp.exe: 90165248 bytes
+SHA256 49f6f9636a37d80c5c2d60d1abad7997547254481e28dd84c685076c63f2a7dc
+Linux build/graalphp-linux-x64: 93326120 bytes
+SHA256 504108f62c48f0bb6305b55133a0bcf73a76c6cb8a4594d7f1c6bb151b598b0d
+JAR metadata in products.json. Pre-block executables retained locally in
+build/before-class-contracts-2026-09-26; no baseline overwritten.
+
+CORRECTIONS AND RETAINED FAILURES
+Fixed delayed evaluation of trait static defaults in the consuming class,
+independent direct-trait storage and direct-trait deprecation diagnostics.
+Fixed ready host work racing with deadline lookup: repost, not a zero alarm.
+Fatal declaration errors now bypass guest handlers while native stacks and
+cross-thread callback dispatches are notified/drained before worker joins.
+Native Image's generic class-resolution path has an explicit TruffleBoundary.
+The Windows language/fatal test wrappers propagate a failed native build
+instead of reporting success or testing the prior executable. Failure was
+reproduced and verified with unchanged prior binary and zero subsequent tests.
+Initial compile, comparison, orchestration and host-fixture failures retained
+under development labels; no failing final program was dropped.
+
+LIMITATIONS
+No new performance campaign; CompilerIdleDelay remains 500 and JIT stays enabled
+except the explicitly requested interpreter correctness runs. Build-time RAM
+and incidental assertion durations are not new runtime performance results.
+No macOS/mobile/UI, complete PHP/SPL/Composer compatibility, full reflection,
+all type/constant/binding rules or all PHP fatal/diagnostic phases are claimed.
+LANG-01 and the project remain open; detailed remaining contracts are in
+class-contracts.md and TODO.md. Historical performance evidence is unchanged.

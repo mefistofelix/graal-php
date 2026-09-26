@@ -1,5 +1,8 @@
 # Autoload e dichiarazioni runtime — LANG-01
 
+Seguito funzionale: [interfacce, trait e contratti delle classi](class-contracts.md).
+I risultati della campagna autoload originaria restano distinti.
+
 26 settembre 2026. Blocco funzionale successivo alla diagnostica PERF-01:
 **nessun nuovo benchmark**, né modifica a compiler idle delay, GC o scheduler.
 Questo documento descrive il nucleo di autoload con callback personalizzate,
@@ -136,9 +139,10 @@ Il parametro storico `throw` viene validato e ignorato: il Notice PHP per
 `throw: false` non è ancora riprodotto.
 
 `class_exists` riconosce le classi utente installate e i nomi builtin già
-modellati dal runtime, non l'intero catalogo PHP/SPL. Non sono aggiunti
-`class_alias`, interfacce, trait, enum, reflection completa o una gerarchia
-Throwable completa. Le costruzioni dinamiche sono verificate per classi utente;
+modellati dal runtime, non l'intero catalogo PHP/SPL. Il blocco successivo
+aggiunge interfacce, trait, query per categoria e composizione sospendibile;
+`class_alias`, enum, reflection completa e la gerarchia Throwable completa
+restano aperti. Le costruzioni dinamiche sono verificate per classi utente;
 non completano i costruttori speciali di tutti gli errori/builtin.
 I nomi binari non UTF-8 e tutte le coercizioni/diagnostiche
 PHP richiedono ulteriore lavoro, come il frontend generale.
@@ -149,7 +153,7 @@ indicizzatore lazy. File non supportati nella root possono ancora bloccare il
 primo indice; gli include devono essere presenti nella generazione fissata.
 Non viene quindi dichiarata funzionante un'applicazione Composer arbitraria.
 
-`LANG-01` rimane aperto. Il seguito funzionale è completare i contratti di
-classe e le forme di dichiarazione mancanti, coordinandoli con valori,
-TrueAsync e reload. **PERF-01 e le misure di prestazioni sono rinviati** per
+`LANG-01` rimane aperto. I contratti di classe ora implementati e le forme di
+dichiarazione mancanti sono distinti nel rapporto successivo; continuare a
+coordinarli con valori, TrueAsync e reload. **PERF-01 e le misure di prestazioni sono rinviati** per
 richiesta dell'utente, senza cancellare le evidenze storiche.

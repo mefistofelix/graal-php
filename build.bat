@@ -43,6 +43,7 @@ if /i "%~1"=="reactor-probe" goto native
 if /i "%~1"=="native-libs" goto native_libraries
 if /i "%~1"=="native-stack-probe" goto native_stack_probe
 if /i "%~1"=="ffi-bridge-test" goto ffi_bridge_test
+if /i "%~1"=="ffi-fatal-test" goto ffi_bridge_test
 if /i "%~1"=="verify" goto verify
 if /i "%~1"=="curl-test" goto curl_test
 if /i "%~1"=="curl-benchmark" goto curl_benchmark
@@ -52,6 +53,7 @@ if /i "%~1"=="network-benchmark" goto network_benchmark
 if /i "%~1"=="trueasync" goto trueasync
 if /i "%~1"=="oracle" goto oracle
 if /i "%~1"=="autoload-test" goto autoload_test
+if /i "%~1"=="class-test" goto class_test
 if /i "%~1"=="benchmark" ("%GRAALPHP_JDK%\bin\java.exe" -cp "build\classes;%DEPS%/*" graalphp.lab.Main --benchmark & exit /b !errorlevel!)
 "%GRAALPHP_JDK%\bin\java.exe" --enable-native-access=ALL-UNNAMED -jar build\graalphp.jar --version
 exit /b %errorlevel%
@@ -148,21 +150,26 @@ certutil -hashfile build\trueasync-source.zip SHA256 | findstr /i /c:"db06d553a9
 if not "!errorlevel!"=="0" exit /b 1
 tar.exe -xf build\trueasync-source.zip -C build\reference
 exit /b %errorlevel%
+:class_test
+set "LANGUAGE_TEST=ClassContractsTest"
+goto language_test
 :autoload_test
+set "LANGUAGE_TEST=AutoloadTest"
+:language_test
 call :setup_trueasync
 if not "!errorlevel!"=="0" exit /b 1
 call :setup_oracle
 if not "!errorlevel!"=="0" exit /b 1
 set "AUTOLOAD_EXECUTABLE="
-if /i "%~2"=="native" (
-    call :native
-    if not "!errorlevel!"=="0" exit /b 1
-    set "AUTOLOAD_EXECUTABLE=%~dp0build\graalphp.exe"
-)
-if not exist build\test-classes mkdir build\test-classes
-"%GRAALPHP_JDK%\bin\javac.exe" --release 25 -proc:none -cp "build\classes;%DEPS%/*" -d build\test-classes tests\graalphp\AutoloadTest.java
+if /i not "%~2"=="native" goto language_compile
+call :native
 if not "!errorlevel!"=="0" exit /b 1
-"%GRAALPHP_JDK%\bin\java.exe" --enable-native-access=ALL-UNNAMED -cp "build\classes;build\test-classes;%DEPS%/*" graalphp.AutoloadTest tools/php-8.6.0RC2/php.exe tools/trueasync-0.10.0/php.exe "!AUTOLOAD_EXECUTABLE!"
+set "AUTOLOAD_EXECUTABLE=%~dp0build\graalphp.exe"
+:language_compile
+if not exist build\test-classes mkdir build\test-classes
+"%GRAALPHP_JDK%\bin\javac.exe" --release 25 -proc:none -cp "build\classes;%DEPS%/*" -d build\test-classes tests\graalphp\!LANGUAGE_TEST!.java
+if not "!errorlevel!"=="0" exit /b 1
+"%GRAALPHP_JDK%\bin\java.exe" --enable-native-access=ALL-UNNAMED -cp "build\classes;build\test-classes;%DEPS%/*" graalphp.!LANGUAGE_TEST! tools/php-8.6.0RC2/php.exe tools/trueasync-0.10.0/php.exe "!AUTOLOAD_EXECUTABLE!" "%~3"
 exit /b %errorlevel%
 :oracle
 call :setup_oracle
@@ -194,8 +201,9 @@ if not "!errorlevel!"=="0" exit /b 1
 tools\xmake.exe -y ffi-bridge-fixture
 if not "!errorlevel!"=="0" exit /b 1
 if not exist build\test-classes mkdir build\test-classes
-"%GRAALPHP_JDK%\bin\javac.exe" --release 25 -proc:none -cp "build\classes;%DEPS%/*" -d build\test-classes tests\graalphp\NativeBridgeTest.java
+"%GRAALPHP_JDK%\bin\javac.exe" --release 25 -proc:none -cp "build\classes;%DEPS%/*" -d build\test-classes tests\graalphp\NativeBridgeTest.java tests\graalphp\NativeBridgeFatalTest.java
 if not "!errorlevel!"=="0" exit /b 1
+if /i "%~1"=="ffi-fatal-test" goto ffi_fatal_run
 if /i "%~2"=="native" (
     call "%GRAALPHP_JDK%\bin\native-image.cmd" -O1 -march=compatibility --initialize-at-build-time=graalphp.truffle,graalphp.runtime --enable-native-access=ALL-UNNAMED -J-Xmx6g --parallelism=8 -cp "build\classes;build\test-classes;%DEPS%/*" graalphp.NativeBridgeTest -o build\ffi-bridge-test-runner
     if not "!errorlevel!"=="0" exit /b 1
@@ -203,6 +211,15 @@ if /i "%~2"=="native" (
 ) else (
     "%GRAALPHP_JDK%\bin\java.exe" --enable-native-access=ALL-UNNAMED -cp "build\classes;build\test-classes;%DEPS%/*" graalphp.NativeBridgeTest build\ffi-bridge-fixture.dll
 )
+exit /b %errorlevel%
+:ffi_fatal_run
+set "FATAL_EXECUTABLE="
+if /i not "%~2"=="native" goto ffi_fatal_execute
+call :native
+if not "!errorlevel!"=="0" exit /b 1
+set "FATAL_EXECUTABLE=%~dp0build\graalphp.exe"
+:ffi_fatal_execute
+"%GRAALPHP_JDK%\bin\java.exe" --enable-native-access=ALL-UNNAMED -cp "build\classes;build\test-classes;%DEPS%/*" graalphp.NativeBridgeFatalTest build\ffi-bridge-fixture.dll "!FATAL_EXECUTABLE!"
 exit /b %errorlevel%
 :native_stack_probe
 call :native_libraries

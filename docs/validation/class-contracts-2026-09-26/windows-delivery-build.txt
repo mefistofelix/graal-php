@@ -1,0 +1,197 @@
+build\generated\graalphp\truffle\PhpRootGen.java:6048: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+build\generated\graalphp\truffle\PhpRootGen.java:7824: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+Note: src\graalphp\truffle\PhpContext.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+2 warnings
+using lock build\toolchain.lock
+already installed 12 packages in build\toolchain
+[100%]: build ok, spent 1.062s
+[100%]: build ok, spent 1.016s
+WARNING: Unknown module: com.oracle.truffle.enterprise.svm specified to --add-exports
+========================================================================================================================
+GraalVM Native Image: Generating 'graalphp.exe' (executable)...
+========================================================================================================================
+For detailed information and explanations on the build output, visit:
+https://github.com/oracle/graal/blob/master/docs/reference-manual/native-image/BuildOutput.md
+------------------------------------------------------------------------------------------------------------------------
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by com.oracle.truffle.polyglot.JDKSupport in module org.graalvm.truffle (file:/build/deps/25.4.4.1.1/truffle-api-25.4.4.1.1.jar)
+WARNING: Use --enable-native-access=org.graalvm.truffle to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+[1/8] Initializing...                                                                                   (6,4s @ 0,24GiB)
+ Builder configuration:
+ - Java version: 25.0.4.1.1+1-LTS, vendor version: Oracle GraalVM 25.4.4.1.1+1.1
+ - Graal compiler: optimization level: 3, target machine: compatibility, PGO: ML-inferred
+ - C compiler: cl.exe (microsoft, x64, 19.50.35739)
+ - Assertions: disabled, system assertions: disabled
+ - 9 user-specific feature(s):
+   - com.oracle.svm.enterprise.truffle.EnterpriseTruffleFeature: Provides enterprise extensions for the Truffle runtime.
+   - com.oracle.svm.enterprise.truffle.compiler.EnterpriseTruffleCompilerFeature: Provides additional optimizations and isolated compilation for Truffle.
+   - com.oracle.svm.truffle.TruffleBaseFeature: Provides internal support for Truffle
+   - com.oracle.svm.truffle.TruffleFeature: Provides internal support for Truffle runtime compilation
+   - com.oracle.svm.truffle.nfi.TruffleNFIFeature
+   - com.oracle.svm.truffle.nfi.windows.WindowsTruffleNFIFeature
+   - com.oracle.truffle.api.impl.TruffleAPIFeature: Provides basic support for Truffle
+   - com.oracle.truffle.api.object.DynamicObjectFeature: Provides support for DynamicObject
+   - org.graalvm.home.HomeFinderFeature: Finds GraalVM paths and its version number
+ Image configuration:
+ - Garbage collector: Serial GC (max heap size: 80% of RAM)
+ - Assertions: disabled (class-specific config may apply), system assertions: disabled
+------------------------------------------------------------------------------------------------------------------------
+Build resources:
+ - 6.00GiB of memory (38.1% of system memory, set via '-Xmx6g')
+ - 8 thread(s) (50,0% of 16 available processor(s), set via '--parallelism=8')
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.oracle.truffle.api.object.DynamicObject (file:/build/deps/25.4.4.1.1/truffle-api-25.4.4.1.1.jar)
+WARNING: Please consider reporting this to the maintainers of class com.oracle.truffle.api.object.DynamicObject
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[2/8] Performing analysis...  [***********]                                                            (22,3s @ 1,37GiB)
+   12.645 types,  17.388 fields, and  63.601 methods found reachable
+      302 types,      99 fields, and     633 methods registered for reflection
+       68 types,      52 fields, and      58 methods registered for JNI access
+       67 resource accesses registered with 172,36KiB total size
+       29 native libraries: advapi32, bcrypt, boringssl, brotli, crypt32, curl-impersonate, dbghelp, graalphp-builtins, impersonate-nghttp2, iphlpapi, libuv, ncrypt, normaliz, ole32, pcre2, psapi, shell32, sqlite3, standard-boringssl, standard-curl, user32, userenv, version, winmm, ws2_32, zlib, zstd
+    2.923 runtime compiled methods (4,6% of all reachable methods)
+[3/8] Building universe...                                                                              (3,6s @ 1,56GiB)
+[4/8] Parsing methods...      [****]                                                                   (14,6s @ 1,78GiB)
+[5/8] Inlining methods...     [***]                                                                     (1,7s @ 1,26GiB)
+[6/8] Compiling methods...    [********]                                                               (69,1s @ 2,70GiB)
+[7/8] Laying out methods...   [***]                                                                     (9,7s @ 3,59GiB)
+[8/8] Creating image...       [**]                                                                      (4,9s @ 3,78GiB)
+  48,48MiB (56,39%) for code area:    37.745 compilation units
+  30,31MiB (35,25%) for image heap:  353.882 objects and 16 resources
+   7,19MiB ( 8,36%) for other data
+  85,99MiB in total image size, 85,99MiB in total file size
+------------------------------------------------------------------------------------------------------------------------
+Top 10 origins of code area:                                Top 10 object types in image heap:
+   3,41MiB o.g.truffle/com.oracle.truffle.polyglot            11,98MiB byte[] for code metadata
+   3,01MiB o.g.n.runtime/com.oracle.svm.core.code              3,98MiB byte[] for string data
+   1,81MiB graalphp.truffle                                    2,13MiB java.base/java.lang.String
+   1,77MiB java.base/java.util                                 1,95MiB byte[] for graph encodings
+   1,56MiB o.g.truffle/com.oracle.truffle.host                 1,93MiB java.base/java.lang.Class
+   1,53MiB graalphp.runtime                                    1,35MiB o.g.n.runtime/c.o.s.core.hub.DynamicHubCompanion
+   1,45MiB o.g.truffle/com.oracle.truffle.api.interop        829,24KiB byte[] for general heap data
+   1,06MiB j.g.compiler/jdk.graal.compiler.lir.amd64         532,28KiB java.base/java.lang.Object[]
+   1,00MiB j.g.compiler/jdk.graal.compiler.nodes             515,56KiB java.base/j.u.concurrent.ConcurrentHashMap$Node
+ 950,47KiB c.o.t.tru~_nfi/com.oracle.truffle.nfi             472,99KiB o.g.t.r.svm/c.o.s.t.api.SubstrateTruffleMethod
+  30,96MiB for 368 more packages                               4,69MiB for 3388 more object types
+                            Use '--emit build-report' to create a report with more details.
+------------------------------------------------------------------------------------------------------------------------
+Security report:
+ - Binary includes Java deserialization.
+ - CycloneDX SBOM with 11 component(s) is embedded in binary (744B). 338 type(s) could not be associated to a component.
+ - Advanced obfuscation not enabled; enable with '-H:AdvancedObfuscation=""' (experimental support).
+------------------------------------------------------------------------------------------------------------------------
+Recommendations:
+ G1GC: Use the G1 GC ('--gc=G1') for improved latency and throughput.
+ PGO:  Use Profile-Guided Optimizations ('--pgo') for improved throughput.
+ FUTR: Use '--future-defaults=all' to prepare for future releases.
+ HEAP: Set max heap for improved and more predictable memory usage.
+ QBM:  Use the quick build mode ('-Ob') to speed up builds during development.
+------------------------------------------------------------------------------------------------------------------------
+                      14,1s (10,3% of total time) in 1898 GCs | Peak RSS: 5,61GiB | CPU load: 9,51
+------------------------------------------------------------------------------------------------------------------------
+Build artifacts:
+ build\graalphp.exe (executable, 85,99MiB)
+========================================================================================================================
+Finished generating 'graalphp' in 2m 15s.
+PASS declaration-kinds-and-timing oracle=0 target=0 mode=output
+PASS interface-methods-and-typing oracle=0 target=0 mode=output
+PASS multiple-interface-inheritance oracle=0 target=0 mode=output
+PASS interface-diamond oracle=0 target=0 mode=output
+PASS inherited-interface-implementation oracle=0 target=0 mode=output
+PASS abstract-class-contract oracle=0 target=0 mode=output
+PASS abstract-interface-carried-to-child oracle=0 target=0 mode=output
+PASS abstract-and-static-methods oracle=0 target=0 mode=output
+PASS covariant-return oracle=0 target=0 mode=output
+PASS contravariant-parameter oracle=0 target=0 mode=output
+PASS nullable-and-union-contracts oracle=0 target=0 mode=output
+PASS intersection-and-dnf-values oracle=0 target=0 mode=output
+PASS intersection-variance oracle=0 target=0 mode=output
+PASS self-parameter-and-return oracle=0 target=0 mode=output
+PASS late-static-return oracle=0 target=0 mode=output
+PASS reference-and-variadic-contract oracle=0 target=0 mode=output
+PASS constructor-signature-exception oracle=0 target=0 mode=output
+PASS private-method-lexical-dispatch oracle=0 target=0 mode=output
+PASS trait-basic-precedence oracle=0 target=0 mode=output
+PASS trait-conflict-resolution-and-alias oracle=0 target=0 mode=output
+PASS class-method-resolves-trait-collision oracle=0 target=0 mode=output
+PASS trait-visibility-alias oracle=0 target=0 mode=output
+PASS trait-nesting-and-shared-origin oracle=0 target=0 mode=output
+PASS trait-magic-constants-and-alias oracle=0 target=0 mode=output
+PASS trait-closure-private-scope oracle=0 target=0 mode=output
+PASS trait-self-types oracle=0 target=0 mode=output
+PASS trait-abstract-parent-implementation oracle=0 target=0 mode=output
+PASS trait-private-abstract-requirement oracle=0 target=0 mode=output
+PASS trait-properties-compatible-defaults oracle=0 target=0 mode=output
+PASS trait-static-storage-isolation oracle=0 target=0 mode=output
+PASS trait-static-self-default oracle=0 target=0 mode=output
+PASS trait-static-parent-default oracle=0 target=0 mode=output
+PASS unused-trait-default-is-not-evaluated oracle=0 target=0 mode=output
+PASS direct-trait-static-deprecations oracle=0 target=0 mode=output
+PASS direct-trait-storage-is-independent oracle=0 target=0 mode=output
+PASS trait-private-property-rebinding oracle=0 target=0 mode=output
+PASS trait-final-overridden-by-using-class oracle=0 target=0 mode=output
+PASS class-constant-inheritance-and-visibility oracle=0 target=0 mode=output
+PASS typed-constant-and-array-copy oracle=0 target=0 mode=output
+PASS trait-constant-parent-precedence oracle=0 target=0 mode=output
+PASS trait-constant-composition oracle=0 target=0 mode=output
+PASS constant-default-and-self-reference oracle=0 target=0 mode=output
+PASS dynamic-class-constants oracle=0 target=0 mode=output
+PASS instanceof-no-autoload oracle=0 target=0 mode=output
+PASS class-relationship-queries oracle=0 target=0 mode=output
+PASS class-name-scope-and-late-binding oracle=0 target=0 mode=output
+PASS class-query-deprecation-record oracle=0 target=0 mode=output
+PASS class-query-deprecation-output oracle=0 target=0 mode=output
+PASS numeric-union-coercion oracle=0 target=0 mode=output
+PASS abstract-trait-alias-implemented oracle=0 target=0 mode=output
+PASS class-metadata oracle=0 target=0 mode=output
+PASS interface-autoload-kind-check oracle=0 target=0 mode=output
+PASS dependency-autoload-order oracle=0 target=0 mode=output
+PASS conditional-interface-and-trait oracle=0 target=0 mode=output
+PASS namespace-trait-and-interface-aliases oracle=0 target=0 mode=output
+PASS async-method-interface-contract oracle=0 target=0 mode=output
+PASS async-trait-alias-and-closure oracle=0 target=0 mode=output
+PASS async-dependency-files oracle=0 target=0 mode=output
+PASS async-constant-autoload oracle=0 target=0 mode=output
+PASS async-interface-query oracle=0 target=0 mode=output
+PASS async-cancellation-during-composition oracle=0 target=0 mode=output
+PASS fatal-declaration-bypasses-catch-finally oracle=255 target=1 mode=rejection:compatible
+PASS async-fatal-declaration-stops-request oracle=255 target=1 mode=rejection:compatible
+PASS abstract-trait-alias-missing oracle=255 target=1 mode=rejection:abstract
+PASS variadic-trailing-type-rejected oracle=255 target=1 mode=rejection:compatible
+PASS final-second-interface-constant-rejected oracle=255 target=1 mode=rejection:constant
+PASS interface-sibling-signatures-rejected oracle=255 target=1 mode=rejection:compatible
+PASS interface-constructor-signature-rejected oracle=255 target=1 mode=rejection:compatible
+PASS late-static-return-widening-rejected oracle=255 target=1 mode=rejection:compatible
+PASS missing-interface-method oracle=255 target=1 mode=rejection:abstract
+PASS missing-abstract-parent-method oracle=255 target=1 mode=rejection:abstract
+PASS missing-trait-requirement oracle=255 target=1 mode=rejection:abstract
+PASS final-class-rejected oracle=255 target=1 mode=rejection:extend
+PASS final-method-rejected oracle=255 target=1 mode=rejection:final
+PASS final-trait-alias-rejected oracle=255 target=1 mode=rejection:final
+PASS visibility-narrowing-rejected oracle=255 target=1 mode=rejection:method
+PASS static-mismatch-rejected oracle=255 target=1 mode=rejection:compatible
+PASS parameter-narrowing-rejected oracle=255 target=1 mode=rejection:compatible
+PASS return-widening-rejected oracle=255 target=1 mode=rejection:compatible
+PASS extra-required-parameter-rejected oracle=255 target=1 mode=rejection:compatible
+PASS reference-mismatch-rejected oracle=255 target=1 mode=rejection:compatible
+PASS variadic-removal-rejected oracle=255 target=1 mode=rejection:compatible
+PASS trait-method-collision-rejected oracle=255 target=1 mode=rejection:collision
+PASS trait-property-conflict-rejected oracle=255 target=1 mode=rejection:incompatible
+PASS trait-property-type-conflict-rejected oracle=255 target=1 mode=rejection:incompatible
+PASS trait-constant-conflict-rejected oracle=255 target=1 mode=rejection:incompatible
+PASS final-constant-rejected oracle=255 target=1 mode=rejection:constant
+PASS interface-constant-ambiguity-rejected oracle=255 target=1 mode=rejection:constant
+PASS extends-interface-rejected oracle=255 target=1 mode=rejection:extend
+PASS implements-class-rejected oracle=255 target=1 mode=rejection:interface
+PASS use-class-rejected oracle=255 target=1 mode=rejection:trait
+PASS invalid-trait-precedence-rejected oracle=255 target=1 mode=rejection:trait
+PASS inherited-property-type-rejected oracle=255 target=1 mode=rejection:property
+Evidence: build\class-contracts-6134466386305487904
+PASS: 93 class contract programs; 32 semantic rejections (diagnostic text not asserted identical)
