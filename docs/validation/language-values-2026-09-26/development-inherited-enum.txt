@@ -1,0 +1,116 @@
+> cmd.exe /d /c build.bat
+GraalPHP 0.1 | PHP 8.6 subset | Truffle 25.4.4.1.1
+build\generated\graalphp\truffle\PhpRootGen.java:6168: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+build\generated\graalphp\truffle\PhpRootGen.java:7988: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+Note: <workspace>\src\graalphp\truffle\PhpContext.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+2 warnings
+
+exit=0
+> tools/graalvm-25.4.4.1.1+1.1/bin/javac.exe --release 25 -proc:none -cp build/classes;build/test-classes;build/deps/25.4.4.1.1/* -d build/test-classes tests/graalphp/ClassContractsTest.java tests/graalphp/EnumMatchTest.java
+
+exit=0
+> tools/graalvm-25.4.4.1.1+1.1/bin/java.exe --enable-native-access=ALL-UNNAMED -cp build/classes;build/test-classes;build/deps/25.4.4.1.1/* graalphp.EnumMatchTest
+PASS enum-declaration-timing-and-kind oracle=0 target=0 mode=output
+PASS unit-cases-and-singleton oracle=0 target=0 mode=output
+PASS case-names-are-case-sensitive oracle=0 target=0 mode=output
+PASS cases-array-is-independent oracle=0 target=0 mode=output
+PASS backed-int-from-and-try oracle=0 target=0 mode=output
+PASS backed-string-and-named-argument oracle=0 target=0 mode=output
+PASS numeric-string-backing-values-stay-distinct oracle=0 target=0 mode=output
+PASS case-constant-alias-and-defaults oracle=0 target=0 mode=output
+PASS case-initializers-use-class-constants oracle=0 target=0 mode=output
+PASS enum-methods-and-interface oracle=0 target=0 mode=output
+PASS custom-unit-enum-interface oracle=0 target=0 mode=output
+PASS custom-backed-enum-interface oracle=0 target=0 mode=output
+PASS enum-interface-order oracle=0 target=0 mode=output
+PASS trait-enum-and-magic-scope oracle=0 target=0 mode=output
+PASS enum-builtins-win-over-trait oracle=0 target=0 mode=output
+PASS unit-enum-may-define-from oracle=0 target=0 mode=output
+PASS enum-invokable oracle=0 target=0 mode=output
+PASS enum-generated-methods-as-callables oracle=0 target=0 mode=output
+PASS enum-dynamic-static-receiver oracle=0 target=0 mode=output
+PASS enum-builtin-arity-and-named-errors oracle=0 target=0 mode=output
+PASS backed-weak-scalar-conversions oracle=0 target=0 mode=output
+PASS backed-float-deprecation oracle=0 target=0 mode=output
+PASS backed-float-string-deprecation oracle=0 target=0 mode=output
+PASS backed-null-deprecation oracle=0 target=0 mode=output
+PASS backed-nonnumeric-type-error oracle=0 target=0 mode=output
+PASS empty-unit-and-backed-enums oracle=0 target=0 mode=output
+PASS duplicate-backing-check-is-lazy oracle=0 target=0 mode=output
+PASS invalid-backing-type-cases-vs-lookup oracle=0 target=0 mode=output
+PASS readonly-name-and-value oracle=0 target=0 mode=output
+PASS readonly-property-references oracle=0 target=0 mode=output
+PASS readonly-property-unset oracle=0 target=0 mode=output
+PASS enum-no-dynamic-properties oracle=0 target=0 mode=output
+PASS enum-not-constructible-or-cloneable oracle=0 target=0 mode=output
+PASS enum-values-in-arrays-and-references oracle=0 target=0 mode=output
+PASS enum-nullable-and-union-types oracle=0 target=0 mode=output
+PASS enum-conditional-declaration oracle=0 target=0 mode=output
+PASS enum-autoload-and-kind oracle=0 target=0 mode=output
+PASS enum-namespace-and-alias oracle=0 target=0 mode=output
+PASS match-strict-scalar-types oracle=0 target=0 mode=output
+PASS match-subject-evaluated-once oracle=0 target=0 mode=output
+PASS match-default-and-lazy-arms oracle=0 target=0 mode=output
+PASS match-multiple-and-empty-arms oracle=0 target=0 mode=output
+PASS match-ordered-nested-arrays oracle=0 target=0 mode=output
+PASS match-object-and-enum-identity oracle=0 target=0 mode=output
+PASS match-array-object-members oracle=0 target=0 mode=output
+FAIL match-subject-retained-while-mutated oracle=0 target=0 mode=output
+oracle=b:2
+actual=3:2
+PASS throw-expression-in-match oracle=0 target=0 mode=output
+PASS throw-expression-in-coalesce oracle=0 target=0 mode=output
+PASS match-return-in-finally oracle=0 target=0 mode=output
+PASS clone-object-and-array-copy-on-write oracle=0 target=0 mode=output
+PASS clone-keeps-explicit-references oracle=0 target=0 mode=output
+PASS clone-calls-hook-on-new-object oracle=0 target=0 mode=output
+PASS clone-visibility-error oracle=0 target=0 mode=output
+PASS clone-closure-captures oracle=0 target=0 mode=output
+PASS async-enum-method-match oracle=0 target=0 mode=output
+PASS async-enum-autoload oracle=0 target=0 mode=output
+PASS async-enum-generated-callable oracle=0 target=0 mode=output
+FAIL async-match-subject-and-condition oracle=255 target=0 mode=output
+oracle=
+Parse error: syntax error, unexpected token "[", expecting "," or ";" in <workspace>\build\enum-match-13544844714878792000\async-match-subject-and-condition\main.php on line 5
+
+actual=9
+PASS async-match-cancellation-finally oracle=0 target=0 mode=output
+PASS async-clone-hook oracle=0 target=0 mode=output
+PASS async-clone-cancellation oracle=0 target=0 mode=output
+PASS enum-case-missing-backing-rejected oracle=255 target=1 mode=rejection:backing
+PASS unit-case-value-rejected oracle=255 target=1 mode=rejection:backing
+PASS invalid-enum-backing-type-rejected oracle=255 target=1 mode=rejection:backing
+PASS duplicate-case-name-rejected oracle=255 target=1 mode=rejection:constant
+PASS case-and-constant-conflict-rejected oracle=255 target=1 mode=rejection:constant
+PASS enum-instance-property-rejected oracle=255 target=1 mode=rejection:properties
+PASS enum-static-property-rejected oracle=255 target=1 mode=rejection:properties
+PASS enum-trait-property-rejected oracle=255 target=1 mode=rejection:properties
+PASS enum-constructor-rejected oracle=255 target=1 mode=rejection:magic
+PASS enum-destructor-rejected oracle=255 target=1 mode=rejection:magic
+PASS enum-clone-hook-rejected oracle=255 target=1 mode=rejection:magic
+PASS enum-tostring-rejected oracle=255 target=1 mode=rejection:magic
+PASS enum-missing-interface-method-rejected oracle=255 target=1 mode=rejection:abstract
+PASS enum-generated-cases-redeclaration-rejected oracle=255 target=1 mode=rejection:redeclare
+PASS enum-generated-from-redeclaration-rejected oracle=255 target=1 mode=rejection:redeclare
+PASS enum-generated-tryfrom-redeclaration-rejected oracle=255 target=1 mode=rejection:redeclare
+PASS non-enum-unit-interface-rejected oracle=255 target=1 mode=rejection:non-enum
+PASS non-enum-indirect-unit-interface-rejected oracle=255 target=1 mode=rejection:non-enum
+PASS unit-enum-backed-interface-rejected oracle=255 target=1 mode=rejection:non-backed
+PASS enum-explicit-unit-interface-rejected oracle=255 target=1 mode=rejection:interface
+PASS enum-explicit-backed-interface-rejected oracle=255 target=1 mode=rejection:interface
+PASS match-duplicate-default-rejected oracle=255 target=1 mode=rejection:default
+Evidence: <workspace>\build\enum-match-13544844714878792000
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime (file:/<workspace>/build/deps/25.4.4.1.1/truffle-runtime-25.4.4.1.1.jar)
+WARNING: Please consider reporting this to the maintainers of class com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Exception in thread "main" java.lang.AssertionError: 2 enum-match cases failed
+	at graalphp.ClassContractsTest.run(ClassContractsTest.java:496)
+	at graalphp.EnumMatchTest.main(EnumMatchTest.java:357)
+
+exit=1

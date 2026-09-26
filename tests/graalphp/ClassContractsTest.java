@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 /** Identical PHP inputs; successful output equality and explicit semantic rejection checks are reported separately. */
 public final class ClassContractsTest {
-    private record Case(String name, String source, Map<String, String> files, boolean async, String rejection) {
+    record Case(String name, String source, Map<String, String> files, boolean async, String rejection) {
         Case(String name, String source) { this(name, source, Map.of(), false, null); }
         Case(String name, String source, boolean async) { this(name, source, Map.of(), async, null); }
         Case(String name, String source, String rejection) { this(name, source, Map.of(), false, rejection); }
@@ -419,13 +419,15 @@ public final class ClassContractsTest {
         new Case("inherited-property-type-rejected", "class Base{public int $n=1;} class Child extends Base{public string $n='a';}", "property")
     );
 
-    public static void main(String[] arguments) throws Exception {
+    public static void main(String[] arguments) throws Exception { run(arguments, CASES, "class-contracts"); }
+
+    static void run(String[] arguments, List<Case> cases, String suite) throws Exception {
         Path oracle = Path.of(arguments.length > 0 ? arguments[0] : "tools/php-8.6.0RC2/php.exe").toAbsolutePath();
         Path asyncOracle = Path.of(arguments.length > 1 ? arguments[1] : "tools/trueasync-0.10.0/php.exe").toAbsolutePath();
         Path executable = arguments.length > 2 && !arguments[2].isBlank() ? Path.of(arguments[2]).toAbsolutePath() : null;
         boolean interpreter = arguments.length > 3 && arguments[3].equals("--interpreter");
         if (!Files.isRegularFile(oracle) || !Files.isRegularFile(asyncOracle)) throw new IllegalArgumentException("Both PHP 8.6 reference executables are required");
-        Path directory = Files.createTempDirectory(Path.of("build"), "class-contracts-").toAbsolutePath();
+        Path directory = Files.createTempDirectory(Path.of("build"), suite + "-").toAbsolutePath();
         var report = new StringBuilder("Target: " + (executable == null ? "JVM" : executable.getFileName()) + (interpreter ? " interpreter" : "") + "\n");
         for (Path reference : List.of(oracle, asyncOracle)) {
             var process = new ProcessBuilder(reference.toString(), "-n", "-v").redirectErrorStream(true).start();
@@ -436,7 +438,7 @@ public final class ClassContractsTest {
         }
         int failures = 0;
         int rejections = 0;
-        for (var test : CASES) {
+        for (var test : cases) {
             Path root = directory.resolve(test.name);
             Files.createDirectories(root);
             Path script = root.resolve("main.php");
@@ -487,12 +489,12 @@ public final class ClassContractsTest {
                 System.out.println("oracle=" + expected + expectedError + "\nactual=" + actual + actualError);
             }
         }
-        report.append("Cases: ").append(CASES.size()).append("; output comparisons: ").append(CASES.size() - rejections)
+        report.append("Cases: ").append(cases.size()).append("; output comparisons: ").append(cases.size() - rejections)
                 .append("; semantic rejections: ").append(rejections).append("; failures: ").append(failures).append('\n');
         Files.writeString(directory.resolve("results.txt"), report);
         System.out.println("Evidence: " + directory);
-        if (failures != 0) throw new AssertionError(failures + " class contract cases failed");
-        System.out.println("PASS: " + CASES.size() + " class contract programs; " + rejections + " semantic rejections (diagnostic text not asserted identical)");
+        if (failures != 0) throw new AssertionError(failures + " " + suite + " cases failed");
+        System.out.println("PASS: " + cases.size() + " " + suite + " programs; " + rejections + " semantic rejections (diagnostic text not asserted identical)");
     }
 
     private static String text(Path root, String name) throws Exception {

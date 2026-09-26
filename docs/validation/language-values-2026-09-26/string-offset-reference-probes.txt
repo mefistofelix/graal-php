@@ -1,0 +1,65 @@
+read exit=0
+[a];[b];[c];
+Warning: Uninitialized string offset 3 in Command line code on line 1
+[];
+Warning: Uninitialized string offset -4 in Command line code on line 1
+[];[b];[b];[b];TypeError:Cannot access offset of type string on string;TypeError:Cannot access offset of type string on string;
+Warning: String offset cast occurred in Command line code on line 1
+[b];
+Warning: String offset cast occurred in Command line code on line 1
+[b];
+Warning: String offset cast occurred in Command line code on line 1
+[a];
+
+quiet exit=0
+set:notempty:a;set:notempty:c;no:empty:missing;set:notempty:b;set:notempty:b;no:empty:missing;no:empty:TypeError:Cannot access offset of type array on string;
+Deprecated: Implicit conversion from float 1.8 to int loses precision in Command line code on line 1
+set:
+Deprecated: Implicit conversion from float 1.8 to int loses precision in Command line code on line 1
+notempty:b;set:notempty:a;
+
+write exit=0
+
+Warning: Only the first byte will be assigned to the string offset in Command line code on line 1
+[Xbc]:[X];
+Warning: Only the first byte will be assigned to the string offset in Command line code on line 1
+[abX]:[X];
+Warning: Only the first byte will be assigned to the string offset in Command line code on line 1
+[abc  X]:[X];
+Warning: Illegal string offset -5 in Command line code on line 1
+[abc]:[];
+Warning: Only the first byte will be assigned to the string offset in Command line code on line 1
+[aXc]:[X];TypeError:Cannot access offset of type string on string;
+Warning: String offset cast occurred in Command line code on line 1
+
+Warning: Only the first byte will be assigned to the string offset in Command line code on line 1
+[aXc]:[X];
+Warning: String offset cast occurred in Command line code on line 1
+
+Warning: Only the first byte will be assigned to the string offset in Command line code on line 1
+[Xbc]:[X];
+
+empty exit=0
+Error:Cannot assign an empty string to a string offset:abc
+
+ref exit=0
+Error:Cannot create references to/from string offsets;Error:Cannot unset string offsets;Error:[] operator not supported for strings
+
+nested exit=0
+a;Error:Cannot use string offset as an array
+
+compound exit=255
+
+Fatal error: Uncaught Error: Cannot use assign-op operators with string offsets in Command line code:1
+Stack trace:
+#0 {main}
+  thrown in Command line code on line 1
+
+
+coalesce exit=0
+
+Warning: Only the first byte will be assigned to the string offset in Command line code on line 1
+X:abc  X
+
+keyordering exit=0
+kv:z

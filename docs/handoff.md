@@ -13,13 +13,13 @@ di PHP; non sono completate tutte le milestone del design.
 
 **L'utente ha chiesto di continuare lo sviluppo funzionale e riverificare le
 performance più avanti.** Non riprendere automaticamente PERF-01. Il blocco
-corrente è [interfacce, trait e contratti delle classi](class-contracts.md),
-con composizione sospendibile delle dipendenze, firme astratte/finali,
-varianza, tipi composti e costanti. Gli errori fatali del linker interrompono
-il guest ma non il drenaggio delle risorse native.
+corrente è [enum, match, clone, offset di stringa e strict_types](language-values.md),
+con singleton per richiesta, valutazione lazy e hook sospendibili. I contratti
+delle classi precedenti rimangono verificati; errori, ownership e generazioni
+continuano a usare la stessa pipeline Bytecode DSL.
 
-Il seguito funzionale riguarda enum, dichiarazioni e iteratori mancanti,
-insieme a valori e TrueAsync. Il
+Il seguito funzionale riguarda iteratori, attributi e unpacking, insieme a
+valori, firme dei builtin e TrueAsync. Il
 loader SPL predefinito, include_path e il binding completo tra unità restano
 aperti: non dichiarare Composer funzionante. Shared-memory threading e FFI
 restano priorità successive; Composer applicativo, Compose e mobile sono rinviati.
@@ -27,11 +27,58 @@ Procedere nel lavoro già autorizzato senza riconfermare queste decisioni.
 
 Il default CLI `engine.CompilerIdleDelay=500` rimane invariato e il JIT attivo.
 La diagnostica precedente [cURL p99](curl-p99.md) resta storica: nessuna nuova
-misura RAM/CPU/throughput/p99 è stata eseguita per i blocchi autoload/classi. Quando
+misura RAM/CPU/throughput/p99 è stata eseguita per i blocchi autoload/classi/valori. Quando
 si tornerà alle performance, mantenere il vincolo di nessun warmup escluso e
 separare GC/invalidazioni, peer e lifetime reale dei compiler worker.
 
-## Blocco funzionale: contratti delle classi, 26 settembre
+## Blocco funzionale: enum e valori, 26 settembre
+
+[Contratti e limiti](language-values.md),
+[evidenze](validation/language-values-2026-09-26/README.md),
+[esiti](validation/language-values-2026-09-26/results.txt),
+[hash](validation/language-values-2026-09-26/hashes.json).
+
+155 programmi nuovi: 90 enum/match/clone, 27 offset di stringa e 38 typing.
+Passano su Windows/Linux JVM, Native Image e Native Image `--interpreter`:
+930 esecuzioni, 756 confronti di output e 174 rifiuti semantici. Per i rifiuti
+non sono asseriti identici codici numerici di uscita o interi messaggi fatal.
+Gli input sono gli stessi 163 file PHP/fixture, con hash in tutti i 18 report.
+Windows usa PHP 8.6.0RC2 e TrueAsync secondo il caso; Linux usa TrueAsync/PHP 8.6
+anche per i casi sincroni, non un PHP stock separato.
+
+Il typing degli argomenti usa il chiamante, quello dei ritorni la funzione;
+trait, alias, closure, include/eval e autoload differito conservano il contesto
+corretto. Non significa che tutte le firme dei builtin siano già implementate.
+Gli enum sono singleton di richiesta e i dati Java non introducono root PHP
+nascosti. Match/clone e assegnazioni a offset possono sospendersi. Gli offset
+sono byte-oriented e conservano stringhe non UTF-8, warning e readonly.
+
+Le regressioni finali passano: 93 contratti classi in tutte e sei le modalità;
+38 autoload e 82 TrueAsync su entrambe le piattaforme JVM/native; 88/82 scenari
+integrati Windows/Linux (sei sono specifici della DLL Windows), 53 scenari
+semantici e 256 grafi/1.280 fasi collector per piattaforma. Passano 50 asserzioni
+rete per prodotto, le suite cURL JVM/native e i quattro casi fatal-C in ogni
+combinazione piattaforma/modalità. I contatori C e il riuso del contesto sono
+verificati su JVM, oltre a 80 checkpoint full-GC per piattaforma; non è stato
+ricostruito un runner native separato che forzi il GC.
+
+Il test di reload cambia casi enum e strict_types durante una richiesta:
+quella già avviata mantiene entrambi i vecchi contratti, la successiva ottiene
+i nuovi. Le fixture restano su filesystem temporaneo nativo, non su /mnt/c.
+L'esempio `examples/enums.php` passa anche nei prodotti copiati e con interpreter.
+
+I due Native Image sono ricostruiti in sequenza; 98 file src/tests sono identici
+nelle due copie, 108 hash complessivi. Sono conservati i tentativi di build
+falliti prima delle correzioni al template enum e al boundary dell'errore match.
+Una chiamata FFI Linux aveva il nome errato della fixture: corretto soltanto
+il percorso, poi passati i controlli rimanenti. Nessun lavoro/build lasciato
+interrotto. Le baseline precedenti sono in `build/before-language-values-2026-09-26/`.
+
+Il progetto e LANG-01 rimangono aperti; non riprendere le performance per
+inerzia dopo questo blocco. Seguire il prossimo contratto funzionale insieme
+alle dipendenze di valori, lifetime e coroutine.
+
+## Blocco precedente: contratti delle classi, 26 settembre
 
 [Contratto e limiti](class-contracts.md),
 [evidenze](validation/class-contracts-2026-09-26/README.md),
@@ -222,8 +269,8 @@ TrueAsync. Il confronto corrente è HTTP e non prova equivalenza dei backend TLS
 
 | File locale ricreabile | Byte | SHA-256 |
 | --- | ---: | --- |
-| `build/graalphp.exe` | 90.165.248 | `49f6f9636a37d80c5c2d60d1abad7997547254481e28dd84c685076c63f2a7dc` |
-| `build/graalphp-linux-x64` | 93.326.120 | `504108f62c48f0bb6305b55133a0bcf73a76c6cb8a4594d7f1c6bb151b598b0d` |
+| `build/graalphp.exe` | 90.918.912 | `ff54657630d2318f28a047d8173ffc3ac66026bc358a222e3c50f5bb6c2aef43` |
+| `build/graalphp-linux-x64` | 93.653.800 | `eb259141b03e7028d101b8d108f8cc5571a0ad1588673af2aa0a9651feefac51` |
 | `build/graalphp-before-memory.exe` | 90.161.152 | `f84539cde1b2976077f4b29c68d3737f1ab096add2e8662f78d0a5d328c36c53` |
 
 Le copie `build/before-autoload-2026-09-26/graalphp.exe` e
@@ -259,6 +306,10 @@ come checklist obbligatoria a ogni modifica:
 ./build.bat autoload-test native    # ricostruisce e verifica il prodotto
 ./build.bat class-test              # 93 contratti classi/output/rifiuti
 ./build.bat class-test native       # stessa suite sulla CLI ricostruita
+./build.bat enum-test               # 90 programmi enum/match/clone
+./build.bat string-test             # 27 programmi offset di stringa
+./build.bat strict-test             # 38 programmi strict_types
+./build.bat enum-test native --interpreter # stesso prodotto, JIT guest disabilitato
 ./build.bat ffi-fatal-test          # stack C drenati anche dopo un fatal
 ./build.bat ffi-bridge-test native  # callback e stack C; quando pertinenti
 ```

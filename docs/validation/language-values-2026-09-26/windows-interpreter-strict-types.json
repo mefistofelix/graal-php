@@ -1,0 +1,509 @@
+{
+  "suite": "strict-types",
+  "target": "windows-interpreter",
+  "reference": "PHP 8.6.0RC2 for synchronous cases; pinned TrueAsync 0.10.0 / PHP 8.6 for asynchronous cases",
+  "report": "Target: graalphp.exe interpreter\nPHP 8.6.0RC2 (cli) (built: Sep 23 2026 09:53:34) (NTS Visual C++ 2026 x64)\nCopyright © The PHP Group and Contributors\nBuilt by The PHP Group\nZend Engine v4.6.0RC2, Copyright © Zend by Perforce\n    with Zend OPcache v8.6.0RC2, Copyright ©, by Zend by Perforce\nPHP 8.6.0-dev (cli) (built: Sep 12 2026 13:03:46) (ZTS Visual C++ 2026 x64 TrueAsync ABI v0.26.0)\nCopyright © The PHP Group and Contributors\nZend Engine v4.6.0-dev, Copyright © Zend by Perforce\n    with Zend OPcache v8.6.0-dev, Copyright ©, by Zend by Perforce\nPASS strict-scalars oracle=0 target=0 mode=output\nPASS strict-int-to-float-and-unions oracle=0 target=0 mode=output\nPASS strict-nullable-and-exact-literals oracle=0 target=0 mode=output\nPASS weak-default-mode oracle=0 target=0 mode=output\nPASS explicit-weak-mode oracle=0 target=0 mode=output\nPASS strict-directives-do-not-unset-enabled-mode oracle=0 target=0 mode=output\nPASS empty-statements-before-directive oracle=0 target=0 mode=output\nPASS weak-caller-strict-declaration oracle=0 target=0 mode=output\nPASS strict-caller-weak-declaration oracle=0 target=0 mode=output\nPASS strict-return-belongs-to-declaration oracle=0 target=0 mode=output\nPASS closure-and-arrow-strict-return oracle=0 target=0 mode=output\nPASS closure-keeps-source-mode-across-include oracle=0 target=0 mode=output\nPASS trait-method-retains-source-mode oracle=0 target=0 mode=output\nPASS trait-closure-retains-source-mode oracle=0 target=0 mode=output\nPASS eval-is-a-separate-weak-source oracle=0 target=0 mode=output\nPASS strict-method-constructor-and-named-arguments oracle=0 target=0 mode=output\nPASS strict-variadic oracle=0 target=0 mode=output\nPASS weak-reference-coercion-on-entry-only oracle=0 target=0 mode=output\nPASS strict-reference-does-not-coerce oracle=0 target=0 mode=output\nPASS typed-variadic-references oracle=0 target=0 mode=output\nPASS strict-typed-property-writes oracle=0 target=0 mode=output\nPASS property-mode-belongs-to-write-site oracle=0 target=0 mode=output\nPASS weak-argument-precision-deprecation oracle=0 target=0 mode=output\nPASS weak-return-precision-deprecation oracle=0 target=0 mode=output\nPASS strict-backed-enum-lookups oracle=0 target=0 mode=output\nPASS strict-generated-enum-callables oracle=0 target=0 mode=output\nPASS strict-class-query-builtin-types oracle=0 target=0 mode=output\nPASS strict-string-offset-still-casts-index oracle=0 target=0 mode=output\nPASS async-strict-return-and-finally oracle=0 target=0 mode=output\nPASS async-internal-callback-is-weak oracle=0 target=0 mode=output\nPASS autoloaded-callable-preserves-callsite-mode oracle=0 target=0 mode=output\nPASS late-directive-rejected oracle=255 target=1 mode=rejection:first statement\nPASS namespace-before-directive-rejected oracle=255 target=1 mode=rejection:first statement\nPASS function-local-directive-rejected oracle=255 target=1 mode=rejection:first statement\nPASS nonbinary-directive-rejected oracle=255 target=1 mode=rejection:0 or 1\nPASS float-directive-rejected oracle=255 target=1 mode=rejection:0 or 1\nPASS string-directive-rejected oracle=255 target=1 mode=rejection:0 or 1\nPASS block-directive-rejected oracle=255 target=1 mode=rejection:block mode\nCases: 38; output comparisons: 31; semantic rejections: 7; failures: 0\n",
+  "cases": [
+    {
+      "name": "strict-scalars",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "int:int:int:int:string:bool:1:ok:1",
+      "target_stdout": "int:int:int:int:string:bool:1:ok:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "b83ddddc0ed9ec534f2822103ea8e47d9ca5ed8c93d459fd667c8e2a7093d1c6"
+      }
+    },
+    {
+      "name": "strict-int-to-float-and-unions",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "1:1:1",
+      "target_stdout": "1:1:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "7178809ad78816464891dd170b2a0324937f17a754f6c1a3c97e2f5cf3a6db4d"
+      }
+    },
+    {
+      "name": "strict-nullable-and-exact-literals",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "1:2:1:nullable:literal",
+      "target_stdout": "1:2:1:nullable:literal",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "08fc0c7182076d0a80c2b1a4c6f1f639dee93a7c127e2a15b502627461d30c4c"
+      }
+    },
+    {
+      "name": "weak-default-mode",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "1:1:1:1",
+      "target_stdout": "1:1:1:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "757c6c2a5cea907e91c3197ef9c72dffa8f0ca26279095289784d5c53b20957c"
+      }
+    },
+    {
+      "name": "explicit-weak-mode",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "2",
+      "target_stdout": "2",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "e2670c27386649bc4dcff2a9d7c5f0a6963c63fe5ca4bdea410d37e57d875108"
+      }
+    },
+    {
+      "name": "strict-directives-do-not-unset-enabled-mode",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "strict",
+      "target_stdout": "strict",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "a0b03690dead933171d5ebb710e41bd485d0924535fa2a5104f533a6b668aca6"
+      }
+    },
+    {
+      "name": "empty-statements-before-directive",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "strict",
+      "target_stdout": "strict",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "aa8cd1bf744521fb18dc4cfbb77148af86990c5c92627f3a39adc77d289864d4"
+      }
+    },
+    {
+      "name": "weak-caller-strict-declaration",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "2:nested",
+      "target_stdout": "2:nested",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "a3695ef5bbe355560d056299dee839e81a7292d56d356f6fe8a58f7c98469497",
+        "strict.php": "7483304d63e8e51190b610fcc6a0fe40b0615b554e52dad221e7f9840be69d50"
+      }
+    },
+    {
+      "name": "strict-caller-weak-declaration",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "strict:3",
+      "target_stdout": "strict:3",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "93a09a5cef77e7c2e86aa8e654e017389853d3ab50e58f0c730a719e270a15d3",
+        "weak.php": "0e0b1a84af8b9f051cd1792471ba29c1246aaa9bb4bcd3348244190392809560"
+      }
+    },
+    {
+      "name": "strict-return-belongs-to-declaration",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "return:1",
+      "target_stdout": "return:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "2c2710a5dd454807a8dbffe80912db2bfae20af687a9b15b68058b4c309d8e2d",
+        "strict.php": "0f259bd2eb80cbea646939550f10b518cdfc8d9ff53f15296af5e80f8b5b1b8e"
+      }
+    },
+    {
+      "name": "closure-and-arrow-strict-return",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "return:return:",
+      "target_stdout": "return:return:",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "991479852a2bac7a04fc423b7881bc403eab55b10eaf737af68f597faca01c5e"
+      }
+    },
+    {
+      "name": "closure-keeps-source-mode-across-include",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "strict",
+      "target_stdout": "strict",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "21768d5595d607f5cfff7f1ffd9144f481d6be72871085ffc3ef00d10b3b7cf1",
+        "strict.php": "cce0c958da36c7d012fe910a7eb05af945191eec543be82214b3e3b218d375db"
+      }
+    },
+    {
+      "name": "trait-method-retains-source-mode",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "strict:strict:",
+      "target_stdout": "strict:strict:",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "3375c750ef60a697082899b32c33be1c28e6fa9a7ed14cc198d259bc253fe21d",
+        "strict-trait.php": "6075ecd6e4aaf5c346acf8c03e374fa99480906f79e82123829e889bfbfa4ac8"
+      }
+    },
+    {
+      "name": "trait-closure-retains-source-mode",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "strict",
+      "target_stdout": "strict",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "4faf81fc6100444a80f57e55c3d39ca38a2c6a9a8edd6594dd544eccb13d659a",
+        "strict-trait.php": "bf95515424ba44d71123e2a7c44cc1a35aec3630694d40a6c2ff35805e80f366"
+      }
+    },
+    {
+      "name": "eval-is-a-separate-weak-source",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "3:strict",
+      "target_stdout": "3:strict",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "b9cce2098a5a430d728b19be5b5be4387ab99945cbf6416d759a2f4cd7e1cb0e"
+      }
+    },
+    {
+      "name": "strict-method-constructor-and-named-arguments",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "constructor:method:callable",
+      "target_stdout": "constructor:method:callable",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "d56231db9abeca0e990946095c2e51d710dfd7d2b235acdfd95986028e7ea6a1"
+      }
+    },
+    {
+      "name": "strict-variadic",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "2:type",
+      "target_stdout": "2:type",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "c917f238a2d416864dbe1bdccbc2108395c38f1e32ae86486aa1bbea84fbdf87"
+      }
+    },
+    {
+      "name": "weak-reference-coercion-on-entry-only",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "1:changed",
+      "target_stdout": "1:changed",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "aa50dfa6dbcb2ed7c336b5b53d0fb7b7ea583188bdadaf459b505f8246c098c9"
+      }
+    },
+    {
+      "name": "strict-reference-does-not-coerce",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "type:1",
+      "target_stdout": "type:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "c46985af3817167d4f623b309c08e12c3262e2743cfa07ff4a34d0610b16450e"
+      }
+    },
+    {
+      "name": "typed-variadic-references",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "1:1:4",
+      "target_stdout": "1:1:4",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "c2b0be5ae65c0c0ae41718857ef20dbb557bb94547e00a2cdff4004d8d8bbdac"
+      }
+    },
+    {
+      "name": "strict-typed-property-writes",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "instance:static:1:2:1",
+      "target_stdout": "instance:static:1:2:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "09d8fccd1370c01ab80f8dd6d1a707174a4b0c050365f9638216663b647750fd"
+      }
+    },
+    {
+      "name": "property-mode-belongs-to-write-site",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "1:strict",
+      "target_stdout": "1:strict",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "5c558286cbbbf264d1bb7c0cf1e14db2d9db7536b0475cccb3223dea3866fca3",
+        "strict-class.php": "907c662bcae1510bbc88cabb888874b5b8e98b237580a7d10160bf07562116b5"
+      }
+    },
+    {
+      "name": "weak-argument-precision-deprecation",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "\nDeprecated: Implicit conversion from float 1.5 to int loses precision in <workspace>\\build\\strict-types-12752679389082150970\\weak-argument-precision-deprecation\\main.php on line 2\n1:\nDeprecated: Implicit conversion from float-string \"2.5\" to int loses precision in <workspace>\\build\\strict-types-12752679389082150970\\weak-argument-precision-deprecation\\main.php on line 2\n2",
+      "target_stdout": "\nDeprecated: Implicit conversion from float 1.5 to int loses precision in <workspace>\\build\\strict-types-12752679389082150970\\weak-argument-precision-deprecation\\main.php on line 2\n1:\nDeprecated: Implicit conversion from float-string \"2.5\" to int loses precision in <workspace>\\build\\strict-types-12752679389082150970\\weak-argument-precision-deprecation\\main.php on line 2\n2",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "d918a70806e0a6bf3777623e538b56f3746c0278c6da186fbb329dad505dc910"
+      }
+    },
+    {
+      "name": "weak-return-precision-deprecation",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "\nDeprecated: Implicit conversion from float 1.5 to int loses precision in <workspace>\\build\\strict-types-12752679389082150970\\weak-return-precision-deprecation\\main.php on line 2\n1",
+      "target_stdout": "\nDeprecated: Implicit conversion from float 1.5 to int loses precision in <workspace>\\build\\strict-types-12752679389082150970\\weak-return-precision-deprecation\\main.php on line 2\n1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "3dc4d52e3c9115092630b4cac0b0054b5a4c27cef21df0631b3b8c250f2c1f0f"
+      }
+    },
+    {
+      "name": "strict-backed-enum-lookups",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "int:int:int:int:string:string:string:string:A:A",
+      "target_stdout": "int:int:int:int:string:string:string:string:A:A",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "bafc2f2f9c39437f10c34e2d0792dbeb2fb0b2241ba29d2ab100e8230cc99e57"
+      }
+    },
+    {
+      "name": "strict-generated-enum-callables",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "string:float:A",
+      "target_stdout": "string:float:A",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "6e09d7958d23a6c5a075cf4504e0a06e2f70c40d8b4216dd084d9f3a4ce0ac9e"
+      }
+    },
+    {
+      "name": "strict-class-query-builtin-types",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "name:flag:reporting",
+      "target_stdout": "name:flag:reporting",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "a1c04f8e70a7a25282055a4ad7c0c9c0d004a3f5144322378f1bd34754d7598b"
+      }
+    },
+    {
+      "name": "strict-string-offset-still-casts-index",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "\nWarning: String offset cast occurred in <workspace>\\build\\strict-types-12752679389082150970\\strict-string-offset-still-casts-index\\main.php on line 2\nb",
+      "target_stdout": "\nWarning: String offset cast occurred in <workspace>\\build\\strict-types-12752679389082150970\\strict-string-offset-still-casts-index\\main.php on line 2\nb",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "9a773530c88888ab777c924ec4fa91a0cc79010c1c85a1bf41e197876520aa41"
+      }
+    },
+    {
+      "name": "async-strict-return-and-finally",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "finally:type",
+      "target_stdout": "finally:type",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "e4e7d18872b0ac37e0d71ad114ed4498c117ccc4472c1a1054463d32cc447a1a"
+      }
+    },
+    {
+      "name": "async-internal-callback-is-weak",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "2",
+      "target_stdout": "2",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "dd6545796343db55c1c49e31ae729b14e9d3e35e574843abac81010d775fbe43"
+      }
+    },
+    {
+      "name": "autoloaded-callable-preserves-callsite-mode",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "strict",
+      "target_stdout": "strict",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "3cec05518d3fb6f9f17957328811fca556478e5ba431f8411eadcb3656772cb6"
+      }
+    },
+    {
+      "name": "late-directive-rejected",
+      "mode": "rejection:first statement",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: strict_types declaration must be the very first statement in the script in <workspace>\\build\\strict-types-12752679389082150970\\late-directive-rejected\\main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "strict_types declaration must be the very first statement in the script\n",
+      "program_sha256": {
+        "main.php": "6c4bdc3069d74acafcc59bdd47df285285071392000a8687bb5acd96eb4debc2"
+      }
+    },
+    {
+      "name": "namespace-before-directive-rejected",
+      "mode": "rejection:first statement",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: strict_types declaration must be the very first statement in the script in <workspace>\\build\\strict-types-12752679389082150970\\namespace-before-directive-rejected\\main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "strict_types declaration must be the very first statement in the script\n",
+      "program_sha256": {
+        "main.php": "fd450166267cb3a4b5c9d46250365efb46e7a357c7ad6545e965af1029550d99"
+      }
+    },
+    {
+      "name": "function-local-directive-rejected",
+      "mode": "rejection:first statement",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: strict_types declaration must be the very first statement in the script in <workspace>\\build\\strict-types-12752679389082150970\\function-local-directive-rejected\\main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "strict_types declaration must be the very first statement in the script\n",
+      "program_sha256": {
+        "main.php": "0bac498a5199ed822523f2618528df9dca0fd97914c472421d6b86219e7d3aa4"
+      }
+    },
+    {
+      "name": "nonbinary-directive-rejected",
+      "mode": "rejection:0 or 1",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: strict_types declaration must have 0 or 1 as its value in <workspace>\\build\\strict-types-12752679389082150970\\nonbinary-directive-rejected\\main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "strict_types declaration must have 0 or 1 as its value\n",
+      "program_sha256": {
+        "main.php": "19fa2ae5560fc9634b169ec065e661b9245e4458b71df66cbcb2a017c903dcd3"
+      }
+    },
+    {
+      "name": "float-directive-rejected",
+      "mode": "rejection:0 or 1",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: strict_types declaration must have 0 or 1 as its value in <workspace>\\build\\strict-types-12752679389082150970\\float-directive-rejected\\main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "strict_types declaration must have 0 or 1 as its value\n",
+      "program_sha256": {
+        "main.php": "70524241855b1a430bc53dab15a73d665a9e5d873df094e5bce238a9f55b5601"
+      }
+    },
+    {
+      "name": "string-directive-rejected",
+      "mode": "rejection:0 or 1",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: strict_types declaration must have 0 or 1 as its value in <workspace>\\build\\strict-types-12752679389082150970\\string-directive-rejected\\main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "strict_types declaration must have 0 or 1 as its value\n",
+      "program_sha256": {
+        "main.php": "ce099cb8952e15ede4416df41ba6650d97ec868ac205eced5ea43ea25c1d3e5f"
+      }
+    },
+    {
+      "name": "block-directive-rejected",
+      "mode": "rejection:block mode",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: strict_types declaration must not use block mode in <workspace>\\build\\strict-types-12752679389082150970\\block-directive-rejected\\main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "strict_types declaration must not use block mode\n",
+      "program_sha256": {
+        "main.php": "3c515ea90ed378a6eb6b9e500d0ecca7b366bffa596bdbf04e1eddcdc85f6eca"
+      }
+    }
+  ]
+}

@@ -18,21 +18,34 @@ public final class Diagnostics {
             Map.entry("E_RECOVERABLE_ERROR", 4096L), Map.entry("E_DEPRECATED", 8192L),
             Map.entry("E_USER_DEPRECATED", 16384L), Map.entry("E_ALL", 30719L));
     public record LastError(long type, String message, String file, int line) {}
+    public record Site(com.oracle.truffle.api.bytecode.BytecodeNode bytecode, int index, java.nio.file.Path file, String name, boolean strictTypes) {}
+    public record Origin(Request request, Site site) {
+        public void warning(String message) { emit(request, site, 2L, "Warning", message); }
+        public void deprecated(String message) { emit(request, site, 8192L, "Deprecated", message); }
+    }
+    public static Origin origin(Activation caller) { return new Origin(caller.request, site(caller)); }
+    public static Site site(Activation caller) {
+        return caller.builtinSite != null ? caller.builtinSite
+                : new Site(caller.diagnosticBytecode, caller.diagnosticBytecodeIndex, caller.function.file(), caller.function.name(), caller.function.strictTypes());
+    }
 
     @TruffleBoundary
     public static void deprecated(Activation caller, String message) { emit(caller, 8192L, "Deprecated", message); }
 
     @TruffleBoundary
     public static void emit(Activation caller, long type, String label, String message) {
-        SourceSection section = caller.diagnosticBytecode == null ? null
-                : caller.diagnosticBytecode.getSourceLocation(caller.diagnosticBytecodeIndex);
-        String file = caller.function.file() != null ? caller.function.file().toString()
-                : section == null ? caller.function.name() : section.getSource().getName();
+        emit(caller.request, site(caller), type, label, message);
+    }
+
+    @TruffleBoundary
+    private static void emit(Request request, Site site, long type, String label, String message) {
+        SourceSection section = site.bytecode == null ? null : site.bytecode.getSourceLocation(site.index);
+        String file = site.file != null ? site.file.toString() : section == null ? site.name : section.getSource().getName();
         int line = section == null ? 0 : section.getStartLine();
-        caller.request.lastError = new LastError(type, message, file, line);
-        if ((caller.request.errorReporting & type) != 0) {
+        request.lastError = new LastError(type, message, file, line);
+        if ((request.errorReporting & type) != 0) {
             String text = "\n" + label + ": " + message + " in " + file + " on line " + line + "\n";
-            caller.request.output.writeBytes(text.getBytes(StandardCharsets.UTF_8));
+            request.output.writeBytes(text.getBytes(StandardCharsets.UTF_8));
         }
     }
 
@@ -41,7 +54,7 @@ public final class Diagnostics {
             case "error_reporting": {
                 var ordered = CallArguments.builtin(name, arguments, List.of("error_level"), 0, (Object) null);
                 long old = caller.request.errorReporting;
-                if (ordered[0].value() != null) caller.request.errorReporting = ((Number) ObjectModel.checkType(ordered[0].value(), "int")).longValue();
+                if (ordered[0].value() != null) caller.request.errorReporting = ((Number) TypeRelations.check(ordered[0].value(), "int", caller.function.strictTypes(), origin(caller))).longValue();
                 return old;
             }
             case "error_clear_last": {

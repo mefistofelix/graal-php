@@ -1,0 +1,85 @@
+LANG-01 / VALUE-01: enums, match, clone, string offsets and strict_types
+Functional validation, 2026-09-26. No new performance campaign.
+
+NEW DIFFERENTIAL CORPUS
+PASS 90 enum/match/clone programs: 68 output comparisons, 22 semantic rejections.
+PASS 27 string-offset programs: 27 output comparisons.
+PASS 38 strict-types programs: 31 output comparisons, 7 semantic rejections.
+Each suite passes on Windows JVM, Windows Native Image, Windows Native Image
+--interpreter, Linux JVM, Linux Native Image and Linux Native Image --interpreter.
+TOTAL: 155 distinct programs, 930 final executions; 756 successful-output
+comparisons and 174 semantic rejections. Not 930 distinct programs.
+All 18 final JSON reports match 163 shared input/fixture snapshots, including
+identical program bytes across the two platforms. Output comparisons require
+zero exits, matching stdout and empty stderr on both reference and target.
+Rejection cases require positive failure exits and a semantic diagnostic;
+Zend/Truffle numeric exits and full fatal messages are not asserted identical.
+Windows references: stock PHP 8.6.0RC2 for synchronous programs, pinned
+TrueAsync 0.10.0 / PHP 8.6 for asynchronous programs. Linux uses the pinned
+TrueAsync/PHP 8.6 executable for both, not a separate stock PHP executable.
+Exact reference version output is retained in each report.
+
+REGRESSIONS
+PASS existing 93 class-contract programs in all six platform/mode combinations.
+PASS existing 38 autoload programs on Windows/Linux JVM and Native Image.
+PASS existing 82 TrueAsync programs on Windows/Linux JVM and Native Image.
+PASS final Windows/Linux JVM integration: 88/82 scenarios. The six additional
+Windows cases are explicitly conditional on the native DLL, not skipped Linux
+failures or a claim of identical coverage for those six platform-specific cases.
+The new reload test pins both enum singleton state and strict_types behavior
+across a generation replacement; the following request gets the new version.
+Two subsequent requests create the same enum declaration independently.
+PASS 53 value-model scenarios per platform, plus storage/lifetime invariants.
+PASS 256 ownership graphs / 1280 collection phases per platform.
+PASS native network/TLS/WebSocket/cURL/SQLite suite: 50 assertions per platform.
+PASS dedicated cURL suites: Windows JVM/native 96/112 assertions; Linux
+JVM/native 98/108 assertions. Progress checks make totals run-dependent;
+these are not different feature counts or new performance measurements.
+Independent HTTP peers reached 16 held requests in each cURL suite.
+PASS 4 fatal C-callback scenarios on Windows/Linux JVM and product CLI:
+JVM verifies active C stacks = 0, finished delta = 1 and subsequent context
+reuse; CLI verifies expected exit = 1, output and shutdown without a hang.
+PASS transparent FFI JVM suite with 80 requested full-GC checkpoints on each
+platform, including scalar ABIs, native C stacks, nested callbacks, owner-thread
+execution, cancellation drain and SQLite callback. A dedicated forced-GC
+Native Image test runner was not rebuilt in this block.
+PASS examples/enums.php on stock Windows PHP, Windows/Linux JVM, native and
+native --interpreter; exact expected output retained in transcripts.
+PASS copied build/graalphp-linux-x64 version and example, default/interpreter.
+
+PRODUCTS AND SOURCE PARITY
+PASS sequential Windows then Linux Native Image builds with existing -O3,
+compatibility target and dependency pins. No new runtime dependency or global
+initialization override. No simultaneous native image builds.
+PASS 98 src/tests files identical in authoritative workspace and Linux copy;
+108 manifest entries include root build files, the new example and products.
+Windows executable: 90918912 bytes; SHA256
+ff54657630d2318f28a047d8173ffc3ac66026bc358a222e3c50f5bb6c2aef43
+Linux executable: 93653800 bytes; SHA256
+eb259141b03e7028d101b8d108f8cc5571a0ad1588673af2aa0a9651feefac51
+JAR sizes and platform-specific hashes are separately recorded in products.json.
+Pre-feature Windows/Linux images are preserved locally under
+build/before-language-values-2026-09-26 with their prior hashes.
+
+DEVELOPMENT FAILURES RETAINED
+The interrupted enum work initially had incomplete lowering and two failing
+cases. The string-offset failure was corrected in the runtime, not bypassed
+with a different target program. Initial native builds revealed eager frontend
+IR initialization and a runtime-compilation boundary violation; both were
+fixed in code, with failed logs retained separately from successful builds.
+The Linux native regression command reached and passed all language/network/
+cURL checks, then stopped because its FFI fixture filename omitted the 'lib'
+prefix. The command failure is retained in linux-native-final.txt. The corrected
+libffi-bridge-fixture.so invocation passes all remaining checks in
+linux-ffi-final.txt; no product source change or failed scenario removal.
+
+LIMITS
+LANG-01, VALUE-01 and the entire design are not declared complete. Iterator/
+generator protocols, attributes, unpacking, remaining builtin signatures,
+Stringable coercions, typed-property references, full lifetime semantics,
+shared-heap threading, complete FFI and GUI/mobile targets remain separate work.
+WatchService tests use native temporary filesystems; no new /mnt/c guarantee.
+No claims for macOS/mobile execution, a fully static distribution or Composer
+application compatibility. JIT/GC defaults and compiler idle delay remain
+unchanged. Build-resource summaries and network-test durations are not a new
+RAM/CPU/throughput/p99 comparison. Historical performance evidence is untouched.

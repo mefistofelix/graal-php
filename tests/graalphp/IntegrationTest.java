@@ -99,6 +99,7 @@ public final class IntegrationTest {
         includesAndReload();
         autoloadIsolationAndReload();
         classContractsReload();
+        enumAndTypingReload();
         nativeCall();
         if (Files.exists(Path.of("build/graalphp-native.dll"))) nativeBundle();
         readFile();
@@ -286,6 +287,47 @@ public final class IntegrationTest {
             equal("next request links new trait implementation", "new", output.toString());
             equal("class contracts do not leak into another request", true,
                     context.eval("php", "return !interface_exists('I',false) && !trait_exists('T',false) && !class_exists('C',false);").asBoolean());
+        }
+    }
+    private static void enumAndTypingReload() throws Exception {
+        Path root = Files.createTempDirectory("graalphp-enum-typing-reload-").toAbsolutePath();
+        Path main = root.resolve("main.php");
+        Path definitions = root.resolve("definitions.php");
+        Files.writeString(definitions, "<?php declare(strict_types=1); enum Status:string{case Ready='old';} function typed():int{return '7';}");
+        Files.writeString(main, "<?php host_call('gate'); require 'definitions.php'; echo Status::Ready->value; try{typed();echo ':weak';}catch(TypeError $e){echo ':strict';}");
+        var output = new ByteArrayOutputStream();
+        try (var context = Context.newBuilder("php").allowAllAccess(true).out(output)
+                .environment("GRAALPHP_ROOT", root.toString()).environment("GRAALPHP_WATCH", "1").build()) {
+            var entered = new CountDownLatch(1);
+            var release = new CountDownLatch(1);
+            context.getPolyglotBindings().putMember("gate", (ProxyExecutable) values -> {
+                entered.countDown();
+                try { if (!release.await(10, TimeUnit.SECONDS)) throw new AssertionError("Enum request gate timeout"); }
+                catch (InterruptedException error) { Thread.currentThread().interrupt(); throw new AssertionError(error); }
+                return null;
+            });
+            var source = Source.newBuilder("php", main.toFile()).build();
+            var running = CompletableFuture.runAsync(() -> context.eval(source));
+            try {
+                if (!entered.await(10, TimeUnit.SECONDS)) throw new AssertionError("Enum request did not enter");
+                Files.writeString(definitions, "<?php declare(strict_types=0); enum Status:string{case Ready='new';} function typed():int{return '7';}");
+                String version = "";
+                long limit = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
+                while (!version.equals("new") && System.nanoTime() < limit) {
+                    version = context.eval("php", "require 'definitions.php'; return Status::Ready->value;").asString();
+                    if (!version.equals("new")) Thread.sleep(20);
+                }
+                equal("enum new generation published", "new", version);
+            } finally { release.countDown(); }
+            running.get(10, TimeUnit.SECONDS);
+            equal("old request pins enum cases and strict return mode", "old:strict", output.toString());
+            output.reset();
+            context.eval(source);
+            equal("new request gets new enum cases and weak return mode", "new:weak", output.toString());
+            for (int request = 0; request < 2; request++) {
+                equal("enum singleton cache belongs to request " + request, true,
+                        context.eval("php", "enum Fresh{case A;}return Fresh::A===Fresh::cases()[0];").asBoolean());
+            }
         }
     }
     private static void includesAndReload() throws Exception {

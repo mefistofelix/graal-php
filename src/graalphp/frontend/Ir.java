@@ -6,15 +6,18 @@ import java.util.List;
 /** Syntax-independent semantic input to Truffle lowering. No runtime values or frames. */
 public final class Ir {
     private Ir() {}
-    public record Unit(Source source, List<Statement> statements, List<Function> functions, List<ClassDeclaration> classes) {}
+    public record Unit(Source source, List<Statement> statements, List<Function> functions,
+                       List<ClassDeclaration> classes, boolean strictTypes) {}
     public record Function(String name, List<Parameter> parameters, List<Statement> body, int start, int length,
                            String returnType) {}
     public record Parameter(String name, boolean reference, String type, Expression defaultValue, boolean variadic) {}
-    public enum TypeKind { CLASS, INTERFACE, TRAIT }
+    public enum TypeKind { CLASS, INTERFACE, TRAIT, ENUM }
     public record ClassDeclaration(String name, String parent, List<PropertyDeclaration> properties,
                                    List<MethodDeclaration> methods, TypeKind kind, boolean abstractType,
                                    boolean finalType, List<String> interfaces, List<TraitUse> traits,
-                                   List<ClassConstantDeclaration> constants) {}
+                                   List<ClassConstantDeclaration> constants, String backingType,
+                                   List<EnumCase> cases) {}
+    public record EnumCase(String name, Expression value) {}
     public record TraitUse(List<String> names, List<TraitAdaptation> adaptations) {}
     public record TraitAdaptation(String trait, String method, List<String> excluded, String alias,
                                   String visibility, boolean finalMethod) {}
@@ -45,7 +48,8 @@ public final class Ir {
     public record Continue() implements Form {}
     public sealed interface Expression permits Literal, Variable, Index, Assign, Binary, Unary, Call, ArrayLiteral,
             CompoundAssign, Increment, Conditional, Coalesce, Property, StaticProperty, MethodCall, StaticCall,
-            Construct, DynamicConstruct, DynamicCall, Closure, Constant, NamedArgument, ClassConstant, ClassName, InstanceOf {}
+            Construct, DynamicConstruct, DynamicCall, Closure, Constant, NamedArgument, ClassConstant, ClassName, InstanceOf, EnumCaseValue,
+            Match, ThrowExpression, Clone, DynamicStaticCall {}
     public record NamedArgument(String name, Expression value) implements Expression {}
     public record Literal(Object value) implements Expression {}
     public record Variable(String name) implements Expression {}
@@ -67,6 +71,12 @@ public final class Ir {
     public record ClassConstant(Expression type, String name) implements Expression {}
     public record ClassName(String type) implements Expression {}
     public record InstanceOf(Expression value, Expression type) implements Expression {}
+    public record EnumCaseValue(String name) implements Expression {}
+    public record Match(Expression subject, List<MatchArm> arms) implements Expression {}
+    public record MatchArm(List<Expression> conditions, Expression value) {}
+    public record ThrowExpression(Expression value) implements Expression {}
+    public record Clone(Expression value) implements Expression {}
+    public record DynamicStaticCall(Expression type, String name, List<Expression> arguments) implements Expression {}
     public record Binary(String operator, Expression left, Expression right) implements Expression {}
     public record Unary(String operator, Expression value) implements Expression {}
     public record Call(String name, List<Expression> arguments, boolean globalFallback) implements Expression {

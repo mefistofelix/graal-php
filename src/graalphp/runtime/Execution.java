@@ -16,7 +16,14 @@ import java.util.Set;
 public final class Execution {
     private Execution() {}
     public record Function(String name, List<Ir.Parameter> parameters, CallTarget target, Path file,
-                           String owner, String returnType) {}
+                           String owner, String returnType, boolean builtin, boolean strictTypes) {
+        public Function(String name, List<Ir.Parameter> parameters, CallTarget target, Path file, String owner, String returnType) {
+            this(name, parameters, target, file, owner, returnType, false, false);
+        }
+        public Function(String name, List<Ir.Parameter> parameters, CallTarget target, Path file, String owner, String returnType, boolean builtin) {
+            this(name, parameters, target, file, owner, returnType, builtin, false);
+        }
+    }
     public record Unit(Path path, String content, Function main, Map<String, Function> functions,
                        Map<String, ObjectModel.Definition> classes) {}
     public record Argument(Object value, PhpValues.Location location, String name) implements AutoCloseable {
@@ -81,6 +88,7 @@ public final class Execution {
             hosted = "1".equals(context.environment.getEnvironment().get("GRAALPHP_HOSTED"));
             nativeReactor = "libuv".equals(context.environment.getEnvironment().get("GRAALPHP_REACTOR"));
             scheduler = new Scheduler(this);
+            classes.putAll(context.builtinTypes());
         }
         public LibuvReactor libuv(Activation caller) {
             if (libuv == null) libuv = new LibuvReactor(caller);
@@ -202,17 +210,27 @@ public final class Execution {
         public Scheduler.Task task;
         public Activation includedScope;
         public ObjectModel.RuntimeClass calledClass;
+        public Diagnostics.Site builtinSite;
         public com.oracle.truffle.api.bytecode.BytecodeNode diagnosticBytecode;
         public int diagnosticBytecodeIndex = -1;
         public boolean synchronousCallback;
         public final boolean topLevel;
+        public final boolean strictArguments;
+        private final Diagnostics.Origin argumentOrigin;
         private boolean closed;
 
         public Activation(Request request, Function function, Scheduler.Task task, boolean topLevel, Argument[] arguments) {
+            this(request, function, task, topLevel, arguments, null);
+        }
+        public Activation(Request request, Function function, Scheduler.Task task, boolean topLevel, Argument[] arguments, Diagnostics.Origin origin) {
             this.request = request; this.function = function; this.task = task; this.topLevel = topLevel;
+            argumentOrigin = origin;
+            strictArguments = origin != null && origin.site().strictTypes();
             locals = new PhpValues.Scope(request.heap);
             try {
-                arguments = CallArguments.bind(function, arguments);
+                arguments = function.builtin()
+                        ? CallArguments.builtin(function.name(), arguments, function.parameters().stream().map(Ir.Parameter::name).toList(), function.parameters().size())
+                        : CallArguments.bind(function, arguments);
                 for (int i = 0; i < function.parameters.size(); i++) {
                     var parameter = function.parameters.get(i);
                     if (parameter.variadic()) {
@@ -221,14 +239,15 @@ public final class Execution {
                         for (int j = i; j < arguments.length; j++) {
                             if (parameter.reference()) {
                                 if (arguments[j].location == null) throw new PhpError("Variadic reference requires a variable");
+                                checkReference(parameter, arguments[j]);
                                 (arguments[j].name == null ? array.append() : array.element(arguments[j].name)).bind(arguments[j].location);
                             } else (arguments[j].name == null ? array.append() : array.element(arguments[j].name))
-                                    .set(ObjectModel.checkType(arguments[j].value, TypeRelations.contextual(parameter.type(), request, function.owner(), function.owner())));
+                                    .set(checkArgument(arguments[j].value, parameter.type()));
                         }
                         break;
                     }
                     if (i >= arguments.length || arguments[i] == null) {
-                        if (parameter.defaultValue() == null) throw new PhpError("Too few arguments for " + function.name);
+                        if (parameter.defaultValue() == null) throw new PhpError("ArgumentCountError", "Too few arguments for " + function.name);
                         Object value = ObjectModel.constant(request, parameter.defaultValue(), function.owner());
                         try { variable(parameter.name()).set(ObjectModel.checkType(value, TypeRelations.contextual(parameter.type(), request, function.owner(), function.owner()))); }
                         finally { PhpValues.drop(value); }
@@ -237,11 +256,21 @@ public final class Execution {
                     var argument = arguments[i];
                     if (parameter.reference()) {
                         if (argument.location == null) throw new PhpError("Argument " + parameter.name() + " must be a variable");
+                        checkReference(parameter, argument);
                         argument.close();
                         variable(parameter.name()).bind(argument.location);
-                    } else variable(parameter.name()).set(ObjectModel.checkType(argument.value, TypeRelations.contextual(parameter.type(), request, function.owner(), function.owner())));
+                    } else variable(parameter.name()).set(function.builtin() ? PhpValues.unwrap(argument.value)
+                            : checkArgument(argument.value, parameter.type()));
                 }
             } catch (RuntimeException error) { locals.close(); throw error; }
+        }
+        private Object checkArgument(Object value, String type) {
+            return TypeRelations.check(value, TypeRelations.contextual(type, request, function.owner(), function.owner()), strictArguments, argumentOrigin);
+        }
+        private void checkReference(Ir.Parameter parameter, Argument argument) {
+            Object value = argument.location.read();
+            Object checked = checkArgument(value, parameter.type());
+            if (checked != value) argument.location.set(checked);
         }
         @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
         public PhpValues.Location variable(String name) {

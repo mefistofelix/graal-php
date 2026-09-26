@@ -44,8 +44,13 @@ public final class PhpValues {
         return List.copyOf(array.entries.keySet());
     }
     @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
-    public static Object element(Object value, Object key) {
-        var slot = ((PhpArray) unwrap(value)).entries.get(normalizeKey(key));
+    public static Object element(Object value, Object key) { return element(value, key, null); }
+    @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+    public static Object element(Object value, Object key, Diagnostics.Origin origin) {
+        Object raw = unwrap(value);
+        if (StringOffsets.isString(raw)) return StringOffsets.read(raw, key, StringOffsets.ReadMode.NORMAL, origin);
+        if (!(raw instanceof PhpArray array)) throw new PhpError("Error", "Cannot access an array offset on this value");
+        var slot = array.entries.get(normalizeKey(key));
         if (slot == null) throw new PhpError("Undefined array key: " + key);
         return own(slot.read());
     }
@@ -93,6 +98,8 @@ public final class PhpValues {
         private final Location parent;
         private Object key;
         private boolean readonly;
+        private Diagnostics.Origin origin;
+        public Location at(Execution.Activation caller) { origin = Diagnostics.origin(caller); return this; }
         public Location freeze() { readonly = true; return this; }
 
         private Location(Slot local, Location parent, Object key) {
@@ -103,32 +110,68 @@ public final class PhpValues {
 
         @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
         public Location element(Object key) {
-            return new Location(null, this, normalizeKey(key));
+            return new Location(null, this, key);
         }
 
         public Location deferredAppend() { return new Location(null, this, APPEND); }
 
         @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
-        public Object readOrNull() {
+        public Object readOrNull() { return read(StringOffsets.ReadMode.COALESCE); }
+
+        @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+        public Object probe() { return read(StringOffsets.ReadMode.PROBE); }
+
+        private Object read(StringOffsets.ReadMode mode) {
+            if (parent != null) {
+                Object container = parent.readOrNull();
+                if (StringOffsets.isString(container)) {
+                    if (key == APPEND) throw new PhpError("Error", "[] operator not supported for strings");
+                    return StringOffsets.read(container, key, mode, origin);
+                }
+            }
             var slot = resolve(false);
+            if (slot == null && mode == StringOffsets.ReadMode.NORMAL) throw new NoSuchElementException("Undefined location: " + key);
             return slot == null ? null : slot.read();
+        }
+
+        private boolean stringOffset() { return parent != null && StringOffsets.isString(parent.readOrNull()); }
+
+        public Object readForAssignOperation() { return stringOffset() ? null : read(); }
+
+        public void checkIncrement() {
+            if (stringOffset()) throw new PhpError("Error", "Cannot increment/decrement string offsets");
+        }
+
+        public void checkAssignOperation() {
+            if (stringOffset()) throw new PhpError("Error", "Cannot use assign-op operators with string offsets");
         }
 
         /** Borrowed value: store it in a location to give it an owning lifetime. */
         @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
         public Object read() {
-            var slot = resolve(false);
-            if (slot == null) throw new NoSuchElementException("Undefined location: " + key);
-            return slot.read();
+            return read(StringOffsets.ReadMode.NORMAL);
         }
 
         @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
-        public void set(Object value) {
+        public void set(Object value) { write(value); }
+
+        @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+        public Object write(Object value) {
+            if (readonly) throw new PhpError("Error", "Cannot modify readonly property");
             validateValue(value);
+            if (stringOffset()) {
+                if (parent.stringOffset()) throw new PhpError("Error", "Cannot use string offset as an array");
+                if (key == APPEND) throw new PhpError("Error", "[] operator not supported for strings");
+                parent.resolve(true);
+                var written = StringOffsets.write(parent.read(), key, value, origin);
+                if (written.string() != null) parent.set(written.string());
+                return written.result();
+            }
             // Preserve the RHS before resolving a destination inside that same array.
             retain(value);
             try {
-                resolve(true).set(value);
+                resolve(true).set(value, origin);
+                return value;
             } finally {
                 release(value);
             }
@@ -147,27 +190,31 @@ public final class PhpValues {
 
         @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
         public void bind(Reference reference) {
+            if (stringOffset()) throw new PhpError("Error", "Cannot create references to/from string offsets");
             resolve(true).bind(reference.cell());
         }
 
         public Reference reference() {
+            if (stringOffset()) throw new PhpError("Error", "Cannot create references to/from string offsets");
+            if (parent == null && local.readonlyLabel != null)
+                throw new PhpError("Error", "Cannot acquire reference to readonly property " + local.readonlyLabel);
             return new Reference(resolve(true).reference());
         }
 
-        public boolean exists() {
-            return resolve(false) != null;
-        }
+        public boolean exists() { return stringOffset() ? probe() != null : resolve(false) != null; }
 
         @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
         public void unset() {
+            if (stringOffset()) throw new PhpError("Error", "Cannot unset string offsets");
             if (readonly) throw new PhpError("Error", "Cannot unset readonly property");
             if (parent == null) {
+                if (local.readonlyLabel != null) throw new PhpError("Error", "Cannot unset readonly property " + local.readonlyLabel);
                 local.clear();
                 return;
             }
             if (!exists()) return;
             var array = parent.writableArray();
-            array.entries.remove(key).clear();
+            array.entries.remove(normalizeKey(key)).clear();
         }
 
         @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
@@ -201,7 +248,10 @@ public final class PhpValues {
 
         private Slot resolve(boolean write) {
             if (write && readonly) throw new PhpError("Error", "Cannot modify readonly property");
-            if (parent == null) return write || local.defined ? local : null;
+            if (parent == null) {
+                if (write) local.checkWritable();
+                return write || local.defined ? local : null;
+            }
             PhpArray array;
             if (write) {
                 array = parent.writableArray();
@@ -216,11 +266,12 @@ public final class PhpValues {
                 if (!(parentSlot.read() instanceof PhpArray value)) throw new PhpError("Cannot access an array offset on this value");
                 array = value;
             }
-            var slot = array.entries.get(key);
+            Object index = normalizeKey(key);
+            var slot = array.entries.get(index);
             if (slot == null && write) {
                 slot = new Slot(array.heap);
-                array.insert(key, slot);
-                array.recordKey(key);
+                array.insert(index, slot);
+                array.recordKey(index);
             }
             return slot;
         }
@@ -319,6 +370,7 @@ public final class PhpValues {
     public static final class PhpObject extends HeapNode implements TruffleObject {
         public final Object descriptor;
         private final LinkedHashMap<String, Slot> fields = new LinkedHashMap<>();
+        private String sealedType;
 
         public PhpObject(Heap heap, Object descriptor) {
             super(heap);
@@ -328,7 +380,35 @@ public final class PhpValues {
 
         @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
         public Location field(String name) {
-            return new Location(fields.computeIfAbsent(name, ignored -> new Slot(heap)), null, null);
+            Slot slot = fields.get(name);
+            if (slot == null && sealedType != null) {
+                slot = new Slot(heap);
+                slot.writeError = "Cannot create dynamic property " + sealedType + "::$" + name;
+            } else if (slot == null) {
+                slot = new Slot(heap);
+                fields.put(name, slot);
+            }
+            return new Location(slot, null, null);
+        }
+
+        public void sealEnum(String type) {
+            for (var entry : fields.entrySet()) entry.getValue().readonlyLabel = type + "::$" + entry.getKey();
+            sealedType = type;
+        }
+
+        public PhpObject copyObject() {
+            var copy = new PhpObject(heap, descriptor);
+            for (var entry : fields.entrySet()) {
+                var slot = entry.getValue();
+                var cloned = slot.copyForArray();
+                cloned.defined = slot.defined;
+                cloned.type = slot.type;
+                cloned.readonlyLabel = slot.readonlyLabel;
+                cloned.writeError = slot.writeError;
+                copy.fields.put(entry.getKey(), cloned);
+            }
+            copy.sealedType = sealedType;
+            return copy;
         }
 
         public void fieldType(String name, String type) { fields.get(name).type = type; }
@@ -459,13 +539,21 @@ public final class PhpValues {
         Object content;
         boolean defined;
         String type;
+        String readonlyLabel;
+        String writeError;
+
+        void checkWritable() {
+            if (writeError != null) throw new PhpError("Error", writeError);
+            if (readonlyLabel != null) throw new PhpError("Error", "Cannot modify readonly property " + readonlyLabel);
+        }
 
         Object read() {
             return content instanceof Cell cell ? cell.value : content;
         }
 
-        void set(Object value) {
-            if (type != null) value = ObjectModel.checkType(value, type);
+        void set(Object value) { set(value, null); }
+        void set(Object value, Diagnostics.Origin origin) {
+            if (type != null) value = TypeRelations.check(value, type, origin != null && origin.site().strictTypes(), origin);
             if (value instanceof HeapNode node && node.heap != heap) {
                 throw new IllegalArgumentException("PHP containers must belong to the same request heap");
             }
@@ -523,7 +611,7 @@ public final class PhpValues {
         if (key == null) return "";
         if (key instanceof Boolean bool) return bool ? 1L : 0L;
         if (key instanceof Integer integer) return integer.longValue();
-        if (key instanceof Long) return key;
+        if (key instanceof Long || key instanceof PhpString) return key;
         if (key instanceof Double number) return number.longValue();
         if (key instanceof String string) {
             try {

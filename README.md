@@ -25,6 +25,9 @@ build.bat verify
 build.bat oracle
 build.bat autoload-test
 build.bat class-test
+build.bat enum-test
+build.bat string-test
+build.bat strict-test
 build.bat ffi-fatal-test
 build.bat native
 build.bat network-test
@@ -33,6 +36,7 @@ build.bat network-benchmark
 build\graalphp.exe examples\language.php
 build\graalphp.exe examples\autoload.php
 build\graalphp.exe examples\class-contracts.php
+build\graalphp.exe examples\enums.php
 build\graalphp.exe examples\trueasync.php
 build\graalphp.exe examples\async-composition.php
 build\graalphp.exe examples\native-callback.php
@@ -55,6 +59,10 @@ gli esempi `compat.php` e `language.php` con PHP 8.6.0RC2.
 compresi i rifiuti semantici; `class-test native` ricostruisce e verifica la CLI.
 `ffi-fatal-test` verifica il drenaggio C dopo errori fatali di dichiarazione.
 [Contratti delle classi](docs/class-contracts.md).
+`enum-test`, `string-test` e `strict-test` verificano rispettivamente 90, 27 e
+38 programmi; la variante `native` ricostruisce e verifica il prodotto e
+l'argomento ulteriore `--interpreter` disabilita il JIT guest.
+[Contratti enum e valori](docs/language-values.md).
 `network-test` esegue il percorso WebSocket → HTTPS/curl-impersonate → SQLite
 con peer di rete indipendenti; `network-test native` rigenera e verifica
 l'eseguibile. Vedere [network-integration.md](docs/network-integration.md).
@@ -125,6 +133,12 @@ di classe e controlli di varianza sono documentati nei
 [contratti delle classi](docs/class-contracts.md), con
 [esempio eseguibile](examples/class-contracts.php). Le categorie di dichiarazione,
 i fatal e la generazione di reload rimangono distinti nei test.
+Sono inoltre implementati enum, match, throw come espressione, clone con hook
+sospendibile, offset byte-oriented delle stringhe e strict_types per sorgente.
+I controlli degli argomenti usano il file chiamante, quelli dei ritorni il file
+della funzione; il catalogo completo dei builtin non è ancora centralizzato.
+Vedere [contratti e limiti](docs/language-values.md) e
+[l'esempio enum/COW](examples/enums.php).
 
 L'API asincrona pubblica usa il namespace upstream:
 

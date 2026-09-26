@@ -1,0 +1,5 @@
+PASS 18 final reports: 756 successful-output comparisons and 174 semantic rejections, all shared input hashes verified.
+PASS all 108 source/test/build/example/product SHA-256 entries match.
+PASS 234 modified/new files UTF-8/LF without BOM, ANSI or private home prefixes; 166 relative Markdown links resolve.
+PASS all 163 hidden program snapshots are selected by Git, not ignored by the project rules.
+PASS git diff --check.

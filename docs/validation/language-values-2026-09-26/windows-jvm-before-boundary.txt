@@ -1,0 +1,466 @@
+> cmd.exe /d /c build.bat enum-test
+PASS enum-declaration-timing-and-kind oracle=0 target=0 mode=output
+PASS unit-cases-and-singleton oracle=0 target=0 mode=output
+PASS case-names-are-case-sensitive oracle=0 target=0 mode=output
+PASS cases-array-is-independent oracle=0 target=0 mode=output
+PASS backed-int-from-and-try oracle=0 target=0 mode=output
+PASS backed-string-and-named-argument oracle=0 target=0 mode=output
+PASS numeric-string-backing-values-stay-distinct oracle=0 target=0 mode=output
+PASS case-constant-alias-and-defaults oracle=0 target=0 mode=output
+PASS case-initializers-use-class-constants oracle=0 target=0 mode=output
+PASS enum-properties-in-constant-expressions oracle=0 target=0 mode=output
+PASS array-offsets-in-enum-initializers oracle=0 target=0 mode=output
+PASS constant-expression-short-circuiting oracle=0 target=0 mode=output
+PASS enum-methods-and-interface oracle=0 target=0 mode=output
+PASS custom-unit-enum-interface oracle=0 target=0 mode=output
+PASS custom-backed-enum-interface oracle=0 target=0 mode=output
+PASS enum-interface-order oracle=0 target=0 mode=output
+PASS trait-enum-and-magic-scope oracle=0 target=0 mode=output
+PASS enum-builtins-win-over-trait oracle=0 target=0 mode=output
+PASS unit-enum-may-define-from oracle=0 target=0 mode=output
+PASS enum-invokable oracle=0 target=0 mode=output
+PASS enum-generated-methods-as-callables oracle=0 target=0 mode=output
+PASS enum-dynamic-static-receiver oracle=0 target=0 mode=output
+PASS enum-builtin-arity-and-named-errors oracle=0 target=0 mode=output
+PASS backed-weak-scalar-conversions oracle=0 target=0 mode=output
+PASS backed-float-deprecation oracle=0 target=0 mode=output
+PASS backed-float-string-deprecation oracle=0 target=0 mode=output
+PASS backed-null-deprecation oracle=0 target=0 mode=output
+PASS backed-nonnumeric-type-error oracle=0 target=0 mode=output
+PASS empty-unit-and-backed-enums oracle=0 target=0 mode=output
+PASS duplicate-backing-check-is-lazy oracle=0 target=0 mode=output
+PASS invalid-backing-type-cases-vs-lookup oracle=0 target=0 mode=output
+PASS readonly-name-and-value oracle=0 target=0 mode=output
+PASS readonly-property-references oracle=0 target=0 mode=output
+PASS readonly-property-unset oracle=0 target=0 mode=output
+PASS enum-no-dynamic-properties oracle=0 target=0 mode=output
+PASS enum-not-constructible-or-cloneable oracle=0 target=0 mode=output
+PASS enum-values-in-arrays-and-references oracle=0 target=0 mode=output
+PASS enum-nullable-and-union-types oracle=0 target=0 mode=output
+PASS enum-conditional-declaration oracle=0 target=0 mode=output
+PASS enum-autoload-and-kind oracle=0 target=0 mode=output
+PASS enum-namespace-and-alias oracle=0 target=0 mode=output
+PASS match-strict-scalar-types oracle=0 target=0 mode=output
+PASS match-subject-evaluated-once oracle=0 target=0 mode=output
+PASS match-default-and-lazy-arms oracle=0 target=0 mode=output
+PASS match-multiple-and-empty-arms oracle=0 target=0 mode=output
+PASS match-ordered-nested-arrays oracle=0 target=0 mode=output
+PASS match-object-and-enum-identity oracle=0 target=0 mode=output
+PASS match-array-object-members oracle=0 target=0 mode=output
+PASS match-subject-retained-while-mutated oracle=0 target=0 mode=output
+PASS match-variable-reads-after-condition oracle=0 target=0 mode=output
+PASS match-property-is-a-snapshot oracle=0 target=0 mode=output
+PASS match-assignment-is-a-snapshot oracle=0 target=0 mode=output
+PASS match-undefined-variable-assigned-by-condition oracle=0 target=0 mode=output
+PASS throw-expression-in-match oracle=0 target=0 mode=output
+PASS throw-expression-in-coalesce oracle=0 target=0 mode=output
+PASS match-return-in-finally oracle=0 target=0 mode=output
+PASS clone-object-and-array-copy-on-write oracle=0 target=0 mode=output
+PASS clone-keeps-explicit-references oracle=0 target=0 mode=output
+PASS clone-calls-hook-on-new-object oracle=0 target=0 mode=output
+PASS clone-visibility-error oracle=0 target=0 mode=output
+PASS clone-closure-captures oracle=0 target=0 mode=output
+PASS async-enum-method-match oracle=0 target=0 mode=output
+PASS async-enum-autoload oracle=0 target=0 mode=output
+PASS async-enum-generated-callable oracle=0 target=0 mode=output
+PASS async-match-subject-and-condition oracle=0 target=0 mode=output
+PASS async-match-cancellation-finally oracle=0 target=0 mode=output
+PASS async-clone-hook oracle=0 target=0 mode=output
+PASS async-clone-cancellation oracle=0 target=0 mode=output
+PASS enum-case-missing-backing-rejected oracle=255 target=1 mode=rejection:backing
+PASS unit-case-value-rejected oracle=255 target=1 mode=rejection:backing
+PASS invalid-enum-backing-type-rejected oracle=255 target=1 mode=rejection:backing
+PASS duplicate-case-name-rejected oracle=255 target=1 mode=rejection:constant
+PASS case-and-constant-conflict-rejected oracle=255 target=1 mode=rejection:constant
+PASS enum-instance-property-rejected oracle=255 target=1 mode=rejection:properties
+PASS enum-static-property-rejected oracle=255 target=1 mode=rejection:properties
+PASS enum-trait-property-rejected oracle=255 target=1 mode=rejection:properties
+PASS enum-constructor-rejected oracle=255 target=1 mode=rejection:magic
+PASS enum-destructor-rejected oracle=255 target=1 mode=rejection:magic
+PASS enum-clone-hook-rejected oracle=255 target=1 mode=rejection:magic
+PASS enum-tostring-rejected oracle=255 target=1 mode=rejection:magic
+PASS enum-missing-interface-method-rejected oracle=255 target=1 mode=rejection:abstract
+PASS enum-generated-cases-redeclaration-rejected oracle=255 target=1 mode=rejection:redeclare
+PASS enum-generated-from-redeclaration-rejected oracle=255 target=1 mode=rejection:redeclare
+PASS enum-generated-tryfrom-redeclaration-rejected oracle=255 target=1 mode=rejection:redeclare
+PASS non-enum-unit-interface-rejected oracle=255 target=1 mode=rejection:non-enum
+PASS non-enum-indirect-unit-interface-rejected oracle=255 target=1 mode=rejection:non-enum
+PASS unit-enum-backed-interface-rejected oracle=255 target=1 mode=rejection:non-backed
+PASS enum-explicit-unit-interface-rejected oracle=255 target=1 mode=rejection:interface
+PASS enum-explicit-backed-interface-rejected oracle=255 target=1 mode=rejection:interface
+PASS match-duplicate-default-rejected oracle=255 target=1 mode=rejection:default
+Evidence: <workspace>\build\enum-match-15178999183631140960
+PASS: 90 enum-match programs; 22 semantic rejections (diagnostic text not asserted identical)
+build\generated\graalphp\truffle\PhpRootGen.java:6270: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+build\generated\graalphp\truffle\PhpRootGen.java:8133: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+Note: <workspace>\src\graalphp\truffle\PhpContext.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+2 warnings
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime (file:/<workspace>/build/deps/25.4.4.1.1/truffle-runtime-25.4.4.1.1.jar)
+WARNING: Please consider reporting this to the maintainers of class com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+
+exit=0
+> cmd.exe /d /c build.bat verify
+using lock <workspace>\build\toolchain.lock
+already installed 12 packages in <workspace>\build\toolchain
+[100%]: build ok, spent 1.625s
+[100%]: build ok, spent 1.062s
+PASS: 88 integration scenarios (Truffle, async, reload, threads, NFI, host)
+PASS: 53 semantic scenarios + storage/lifetime invariants
+PASS: 256 ownership graphs, 1280 collection phases, exactly-once resource release
+PASS curl-multi-empty-reference
+PASS curl-multi-membership
+PASS curl-multi-results-and-reuse
+PASS curl-multi-close-and-ownership
+PASS curl-multi-options-validation
+PASS curl-immediate-error-alias
+PASS named-arguments
+PASS thread-channel-buffered
+PASS named-reference-variadic
+PASS coroutine-result
+PASS capture-lifetime
+PASS scope-context
+PASS detached-scope-context
+PASS coroutine-private-context
+PASS scope-joins-descendants
+PASS detached-scope-reopens-after-descendants-finish
+PASS detached-scope-keeps-request-alive
+PASS timeout-cancels-wait-only
+PASS cancel-unwinds-finally
+PASS buffered-channel-close-drains
+PASS rendezvous-channel
+PASS channel-timeout-removes-waiter
+PASS future-array-cow
+PASS future-state
+PASS future-error
+PASS await-all-order-and-cow
+PASS await-errors-fill-null
+PASS await-first-success-errors
+PASS await-count-successes
+PASS await-race-keeps-other-tasks
+PASS await-fail-fast
+PASS await-combinator-timeout
+PASS await-empty-and-count-zero
+PASS await-duplicate-future
+PASS await-already-complete-no-yield
+PASS await-pending-same-token
+PASS protect-cancel-unwind
+PASS protect-context-and-return
+PASS cancel-reason-before-start
+PASS context-duplicate-and-unset
+PASS upstream-channel-001-channel_construct
+PASS upstream-channel-002-channel_buffered_basic
+PASS upstream-channel-007-channel_sendAsync
+PASS upstream-future-001-map-basic
+PASS upstream-future-002-map-chain
+PASS upstream-future-004-map-propagates-error
+PASS upstream-future-005-map-throws-exception
+PASS upstream-future-007-catch-basic
+PASS upstream-future-011-finally-on-success
+PASS upstream-future-012-finally-on-error
+PASS upstream-future-013-finally-throws-exception
+PASS upstream-future-014-map-catch-finally-chain
+PASS upstream-future-035-finally_exception_chain
+PASS upstream-await-005-awaitAnyOrFail_basic
+PASS upstream-await-006-awaitAnyOrFail_empty
+PASS upstream-await-007-awaitAnyOrFail_exception
+PASS upstream-await-008-awaitFirstSuccess_basic
+PASS upstream-await-011-awaitAllOrFail_exception
+PASS upstream-await-014-awaitAnyOfOrFail_basic
+PASS upstream-await-016-awaitAnyOf_basic
+PASS upstream-await-017-awaitAnyOf_all_success
+PASS upstream-await-045-awaitAnyOfOrFail_edge_cases
+PASS upstream-await-073-await_future_cancel_token_pre_completed
+PASS upstream-await-074-await_future_cancel_token_completed_during
+PASS upstream-await-075-await_future_cancel_token_pre_rejected
+PASS upstream-await-076-await_future_cancel_token_rejected_during
+PASS upstream-await-077-await_future_cancel_token_pre_rejected_cancellation
+PASS upstream-await-078-await_future_cancel_token_rejected_cancellation_during
+PASS upstream-await-079-await_completes_before_future_cancel_token
+PASS upstream-await-084-awaitAnyOrFail_already_completed_returns_immediately
+PASS upstream-await-093-awaitAnyOrFail_with_future_triggers
+PASS upstream-protect-001-protect_basic
+PASS upstream-protect-003-protect_nested
+PASS upstream-protect-007-protect_exception_in_closure
+PASS upstream-protect-008-protect_with_exception
+PASS upstream-protect-009-protect_with_spawn
+PASS upstream-protect-010-protect_with_await
+PASS upstream-scope-022-scope_awaitCompletion_basic
+PASS upstream-scope-041-scope_awaitCompletion_marks_future_used
+PASS upstream-scope-044-scope_awaitAfterCancellation_not_cancelled
+PASS upstream-scope-045-scope_awaitCompletion_self_deadlock
+PASS upstream-scope-051-scope_awaitCompletion_deadlock_from_grandchild
+PASS: 82 differential scenarios against TrueAsync 0.10.0
+build\generated\graalphp\truffle\PhpRootGen.java:6270: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+build\generated\graalphp\truffle\PhpRootGen.java:8133: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+Note: <workspace>\src\graalphp\truffle\PhpContext.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+2 warnings
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime (file:/<workspace>/build/deps/25.4.4.1.1/truffle-runtime-25.4.4.1.1.jar)
+WARNING: Please consider reporting this to the maintainers of class com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime (file:/<workspace>/build/deps/25.4.4.1.1/truffle-runtime-25.4.4.1.1.jar)
+WARNING: Please consider reporting this to the maintainers of class com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+
+exit=0
+> tools\graalvm-25.4.4.1.1+1.1\bin\java.exe --enable-native-access=ALL-UNNAMED -cp build/classes;build/test-classes;build/deps/25.4.4.1.1/* graalphp.StringOffsetsTest
+PASS positive-negative-and-numeric-string oracle=0 target=0 mode=output
+PASS utf8-and-binary-read-bytes oracle=0 target=0 mode=output
+PASS write-is-byte-oriented oracle=0 target=0 mode=output
+PASS string-assignment-is-copy-on-write oracle=0 target=0 mode=output
+PASS shared-string-variable-reference oracle=0 target=0 mode=output
+PASS readonly-enum-string-offset oracle=0 target=0 mode=output
+PASS out-of-range-read-warnings oracle=0 target=0 mode=output
+PASS read-offset-cast-warnings oracle=0 target=0 mode=output
+PASS integer-prefix-warning oracle=0 target=0 mode=output
+PASS invalid-offset-types oracle=0 target=0 mode=output
+PASS quiet-offset-probes oracle=0 target=0 mode=output
+PASS coalesce-quiet-vs-invalid-type oracle=0 target=0 mode=output
+PASS probe-float-precision-warning oracle=0 target=0 mode=output
+PASS write-expands-with-spaces oracle=0 target=0 mode=output
+PASS write-first-byte-and-assignment-result oracle=0 target=0 mode=output
+PASS write-negative-out-of-range oracle=0 target=0 mode=output
+PASS write-offset-casts oracle=0 target=0 mode=output
+PASS empty-write-is-an-error oracle=0 target=0 mode=output
+PASS coalesce-write-byte-result oracle=0 target=0 mode=output
+PASS append-reference-unset-are-errors oracle=0 target=0 mode=output
+PASS compound-assignment-evaluates-rhs-before-error oracle=0 target=0 mode=output
+PASS nested-string-offset-read-and-write oracle=0 target=0 mode=output
+PASS offset-source-can-change-during-rhs oracle=0 target=0 mode=output
+PASS binary-array-key-preserved oracle=0 target=0 mode=output
+PASS masked-warning-updates-last-error oracle=0 target=0 mode=output
+PASS async-offset-assignment oracle=0 target=0 mode=output
+PASS async-offset-error-and-finally oracle=0 target=0 mode=output
+Evidence: <workspace>\build\string-offsets-4071200066560908950
+PASS: 27 string-offsets programs; 0 semantic rejections (diagnostic text not asserted identical)
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime (file:/<workspace>/build/deps/25.4.4.1.1/truffle-runtime-25.4.4.1.1.jar)
+WARNING: Please consider reporting this to the maintainers of class com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+
+exit=0
+> tools\graalvm-25.4.4.1.1+1.1\bin\java.exe --enable-native-access=ALL-UNNAMED -cp build/classes;build/test-classes;build/deps/25.4.4.1.1/* graalphp.StrictTypesTest
+PASS strict-scalars oracle=0 target=0 mode=output
+PASS strict-int-to-float-and-unions oracle=0 target=0 mode=output
+PASS strict-nullable-and-exact-literals oracle=0 target=0 mode=output
+PASS weak-default-mode oracle=0 target=0 mode=output
+PASS explicit-weak-mode oracle=0 target=0 mode=output
+PASS strict-directives-do-not-unset-enabled-mode oracle=0 target=0 mode=output
+PASS empty-statements-before-directive oracle=0 target=0 mode=output
+PASS weak-caller-strict-declaration oracle=0 target=0 mode=output
+PASS strict-caller-weak-declaration oracle=0 target=0 mode=output
+PASS strict-return-belongs-to-declaration oracle=0 target=0 mode=output
+PASS closure-and-arrow-strict-return oracle=0 target=0 mode=output
+PASS closure-keeps-source-mode-across-include oracle=0 target=0 mode=output
+PASS trait-method-retains-source-mode oracle=0 target=0 mode=output
+PASS trait-closure-retains-source-mode oracle=0 target=0 mode=output
+PASS eval-is-a-separate-weak-source oracle=0 target=0 mode=output
+PASS strict-method-constructor-and-named-arguments oracle=0 target=0 mode=output
+PASS strict-variadic oracle=0 target=0 mode=output
+PASS weak-reference-coercion-on-entry-only oracle=0 target=0 mode=output
+PASS strict-reference-does-not-coerce oracle=0 target=0 mode=output
+PASS typed-variadic-references oracle=0 target=0 mode=output
+PASS strict-typed-property-writes oracle=0 target=0 mode=output
+PASS property-mode-belongs-to-write-site oracle=0 target=0 mode=output
+PASS weak-argument-precision-deprecation oracle=0 target=0 mode=output
+PASS weak-return-precision-deprecation oracle=0 target=0 mode=output
+PASS strict-backed-enum-lookups oracle=0 target=0 mode=output
+PASS strict-generated-enum-callables oracle=0 target=0 mode=output
+PASS strict-class-query-builtin-types oracle=0 target=0 mode=output
+PASS strict-string-offset-still-casts-index oracle=0 target=0 mode=output
+PASS async-strict-return-and-finally oracle=0 target=0 mode=output
+PASS async-internal-callback-is-weak oracle=0 target=0 mode=output
+PASS autoloaded-callable-preserves-callsite-mode oracle=0 target=0 mode=output
+PASS late-directive-rejected oracle=255 target=1 mode=rejection:first statement
+PASS namespace-before-directive-rejected oracle=255 target=1 mode=rejection:first statement
+PASS function-local-directive-rejected oracle=255 target=1 mode=rejection:first statement
+PASS nonbinary-directive-rejected oracle=255 target=1 mode=rejection:0 or 1
+PASS float-directive-rejected oracle=255 target=1 mode=rejection:0 or 1
+PASS string-directive-rejected oracle=255 target=1 mode=rejection:0 or 1
+PASS block-directive-rejected oracle=255 target=1 mode=rejection:block mode
+Evidence: <workspace>\build\strict-types-8083823560524693822
+PASS: 38 strict-types programs; 7 semantic rejections (diagnostic text not asserted identical)
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime (file:/<workspace>/build/deps/25.4.4.1.1/truffle-runtime-25.4.4.1.1.jar)
+WARNING: Please consider reporting this to the maintainers of class com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+
+exit=0
+> tools\graalvm-25.4.4.1.1+1.1\bin\java.exe --enable-native-access=ALL-UNNAMED -cp build/classes;build/test-classes;build/deps/25.4.4.1.1/* graalphp.ClassContractsTest
+PASS declaration-kinds-and-timing oracle=0 target=0 mode=output
+PASS interface-methods-and-typing oracle=0 target=0 mode=output
+PASS multiple-interface-inheritance oracle=0 target=0 mode=output
+PASS interface-diamond oracle=0 target=0 mode=output
+PASS inherited-interface-implementation oracle=0 target=0 mode=output
+PASS abstract-class-contract oracle=0 target=0 mode=output
+PASS abstract-interface-carried-to-child oracle=0 target=0 mode=output
+PASS abstract-and-static-methods oracle=0 target=0 mode=output
+PASS covariant-return oracle=0 target=0 mode=output
+PASS contravariant-parameter oracle=0 target=0 mode=output
+PASS nullable-and-union-contracts oracle=0 target=0 mode=output
+PASS intersection-and-dnf-values oracle=0 target=0 mode=output
+PASS intersection-variance oracle=0 target=0 mode=output
+PASS self-parameter-and-return oracle=0 target=0 mode=output
+PASS late-static-return oracle=0 target=0 mode=output
+PASS reference-and-variadic-contract oracle=0 target=0 mode=output
+PASS constructor-signature-exception oracle=0 target=0 mode=output
+PASS private-method-lexical-dispatch oracle=0 target=0 mode=output
+PASS trait-basic-precedence oracle=0 target=0 mode=output
+PASS trait-conflict-resolution-and-alias oracle=0 target=0 mode=output
+PASS class-method-resolves-trait-collision oracle=0 target=0 mode=output
+PASS trait-visibility-alias oracle=0 target=0 mode=output
+PASS trait-nesting-and-shared-origin oracle=0 target=0 mode=output
+PASS trait-magic-constants-and-alias oracle=0 target=0 mode=output
+PASS trait-closure-private-scope oracle=0 target=0 mode=output
+PASS trait-self-types oracle=0 target=0 mode=output
+PASS trait-abstract-parent-implementation oracle=0 target=0 mode=output
+PASS trait-private-abstract-requirement oracle=0 target=0 mode=output
+PASS trait-properties-compatible-defaults oracle=0 target=0 mode=output
+PASS trait-static-storage-isolation oracle=0 target=0 mode=output
+PASS trait-static-self-default oracle=0 target=0 mode=output
+PASS trait-static-parent-default oracle=0 target=0 mode=output
+PASS unused-trait-default-is-not-evaluated oracle=0 target=0 mode=output
+PASS direct-trait-static-deprecations oracle=0 target=0 mode=output
+PASS direct-trait-storage-is-independent oracle=0 target=0 mode=output
+PASS trait-private-property-rebinding oracle=0 target=0 mode=output
+PASS trait-final-overridden-by-using-class oracle=0 target=0 mode=output
+PASS class-constant-inheritance-and-visibility oracle=0 target=0 mode=output
+PASS typed-constant-and-array-copy oracle=0 target=0 mode=output
+PASS trait-constant-parent-precedence oracle=0 target=0 mode=output
+PASS trait-constant-composition oracle=0 target=0 mode=output
+PASS constant-default-and-self-reference oracle=0 target=0 mode=output
+PASS dynamic-class-constants oracle=0 target=0 mode=output
+PASS instanceof-no-autoload oracle=0 target=0 mode=output
+PASS class-relationship-queries oracle=0 target=0 mode=output
+PASS class-name-scope-and-late-binding oracle=0 target=0 mode=output
+PASS class-query-deprecation-record oracle=0 target=0 mode=output
+PASS class-query-deprecation-output oracle=0 target=0 mode=output
+PASS numeric-union-coercion oracle=0 target=0 mode=output
+PASS abstract-trait-alias-implemented oracle=0 target=0 mode=output
+PASS class-metadata oracle=0 target=0 mode=output
+PASS interface-autoload-kind-check oracle=0 target=0 mode=output
+PASS dependency-autoload-order oracle=0 target=0 mode=output
+PASS conditional-interface-and-trait oracle=0 target=0 mode=output
+PASS namespace-trait-and-interface-aliases oracle=0 target=0 mode=output
+PASS async-method-interface-contract oracle=0 target=0 mode=output
+PASS async-trait-alias-and-closure oracle=0 target=0 mode=output
+PASS async-dependency-files oracle=0 target=0 mode=output
+PASS async-constant-autoload oracle=0 target=0 mode=output
+PASS async-interface-query oracle=0 target=0 mode=output
+PASS async-cancellation-during-composition oracle=0 target=0 mode=output
+PASS fatal-declaration-bypasses-catch-finally oracle=255 target=1 mode=rejection:compatible
+PASS async-fatal-declaration-stops-request oracle=255 target=1 mode=rejection:compatible
+PASS abstract-trait-alias-missing oracle=255 target=1 mode=rejection:abstract
+PASS variadic-trailing-type-rejected oracle=255 target=1 mode=rejection:compatible
+PASS final-second-interface-constant-rejected oracle=255 target=1 mode=rejection:constant
+PASS interface-sibling-signatures-rejected oracle=255 target=1 mode=rejection:compatible
+PASS interface-constructor-signature-rejected oracle=255 target=1 mode=rejection:compatible
+PASS late-static-return-widening-rejected oracle=255 target=1 mode=rejection:compatible
+PASS missing-interface-method oracle=255 target=1 mode=rejection:abstract
+PASS missing-abstract-parent-method oracle=255 target=1 mode=rejection:abstract
+PASS missing-trait-requirement oracle=255 target=1 mode=rejection:abstract
+PASS final-class-rejected oracle=255 target=1 mode=rejection:extend
+PASS final-method-rejected oracle=255 target=1 mode=rejection:final
+PASS final-trait-alias-rejected oracle=255 target=1 mode=rejection:final
+PASS visibility-narrowing-rejected oracle=255 target=1 mode=rejection:method
+PASS static-mismatch-rejected oracle=255 target=1 mode=rejection:compatible
+PASS parameter-narrowing-rejected oracle=255 target=1 mode=rejection:compatible
+PASS return-widening-rejected oracle=255 target=1 mode=rejection:compatible
+PASS extra-required-parameter-rejected oracle=255 target=1 mode=rejection:compatible
+PASS reference-mismatch-rejected oracle=255 target=1 mode=rejection:compatible
+PASS variadic-removal-rejected oracle=255 target=1 mode=rejection:compatible
+PASS trait-method-collision-rejected oracle=255 target=1 mode=rejection:collision
+PASS trait-property-conflict-rejected oracle=255 target=1 mode=rejection:incompatible
+PASS trait-property-type-conflict-rejected oracle=255 target=1 mode=rejection:incompatible
+PASS trait-constant-conflict-rejected oracle=255 target=1 mode=rejection:incompatible
+PASS final-constant-rejected oracle=255 target=1 mode=rejection:constant
+PASS interface-constant-ambiguity-rejected oracle=255 target=1 mode=rejection:constant
+PASS extends-interface-rejected oracle=255 target=1 mode=rejection:extend
+PASS implements-class-rejected oracle=255 target=1 mode=rejection:interface
+PASS use-class-rejected oracle=255 target=1 mode=rejection:trait
+PASS invalid-trait-precedence-rejected oracle=255 target=1 mode=rejection:trait
+PASS inherited-property-type-rejected oracle=255 target=1 mode=rejection:property
+Evidence: <workspace>\build\class-contracts-136296396772576424
+PASS: 93 class-contracts programs; 32 semantic rejections (diagnostic text not asserted identical)
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime (file:/<workspace>/build/deps/25.4.4.1.1/truffle-runtime-25.4.4.1.1.jar)
+WARNING: Please consider reporting this to the maintainers of class com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+
+exit=0
+> tools\graalvm-25.4.4.1.1+1.1\bin\java.exe --enable-native-access=ALL-UNNAMED -cp build/classes;build/test-classes;build/deps/25.4.4.1.1/* graalphp.AutoloadTest
+PASS empty-and-already-loaded oracle=0 target=0
+PASS queue-order-and-return-ignored oracle=0 target=0
+PASS function-identity oracle=0 target=0
+PASS static-callback-identity oracle=0 target=0
+PASS closure-and-object-lifetime oracle=0 target=0
+PASS private-method-registration oracle=0 target=0
+PASS invokable-loader oracle=0 target=0
+PASS list-is-a-snapshot oracle=0 target=0
+PASS live-append oracle=0 target=0
+PASS live-prepend oracle=0 target=0
+PASS remove-pending-and-current oracle=0 target=0
+PASS explicit-call-existing-and-recursion oracle=0 target=0
+PASS lookup-recursion-and-retry oracle=0 target=0
+PASS exception-unwinds-guard oracle=0 target=0
+PASS nested-loading oracle=0 target=0
+PASS namespace-and-alias oracle=0 target=0
+PASS dynamic-construction-and-argument-order oracle=0 target=0
+PASS dynamic-class-types oracle=0 target=0
+PASS remove-current-skips-next oracle=0 target=0
+PASS remove-earlier-keeps-next oracle=0 target=0
+PASS static-property-and-method oracle=0 target=0
+PASS callable-array-and-reference oracle=0 target=0
+PASS callable-string-leading-separator oracle=0 target=0
+PASS registration-loads-callback-class oracle=0 target=0
+PASS parent-loads-at-declaration oracle=0 target=0
+PASS late-parent-not-hoisted oracle=0 target=0
+PASS conditional-and-function-local-classes oracle=0 target=0
+PASS missing-parent-does-not-publish oracle=0 target=0
+PASS validation-and-named-arguments oracle=0 target=0
+PASS invalid-names-do-not-autoload oracle=0 target=0
+PASS include-loader-scope oracle=0 target=0
+PASS included-child-parent-and-once oracle=0 target=0
+PASS async-loader-and-constructor oracle=0 target=0
+PASS async-live-removal-roots oracle=0 target=0
+PASS async-same-name-suppressed oracle=0 target=0
+PASS async-cancellation-releases-guard oracle=0 target=0
+PASS async-callable-arguments oracle=0 target=0
+PASS async-inherited-include oracle=0 target=0
+Evidence: <workspace>\build\autoload-test-8289945171146114823
+PASS: 38 identical autoload programs
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime (file:/<workspace>/build/deps/25.4.4.1.1/truffle-runtime-25.4.4.1.1.jar)
+WARNING: Please consider reporting this to the maintainers of class com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+
+exit=0
+> tools/php-8.6.0RC2/php.exe -n examples/enums.php
+Ready to run:demo
+Completed:Demo
+3:1
+
+exit=0
+> tools\graalvm-25.4.4.1.1+1.1\bin\java.exe --enable-native-access=ALL-UNNAMED -jar build/graalphp.jar examples/enums.php
+Ready to run:demo
+Completed:Demo
+3:1
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime (file:/<workspace>/build/deps/25.4.4.1.1/truffle-runtime-25.4.4.1.1.jar)
+WARNING: Please consider reporting this to the maintainers of class com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+
+exit=0

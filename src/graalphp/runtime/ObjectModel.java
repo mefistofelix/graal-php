@@ -16,14 +16,15 @@ public final class ObjectModel {
     public record Method(Function function, boolean shared, String visibility, boolean abstractMethod,
                          boolean finalMethod) {
         public Method inClass(String owner) {
-            var rebound = new Function(function.name(), function.parameters(), function.target(), function.file(), owner, function.returnType());
+            var rebound = new Function(function.name(), function.parameters(), function.target(), function.file(), owner, function.returnType(), function.builtin(), function.strictTypes());
             return new Method(rebound, shared, visibility, abstractMethod, finalMethod);
         }
     }
     public record Definition(String name, String parent, List<Ir.PropertyDeclaration> properties,
                              Map<String, Method> methods, Ir.TypeKind kind, boolean abstractType,
                              boolean finalType, List<String> interfaces, List<Ir.TraitUse> traits,
-                             List<Ir.ClassConstantDeclaration> constants) implements com.oracle.truffle.api.interop.TruffleObject {
+                             List<Ir.ClassConstantDeclaration> constants, String backingType,
+                             List<Ir.EnumCase> cases) implements com.oracle.truffle.api.interop.TruffleObject {
         public List<String> dependencies() {
             var dependencies = new java.util.ArrayList<String>();
             if (parent != null) dependencies.add(parent);
@@ -36,7 +37,17 @@ public final class ObjectModel {
     public record ClosureData(Function function, List<Ir.Capture> captures) {}
     public record ClosureTemplate(Function function, List<Ir.Capture> captures, boolean arrow) {}
     public record Invocation(Function function, PhpValues.PhpObject receiver, RuntimeClass calledClass,
-                             PhpValues.PhpObject environment) {}
+                             PhpValues.PhpObject environment, Diagnostics.Site site) {
+        public Invocation(Function function, PhpValues.PhpObject receiver, RuntimeClass calledClass, PhpValues.PhpObject environment) {
+            this(function, receiver, calledClass, environment, null);
+        }
+        // A diagnostic call site is not part of callable identity (SPL registration, aliases).
+        @Override public boolean equals(Object other) {
+            return other instanceof Invocation invocation && function.equals(invocation.function)
+                    && receiver == invocation.receiver && calledClass == invocation.calledClass && environment == invocation.environment;
+        }
+        @Override public int hashCode() { return java.util.Objects.hash(function, receiver, calledClass, environment); }
+    }
 
     public static final class RuntimeClass {
         public final Definition definition;
@@ -47,6 +58,7 @@ public final class ObjectModel {
         public final List<Method> requirements;
         public final List<Ir.PropertyDeclaration> properties;
         public final Map<String, ClassConstant> constants;
+        public final EnumApi.State enumState;
         private final java.util.Set<String> initializedConstants = new java.util.HashSet<>();
         private final java.util.Set<String> evaluatingConstants = new java.util.HashSet<>();
         private boolean staticsInitialized;
@@ -61,6 +73,7 @@ public final class ObjectModel {
             this.requirements = List.copyOf(requirements);
             this.properties = List.copyOf(properties);
             this.constants = java.util.Collections.unmodifiableMap(new LinkedHashMap<>(constants));
+            enumState = definition.kind() == Ir.TypeKind.ENUM ? new EnumApi.State(this) : null;
             statics = new PhpValues.PhpObject(request.heap, this);
             request.globals.variable(statics);
         }
@@ -85,6 +98,7 @@ public final class ObjectModel {
         }
 
         Object constant(Request request, String name) {
+            if (enumState != null) enumState.prepareConstantAccess(request);
             var member = constants.get(name);
             if (member == null) throw new PhpError("Error", "Undefined constant " + definition.name + "::" + name);
             if (!member.owner.equals(definition.name)) return request.type(member.owner).constant(request, name);
@@ -138,6 +152,17 @@ public final class ObjectModel {
         Object owned = caller.track(PhpValues.own(object));
         initializeObject(caller.request, object, type);
         return owned;
+    }
+
+    @TruffleBoundary
+    public static Object cloneObject(Activation caller, Object value) {
+        try {
+            Object raw = PhpValues.unwrap(value);
+            if (!(raw instanceof PhpValues.PhpObject object)) throw new PhpError("Error", "__clone method called on non-object");
+            if (object.descriptor instanceof RuntimeClass type && type.definition.kind() == Ir.TypeKind.ENUM)
+                throw new PhpError("Error", "Trying to clone an uncloneable object of class " + type.definition.name());
+            return caller.track(PhpValues.own(object.copyObject()));
+        } finally { PhpValues.drop(value); }
     }
 
     private static void initializeObject(Request request, PhpValues.PhpObject object, RuntimeClass type) {
@@ -220,6 +245,8 @@ public final class ObjectModel {
 
     @TruffleBoundary
     public static Invocation method(Activation caller, Object value, String name, boolean constructor) {
+        if (constructor && name.equals("__clone") && PhpValues.unwrap(value) instanceof PhpValues.PhpObject closure
+                && closure.descriptor instanceof ClosureData) return null;
         if (!(PhpValues.unwrap(value) instanceof PhpValues.PhpObject object)
                 || !(object.descriptor instanceof RuntimeClass type)) throw new PhpError("Method call requires an object");
         var method = type.method(name);
@@ -231,7 +258,8 @@ public final class ObjectModel {
         if (method == null) throw new PhpError("Undefined method " + type.definition.name + "::" + name);
         if (method.abstractMethod) throw new PhpError("Error", "Cannot call abstract method " + method.function.owner() + "::" + name);
         access(caller, caller.request.type(method.function.owner()), method.visibility);
-        return new Invocation(method.function, method.shared ? null : object, type, null);
+        return new Invocation(method.function, method.shared ? null : object, type, null,
+                method.function.builtin() ? Diagnostics.site(caller) : null);
     }
 
     @TruffleBoundary
@@ -249,13 +277,13 @@ public final class ObjectModel {
             receiver = object;
         }
         var called = List.of("self", "parent", "static").contains(className) && caller.calledClass != null ? caller.calledClass : type;
-        return new Invocation(method.function, receiver, called, null);
+        return new Invocation(method.function, receiver, called, null, method.function.builtin() ? Diagnostics.site(caller) : null);
     }
 
     @TruffleBoundary
     public static Object closure(Activation caller, Function function, List<Ir.Capture> captures, boolean arrow) {
         if (function.owner() != null && caller.function.owner() != null && !function.owner().equals(caller.function.owner()))
-            function = new Function(function.name(), function.parameters(), function.target(), function.file(), caller.function.owner(), function.returnType());
+            function = new Function(function.name(), function.parameters(), function.target(), function.file(), caller.function.owner(), function.returnType(), function.builtin(), function.strictTypes());
         var object = new PhpValues.PhpObject(caller.request.heap, new ClosureData(function, captures));
         Object owned = caller.track(PhpValues.own(object));
         if (arrow) {
@@ -311,7 +339,7 @@ public final class ObjectModel {
                 Diagnostics.deprecated(caller, "Calling static trait method " + invocation.calledClass.definition.name + "::" + invocation.function.name()
                         + " is deprecated, it should only be called on a class using the trait");
             }
-            var child = new Activation(caller.request, invocation.function, caller.task, false, args);
+            var child = new Activation(caller.request, invocation.function, caller.task, false, args, Diagnostics.origin(caller));
             bind(child, invocation);
             return Operations.executeChild(caller, child, call);
         } finally { for (var argument : args) argument.close(); }
@@ -319,6 +347,7 @@ public final class ObjectModel {
 
     public static void bind(Activation child, Invocation invocation) {
         child.calledClass = invocation.calledClass;
+        child.builtinSite = invocation.site;
         if (invocation.environment != null) {
             child.locals.variable(invocation.environment);
             var parameters = child.function.parameters().stream().map(Ir.Parameter::name).toList();
@@ -340,14 +369,61 @@ public final class ObjectModel {
     public static Object constant(Request request, Ir.Expression expression, String lexicalClass) {
         return switch (expression) {
             case Ir.Literal literal -> literal.value();
-            case Ir.Unary unary -> {
-                var number = Operations.number(constant(request, unary.value(), lexicalClass));
-                if (unary.operator().equals("+")) yield number;
-                if (unary.operator().equals("!")) yield !Operations.truth(number);
-                if (number instanceof Long value && value != Long.MIN_VALUE) yield -value;
-                yield -number.doubleValue();
+            case Ir.EnumCaseValue value -> request.type(lexicalClass).enumState.caseObject(request, value.name());
+            case Ir.Property property -> {
+                Object receiver = constant(request, property.object(), lexicalClass);
+                try {
+                    Object raw = PhpValues.unwrap(receiver);
+                    if (!(raw instanceof PhpValues.PhpObject object) || !(object.descriptor instanceof RuntimeClass type)
+                            || type.enumState == null || !List.of("name", "value").contains(property.name()))
+                        throw new PhpError("Error", "Only enum properties are allowed in constant expressions");
+                    yield PhpValues.own(object.field(property.name()).read());
+                } finally { PhpValues.drop(receiver); }
             }
-            case Ir.Binary binary -> Operations.binary(binary.operator(), constant(request, binary.left(), lexicalClass), constant(request, binary.right(), lexicalClass));
+            case Ir.Index index -> {
+                Object source = constant(request, index.array(), lexicalClass);
+                Object key = null;
+                try {
+                    if (index.key() == null) throw new PhpError("Error", "Cannot append in a constant expression");
+                    key = constant(request, index.key(), lexicalClass);
+                    yield PhpValues.element(source, PhpValues.unwrap(key));
+                } finally { PhpValues.drop(source); PhpValues.drop(key); }
+            }
+            case Ir.Unary unary -> {
+                Object operand = constant(request, unary.value(), lexicalClass);
+                try {
+                    if (unary.operator().equals("!")) yield !Operations.truth(operand);
+                    var number = Operations.number(operand);
+                    if (unary.operator().equals("+")) yield number;
+                    if (number instanceof Long value && value != Long.MIN_VALUE) yield -value;
+                    yield -number.doubleValue();
+                } finally { PhpValues.drop(operand); }
+            }
+            case Ir.Binary binary -> {
+                Object left = constant(request, binary.left(), lexicalClass);
+                try {
+                    if (binary.operator().equals("&&") && !Operations.truth(left)) yield false;
+                    if (binary.operator().equals("||") && Operations.truth(left)) yield true;
+                    Object right = constant(request, binary.right(), lexicalClass);
+                    if (binary.operator().equals("&&") || binary.operator().equals("||")) {
+                        try { yield Operations.truth(right); } finally { PhpValues.drop(right); }
+                    }
+                    yield Operations.binary(binary.operator(), left, right);
+                } finally { PhpValues.drop(left); }
+            }
+            case Ir.Coalesce coalesce -> {
+                Object left = constant(request, coalesce.left(), lexicalClass);
+                if (PhpValues.unwrap(left) != null) yield left;
+                PhpValues.drop(left);
+                yield constant(request, coalesce.right(), lexicalClass);
+            }
+            case Ir.Conditional conditional -> {
+                Object condition = constant(request, conditional.condition(), lexicalClass);
+                try {
+                    if (!Operations.truth(condition)) yield constant(request, conditional.no(), lexicalClass);
+                    yield conditional.yes() == null ? PhpValues.own(PhpValues.unwrap(condition)) : constant(request, conditional.yes(), lexicalClass);
+                } finally { PhpValues.drop(condition); }
+            }
             case Ir.ArrayLiteral literal -> {
                 try (var scope = new PhpValues.Scope(request.heap)) {
                     var array = scope.variable(scope.emptyArray());

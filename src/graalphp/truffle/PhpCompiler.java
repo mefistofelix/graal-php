@@ -22,8 +22,9 @@ public final class PhpCompiler {
     private final String owner;
     private final String functionName;
     private final String traitName;
+    private final boolean strictTypes;
     private final ArrayDeque<Loop> loops = new ArrayDeque<>();
-    private PhpCompiler(PhpRootGen.Builder builder, PhpLanguage language, Source source, Path path, String owner, String functionName, String traitName) {
+    private PhpCompiler(PhpRootGen.Builder builder, PhpLanguage language, Source source, Path path, String owner, String functionName, boolean strictTypes, String traitName) {
         this.builder = builder;
         this.language = language;
         this.source = source;
@@ -31,6 +32,7 @@ public final class PhpCompiler {
         this.owner = owner;
         this.functionName = functionName;
         this.traitName = traitName;
+        this.strictTypes = strictTypes;
     }
 
     @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
@@ -40,45 +42,77 @@ public final class PhpCompiler {
         var functions = new HashMap<String, Execution.Function>();
         for (var function : ir.functions()) {
             String key = function.name().toLowerCase(java.util.Locale.ROOT);
-            var compiled = function(language, source, path, function.name(), function.parameters(), function.body(), false, null, function.returnType());
+            var compiled = function(language, source, path, function.name(), function.parameters(), function.body(), false, null, function.returnType(), ir.strictTypes());
             if (functions.putIfAbsent(key, compiled) != null) throw new PhpError("Cannot redeclare " + key);
         }
         var classes = new java.util.LinkedHashMap<String, graalphp.runtime.ObjectModel.Definition>();
         for (var declaration : ir.classes()) {
-            var definition = definition(language, source, path, declaration);
+            var definition = definition(language, source, path, declaration, ir.strictTypes());
             if (classes.putIfAbsent(declaration.name().toLowerCase(java.util.Locale.ROOT), definition) != null) {
                 throw new PhpError("Cannot redeclare class " + declaration.name());
             }
         }
         return new Execution.Unit(path, source.getCharacters().toString(),
-                function(language, source, path, source.getName(), List.of(), ir.statements(), true, null, null),
+                function(language, source, path, source.getName(), List.of(), ir.statements(), true, null, null, ir.strictTypes()),
                 java.util.Map.copyOf(functions), java.util.Collections.unmodifiableMap(classes));
     }
-    private static graalphp.runtime.ObjectModel.Definition definition(PhpLanguage language, Source source, Path path, Ir.ClassDeclaration declaration) {
+    public static java.util.Map<String, graalphp.runtime.ObjectModel.Definition> builtinTypes(PhpLanguage language, Source source) {
+        var parsed = new Parser(source).parse();
+        var declarations = new java.util.ArrayList<>(parsed.classes());
+        for (var statement : parsed.statements()) {
+            if (!(statement.form() instanceof Ir.DeclareClass declared)) throw new IllegalArgumentException("Builtin type source must contain declarations only");
+            declarations.add(declared.declaration());
+        }
+        var result = new java.util.LinkedHashMap<String, graalphp.runtime.ObjectModel.Definition>();
+        for (var declaration : declarations) result.put(declaration.name().toLowerCase(java.util.Locale.ROOT), definition(language, source, null, declaration, false));
+        return java.util.Collections.unmodifiableMap(result);
+    }
+
+    private static graalphp.runtime.ObjectModel.Definition definition(PhpLanguage language, Source source, Path path, Ir.ClassDeclaration declaration, boolean strictTypes) {
         var methods = new java.util.LinkedHashMap<String, graalphp.runtime.ObjectModel.Method>();
         for (var method : declaration.methods()) {
             var value = method.function();
             var compiled = function(language, source, path, value.name(), value.parameters(), value.body(),
-                    false, declaration.name(), value.returnType(), declaration.kind() == Ir.TypeKind.TRAIT ? declaration.name() : null);
+                    false, declaration.name(), value.returnType(), strictTypes, declaration.kind() == Ir.TypeKind.TRAIT ? declaration.name() : null);
             String key = value.name().toLowerCase(java.util.Locale.ROOT);
             if (methods.putIfAbsent(key, new graalphp.runtime.ObjectModel.Method(compiled, method.shared(), method.visibility(), method.abstractMethod(), method.finalMethod())) != null) {
                 throw new PhpError("Cannot redeclare method " + declaration.name() + "::" + value.name());
             }
         }
+        var constants = new java.util.ArrayList<>(declaration.constants());
+        var interfaces = new java.util.ArrayList<>(declaration.interfaces());
+        if (declaration.kind() == Ir.TypeKind.ENUM) {
+            interfaces.add("UnitEnum");
+            if (declaration.backingType() != null) interfaces.add("BackedEnum");
+            for (var enumCase : declaration.cases()) constants.add(new Ir.ClassConstantDeclaration(enumCase.name(),
+                    new Ir.EnumCaseValue(enumCase.name()), "public", false, null));
+            for (var generated : graalphp.runtime.EnumApi.generatedMethods().methods()) {
+                var value = generated.function();
+                String key = value.name().toLowerCase(java.util.Locale.ROOT);
+                if (declaration.backingType() == null && !key.equals("cases")) continue;
+                if (methods.containsKey(key)) throw PhpError.fatal("Cannot redeclare enum method " + declaration.name() + "::" + value.name());
+                Source builtinSource = graalphp.runtime.EnumApi.methodSource();
+                var body = function(language, builtinSource, null, value.name(), value.parameters(), value.body(), false,
+                        declaration.name(), value.returnType(), false);
+                var builtin = new Execution.Function(body.name(), body.parameters(), body.target(), body.file(), body.owner(), body.returnType(), true);
+                methods.put(key, new graalphp.runtime.ObjectModel.Method(builtin, true, "public", false, false));
+            }
+        }
         return new graalphp.runtime.ObjectModel.Definition(declaration.name(), declaration.parent(),
                 declaration.properties(), java.util.Collections.unmodifiableMap(methods), declaration.kind(), declaration.abstractType(),
-                declaration.finalType(), declaration.interfaces(), declaration.traits(), declaration.constants());
+                declaration.finalType() || declaration.kind() == Ir.TypeKind.ENUM, List.copyOf(interfaces), declaration.traits(),
+                List.copyOf(constants), declaration.backingType(), declaration.cases());
     }
     private static Execution.Function function(PhpLanguage language, Source source, Path path, String name,
-            List<Ir.Parameter> parameters, List<Ir.Statement> body, boolean main, String owner, String returnType) {
-        return function(language, source, path, name, parameters, body, main, owner, returnType, null);
+            List<Ir.Parameter> parameters, List<Ir.Statement> body, boolean main, String owner, String returnType, boolean strictTypes) {
+        return function(language, source, path, name, parameters, body, main, owner, returnType, strictTypes, null);
     }
     private static Execution.Function function(PhpLanguage language, Source source, Path path, String name,
-            List<Ir.Parameter> parameters, List<Ir.Statement> body, boolean main, String owner, String returnType, String traitName) {
+            List<Ir.Parameter> parameters, List<Ir.Statement> body, boolean main, String owner, String returnType, boolean strictTypes, String traitName) {
         var roots = PhpRootGen.create(language, BytecodeConfig.WITH_SOURCE, builder -> {
             builder.beginRoot();
             builder.beginSource(source);
-            var compiler = new PhpCompiler(builder, language, source, path, owner, name, traitName);
+            var compiler = new PhpCompiler(builder, language, source, path, owner, name, strictTypes, traitName);
             for (var statement : body) compiler.statement(statement);
             builder.beginReturn();
             builder.beginCheckReturn();
@@ -89,7 +123,7 @@ public final class PhpCompiler {
             builder.endRoot();
         });
         var root = roots.getNode(0); root.name = name;
-        return new Execution.Function(name, parameters, root.getCallTarget(), path, owner, returnType);
+        return new Execution.Function(name, parameters, root.getCallTarget(), path, owner, returnType, false, strictTypes);
     }
     @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
     private void statement(Ir.Statement statement) {
@@ -97,7 +131,7 @@ public final class PhpCompiler {
         b.beginSourceSection(statement.start(), statement.length());
         switch (statement.form()) {
             case Ir.DeclareClass declared -> {
-                var definition = definition(language, source, path, declared.declaration());
+                var definition = definition(language, source, path, declared.declaration(), strictTypes);
                 b.beginDrop();
                 suspended(() -> b.emitDeclareClass(definition));
                 b.endDrop();
@@ -277,6 +311,11 @@ public final class PhpCompiler {
                 else call(call);
             }
             case Ir.NamedArgument ignored -> throw new graalphp.runtime.PhpError("Named argument outside a call");
+            case Ir.EnumCaseValue ignored -> throw new PhpError("Enum case values are declaration constants");
+            case Ir.Match match -> match(match);
+            case Ir.ThrowExpression thrown -> { b.beginThrowValue(); expression(thrown.value()); b.endThrowValue(); }
+            case Ir.Clone clone -> cloneObject(clone.value());
+            case Ir.DynamicStaticCall call -> memberCall("static", call.name(), call.type(), call.arguments());
             case Ir.DynamicCall call -> memberCall("callable", "", call.callable(), call.arguments());
             case Ir.MethodCall call -> memberCall("method", call.name(), call.object(), call.arguments());
             case Ir.StaticCall call -> memberCall("static", call.name(), new Ir.Literal(call.type()), call.arguments());
@@ -284,7 +323,7 @@ public final class PhpCompiler {
             case Ir.DynamicConstruct construct -> construct(construct.type(), construct.arguments());
             case Ir.Closure closure -> {
                 var value = closure.function();
-                var compiled = function(language, source, path, value.name(), value.parameters(), value.body(), false, owner, value.returnType(), traitName);
+                var compiled = function(language, source, path, value.name(), value.parameters(), value.body(), false, owner, value.returnType(), strictTypes, traitName);
                 b.emitCreateClosure(new graalphp.runtime.ObjectModel.ClosureTemplate(compiled, closure.captures(), closure.arrow()));
             }
             case Ir.ArrayLiteral array -> {
@@ -332,6 +371,49 @@ public final class PhpCompiler {
         });
         b.endDrop(); b.emitLoadLocal(object); b.endBlock();
     }
+    private void match(Ir.Match match) {
+        var b = builder;
+        b.beginBlock(); var subject = b.createLocal(); var result = b.createLocal();
+        boolean variable = match.subject() instanceof Ir.Variable;
+        b.beginStoreLocal(subject);
+        if (variable) location(match.subject()); else expression(match.subject());
+        b.endStoreLocal();
+        var arms = match.arms().stream().filter(arm -> !arm.conditions().isEmpty()).toList();
+        var fallback = match.arms().stream().filter(arm -> arm.conditions().isEmpty()).findFirst();
+        b.beginTryFinally(() -> { b.beginDrop(); b.emitLoadLocal(subject); b.endDrop(); });
+        b.beginStoreLocal(result); matchArm(subject, variable, arms, 0, fallback.map(Ir.MatchArm::value).orElse(null)); b.endStoreLocal();
+        b.endTryFinally(); b.emitLoadLocal(result); b.endBlock();
+    }
+    private void matchArm(com.oracle.truffle.api.bytecode.BytecodeLocal subject, boolean variable, List<Ir.MatchArm> arms, int index, Ir.Expression fallback) {
+        var b = builder;
+        if (index == arms.size()) {
+            if (fallback == null) { b.beginUnmatchedMatch(); matchSubject(subject, variable); b.endUnmatchedMatch(); }
+            else expression(fallback);
+            return;
+        }
+        var arm = arms.get(index);
+        b.beginConditional(); matchCondition(subject, variable, arm.conditions(), 0);
+        expression(arm.value()); matchArm(subject, variable, arms, index + 1, fallback); b.endConditional();
+    }
+    private void matchCondition(com.oracle.truffle.api.bytecode.BytecodeLocal subject, boolean variable, List<Ir.Expression> conditions, int index) {
+        var b = builder;
+        if (index + 1 < conditions.size()) b.beginConditional();
+        b.beginBinary("==="); expression(conditions.get(index)); matchSubject(subject, variable); b.endBinary();
+        if (index + 1 < conditions.size()) { b.emitLoadConstant(true); matchCondition(subject, variable, conditions, index + 1); b.endConditional(); }
+    }
+    private void matchSubject(com.oracle.truffle.api.bytecode.BytecodeLocal subject, boolean variable) {
+        if (variable) builder.beginRead(); else builder.beginRetain();
+        builder.emitLoadLocal(subject);
+        if (variable) builder.endRead(); else builder.endRetain();
+    }
+    private void cloneObject(Ir.Expression value) {
+        var b = builder;
+        b.beginBlock(); var object = b.createLocal();
+        b.beginStoreLocal(object); b.beginCloneObject(); expression(value); b.endCloneObject(); b.endStoreLocal();
+        b.beginDrop(); suspended(() -> {
+            b.beginInvokeMember("clone", "__clone"); b.emitLoadLocal(object); b.endInvokeMember();
+        }); b.endDrop(); b.emitLoadLocal(object); b.endBlock();
+    }
     private void arguments(List<Ir.Expression> arguments) {
         var b = builder;
         for (var argument : arguments) {
@@ -355,9 +437,13 @@ public final class PhpCompiler {
     private void checkpoint() {
         builder.beginDrop(); suspended(() -> builder.emitPoll()); builder.endDrop();
     }
-    private void quietRead(Ir.Expression value) {
-        if (isLocation(value)) { builder.beginQuietRead(); location(value); builder.endQuietRead(); }
-        else expression(value);
+    private void quietRead(Ir.Expression value) { quietRead(value, false); }
+    private void quietRead(Ir.Expression value, boolean probe) {
+        if (isLocation(value)) {
+            if (probe) builder.beginProbeRead(); else builder.beginQuietRead();
+            location(value);
+            if (probe) builder.endProbeRead(); else builder.endQuietRead();
+        } else expression(value);
     }
     private void coalesce(Ir.Expression left, Ir.Expression right) {
         var b = builder;
@@ -371,9 +457,9 @@ public final class PhpCompiler {
         var b = builder;
         if (name.equals("empty")) {
             if (args.size() != 1) throw new PhpError("empty requires one argument");
-            b.beginUnary("!"); quietRead(args.getFirst()); b.endUnary();
+            b.beginUnary("!"); quietRead(args.getFirst(), true); b.endUnary();
         } else {
-            b.beginConditional(); b.beginIsSet(); quietRead(args.get(index)); b.endIsSet();
+            b.beginConditional(); b.beginIsSet(); quietRead(args.get(index), true); b.endIsSet();
             if (index + 1 == args.size()) b.emitLoadConstant(true); else specialRead(name, args, index + 1);
             b.emitLoadConstant(false); b.endConditional();
         }
@@ -383,9 +469,9 @@ public final class PhpCompiler {
         b.beginBlock(); var target = b.createLocal(); var old = b.createLocal();
         b.beginStoreLocal(target); location(assignment.target()); b.endStoreLocal();
         b.beginStoreLocal(old);
-        if (assignment.operator().equals("??")) b.beginQuietRead(); else b.beginRead();
+        if (assignment.operator().equals("??")) b.beginQuietRead(); else b.beginReadForAssignOperation();
         b.emitLoadLocal(target);
-        if (assignment.operator().equals("??")) b.endQuietRead(); else b.endRead();
+        if (assignment.operator().equals("??")) b.endQuietRead(); else b.endReadForAssignOperation();
         b.endStoreLocal();
         if (assignment.operator().equals("??")) {
             b.beginConditional(); b.beginNonNull(); b.emitLoadLocal(old); b.endNonNull();
@@ -394,7 +480,8 @@ public final class PhpCompiler {
             b.endConditional();
         } else {
             b.beginWrite(); b.emitLoadLocal(target);
-            b.beginBinary(assignment.operator()); b.emitLoadLocal(old); expression(assignment.value()); b.endBinary();
+            b.beginCompoundValue(assignment.operator()); b.emitLoadLocal(target); b.emitLoadLocal(old);
+            expression(assignment.value()); b.endCompoundValue();
             b.endWrite();
         }
         b.endBlock();

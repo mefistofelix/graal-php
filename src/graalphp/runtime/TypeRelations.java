@@ -175,9 +175,16 @@ public final class TypeRelations {
     }
 
     @TruffleBoundary
-    public static Object check(Object value, String type) {
+    public static Object check(Object value, String type) { return check(value, type, false, null); }
+
+    @TruffleBoundary
+    public static Object check(Object value, String type, boolean strict, Diagnostics.Origin origin) {
         value = PhpValues.unwrap(value);
         if (accepts(value, type)) return value;
+        if (strict) {
+            if (value instanceof Long number && alternatives(type).contains(List.of("float"))) return number.doubleValue();
+            throw new PhpError("TypeError", "Value does not satisfy type " + type);
+        }
         if (value != null && (value instanceof Number || value instanceof String || value instanceof Boolean)) {
             // Exact union membership is tested first: an existing string is not coerced by int|string.
             var alternatives = alternatives(type);
@@ -190,7 +197,7 @@ public final class TypeRelations {
                 if (!alternatives.contains(List.of(scalar))) continue;
                 try {
                     return switch (scalar) {
-                        case "int" -> Operations.number(value).longValue();
+                        case "int" -> integer(value, origin);
                         case "float" -> Operations.number(value).doubleValue();
                         case "string" -> Operations.string(value);
                         default -> Operations.truth(value);
@@ -201,6 +208,20 @@ public final class TypeRelations {
             }
         }
         throw new PhpError("TypeError", "Value does not satisfy type " + type);
+    }
+
+    private static long integer(Object value, Diagnostics.Origin origin) {
+        Number number = Operations.number(value);
+        if (number instanceof Long integer) return integer;
+        double decimal = number.doubleValue();
+        if (!Double.isFinite(decimal) || decimal < -0x1.0p63 || decimal >= 0x1.0p63)
+            throw new PhpError("TypeError", "Value cannot be converted to int");
+        long integer = (long) decimal;
+        if (decimal != (double) integer && origin != null) {
+            String from = value instanceof String text ? "float-string \"" + text + "\"" : "float " + Operations.string(decimal);
+            origin.deprecated("Implicit conversion from " + from + " to int loses precision");
+        }
+        return integer;
     }
 
     static void compatible(Request request, ObjectModel.Method implementation, ObjectModel.Method contract) {

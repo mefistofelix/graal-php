@@ -1,0 +1,37 @@
+duplicate exit=255
+
+Fatal error: Uncaught TypeError: f(): Argument #1 ($n) must be of type int, string given, called in Command line code on line 1 and defined in Command line code:1
+Stack trace:
+#0 Command line code(1): f('1')
+#1 {main}
+  thrown in Command line code on line 1
+
+
+namespace exit=255
+
+Fatal error: strict_types declaration must be the very first statement in the script in Command line code on line 1
+Stack trace:
+#0 {main}
+
+
+emptyfirst exit=0
+ok
+
+eval exit=0
+1
+
+stringenum exit=0
+type;A;type;type;type;
+
+declarefloat exit=255
+
+Fatal error: strict_types declaration must have 0 or 1 as its value in Command line code on line 1
+Stack trace:
+#0 {main}
+
+
+declarefunction exit=255
+
+Fatal error: strict_types declaration must be the very first statement in the script in Command line code on line 1
+Stack trace:
+#0 {main}

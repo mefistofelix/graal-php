@@ -1,0 +1,1179 @@
+{
+  "suite": "enum-match",
+  "target": "linux-jvm",
+  "reference": "Pinned TrueAsync/PHP 8.6 for all Linux cases, not a separate stock PHP executable",
+  "report": "Target: JVM\nPHP 8.6.0-dev (cli) (built: Sep 12 2026 13:16:10) (ZTS zig 0.16.0 TrueAsync ABI v0.26.0)\nCopyright © The PHP Group and Contributors\nBuilt by StaticPHP 3.0.0-alpha1\nZend Engine v4.6.0-dev, Copyright © Zend by Perforce\n    with Zend OPcache v8.6.0-dev, Copyright ©, by Zend by Perforce\nPHP 8.6.0-dev (cli) (built: Sep 12 2026 13:16:10) (ZTS zig 0.16.0 TrueAsync ABI v0.26.0)\nCopyright © The PHP Group and Contributors\nBuilt by StaticPHP 3.0.0-alpha1\nZend Engine v4.6.0-dev, Copyright © Zend by Perforce\n    with Zend OPcache v8.6.0-dev, Copyright ©, by Zend by Perforce\nPASS enum-declaration-timing-and-kind oracle=0 target=0 mode=output\nPASS unit-cases-and-singleton oracle=0 target=0 mode=output\nPASS case-names-are-case-sensitive oracle=0 target=0 mode=output\nPASS cases-array-is-independent oracle=0 target=0 mode=output\nPASS backed-int-from-and-try oracle=0 target=0 mode=output\nPASS backed-string-and-named-argument oracle=0 target=0 mode=output\nPASS numeric-string-backing-values-stay-distinct oracle=0 target=0 mode=output\nPASS case-constant-alias-and-defaults oracle=0 target=0 mode=output\nPASS case-initializers-use-class-constants oracle=0 target=0 mode=output\nPASS enum-properties-in-constant-expressions oracle=0 target=0 mode=output\nPASS array-offsets-in-enum-initializers oracle=0 target=0 mode=output\nPASS constant-expression-short-circuiting oracle=0 target=0 mode=output\nPASS enum-methods-and-interface oracle=0 target=0 mode=output\nPASS custom-unit-enum-interface oracle=0 target=0 mode=output\nPASS custom-backed-enum-interface oracle=0 target=0 mode=output\nPASS enum-interface-order oracle=0 target=0 mode=output\nPASS trait-enum-and-magic-scope oracle=0 target=0 mode=output\nPASS enum-builtins-win-over-trait oracle=0 target=0 mode=output\nPASS unit-enum-may-define-from oracle=0 target=0 mode=output\nPASS enum-invokable oracle=0 target=0 mode=output\nPASS enum-generated-methods-as-callables oracle=0 target=0 mode=output\nPASS enum-dynamic-static-receiver oracle=0 target=0 mode=output\nPASS enum-builtin-arity-and-named-errors oracle=0 target=0 mode=output\nPASS backed-weak-scalar-conversions oracle=0 target=0 mode=output\nPASS backed-float-deprecation oracle=0 target=0 mode=output\nPASS backed-float-string-deprecation oracle=0 target=0 mode=output\nPASS backed-null-deprecation oracle=0 target=0 mode=output\nPASS backed-nonnumeric-type-error oracle=0 target=0 mode=output\nPASS empty-unit-and-backed-enums oracle=0 target=0 mode=output\nPASS duplicate-backing-check-is-lazy oracle=0 target=0 mode=output\nPASS invalid-backing-type-cases-vs-lookup oracle=0 target=0 mode=output\nPASS readonly-name-and-value oracle=0 target=0 mode=output\nPASS readonly-property-references oracle=0 target=0 mode=output\nPASS readonly-property-unset oracle=0 target=0 mode=output\nPASS enum-no-dynamic-properties oracle=0 target=0 mode=output\nPASS enum-not-constructible-or-cloneable oracle=0 target=0 mode=output\nPASS enum-values-in-arrays-and-references oracle=0 target=0 mode=output\nPASS enum-nullable-and-union-types oracle=0 target=0 mode=output\nPASS enum-conditional-declaration oracle=0 target=0 mode=output\nPASS enum-autoload-and-kind oracle=0 target=0 mode=output\nPASS enum-namespace-and-alias oracle=0 target=0 mode=output\nPASS match-strict-scalar-types oracle=0 target=0 mode=output\nPASS match-subject-evaluated-once oracle=0 target=0 mode=output\nPASS match-default-and-lazy-arms oracle=0 target=0 mode=output\nPASS match-multiple-and-empty-arms oracle=0 target=0 mode=output\nPASS match-ordered-nested-arrays oracle=0 target=0 mode=output\nPASS match-object-and-enum-identity oracle=0 target=0 mode=output\nPASS match-array-object-members oracle=0 target=0 mode=output\nPASS match-subject-retained-while-mutated oracle=0 target=0 mode=output\nPASS match-variable-reads-after-condition oracle=0 target=0 mode=output\nPASS match-property-is-a-snapshot oracle=0 target=0 mode=output\nPASS match-assignment-is-a-snapshot oracle=0 target=0 mode=output\nPASS match-undefined-variable-assigned-by-condition oracle=0 target=0 mode=output\nPASS throw-expression-in-match oracle=0 target=0 mode=output\nPASS throw-expression-in-coalesce oracle=0 target=0 mode=output\nPASS match-return-in-finally oracle=0 target=0 mode=output\nPASS clone-object-and-array-copy-on-write oracle=0 target=0 mode=output\nPASS clone-keeps-explicit-references oracle=0 target=0 mode=output\nPASS clone-calls-hook-on-new-object oracle=0 target=0 mode=output\nPASS clone-visibility-error oracle=0 target=0 mode=output\nPASS clone-closure-captures oracle=0 target=0 mode=output\nPASS async-enum-method-match oracle=0 target=0 mode=output\nPASS async-enum-autoload oracle=0 target=0 mode=output\nPASS async-enum-generated-callable oracle=0 target=0 mode=output\nPASS async-match-subject-and-condition oracle=0 target=0 mode=output\nPASS async-match-cancellation-finally oracle=0 target=0 mode=output\nPASS async-clone-hook oracle=0 target=0 mode=output\nPASS async-clone-cancellation oracle=0 target=0 mode=output\nPASS enum-case-missing-backing-rejected oracle=255 target=1 mode=rejection:backing\nPASS unit-case-value-rejected oracle=255 target=1 mode=rejection:backing\nPASS invalid-enum-backing-type-rejected oracle=255 target=1 mode=rejection:backing\nPASS duplicate-case-name-rejected oracle=255 target=1 mode=rejection:constant\nPASS case-and-constant-conflict-rejected oracle=255 target=1 mode=rejection:constant\nPASS enum-instance-property-rejected oracle=255 target=1 mode=rejection:properties\nPASS enum-static-property-rejected oracle=255 target=1 mode=rejection:properties\nPASS enum-trait-property-rejected oracle=255 target=1 mode=rejection:properties\nPASS enum-constructor-rejected oracle=255 target=1 mode=rejection:magic\nPASS enum-destructor-rejected oracle=255 target=1 mode=rejection:magic\nPASS enum-clone-hook-rejected oracle=255 target=1 mode=rejection:magic\nPASS enum-tostring-rejected oracle=255 target=1 mode=rejection:magic\nPASS enum-missing-interface-method-rejected oracle=255 target=1 mode=rejection:abstract\nPASS enum-generated-cases-redeclaration-rejected oracle=255 target=1 mode=rejection:redeclare\nPASS enum-generated-from-redeclaration-rejected oracle=255 target=1 mode=rejection:redeclare\nPASS enum-generated-tryfrom-redeclaration-rejected oracle=255 target=1 mode=rejection:redeclare\nPASS non-enum-unit-interface-rejected oracle=255 target=1 mode=rejection:non-enum\nPASS non-enum-indirect-unit-interface-rejected oracle=255 target=1 mode=rejection:non-enum\nPASS unit-enum-backed-interface-rejected oracle=255 target=1 mode=rejection:non-backed\nPASS enum-explicit-unit-interface-rejected oracle=255 target=1 mode=rejection:interface\nPASS enum-explicit-backed-interface-rejected oracle=255 target=1 mode=rejection:interface\nPASS match-duplicate-default-rejected oracle=255 target=1 mode=rejection:default\nCases: 90; output comparisons: 68; semantic rejections: 22; failures: 0\n",
+  "cases": [
+    {
+      "name": "enum-declaration-timing-and-kind",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "1:1:1:1:1:1:1:1",
+      "target_stdout": "1:1:1:1:1:1:1:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "55c30ccebb487994c6c68963baae74b5b635887226183c29fc41a7d10763c954"
+      }
+    },
+    {
+      "name": "unit-cases-and-singleton",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "North:1:1;0:North;1:South:1",
+      "target_stdout": "North:1:1;0:North;1:South:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "9454533cfd03329fd1ae31ebdd53ee88f82c911ab57a1b513126d7d2afb21a06"
+      }
+    },
+    {
+      "name": "case-names-are-case-sensitive",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "A:a:1:missing",
+      "target_stdout": "A:a:1:missing",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "58fc42f8534d1d9b79e87da6184609403c2dfdb7e43472eb5a06ae0277a879c5"
+      }
+    },
+    {
+      "name": "cases-array-is-independent",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "3:2:1:1",
+      "target_stdout": "3:2:1:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "b21594563d8f0d531467f5eaf98a33ea05341ee469fc3f1f884bcec4a789abb1"
+      }
+    },
+    {
+      "name": "backed-int-from-and-try",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "200:1:1:1:value",
+      "target_stdout": "200:1:1:1:value",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "63227fc45a18e55eeee24cc85bfff35023d5238a23c7dc431d72e7a755ebf2c8"
+      }
+    },
+    {
+      "name": "backed-string-and-named-argument",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "Done:1:1",
+      "target_stdout": "Done:1:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "780dea596ba815f1ce63b2ab1a24c8df72f2a358080d768bba2ff891e7218a08"
+      }
+    },
+    {
+      "name": "numeric-string-backing-values-stay-distinct",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "One:Padded:Zero:Empty:1",
+      "target_stdout": "One:Padded:Zero:Empty:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "05b303d5a827f16c12cc371071bd9a4ee0fdb7b3ea6ca0d2f97c0bda732f4a79"
+      }
+    },
+    {
+      "name": "case-constant-alias-and-defaults",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "1:2:1:1:1",
+      "target_stdout": "1:2:1:1:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "ec197f4570b3cdcf64e0d378eb7e92f0a865b378a102a70ba8c5eae920fbabae"
+      }
+    },
+    {
+      "name": "case-initializers-use-class-constants",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "2:3:1",
+      "target_stdout": "2:3:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "82f9dfe1521ca67372fd42c3a540d798fb47945487e57b4ce14550c88706c2f2"
+      }
+    },
+    {
+      "name": "enum-properties-in-constant-expressions",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "A:2:3",
+      "target_stdout": "A:2:3",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "0cb11cb20541f921f540995e17a269bfbbaec9093216fdaf006266ce4e473350"
+      }
+    },
+    {
+      "name": "array-offsets-in-enum-initializers",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "4:A",
+      "target_stdout": "4:A",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "685861f3502d9c993a669886e444aa89ef8a66a2c08b1ae30e5d32a520e54263"
+      }
+    },
+    {
+      "name": "constant-expression-short-circuiting",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "1:1:1:7",
+      "target_stdout": "1:1:1:7",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "2defe4e1523e5d3a66eb53a640d807bb85671fd3eeed80934690dfcd5787d1ff"
+      }
+    },
+    {
+      "name": "enum-methods-and-interface",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "done:1:1:1",
+      "target_stdout": "done:1:1:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "05a14cff90078039039b5d95b2ba5d66dcce0a9d863c31782cabcd6407b86faa"
+      }
+    },
+    {
+      "name": "custom-unit-enum-interface",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "A:1:Kind:UnitEnum",
+      "target_stdout": "A:1:Kind:UnitEnum",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "69fd901e73862121123064f118bb64527fd47b07b6b3f6328af0204d5fd3f241"
+      }
+    },
+    {
+      "name": "custom-backed-enum-interface",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "A:1",
+      "target_stdout": "A:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "3feac5701726d25ad9fc3216c8d3dfdb49513ac5d4a9a176be27cf4927a23577"
+      }
+    },
+    {
+      "name": "enum-interface-order",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "I:UnitEnum:BackedEnum:0:1:1",
+      "target_stdout": "I:UnitEnum:BackedEnum:0:1:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "fa933d6cdf12193e3c22e7063629c63065229e17b2c4ce091bab2ca46933875d"
+      }
+    },
+    {
+      "name": "trait-enum-and-magic-scope",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "E:T:A",
+      "target_stdout": "E:T:A",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "e595e3067505d7369f6753ae52e044bb72da971f57eaf2683fb665edb5eae0b5"
+      }
+    },
+    {
+      "name": "enum-builtins-win-over-trait",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "1:1",
+      "target_stdout": "1:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "0796639bbd5143fb0b80d05ee16b3d191583941282bb5ee15ad3bb7ed0cf5ae3"
+      }
+    },
+    {
+      "name": "unit-enum-may-define-from",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "1",
+      "target_stdout": "1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "b39a3e0b2d2130dba09ba694e7320cd1072a1380b80729ab65fa187f361b1571"
+      }
+    },
+    {
+      "name": "enum-invokable",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "A7",
+      "target_stdout": "A7",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "4f79228326386e149a0142635a7aaebd7e930d453aa1b78ecb398d573f60f2da"
+      }
+    },
+    {
+      "name": "enum-generated-methods-as-callables",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "1:1:1",
+      "target_stdout": "1:1:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "0c3bdcb26d3e35322e354f708309bfa15adab1d7b295b32a0cb55f83f11aaae5"
+      }
+    },
+    {
+      "name": "enum-dynamic-static-receiver",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "1:1:A:1",
+      "target_stdout": "1:1:A:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "667bc107f0cc5b8b188e607dfc2068a6f514b8d26f1d245d91c01f0cf2cc6e46"
+      }
+    },
+    {
+      "name": "enum-builtin-arity-and-named-errors",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "missing:extra:cases:named:1",
+      "target_stdout": "missing:extra:cases:named:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "83ba659a8a1166a3273a4a47eb7531da34a06722635177cf78d8107e3ab946de"
+      }
+    },
+    {
+      "name": "backed-weak-scalar-conversions",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "A;A;A;A;none;type;type;",
+      "target_stdout": "A;A;A;A;none;type;type;",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "87d1bbacfd9b7194b37318ca420f633ceae7b6c4481cbfe63adc3f56ebecc5ba"
+      }
+    },
+    {
+      "name": "backed-float-deprecation",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "\nDeprecated: Implicit conversion from float 1.5 to int loses precision in <workspace>/build/linux-workspace/build/enum-match-269097467809476981/backed-float-deprecation/main.php on line 3\nA",
+      "target_stdout": "\nDeprecated: Implicit conversion from float 1.5 to int loses precision in <workspace>/build/linux-workspace/build/enum-match-269097467809476981/backed-float-deprecation/main.php on line 3\nA",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "a2b5442c4ffd38c19f1c92156f3bf60b62e514428e0c55a2cffde5c94900be65"
+      }
+    },
+    {
+      "name": "backed-float-string-deprecation",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "\nDeprecated: Implicit conversion from float-string \"1.5\" to int loses precision in <workspace>/build/linux-workspace/build/enum-match-269097467809476981/backed-float-string-deprecation/main.php on line 3\nA",
+      "target_stdout": "\nDeprecated: Implicit conversion from float-string \"1.5\" to int loses precision in <workspace>/build/linux-workspace/build/enum-match-269097467809476981/backed-float-string-deprecation/main.php on line 3\nA",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "e494befcb0923b5753e019984b3b8a6f8650ce86215539529e7356b731168263"
+      }
+    },
+    {
+      "name": "backed-null-deprecation",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "\nDeprecated: E::tryFrom(): Passing null to parameter #1 ($value) of type string|int is deprecated in <workspace>/build/linux-workspace/build/enum-match-269097467809476981/backed-null-deprecation/main.php on line 3\nZero",
+      "target_stdout": "\nDeprecated: E::tryFrom(): Passing null to parameter #1 ($value) of type string|int is deprecated in <workspace>/build/linux-workspace/build/enum-match-269097467809476981/backed-null-deprecation/main.php on line 3\nZero",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "3826b865b3040ac8aa579631cc5a1ffe007eaaefe8873f453f168ab65260dae7"
+      }
+    },
+    {
+      "name": "backed-nonnumeric-type-error",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "type",
+      "target_stdout": "type",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "d4956bcc078709e107b65e9135b3b4c2f2df655dcf63f8ced3cd058d198c131a"
+      }
+    },
+    {
+      "name": "empty-unit-and-backed-enums",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "0:0:1:missing",
+      "target_stdout": "0:0:1:missing",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "d9271f1dad0fc4abe312e7d1f6f4df6dd7b6fd85c3d0a74aef12eb51c7b147f5"
+      }
+    },
+    {
+      "name": "duplicate-backing-check-is-lazy",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "declared:1:A:x;B:x;duplicate:constant:lookup",
+      "target_stdout": "declared:1:A:x;B:x;duplicate:constant:lookup",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "6902080b5015891aaf3611f79a6a3c9e332b195eed3bbb5b08f4345ae7850a55"
+      }
+    },
+    {
+      "name": "invalid-backing-type-cases-vs-lookup",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "declared:A:1;B:b;case:constant",
+      "target_stdout": "declared:A:1;B:b;case:constant",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "afa50204ae3fcf465f74e20abba213d8174f58f8988cedd00a441246f83203c1"
+      }
+    },
+    {
+      "name": "readonly-name-and-value",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "name:value:A:a",
+      "target_stdout": "name:value:A:a",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "0e75ecfee3b466319ee23496026a0c5691299c736ad05bb6bfedae57ac9183cf"
+      }
+    },
+    {
+      "name": "readonly-property-references",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "name:value:bind",
+      "target_stdout": "name:value:bind",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "79c359eb67de96d1830394072b799f96fe8595097e7e786a50e11718425bfba1"
+      }
+    },
+    {
+      "name": "readonly-property-unset",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "name:value:absent",
+      "target_stdout": "name:value:absent",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "e16fa515625408450e1e317f2bdb390f3cc714c3e0d7547dea7704736fb4634d"
+      }
+    },
+    {
+      "name": "enum-no-dynamic-properties",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "dynamic:array:1",
+      "target_stdout": "dynamic:array:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "6534b08ee6e3444468823eeb62297a791e84180d02ce0dd5a6dfa0f09be54e03"
+      }
+    },
+    {
+      "name": "enum-not-constructible-or-cloneable",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "new:dynamic:clone:1",
+      "target_stdout": "new:dynamic:clone:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "7a163452586ac8ceb5579d66d225f136389dfd657c9e193be089033bd9e1bd1d"
+      }
+    },
+    {
+      "name": "enum-values-in-arrays-and-references",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "1:1:1:1",
+      "target_stdout": "1:1:1:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "c6132c26123cd11f212f88361fa1d8771bbccbc96f6ab553ac9e6f40ae595f28"
+      }
+    },
+    {
+      "name": "enum-nullable-and-union-types",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "1:1:type",
+      "target_stdout": "1:1:type",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "d31fbd1f5f6ef9de20afc981f3fed30771c6da5d9fd322999db368f57002ff43"
+      }
+    },
+    {
+      "name": "enum-conditional-declaration",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "1:1:A",
+      "target_stdout": "1:1:A",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "e493b6209e22a394a17c2ef7b7aaf8b6df2c012f2eb6c5fc7ac9deeedc7d21ca"
+      }
+    },
+    {
+      "name": "enum-autoload-and-kind",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "load:1:1:A",
+      "target_stdout": "load:1:1:A",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "c68f2bc1ad232c66124c52e638974ca8774633537ef46ff20ce8ce3fa8d1062d"
+      }
+    },
+    {
+      "name": "enum-namespace-and-alias",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "Ready:1:1",
+      "target_stdout": "Ready:1:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "8a62a257a926e1b72bee75e0da0becc7cab84fbac6ad64d6d789f0cca7a366cd"
+      }
+    },
+    {
+      "name": "match-strict-scalar-types",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "int0;string0;false;null;int1;float1;",
+      "target_stdout": "int0;string0;false;null;int1;float1;",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "b3c0a4513578d633f101b21ecfad68c7eda6e4e9fa5b3ec7a529d1a206533032"
+      }
+    },
+    {
+      "name": "match-subject-evaluated-once",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "two:1",
+      "target_stdout": "two:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "99d2a576eda768bfdeb75653966927e642dd092aa6f1f9dcde5c43dcc6bbd982"
+      }
+    },
+    {
+      "name": "match-default-and-lazy-arms",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "c1:c2:rtwo:two",
+      "target_stdout": "c1:c2:rtwo:two",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "360c5cb71e44245beed1653901a59f79571040dd12cd8807408572830d17ea70"
+      }
+    },
+    {
+      "name": "match-multiple-and-empty-arms",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "group:empty:unhandled",
+      "target_stdout": "group:empty:unhandled",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "366ba7ca6fc2b133f042e6ded8483d07c0d9e5bb7a583e4985e7fe78778fb82c"
+      }
+    },
+    {
+      "name": "match-ordered-nested-arrays",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "exact",
+      "target_stdout": "exact",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "c6781c11347595395c2e52f4a81bfa3659058b42a8004093dcb38abe988443c7"
+      }
+    },
+    {
+      "name": "match-object-and-enum-identity",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "same:B",
+      "target_stdout": "same:B",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "3b154d323670807409316cdaecef0db991393505b495010e425b951ef7f3ac29"
+      }
+    },
+    {
+      "name": "match-array-object-members",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "same",
+      "target_stdout": "same",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "bc7fa88a9f6afa66baac0f2a4068082d57b6dfbbc5625bf018199a1612ce71bf"
+      }
+    },
+    {
+      "name": "match-subject-retained-while-mutated",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "b:2",
+      "target_stdout": "b:2",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "decf9646fb699befa587334539bbed785a19e99e19abf0d7f382bcc405e5e8b6"
+      }
+    },
+    {
+      "name": "match-variable-reads-after-condition",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "two:2",
+      "target_stdout": "two:2",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "1f2cb8c2e8c6ebc4e870e0ea1e87334e33b7e58f5f3428f3b9fafee064f4b315"
+      }
+    },
+    {
+      "name": "match-property-is-a-snapshot",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "one:2",
+      "target_stdout": "one:2",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "e255f1dd1854c2f1597158e5c3dd3f6d547f93c8f95466c2b0210d100e5cd10d"
+      }
+    },
+    {
+      "name": "match-assignment-is-a-snapshot",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "one:2",
+      "target_stdout": "one:2",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "160773d43d8573cba483575feb939fa582b6ac7785b2995f02940dd3d4c20031"
+      }
+    },
+    {
+      "name": "match-undefined-variable-assigned-by-condition",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "two",
+      "target_stdout": "two",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "cabe3e1d3034ec2bc2a0a08ced8a75fac161ab8668378b495d9b2a43cf341cb2"
+      }
+    },
+    {
+      "name": "throw-expression-in-match",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "one:missing:finally",
+      "target_stdout": "one:missing:finally",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "be9af835cf740ecb53201ec5b46b055404f80ca1fc3a822886a1c5dbdb7a9d36"
+      }
+    },
+    {
+      "name": "throw-expression-in-coalesce",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "7:missing",
+      "target_stdout": "7:missing",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "7dadc137d6904c7a22d76b12da9d4b09c8518bcf8df6043358652da020cc7651"
+      }
+    },
+    {
+      "name": "match-return-in-finally",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "finally:4:finally:caught",
+      "target_stdout": "finally:4:finally:caught",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "7eef4d9f59b300808aa9cea18fa0355d73ce932af30b69068368875b1faac163"
+      }
+    },
+    {
+      "name": "clone-object-and-array-copy-on-write",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "1:1:9:2:7",
+      "target_stdout": "1:1:9:2:7",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "4e36065e198088a945be69781dd29a6f60b15c1ea1c602dbe660e6ca860e69b9"
+      }
+    },
+    {
+      "name": "clone-keeps-explicit-references",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "9:9:9",
+      "target_stdout": "9:9:9",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "5fc782b71b49e4a4c67ac2f4db82394fbe240eb4cb11c0434825196e5e1b41cc"
+      }
+    },
+    {
+      "name": "clone-calls-hook-on-new-object",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "1:2",
+      "target_stdout": "1:2",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "6d684d89895b95474809689a0c576c22af96d6cb8067b19361209dcb0ee6a9be"
+      }
+    },
+    {
+      "name": "clone-visibility-error",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "private:scalar",
+      "target_stdout": "private:scalar",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "43e6740523ab1e52c58d779febdd737e6de33e9de22d7944e97efa400925331b"
+      }
+    },
+    {
+      "name": "clone-closure-captures",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "3:1",
+      "target_stdout": "3:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "1d48741a93b817c6011cb8140c90dec2bc4e3e510a2ff5b15abc25a2114fe940"
+      }
+    },
+    {
+      "name": "async-enum-method-match",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "B",
+      "target_stdout": "B",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "1f98749076e63b28b9c1c7816967ceb152a93af30ed1e5df4b45bec38ec191bc"
+      }
+    },
+    {
+      "name": "async-enum-autoload",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "A:1",
+      "target_stdout": "A:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "E.php": "021c43768eca1c09c13ddb66cfaaef3a53d1f592b8480007fe4ff98703325de2",
+        "main.php": "e62477019095a2c14ed4dca7232f8fa46b6f39b9f27ad73ba0ad1fc6c17c33dc"
+      }
+    },
+    {
+      "name": "async-enum-generated-callable",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "1",
+      "target_stdout": "1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "cb1a87a8a31e266a6b098047250ee8c6b843c8e91a23709ad03ec3c8eb39f196"
+      }
+    },
+    {
+      "name": "async-match-subject-and-condition",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "9",
+      "target_stdout": "9",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "789ae200c2d36a58de1388947318cbc2187fed366fefee82cb6982ad2b5aa5f6"
+      }
+    },
+    {
+      "name": "async-match-cancellation-finally",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "finally:cancel",
+      "target_stdout": "finally:cancel",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "43251bb6e1d88cf93c0de0c1e79c92f4b81899086f6752a5c6e7ec519255601f"
+      }
+    },
+    {
+      "name": "async-clone-hook",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "1:9",
+      "target_stdout": "1:9",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "9547203bc497be578b08b997e48f598fcebe7e82e085e360181f9f26ab4b7c1b"
+      }
+    },
+    {
+      "name": "async-clone-cancellation",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "clone-finally:cancel:1",
+      "target_stdout": "clone-finally:cancel:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "ec4f4c594459e7823262a365c0b9e74ecd130b1fd874c09e4f405373b5ed2537"
+      }
+    },
+    {
+      "name": "enum-case-missing-backing-rejected",
+      "mode": "rejection:backing",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Case A of backed enum E must have a value in <workspace>/build/linux-workspace/build/enum-match-269097467809476981/enum-case-missing-backing-rejected/main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "org.graalvm.polyglot.PolyglotException: Enum case E::A must match its backing declaration",
+      "program_sha256": {
+        "main.php": "04947bb16c6b2f65cdf54750294d6c08982498e9828eec86cc0b86a466b21864"
+      }
+    },
+    {
+      "name": "unit-case-value-rejected",
+      "mode": "rejection:backing",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Case A of non-backed enum E must not have a value in <workspace>/build/linux-workspace/build/enum-match-269097467809476981/unit-case-value-rejected/main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "org.graalvm.polyglot.PolyglotException: Enum case E::A must match its backing declaration",
+      "program_sha256": {
+        "main.php": "0982c25f523abe6147a46486650b79eb2faf661e148aaba75d606784bef16611"
+      }
+    },
+    {
+      "name": "invalid-enum-backing-type-rejected",
+      "mode": "rejection:backing",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Enum backing type must be int or string, float given in <workspace>/build/linux-workspace/build/enum-match-269097467809476981/invalid-enum-backing-type-rejected/main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "org.graalvm.polyglot.PolyglotException: Enum backing type must be int or string",
+      "program_sha256": {
+        "main.php": "4d0f295585dbc9797f6ad1d4bf6ec31500ae8bc0dd6f91a0adda4ad2d78632ff"
+      }
+    },
+    {
+      "name": "duplicate-case-name-rejected",
+      "mode": "rejection:constant",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Cannot redefine class constant E::A in <workspace>/build/linux-workspace/build/enum-match-269097467809476981/duplicate-case-name-rejected/main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "org.graalvm.polyglot.PolyglotException: Cannot redeclare constant A",
+      "program_sha256": {
+        "main.php": "6e7d03b1616f1a201bb492de6084f7dd05fe8df153230b00c0debb30a368adbd"
+      }
+    },
+    {
+      "name": "case-and-constant-conflict-rejected",
+      "mode": "rejection:constant",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Cannot redefine class constant E::A in <workspace>/build/linux-workspace/build/enum-match-269097467809476981/case-and-constant-conflict-rejected/main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "org.graalvm.polyglot.PolyglotException: Cannot redeclare constant A",
+      "program_sha256": {
+        "main.php": "53d24613e6a93a7abeb046247ae48d0200d206e63906161a0ab575530bd3e52c"
+      }
+    },
+    {
+      "name": "enum-instance-property-rejected",
+      "mode": "rejection:properties",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Enum E cannot include properties in <workspace>/build/linux-workspace/build/enum-match-269097467809476981/enum-instance-property-rejected/main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "org.graalvm.polyglot.PolyglotException: Enum E cannot include properties",
+      "program_sha256": {
+        "main.php": "d1ef4c98b75928c8753aa1c964b88e7a528e2340d8fe9b1717810e1eda3cb77a"
+      }
+    },
+    {
+      "name": "enum-static-property-rejected",
+      "mode": "rejection:properties",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Enum E cannot include properties in <workspace>/build/linux-workspace/build/enum-match-269097467809476981/enum-static-property-rejected/main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "org.graalvm.polyglot.PolyglotException: Enum E cannot include properties",
+      "program_sha256": {
+        "main.php": "89a57dcff69028d260106cdd2b8da4efcded374ce571577c152f907aec253206"
+      }
+    },
+    {
+      "name": "enum-trait-property-rejected",
+      "mode": "rejection:properties",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Enum E cannot include properties in <workspace>/build/linux-workspace/build/enum-match-269097467809476981/enum-trait-property-rejected/main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "org.graalvm.polyglot.PolyglotException: Enum E cannot include properties",
+      "program_sha256": {
+        "main.php": "097ff066b0d484c2fb8a50e3f7c16eb45a44924468872521a161f79feb6b0a5a"
+      }
+    },
+    {
+      "name": "enum-constructor-rejected",
+      "mode": "rejection:magic",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Enum E cannot include magic method __construct in <workspace>/build/linux-workspace/build/enum-match-269097467809476981/enum-constructor-rejected/main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "org.graalvm.polyglot.PolyglotException: Enum E cannot include magic method __construct",
+      "program_sha256": {
+        "main.php": "69ac340fa7b3370eba3d8e10f9dbf1446675f07ae9ef2a8f738e068a8ac19d01"
+      }
+    },
+    {
+      "name": "enum-destructor-rejected",
+      "mode": "rejection:magic",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Enum E cannot include magic method __destruct in <workspace>/build/linux-workspace/build/enum-match-269097467809476981/enum-destructor-rejected/main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "org.graalvm.polyglot.PolyglotException: Enum E cannot include magic method __destruct",
+      "program_sha256": {
+        "main.php": "90f2da319fa76f61bd125de04800c1a8cecfcf08808595fc24d897ffe57b0c30"
+      }
+    },
+    {
+      "name": "enum-clone-hook-rejected",
+      "mode": "rejection:magic",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Enum E cannot include magic method __clone in <workspace>/build/linux-workspace/build/enum-match-269097467809476981/enum-clone-hook-rejected/main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "org.graalvm.polyglot.PolyglotException: Enum E cannot include magic method __clone",
+      "program_sha256": {
+        "main.php": "fb9a79a4ebb60e8c8302f5077d48fa1b41bff9c88997608b6f3a7d7ead39601f"
+      }
+    },
+    {
+      "name": "enum-tostring-rejected",
+      "mode": "rejection:magic",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Enum E cannot include magic method __toString in <workspace>/build/linux-workspace/build/enum-match-269097467809476981/enum-tostring-rejected/main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "org.graalvm.polyglot.PolyglotException: Enum E cannot include magic method __tostring",
+      "program_sha256": {
+        "main.php": "fec6fabe65ff03db9c388d7784f9733e5f7214c526f040b94f280cb69ecd3e53"
+      }
+    },
+    {
+      "name": "enum-missing-interface-method-rejected",
+      "mode": "rejection:abstract",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Enum E must implement 1 abstract method (I::value) in <workspace>/build/linux-workspace/build/enum-match-269097467809476981/enum-missing-interface-method-rejected/main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "org.graalvm.polyglot.PolyglotException: Class E must implement abstract method value",
+      "program_sha256": {
+        "main.php": "5e17a75a858342018dd47ea50d54a42f2d1ed8f25ca95fe66d52bbde6ca6b062"
+      }
+    },
+    {
+      "name": "enum-generated-cases-redeclaration-rejected",
+      "mode": "rejection:redeclare",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Cannot redeclare E::cases() in <workspace>/build/linux-workspace/build/enum-match-269097467809476981/enum-generated-cases-redeclaration-rejected/main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "org.graalvm.polyglot.PolyglotException: Cannot redeclare enum method E::cases",
+      "program_sha256": {
+        "main.php": "88c98c55eb64e9991f02c65c2a1f43ce1ff90a89345fc44bf071d0f2b8c60ecc"
+      }
+    },
+    {
+      "name": "enum-generated-from-redeclaration-rejected",
+      "mode": "rejection:redeclare",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Cannot redeclare E::from() in <workspace>/build/linux-workspace/build/enum-match-269097467809476981/enum-generated-from-redeclaration-rejected/main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "org.graalvm.polyglot.PolyglotException: Cannot redeclare enum method E::from",
+      "program_sha256": {
+        "main.php": "cbe0508057acefd7aa1a58d04691e464829231044f04960d2e43b2eb9dc1cff4"
+      }
+    },
+    {
+      "name": "enum-generated-tryfrom-redeclaration-rejected",
+      "mode": "rejection:redeclare",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Cannot redeclare E::tryfrom() in <workspace>/build/linux-workspace/build/enum-match-269097467809476981/enum-generated-tryfrom-redeclaration-rejected/main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "org.graalvm.polyglot.PolyglotException: Cannot redeclare enum method E::tryFrom",
+      "program_sha256": {
+        "main.php": "89a501960326324ef49d35611536eb4ffe13d3ed8b3dd3b07d39670d22cfd475"
+      }
+    },
+    {
+      "name": "non-enum-unit-interface-rejected",
+      "mode": "rejection:non-enum",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Non-enum class C cannot implement interface UnitEnum in <workspace>/build/linux-workspace/build/enum-match-269097467809476981/non-enum-unit-interface-rejected/main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "org.graalvm.polyglot.PolyglotException: Non-enum class C cannot implement interface UnitEnum",
+      "program_sha256": {
+        "main.php": "1fdab1f5f696295fb40030cbb4e75b608b064fc5899e6eacb1142384525e5ad2"
+      }
+    },
+    {
+      "name": "non-enum-indirect-unit-interface-rejected",
+      "mode": "rejection:non-enum",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Non-enum class C cannot implement interface UnitEnum in <workspace>/build/linux-workspace/build/enum-match-269097467809476981/non-enum-indirect-unit-interface-rejected/main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "org.graalvm.polyglot.PolyglotException: Non-enum class C cannot implement interface I",
+      "program_sha256": {
+        "main.php": "8eeb85424d3216e85cf20aa7bf51d40e711e4db923442a8d964cd1553e0bb591"
+      }
+    },
+    {
+      "name": "unit-enum-backed-interface-rejected",
+      "mode": "rejection:non-backed",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Non-backed enum E cannot implement interface BackedEnum in <workspace>/build/linux-workspace/build/enum-match-269097467809476981/unit-enum-backed-interface-rejected/main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "org.graalvm.polyglot.PolyglotException: Non-backed enum E cannot implement BackedEnum",
+      "program_sha256": {
+        "main.php": "970638518ecc703be07b76ee60d2159e9f27aac2b933891a53eb5d592f62ab11"
+      }
+    },
+    {
+      "name": "enum-explicit-unit-interface-rejected",
+      "mode": "rejection:interface",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Enum E cannot implement previously implemented interface UnitEnum in <workspace>/build/linux-workspace/build/enum-match-269097467809476981/enum-explicit-unit-interface-rejected/main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "org.graalvm.polyglot.PolyglotException: Repeated interface UnitEnum",
+      "program_sha256": {
+        "main.php": "095b4b0fa3dbe12292cd90a28697736e8d640f39e11a34913e5b7eeae45c5a14"
+      }
+    },
+    {
+      "name": "enum-explicit-backed-interface-rejected",
+      "mode": "rejection:interface",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Enum E cannot implement previously implemented interface BackedEnum in <workspace>/build/linux-workspace/build/enum-match-269097467809476981/enum-explicit-backed-interface-rejected/main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "org.graalvm.polyglot.PolyglotException: Repeated interface BackedEnum",
+      "program_sha256": {
+        "main.php": "5bec73fee6c8ee5594d193f97cfdbaaa011a8c8de007c1450c6ac0f1031194fc"
+      }
+    },
+    {
+      "name": "match-duplicate-default-rejected",
+      "mode": "rejection:default",
+      "oracle_exit": 255,
+      "target_exit": 1,
+      "oracle_stdout": "\nFatal error: Match expressions may only contain one default arm in <workspace>/build/linux-workspace/build/enum-match-269097467809476981/match-duplicate-default-rejected/main.php on line 2\nStack trace:\n#0 {main}\n",
+      "target_stdout": "",
+      "oracle_stderr": "",
+      "target_stderr": "org.graalvm.polyglot.PolyglotException: Match expressions may only contain one default arm",
+      "program_sha256": {
+        "main.php": "fd9f69a7a4e1b9a652086b20ebb549dbb8b991214104963161222a16936972de"
+      }
+    }
+  ]
+}

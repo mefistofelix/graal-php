@@ -12,6 +12,12 @@ public final class PhpContext implements AutoCloseable {
     private CodeRepository repository;
     private final java.util.List<HostedRequest> hostedRequests = new java.util.ArrayList<>();
     private java.util.Map<String, Execution.Function> asyncFunctions;
+    private java.util.Map<String, ObjectModel.Definition> builtinTypes;
+    public synchronized java.util.Map<String, ObjectModel.Definition> builtinTypes() {
+        if (builtinTypes == null) builtinTypes = PhpCompiler.builtinTypes(language,
+                com.oracle.truffle.api.source.Source.newBuilder("php", EnumApi.INTERFACES + "\nclass stdClass {}", "<builtin-types>").internal(true).build());
+        return builtinTypes;
+    }
     public synchronized Execution.Function asyncFunction(String name) {
         if (asyncFunctions == null) asyncFunctions = AsyncBuiltins.compile(this);
         return asyncFunctions.get(name);

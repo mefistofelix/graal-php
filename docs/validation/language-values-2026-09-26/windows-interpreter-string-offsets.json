@@ -1,0 +1,359 @@
+{
+  "suite": "string-offsets",
+  "target": "windows-interpreter",
+  "reference": "PHP 8.6.0RC2 for synchronous cases; pinned TrueAsync 0.10.0 / PHP 8.6 for asynchronous cases",
+  "report": "Target: graalphp.exe interpreter\nPHP 8.6.0RC2 (cli) (built: Sep 23 2026 09:53:34) (NTS Visual C++ 2026 x64)\nCopyright © The PHP Group and Contributors\nBuilt by The PHP Group\nZend Engine v4.6.0RC2, Copyright © Zend by Perforce\n    with Zend OPcache v8.6.0RC2, Copyright ©, by Zend by Perforce\nPHP 8.6.0-dev (cli) (built: Sep 12 2026 13:03:46) (ZTS Visual C++ 2026 x64 TrueAsync ABI v0.26.0)\nCopyright © The PHP Group and Contributors\nZend Engine v4.6.0-dev, Copyright © Zend by Perforce\n    with Zend OPcache v8.6.0-dev, Copyright ©, by Zend by Perforce\nPASS positive-negative-and-numeric-string oracle=0 target=0 mode=output\nPASS utf8-and-binary-read-bytes oracle=0 target=0 mode=output\nPASS write-is-byte-oriented oracle=0 target=0 mode=output\nPASS string-assignment-is-copy-on-write oracle=0 target=0 mode=output\nPASS shared-string-variable-reference oracle=0 target=0 mode=output\nPASS readonly-enum-string-offset oracle=0 target=0 mode=output\nPASS out-of-range-read-warnings oracle=0 target=0 mode=output\nPASS read-offset-cast-warnings oracle=0 target=0 mode=output\nPASS integer-prefix-warning oracle=0 target=0 mode=output\nPASS invalid-offset-types oracle=0 target=0 mode=output\nPASS quiet-offset-probes oracle=0 target=0 mode=output\nPASS coalesce-quiet-vs-invalid-type oracle=0 target=0 mode=output\nPASS probe-float-precision-warning oracle=0 target=0 mode=output\nPASS write-expands-with-spaces oracle=0 target=0 mode=output\nPASS write-first-byte-and-assignment-result oracle=0 target=0 mode=output\nPASS write-negative-out-of-range oracle=0 target=0 mode=output\nPASS write-offset-casts oracle=0 target=0 mode=output\nPASS empty-write-is-an-error oracle=0 target=0 mode=output\nPASS coalesce-write-byte-result oracle=0 target=0 mode=output\nPASS append-reference-unset-are-errors oracle=0 target=0 mode=output\nPASS compound-assignment-evaluates-rhs-before-error oracle=0 target=0 mode=output\nPASS nested-string-offset-read-and-write oracle=0 target=0 mode=output\nPASS offset-source-can-change-during-rhs oracle=0 target=0 mode=output\nPASS binary-array-key-preserved oracle=0 target=0 mode=output\nPASS masked-warning-updates-last-error oracle=0 target=0 mode=output\nPASS async-offset-assignment oracle=0 target=0 mode=output\nPASS async-offset-error-and-finally oracle=0 target=0 mode=output\nCases: 27; output comparisons: 27; semantic rejections: 0; failures: 0\n",
+  "cases": [
+    {
+      "name": "positive-negative-and-numeric-string",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "a:b:c:b:b:b:b:z:y",
+      "target_stdout": "a:b:c:b:b:b:b:z:y",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "a16e24b93fc22a5735283fdfffcb1fd051d5582feabca74dfd6918ea57c05e60"
+      }
+    },
+    {
+      "name": "utf8-and-binary-read-bytes",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "c3:a9:00:ff:ff",
+      "target_stdout": "c3:a9:00:ff:ff",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "6cf44287a9b7ab7b1886a0a4010cda2d12fae98183a140efc530f78ec1aefd49"
+      }
+    },
+    {
+      "name": "write-is-byte-oriented",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "41a980:a9",
+      "target_stdout": "41a980:a9",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "e98ffbecd95a1d2e07efaa4398a15b7971b8ddf44aed0615f5c001b00fefa9c0"
+      }
+    },
+    {
+      "name": "string-assignment-is-copy-on-write",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "abc:aXc:abc:aYc",
+      "target_stdout": "abc:aXc:abc:aYc",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "5d5b450a5912b700e4207b1560c8db72cb965067135acb3958ad007f64b64313"
+      }
+    },
+    {
+      "name": "shared-string-variable-reference",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "abZ:abZ",
+      "target_stdout": "abZ:abZ",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "7e8a66dbbed45df5be17701c7d0c6238336a48a007cac70c161d6c10b2c950fc"
+      }
+    },
+    {
+      "name": "readonly-enum-string-offset",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "name:value:A:abc",
+      "target_stdout": "name:value:A:abc",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "9210944c10952de619a282b02467ee428c893ba6c44ee88216990a8b383da667"
+      }
+    },
+    {
+      "name": "out-of-range-read-warnings",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "\nWarning: Uninitialized string offset 3 in <workspace>\\build\\string-offsets-6353291630999025784\\out-of-range-read-warnings\\main.php on line 2\n[]\nWarning: Uninitialized string offset -4 in <workspace>\\build\\string-offsets-6353291630999025784\\out-of-range-read-warnings\\main.php on line 2\n[]",
+      "target_stdout": "\nWarning: Uninitialized string offset 3 in <workspace>\\build\\string-offsets-6353291630999025784\\out-of-range-read-warnings\\main.php on line 2\n[]\nWarning: Uninitialized string offset -4 in <workspace>\\build\\string-offsets-6353291630999025784\\out-of-range-read-warnings\\main.php on line 2\n[]",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "5ed53dcca44d97cec4abc79ff9ec99fdd64c30d45a0c168de57deff283f1da4d"
+      }
+    },
+    {
+      "name": "read-offset-cast-warnings",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "\nWarning: String offset cast occurred in <workspace>\\build\\string-offsets-6353291630999025784\\read-offset-cast-warnings\\main.php on line 2\n[b]\nWarning: String offset cast occurred in <workspace>\\build\\string-offsets-6353291630999025784\\read-offset-cast-warnings\\main.php on line 2\n[b]\nWarning: String offset cast occurred in <workspace>\\build\\string-offsets-6353291630999025784\\read-offset-cast-warnings\\main.php on line 2\n[b]\nWarning: String offset cast occurred in <workspace>\\build\\string-offsets-6353291630999025784\\read-offset-cast-warnings\\main.php on line 2\n[a]",
+      "target_stdout": "\nWarning: String offset cast occurred in <workspace>\\build\\string-offsets-6353291630999025784\\read-offset-cast-warnings\\main.php on line 2\n[b]\nWarning: String offset cast occurred in <workspace>\\build\\string-offsets-6353291630999025784\\read-offset-cast-warnings\\main.php on line 2\n[b]\nWarning: String offset cast occurred in <workspace>\\build\\string-offsets-6353291630999025784\\read-offset-cast-warnings\\main.php on line 2\n[b]\nWarning: String offset cast occurred in <workspace>\\build\\string-offsets-6353291630999025784\\read-offset-cast-warnings\\main.php on line 2\n[a]",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "6c0d73045549bf6e1ea4a7680c88daba77a6fc9e50cee98eabe8ba30a97eef84"
+      }
+    },
+    {
+      "name": "integer-prefix-warning",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "\nWarning: Illegal string offset \"1x\" in <workspace>\\build\\string-offsets-6353291630999025784\\integer-prefix-warning\\main.php on line 2\nb",
+      "target_stdout": "\nWarning: Illegal string offset \"1x\" in <workspace>\\build\\string-offsets-6353291630999025784\\integer-prefix-warning\\main.php on line 2\nb",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "e8a584d0f6d8b91718344cac0deee8a434c1d111722765abe830271027b8a132"
+      }
+    },
+    {
+      "name": "invalid-offset-types",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "type:type:type:type:type:type:",
+      "target_stdout": "type:type:type:type:type:type:",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "d8ca1e111596c47f3f8f7130683801c115f8a24d40ce4c8fac945d93cad2d726"
+      }
+    },
+    {
+      "name": "quiet-offset-probes",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "set:value;set:empty;set:value;no:empty;no:empty;set:empty;set:empty;no:empty;no:empty;set:value;",
+      "target_stdout": "set:value;set:empty;set:value;no:empty;no:empty;set:empty;set:empty;no:empty;no:empty;set:value;",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "3d94ce075e25d33b7eed0f7436def52912bba4760b1242691aa35e49f6429b42"
+      }
+    },
+    {
+      "name": "coalesce-quiet-vs-invalid-type",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "a:missing:missing:a:b:type",
+      "target_stdout": "a:missing:missing:a:b:type",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "768b34230a9787d4debd7dc879abf662267ebd3f53585dfeb6818f8b8312a662"
+      }
+    },
+    {
+      "name": "probe-float-precision-warning",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "\nDeprecated: Implicit conversion from float 1.8 to int loses precision in <workspace>\\build\\string-offsets-6353291630999025784\\probe-float-precision-warning\\main.php on line 2\n1:\nDeprecated: Implicit conversion from float 1.8 to int loses precision in <workspace>\\build\\string-offsets-6353291630999025784\\probe-float-precision-warning\\main.php on line 2\n1",
+      "target_stdout": "\nDeprecated: Implicit conversion from float 1.8 to int loses precision in <workspace>\\build\\string-offsets-6353291630999025784\\probe-float-precision-warning\\main.php on line 2\n1:\nDeprecated: Implicit conversion from float 1.8 to int loses precision in <workspace>\\build\\string-offsets-6353291630999025784\\probe-float-precision-warning\\main.php on line 2\n1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "25a35e86709630e8bcf24c6bd1d7f9598b2aae2bfce233e7a339673280b9d351"
+      }
+    },
+    {
+      "name": "write-expands-with-spaces",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "Z:abc  Z:6",
+      "target_stdout": "Z:abc  Z:6",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "97a26caf4e1c2f0b18ae416cd23b8dd245227e2dc32d4573477659bfaaa21cc6"
+      }
+    },
+    {
+      "name": "write-first-byte-and-assignment-result",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "\nWarning: Only the first byte will be assigned to the string offset in <workspace>\\build\\string-offsets-6353291630999025784\\write-first-byte-and-assignment-result\\main.php on line 2\nX:Xbc:XY",
+      "target_stdout": "\nWarning: Only the first byte will be assigned to the string offset in <workspace>\\build\\string-offsets-6353291630999025784\\write-first-byte-and-assignment-result\\main.php on line 2\nX:Xbc:XY",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "f0c4c6c458795420fa923f3b068d4b1e996213a34b70e3a0131500c1683a7fa5"
+      }
+    },
+    {
+      "name": "write-negative-out-of-range",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "\nWarning: Illegal string offset -5 in <workspace>\\build\\string-offsets-6353291630999025784\\write-negative-out-of-range\\main.php on line 2\n[]:abc",
+      "target_stdout": "\nWarning: Illegal string offset -5 in <workspace>\\build\\string-offsets-6353291630999025784\\write-negative-out-of-range\\main.php on line 2\n[]:abc",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "e155bf13cfa1ecaf2be368e58bc039c9492e108103e5c0f889099f542e54be7a"
+      }
+    },
+    {
+      "name": "write-offset-casts",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "\nWarning: String offset cast occurred in <workspace>\\build\\string-offsets-6353291630999025784\\write-offset-casts\\main.php on line 2\nZ:aZc",
+      "target_stdout": "\nWarning: String offset cast occurred in <workspace>\\build\\string-offsets-6353291630999025784\\write-offset-casts\\main.php on line 2\nZ:aZc",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "9b21980ec157c5820da1f9010d99ffd537f25404e95d8f4cc8057b646d76920d"
+      }
+    },
+    {
+      "name": "empty-write-is-an-error",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "empty:abc",
+      "target_stdout": "empty:abc",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "7b6d3d4c5e09712ce600b86c1da3db5ad1374435797dafb34ecf0dce0f79b24e"
+      }
+    },
+    {
+      "name": "coalesce-write-byte-result",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "b:\nWarning: Only the first byte will be assigned to the string offset in <workspace>\\build\\string-offsets-6353291630999025784\\coalesce-write-byte-result\\main.php on line 2\nY:abc  Y",
+      "target_stdout": "b:\nWarning: Only the first byte will be assigned to the string offset in <workspace>\\build\\string-offsets-6353291630999025784\\coalesce-write-byte-result\\main.php on line 2\nY:abc  Y",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "deae1923471d66ba17a0a38ba09570ca391544b0cca9cfa4e92f8abc63cdfa4e"
+      }
+    },
+    {
+      "name": "append-reference-unset-are-errors",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "append:reference:bind:unset:abc",
+      "target_stdout": "append:reference:bind:unset:abc",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "3648f3128db32f18c08aa4b576e6cd3d4589dca1d2df3a412f8dc498a092161d"
+      }
+    },
+    {
+      "name": "compound-assignment-evaluates-rhs-before-error",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "rhs:compound:rhs:invalid:increment:abc",
+      "target_stdout": "rhs:compound:rhs:invalid:increment:abc",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "25f8e289bbd1cc3bdb288b0ba0c28153d6635764e2bec0998164c1d6687be6f7"
+      }
+    },
+    {
+      "name": "nested-string-offset-read-and-write",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "a:nested:abc",
+      "target_stdout": "a:nested:abc",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "ab57de978161e01cfd5d8dce61a96c597cbebf8fccee4fad49514176cb48e9fb"
+      }
+    },
+    {
+      "name": "offset-source-can-change-during-rhs",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "key:value:Z",
+      "target_stdout": "key:value:Z",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "c9f7b1267ee7a4893f25fbbfdc01b4ecc47880dd97f5e7ad23d58f36eba706ca"
+      }
+    },
+    {
+      "name": "binary-array-key-preserved",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "3:9:1:ff00:3",
+      "target_stdout": "3:9:1:ff00:3",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "ef2117986c98ba95ed8f4968f9ffe964b8253ab0cc525b344c121540c440c67a"
+      }
+    },
+    {
+      "name": "masked-warning-updates-last-error",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "[]:2:Uninitialized string offset 9:1:2",
+      "target_stdout": "[]:2:Uninitialized string offset 9:1:2",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "66c02053372fa5ddf2716baf793fbcee03449bd2c4898b463cb3d6cad176fa2b"
+      }
+    },
+    {
+      "name": "async-offset-assignment",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "aZc",
+      "target_stdout": "aZc",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "a47971a647bfd18648be3b5616c459ce7d231925be6abdb7b35f7d4a49440b21"
+      }
+    },
+    {
+      "name": "async-offset-error-and-finally",
+      "mode": "output",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "error:abc",
+      "target_stdout": "error:abc",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "1b68100c78cc14ba6e402fde26f3a2a7bea32b0735fbc4fee2387dc196c4cc9f"
+      }
+    }
+  ]
+}

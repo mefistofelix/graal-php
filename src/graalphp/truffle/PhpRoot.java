@@ -25,8 +25,9 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
     }
     @Operation
     public static final class Element {
-        @Specialization static PhpValues.Location run(PhpValues.Location parent, Object key) {
-            try { return key == Append.KEY ? parent.deferredAppend() : parent.element(PhpValues.unwrap(key)); }
+        @Specialization static PhpValues.Location run(VirtualFrame frame, PhpValues.Location parent, Object key,
+                @com.oracle.truffle.api.dsl.Bind BytecodeNode bytecode, @com.oracle.truffle.api.dsl.Bind("$bytecodeIndex") int bci) {
+            try { return (key == Append.KEY ? parent.deferredAppend() : parent.element(PhpValues.unwrap(key))).at(activation(frame).at(bytecode, bci)); }
             finally { PhpValues.drop(key); }
         }
     }
@@ -42,17 +43,25 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
             return activation(frame).track(PhpValues.own(location.readOrNull()));
         }
     }
+    @Operation public static final class ProbeRead {
+        @Specialization static Object run(VirtualFrame frame, PhpValues.Location location) {
+            return activation(frame).track(PhpValues.own(location.probe()));
+        }
+    }
     @Operation @ConstantOperand(type = String.class, name = "name")
     public static final class Property {
-        @Specialization static PhpValues.Location run(VirtualFrame frame, String name, Object receiver) {
-            return ObjectModel.property(activation(frame), receiver, name);
+        @Specialization static PhpValues.Location run(VirtualFrame frame, String name, Object receiver,
+                @com.oracle.truffle.api.dsl.Bind BytecodeNode bytecode, @com.oracle.truffle.api.dsl.Bind("$bytecodeIndex") int bci) {
+            var caller = activation(frame).at(bytecode, bci);
+            return ObjectModel.property(caller, receiver, name).at(caller);
         }
     }
     @Operation @ConstantOperand(type = String.class, name = "type") @ConstantOperand(type = String.class, name = "name")
     public static final class StaticProperty {
         @Specialization static PhpValues.Location run(VirtualFrame frame, String type, String name,
                 @com.oracle.truffle.api.dsl.Bind BytecodeNode bytecode, @com.oracle.truffle.api.dsl.Bind("$bytecodeIndex") int bci) {
-            return ObjectModel.staticProperty(activation(frame).at(bytecode, bci), type, name);
+            var caller = activation(frame).at(bytecode, bci);
+            return ObjectModel.staticProperty(caller, type, name).at(caller);
         }
     }
     @Operation @ConstantOperand(type = String.class, name = "name")
@@ -110,11 +119,12 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
         }
     }
     @Operation public static final class CheckReturn {
-        @Specialization static Object run(VirtualFrame frame, Object value) {
-            var caller = activation(frame);
+        @Specialization static Object run(VirtualFrame frame, Object value,
+                @com.oracle.truffle.api.dsl.Bind BytecodeNode bytecode, @com.oracle.truffle.api.dsl.Bind("$bytecodeIndex") int bci) {
+            var caller = activation(frame).at(bytecode, bci);
             String returnType = TypeRelations.contextual(caller.function.returnType(), caller.request, caller.function.owner(),
                     caller.calledClass == null ? caller.function.owner() : caller.calledClass.definition.name());
-            Object checked = ObjectModel.checkType(value, returnType);
+            Object checked = TypeRelations.check(value, returnType, caller.function.strictTypes(), Diagnostics.origin(caller));
             if (checked == PhpValues.unwrap(value)) return value;
             PhpValues.drop(value);
             return checked;
@@ -124,10 +134,24 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
     public static final class Increment {
         @Specialization @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
         static Object run(int delta, boolean before, PhpValues.Location location) {
+            location.checkIncrement();
             Object previous = location.read();
             Object value = Operations.binary("+", previous, (long) delta);
             location.set(value);
             return before ? value : previous;
+        }
+    }
+    @Operation public static final class ReadForAssignOperation {
+        @Specialization static Object run(VirtualFrame frame, PhpValues.Location location) {
+            return activation(frame).track(PhpValues.own(location.readForAssignOperation()));
+        }
+    }
+    @Operation @ConstantOperand(type = String.class, name = "operator")
+    public static final class CompoundValue {
+        @Specialization @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+        static Object run(String operator, PhpValues.Location location, Object previous, Object value) {
+            try { location.checkAssignOperation(); return Operations.binary(operator, previous, value); }
+            finally { PhpValues.drop(previous); PhpValues.drop(value); }
         }
     }
     @Operation public static final class NonNull {
@@ -143,19 +167,55 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
     }
     @Operation
     public static final class Lookup {
-        @Specialization static Object run(VirtualFrame frame, Object array, Object key) {
-            try { return activation(frame).track(PhpValues.element(array, PhpValues.unwrap(key))); }
+        @Specialization static Object run(VirtualFrame frame, Object array, Object key,
+                @com.oracle.truffle.api.dsl.Bind BytecodeNode bytecode, @com.oracle.truffle.api.dsl.Bind("$bytecodeIndex") int bci) {
+            var caller = activation(frame).at(bytecode, bci);
+            try { return caller.track(PhpValues.element(array, PhpValues.unwrap(key), Diagnostics.origin(caller))); }
             finally { PhpValues.drop(array); PhpValues.drop(key); }
         }
     }
     @Operation
     public static final class Write {
-        @Specialization static Object run(PhpValues.Location location, Object value) { location.set(PhpValues.unwrap(value)); return value; }
+        @Specialization static Object run(PhpValues.Location location, Object value) {
+            Object result = location.write(PhpValues.unwrap(value));
+            if (result == PhpValues.unwrap(value)) return value;
+            PhpValues.drop(value);
+            return result;
+        }
     }
     @Operation
     public static final class Bind {
         @Specialization static Object run(VirtualFrame frame, PhpValues.Location destination, PhpValues.Location source) {
             destination.bind(source); return activation(frame).track(PhpValues.own(destination.read()));
+        }
+    }
+    @Operation public static final class Retain {
+        @Specialization static Object run(VirtualFrame frame, Object value) {
+            return activation(frame).track(PhpValues.own(PhpValues.unwrap(value)));
+        }
+    }
+    @Operation public static final class CloneObject {
+        @Specialization static Object run(VirtualFrame frame, Object value) { return ObjectModel.cloneObject(activation(frame), value); }
+    }
+    @Operation public static final class ThrowValue {
+        @Specialization static Object run(Object value) {
+            Object raw = PhpValues.unwrap(value);
+            PhpValues.drop(value);
+            if (raw instanceof PhpError error) throw error;
+            throw new PhpError("Error", "Can only throw objects implementing Throwable");
+        }
+    }
+    @Operation public static final class UnmatchedMatch {
+        @Specialization @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+        static Object run(Object value) {
+            try {
+                Object raw = PhpValues.unwrap(value);
+                String type = EnumApi.valueType(raw);
+                String shown = raw instanceof Long || raw instanceof Double ? Operations.string(raw)
+                        : raw instanceof String ? "'" + raw + "'" : raw == null ? "NULL"
+                        : raw instanceof Boolean ? raw.toString() : "of type " + type;
+                throw new PhpError("UnhandledMatchError", "Unhandled match case " + shown);
+            } finally { PhpValues.drop(value); }
         }
     }
     @Operation public static final class Drop {

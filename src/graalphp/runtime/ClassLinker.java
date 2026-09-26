@@ -39,6 +39,10 @@ public final class ClassLinker {
             if (!interfaceNames.add(key(name))) throw failure("Repeated interface " + name);
             var type = request.type(name);
             if (type.definition.kind() != Ir.TypeKind.INTERFACE) throw failure(name + " is not an interface");
+            if (definition.kind() == Ir.TypeKind.CLASS && type.isA("UnitEnum"))
+                throw failure("Non-enum class " + definition.name() + " cannot implement interface " + name);
+            if (definition.kind() == Ir.TypeKind.ENUM && definition.backingType() == null && type.isA("BackedEnum"))
+                throw failure("Non-backed enum " + definition.name() + " cannot implement BackedEnum");
             interfaces.add(type);
         }
         var traits = new LinkedHashMap<String, RuntimeClass>();
@@ -102,7 +106,7 @@ public final class ClassLinker {
             if (changed.abstractMethod() && changed.finalMethod()) throw failure("An abstract trait method cannot be final");
             if (adaptation.alias() != null) {
                 var function = changed.function();
-                var aliasFunction = new Function(adaptation.alias(), function.parameters(), function.target(), function.file(), function.owner(), function.returnType());
+                var aliasFunction = new Function(adaptation.alias(), function.parameters(), function.target(), function.file(), function.owner(), function.returnType(), function.builtin(), function.strictTypes());
                 changed = new Method(aliasFunction, changed.shared(), changed.visibility(), changed.abstractMethod(), changed.finalMethod());
                 if (aliases.putIfAbsent(key(adaptation.alias()), changed) != null) throw failure("Duplicate trait alias " + adaptation.alias());
             } else {
@@ -163,6 +167,7 @@ public final class ClassLinker {
                 }
             }
         }
+        EnumApi.validate(definition, new ArrayList<>(properties.values()), methods);
         for (var method : methods.values()) if (method.abstractMethod()) requirements.add(method);
         for (var contract : interfaces) {
             for (var entry : contract.methods.entrySet()) {
@@ -179,7 +184,7 @@ public final class ClassLinker {
             Method implementation = methods.get(key(requirement.function().name()));
             if (implementation == null && parent != null) implementation = parent.method(requirement.function().name());
             if (implementation == null || implementation.abstractMethod()) {
-                if (definition.kind() == Ir.TypeKind.CLASS && !definition.abstractType())
+                if ((definition.kind() == Ir.TypeKind.CLASS || definition.kind() == Ir.TypeKind.ENUM) && !definition.abstractType())
                     throw failure("Class " + definition.name() + " must implement abstract method " + requirement.function().name());
                 if (implementation != null && implementation != requirement) TypeRelations.compatible(request, implementation, requirement);
             } else TypeRelations.compatible(request, implementation, requirement);

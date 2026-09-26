@@ -54,6 +54,9 @@ if /i "%~1"=="trueasync" goto trueasync
 if /i "%~1"=="oracle" goto oracle
 if /i "%~1"=="autoload-test" goto autoload_test
 if /i "%~1"=="class-test" goto class_test
+if /i "%~1"=="enum-test" goto enum_test
+if /i "%~1"=="string-test" goto string_test
+if /i "%~1"=="strict-test" goto strict_test
 if /i "%~1"=="benchmark" ("%GRAALPHP_JDK%\bin\java.exe" -cp "build\classes;%DEPS%/*" graalphp.lab.Main --benchmark & exit /b !errorlevel!)
 "%GRAALPHP_JDK%\bin\java.exe" --enable-native-access=ALL-UNNAMED -jar build\graalphp.jar --version
 exit /b %errorlevel%
@@ -150,6 +153,15 @@ certutil -hashfile build\trueasync-source.zip SHA256 | findstr /i /c:"db06d553a9
 if not "!errorlevel!"=="0" exit /b 1
 tar.exe -xf build\trueasync-source.zip -C build\reference
 exit /b %errorlevel%
+:enum_test
+set "LANGUAGE_TEST=EnumMatchTest"
+goto language_test
+:string_test
+set "LANGUAGE_TEST=StringOffsetsTest"
+goto language_test
+:strict_test
+set "LANGUAGE_TEST=StrictTypesTest"
+goto language_test
 :class_test
 set "LANGUAGE_TEST=ClassContractsTest"
 goto language_test
@@ -167,7 +179,9 @@ if not "!errorlevel!"=="0" exit /b 1
 set "AUTOLOAD_EXECUTABLE=%~dp0build\graalphp.exe"
 :language_compile
 if not exist build\test-classes mkdir build\test-classes
-"%GRAALPHP_JDK%\bin\javac.exe" --release 25 -proc:none -cp "build\classes;%DEPS%/*" -d build\test-classes tests\graalphp\!LANGUAGE_TEST!.java
+set "LANGUAGE_SUPPORT="
+if /i not "!LANGUAGE_TEST!"=="ClassContractsTest" set "LANGUAGE_SUPPORT=tests\graalphp\ClassContractsTest.java"
+"%GRAALPHP_JDK%\bin\javac.exe" --release 25 -proc:none -cp "build\classes;%DEPS%/*" -d build\test-classes !LANGUAGE_SUPPORT! tests\graalphp\!LANGUAGE_TEST!.java
 if not "!errorlevel!"=="0" exit /b 1
 "%GRAALPHP_JDK%\bin\java.exe" --enable-native-access=ALL-UNNAMED -cp "build\classes;build\test-classes;%DEPS%/*" graalphp.!LANGUAGE_TEST! tools/php-8.6.0RC2/php.exe tools/trueasync-0.10.0/php.exe "!AUTOLOAD_EXECUTABLE!" "%~3"
 exit /b %errorlevel%

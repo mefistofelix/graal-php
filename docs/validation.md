@@ -3,7 +3,33 @@
 Toolchain: Oracle GraalVM 25.4.4.1.1+1.1, Java 25.0.4.1.1, Truffle 25.4.4.1.1.
 Oracoli: PHP 8.6.0RC2 e TrueAsync 0.10.0 / PHP 8.6.0-dev / ABI v0.26.0.
 
-Il blocco funzionale corrente implementa [interfacce, trait e contratti delle
+Il blocco funzionale corrente implementa [enum, match, clone, offset di stringa
+e strict_types](language-values.md). Passano **155/155 programmi** su Windows/Linux
+JVM, Native Image e Native Image `--interpreter`: 930 esecuzioni, di cui 756
+confronti di output e 174 rifiuti semantici. I 18 report conservano input identici,
+exit code e output; i fatal non sono dichiarati testualmente identici a Zend.
+Windows usa PHP 8.6.0RC2/TrueAsync, Linux usa TrueAsync/PHP 8.6 per tutti i casi.
+
+Regressioni: 93 contratti classi in tutte e sei le combinazioni, 38 autoload e
+82 TrueAsync per entrambe le piattaforme JVM/native; 88/82 scenari integrati,
+53 scenari valori e 256 grafi/1.280 fasi collector per piattaforma. Il nuovo
+reload verifica casi enum e modalità strict_types fissati alla generazione.
+Passano 50 asserzioni di rete per prodotto, cURL JVM/native (96/112 Windows e
+98/108 Linux, con conteggi di progress variabili), i quattro casi fatal-C su
+JVM/CLI e 80 checkpoint full-GC FFI su ciascuna JVM. I sei casi integrati
+specifici della DLL Windows non sono eseguiti su Linux.
+
+Native Image ricostruiti in sequenza e copia Linux avviata dalla root; 98 file
+src/tests identici e 108 hash complessivi. Le prove fallite di sviluppo e i due
+errori di build nativa corretti restano archiviati. Un percorso errato della
+fixture FFI Linux è documentato insieme alla continuazione riuscita. Nessuna
+nuova campagna prestazionale o modifica ai default JIT/GC; il forced-GC su
+runner Native Image dedicato non è ripetuto qui.
+[Esiti](validation/language-values-2026-09-26/results.txt),
+[hash](validation/language-values-2026-09-26/hashes.json),
+[evidenze](validation/language-values-2026-09-26/README.md).
+
+Il blocco precedente implementa [interfacce, trait e contratti delle
 classi](class-contracts.md), varianza/tipi composti e costanti, con fatal di
 dichiarazione e cleanup nativo coordinati. Passano **93/93 programmi su
 Windows/Linux JVM, Native Image e Native Image `--interpreter`**: 558 esecuzioni,

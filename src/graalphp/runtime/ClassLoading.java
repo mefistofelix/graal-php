@@ -57,7 +57,7 @@ public final class ClassLoading implements AutoCloseable {
     // Only names already represented by this runtime, not the full PHP/SPL class catalog.
     private static final Set<String> BUILTINS = Set.of(
             "closure", "exception", "runtimeexception", "logicexception", "invalidargumentexception",
-            "error", "typeerror", "valueerror", "argumentcounterror", "ffi", "curlhandle", "curlmultihandle",
+            "error", "typeerror", "valueerror", "argumentcounterror", "unhandledmatcherror", "ffi", "curlhandle", "curlmultihandle",
             "sqlite3", "sqlite3stmt", "sqlite3result", "async\\coroutine", "async\\scope", "async\\context",
             "async\\channel", "async\\mutex", "async\\threadchannel", "async\\future", "async\\futurestate",
             "async\\asyncexception", "async\\asynccancellation", "async\\operationcanceledexception",
@@ -149,6 +149,10 @@ public final class ClassLoading implements AutoCloseable {
         try { return ObjectModel.checkType(value, type); }
         catch (PhpError error) { throw new PhpError("TypeError", "Autoload argument must satisfy type " + type); }
     }
+    private static Object argument(Activation caller, Object value, String type) {
+        return TypeRelations.check(value, type, caller.function.strictTypes(), Diagnostics.origin(caller));
+    }
+    private static String name(Activation caller, Object value) { return name(argument(caller, value, "string")); }
     private static String name(Object value) {
         String name = Operations.string(argument(value, "string"));
         return name.startsWith("\\") ? name.substring(1) : name;
@@ -229,11 +233,11 @@ public final class ClassLoading implements AutoCloseable {
     public static Object function(Activation caller, String function, Argument[] args, IndirectCallNode call) {
         var registry = caller.request.autoload;
         switch (function) {
-            case "class_exists", "interface_exists", "trait_exists": {
+            case "class_exists", "interface_exists", "trait_exists", "enum_exists": {
                 String kind = function.substring(0, function.indexOf('_'));
-                var ordered = CallArguments.builtin(function, args, List.of(kind, "autoload"), 1, true);
-                String name = name(ordered[0].value());
-                boolean autoload = (boolean) argument(ordered[1].value(), "bool");
+                var ordered = CallArguments.builtin(function, args, List.of(kind.equals("enum") ? "enum" : kind, "autoload"), 1, true);
+                String name = name(caller, ordered[0].value());
+                boolean autoload = (boolean) argument(caller, ordered[1].value(), "bool");
                 if (exists(caller.request, name)) return kind(caller.request, name, kind);
                 if (!autoload || !valid(name)) return false;
                 return Operations.invokeFunction(caller, caller.request.context.asyncFunction("class_exists_query"),
@@ -242,10 +246,10 @@ public final class ClassLoading implements AutoCloseable {
             case "is_a", "is_subclass_of": {
                 var ordered = CallArguments.builtin(function, args, List.of("object_or_class", "class", "allow_string"), 2, function.equals("is_subclass_of"));
                 Object value = PhpValues.unwrap(ordered[0].value());
-                boolean allowString = (boolean) argument(ordered[2].value(), "bool");
+                boolean allowString = (boolean) argument(caller, ordered[2].value(), "bool");
                 if (value instanceof String && !allowString)
                     Diagnostics.deprecated(caller, "Calling " + function + "() with a string when $allow_string is false");
-                String target = name(ordered[1].value());
+                String target = name(caller, ordered[1].value());
                 String source = value instanceof String text ? allowString ? name(text) : null : ObjectModel.className(value);
                 if (source == null) return false;
                 return information(caller, source, function, target, true, call);
@@ -255,14 +259,14 @@ public final class ClassLoading implements AutoCloseable {
                 Object value = PhpValues.unwrap(ordered[0].value());
                 String type = value instanceof String text ? name(text) : ObjectModel.className(value);
                 if (type == null) throw new PhpError("TypeError", "Expected an object or a class name");
-                return information(caller, type, function, null, (boolean) argument(ordered[1].value(), "bool"), call);
+                return information(caller, type, function, null, (boolean) argument(caller, ordered[1].value(), "bool"), call);
             }
             case "method_exists": {
                 var ordered = CallArguments.builtin(function, args, List.of("object_or_class", "method"), 2);
                 Object value = PhpValues.unwrap(ordered[0].value());
                 String type = value instanceof String text ? name(text) : ObjectModel.className(value);
                 if (type == null) throw new PhpError("TypeError", "Expected an object or a class name");
-                return information(caller, type, function, Operations.string(argument(ordered[1].value(), "string")), true, call);
+                return information(caller, type, function, Operations.string(argument(caller, ordered[1].value(), "string")), true, call);
             }
             case "get_declared_classes", "get_declared_interfaces", "get_declared_traits": {
                 CallArguments.builtin(function, args, List.of(), 0);
@@ -270,7 +274,7 @@ public final class ClassLoading implements AutoCloseable {
                 try (var scope = new PhpValues.Scope(caller.request.heap)) {
                     var array = scope.variable(scope.emptyArray());
                     for (var definition : caller.request.classes.values()) {
-                        if (definition.kind().name().equals(kind)) array.append().set(definition.name());
+                        if ((definition.kind().name().equals(kind) || kind.equals("CLASS") && definition.kind() == graalphp.frontend.Ir.TypeKind.ENUM)) array.append().set(definition.name());
                     }
                     return caller.track(PhpValues.own(array.read()));
                 }
@@ -278,13 +282,13 @@ public final class ClassLoading implements AutoCloseable {
             case "spl_autoload_call": {
                 var ordered = CallArguments.builtin(function, args, List.of("class"), 1);
                 return Operations.invokeFunction(caller, caller.request.context.asyncFunction("class_autoload_call"),
-                        new Argument[] {new Argument(name(ordered[0].value()), null)}, call);
+                        new Argument[] {new Argument(name(caller, ordered[0].value()), null)}, call);
             }
             case "spl_autoload_register": {
                 var ordered = CallArguments.builtin(function, args, List.of("callback", "throw", "prepend"), 0, null, true, false);
                 Object callback = PhpValues.unwrap(ordered[0].value());
-                argument(ordered[1].value(), "bool");
-                boolean prepend = (boolean) argument(ordered[2].value(), "bool");
+                argument(caller, ordered[1].value(), "bool");
+                boolean prepend = (boolean) argument(caller, ordered[2].value(), "bool");
                 if (callback == null) throw new PhpError("Error", "Default SPL filename loading is not implemented; register a callback");
                 String type = callableClass(callback);
                 if (type != null && !exists(caller.request, type)) {
@@ -371,7 +375,8 @@ public final class ClassLoading implements AutoCloseable {
 
     private static boolean kind(Request request, String name, String kind) {
         var definition = request.classes.get(key(name));
-        return definition == null ? kind.equals("class") && BUILTINS.contains(key(name)) : definition.kind().name().equalsIgnoreCase(kind);
+        return definition == null ? kind.equals("class") && BUILTINS.contains(key(name))
+                : definition.kind().name().equalsIgnoreCase(kind) || kind.equals("class") && definition.kind() == graalphp.frontend.Ir.TypeKind.ENUM;
     }
 
     private static Object information(Activation caller, String name, String operation, Object argument, boolean autoload, IndirectCallNode call) {

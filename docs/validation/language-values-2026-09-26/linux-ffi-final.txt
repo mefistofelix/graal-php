@@ -1,0 +1,34 @@
+Continuation after correcting only the fixture filename: libffi-bridge-fixture.so.
+> NativeBridgeFatalTest native
+PASS sync expected_exit=1 output=entered: no_shutdown_error=true
+PASS sync-suspended expected_exit=1 output=entered: no_shutdown_error=true
+PASS async expected_exit=1 output=entered: no_shutdown_error=true
+PASS async-suspended expected_exit=1 output=entered: no_shutdown_error=true
+Evidence: <workspace>/build/linux-workspace/build/native-fatal-17705512863968289921
+PASS: 4 fatal native-callback scenarios; product CLI failure/shutdown checked; counters are covered by the JVM test
+> NativeBridgeFatalTest JVM
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime (file:<workspace>/build/linux-workspace/build/deps/25.4.4.1.1/truffle-runtime-25.4.4.1.1.jar)
+WARNING: Please consider reporting this to the maintainers of class com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+PASS sync active=0 finished_delta=1 context_reused=true
+PASS sync-suspended active=0 finished_delta=1 context_reused=true
+PASS async active=0 finished_delta=1 context_reused=true
+PASS async-suspended active=0 finished_delta=1 context_reused=true
+Evidence: <workspace>/build/linux-workspace/build/native-fatal-3514022776310467723
+PASS: 4 fatal native-callback scenarios; C drain counters and context reuse checked
+> NativeBridgeTest JVM
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime (file:<workspace>/build/linux-workspace/build/deps/25.4.4.1.1/truffle-runtime-25.4.4.1.1.jar)
+WARNING: Please consider reporting this to the maintainers of class com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+PASS transparent FFI: nested C stacks, owner coroutine/thread, all scalar ABIs, strings, void, GC, pool serialization, error/cancel drain, SQLite callback; full-GC requests=80
+> Enum example native
+Ready to run:demo
+Completed:Demo
+3:1
+> Enum example interpreter
+Ready to run:demo
+Completed:Demo
+3:1
+PASS Linux remaining functional checks

@@ -1,0 +1,28 @@
+> cmd.exe /d /c build.bat
+<workspace>\src\graalphp\truffle\PhpCompiler.java:377: error: cannot find symbol
+        if (variable) address(match.subject()); else expression(match.subject());
+                      ^
+  symbol:   method address(Expression)
+  location: class PhpCompiler
+<workspace>\src\graalphp\truffle\PhpCompiler.java:403: error: cannot find symbol
+        if (variable) builder.beginReadLocation(); else builder.beginRetain();
+                             ^
+  symbol:   method beginReadLocation()
+  location: variable builder of type Builder
+<workspace>\src\graalphp\truffle\PhpCompiler.java:405: error: cannot find symbol
+        if (variable) builder.endReadLocation(); else builder.endRetain();
+                             ^
+  symbol:   method endReadLocation()
+  location: variable builder of type Builder
+build\generated\graalphp\truffle\PhpRootGen.java:6168: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+build\generated\graalphp\truffle\PhpRootGen.java:7988: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+Note: <workspace>\src\graalphp\truffle\PhpContext.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+3 errors
+2 warnings
+
+exit=1

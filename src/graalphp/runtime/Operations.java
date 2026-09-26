@@ -50,7 +50,7 @@ public final class Operations {
             Object a = PhpValues.unwrap(left); Object b = PhpValues.unwrap(right);
             if (operator.equals(".")) return a instanceof PhpString || b instanceof PhpString ? PhpString.concat(a, b) : string(a) + string(b);
             if (operator.equals("===") || operator.equals("!==")) {
-                boolean equal = java.util.Objects.equals(a, b);
+                boolean equal = ValueEquality.identical(a, b);
                 return operator.equals("===") == equal;
             }
             if (operator.equals("==") || operator.equals("!=")) {
@@ -103,10 +103,13 @@ public final class Operations {
                 if (caller.request.functions.containsKey(name)) return invokeFunction(caller, caller.request.function(name), arguments, call);
             }
             return builtin(caller, name, arguments, call);
+        } catch (PhpError error) {
+            if (error.fatal) caller.request.fatalFailure = error;
+            throw error;
         } finally { for (var argument : arguments) argument.close(); }
     }
     public static Object invokeFunction(Activation caller, Function function, Argument[] arguments, IndirectCallNode call) {
-        var child = new Activation(caller.request, function, caller.task, false, arguments);
+        var child = new Activation(caller.request, function, caller.task, false, arguments, Diagnostics.origin(caller));
         return executeChild(caller, child, call);
     }
     public static Object executeChild(Activation caller, Activation child, IndirectCallNode call) {
@@ -149,17 +152,19 @@ public final class Operations {
             var invocation = switch (kind) {
                 case "callable" -> ObjectModel.callable(caller, receiver);
                 case "static" -> ObjectModel.staticMethod(caller, string(receiver), name);
-                case "method", "constructor" -> ObjectModel.method(caller, receiver, name, kind.equals("constructor"));
+                case "method", "constructor", "clone" -> ObjectModel.method(caller, receiver, name, !kind.equals("method"));
                 default -> throw new PhpError("Unknown invocation kind");
             };
             return ObjectModel.invoke(caller, invocation, args, call);
         } finally {
             for (var argument : args) argument.close();
-            if (!kind.equals("constructor")) PhpValues.drop(receiver);
+            if (!kind.equals("constructor") && !kind.equals("clone")) PhpValues.drop(receiver);
         }
     }
     @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
     private static Object builtin(Activation activation, String name, Argument[] args, IndirectCallNode call) {
+        Object enumValue = EnumApi.function(activation, name, args);
+        if (enumValue != AsyncApi.UNHANDLED) return enumValue;
         Object diagnostic = Diagnostics.function(activation, name, args);
         if (diagnostic != AsyncApi.UNHANDLED) return diagnostic;
         Object loading = ClassLoading.function(activation, name, args, call);

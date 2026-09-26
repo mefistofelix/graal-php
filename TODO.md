@@ -8,12 +8,12 @@ certificano soltanto il risultato descritto, non un'intera milestone del design.
 ## Punto di ripresa
 
 **L'utente ha rinviato le verifiche prestazionali.** Riprendere lo sviluppo
-funzionale, non PERF-01. Il blocco corrente di **LANG-01** estende l'autoload con
-[interfacce, trait e contratti delle classi](docs/class-contracts.md): precedenze,
-alias, firme, tipi composti e costanti, con fatal e shutdown nativo coordinati.
-Il seguito riguarda enum e ulteriori forme di dichiarazione, iteratori/builtin
-e lifetime, coordinati con TrueAsync e reload. Il loader SPL predefinito,
-include_path, binding completo fra unità e l'intero typing PHP restano aperti.
+funzionale, non PERF-01. Il blocco corrente di **LANG-01** implementa
+[enum, match, clone, offset di stringa e strict_types](docs/language-values.md),
+sui precedenti contratti delle classi. Il seguito riguarda iteratori/builtin,
+attributi, unpacking e lifetime, coordinati con TrueAsync e reload. Il loader
+SPL predefinito, include_path, binding completo fra unità e il typing delle
+restanti API native rimangono aperti.
 Linguaggio/TrueAsync/threading/FFI precedono Composer applicativo, Compose e mobile.
 
 ## Concluso e da non rifare da zero
@@ -50,6 +50,12 @@ Linguaggio/TrueAsync/threading/FFI precedono Composer applicativo, Compose e mob
   trait risolti sulla classe utilizzatrice e completamenti host pronti su post,
   non allarmi a zero. LANG-01 resta aperto.
 
+- [x] Enum senza backing e int/string, singleton per richiesta, match/throw
+  expression e clone sospendibile; offset di stringa byte-oriented e chiavi
+  binarie; strict_types per sorgente con propagazione attraverso trait,
+  closure/include/eval. Corpus di 155 programmi, di cui 29 rifiuti semantici.
+  [Contratti e limiti](docs/language-values.md); non chiude LANG-01 o VALUE-01.
+
 ## Prestazioni e memoria: rinviate per richiesta dell'utente
 
 - [ ] **PERF-01 — Spiegare e ridurre il costo del p99.** L'A/B sullo stesso
@@ -78,7 +84,8 @@ Linguaggio/TrueAsync/threading/FFI precedono Composer applicativo, Compose e mob
 
 - [ ] **VALUE-01 — Lifetime PHP completo.** Distruttori, weak reference,
   resurrection, errori/shutdown e rilascio dei receiver temporanei; return-by-ref,
-  proprietà tipizzate e stringhe binarie nelle coercizioni/chiavi. Verificare
+  proprietà tipizzate e stringhe binarie nelle restanti coercizioni. Chiavi
+  binarie e offset byte-oriented sono ora coperti dal blocco valori. Verificare
   ordine osservabile contro PHP 8.6 e invarianti dei cicli anche nelle sospensioni.
   Un miglior RSS della VM non chiude queste semantiche.
 - [ ] **ASYNC-01 — Lifetime dei future e policy degli scope.** I risultati dei
@@ -103,8 +110,10 @@ Linguaggio/TrueAsync/threading/FFI precedono Composer applicativo, Compose e mob
   estensioni/include_path, callback builtin e diagnostica, binding tra unità e
   regole complete di ereditarietà. Il nucleo interfacce/trait, classi astratte,
   finalità, costanti e varianza è implementato in questo blocco, non tutto il
-  modello classi PHP. Restano enum, attributi, iteratori/builtin, generatori/Fiber,
-  unpacking, named arguments nei restanti builtin, readonly/hooks e typing completo.
+  modello classi PHP. Enum, match/clone e strict_types delle chiamate utente
+  sono implementati nel blocco valori. Restano attributi, iteratori/builtin,
+  generatori/Fiber, unpacking, named arguments e typing nei restanti builtin,
+  readonly/hooks e diagnostica completa.
   Pianificare blocchi coerenti con valori, sospensioni e reload; le feature
   usate da Composer sono prioritarie, eseguire Composer non lo è.
 - [ ] **FFI-01 — Modello C e callback generiche.** CData, puntatori/buffer con

@@ -30,7 +30,25 @@ public final class Parser {
         var statements = new ArrayList<Statement>();
         var functions = new ArrayList<Function>();
         var classes = new ArrayList<ClassDeclaration>();
+        boolean strictTypes = false;
+        boolean declarationAllowed = true;
         while (!at("<eof>")) {
+            if (accept(";")) continue;
+            if (accept("declare")) {
+                if (!declarationAllowed) throw PhpError.fatal("strict_types declaration must be the very first statement in the script");
+                take("(");
+                if (!accept("strict_types")) throw new PhpError("Only strict_types declarations are currently implemented");
+                take("=");
+                Object value = peek().literal;
+                if (!(value instanceof Long number) || number != 0 && number != 1)
+                    throw PhpError.fatal("strict_types declaration must have 0 or 1 as its value");
+                position++;
+                strictTypes |= ((Long) value) == 1;
+                take(")");
+                if (!accept(";")) throw PhpError.fatal("strict_types declaration must not use block mode");
+                continue;
+            }
+            declarationAllowed = false;
             if (accept("namespace")) {
                 namespace = identifier();
                 take(";");
@@ -50,7 +68,7 @@ public final class Parser {
                 int start = peek().start;
                 var declaration = classDeclaration();
                 // Only declarations whose inheritance is known here can be bound early.
-                if (declaration.interfaces().isEmpty() && declaration.traits().isEmpty()
+                if (declaration.kind() != TypeKind.ENUM && declaration.interfaces().isEmpty() && declaration.traits().isEmpty()
                         && (declaration.parent() == null || classes.stream().anyMatch(parent -> parent.name().equalsIgnoreCase(declaration.parent())))) {
                     classes.add(declaration);
                 } else {
@@ -60,11 +78,11 @@ public final class Parser {
                 statements.add(statement());
             }
         }
-        return new Unit(source, List.copyOf(statements), List.copyOf(functions), List.copyOf(classes));
+        return new Unit(source, List.copyOf(statements), List.copyOf(functions), List.copyOf(classes), strictTypes);
     }
 
     private boolean atTypeDeclaration() {
-        return at("class") || at("interface") || at("trait") || at("abstract") || at("final");
+        return at("class") || at("interface") || at("trait") || at("enum") || at("abstract") || at("final");
     }
 
     private ClassDeclaration classDeclaration() {
@@ -77,9 +95,15 @@ public final class Parser {
         TypeKind kind;
         if (accept("interface")) kind = TypeKind.INTERFACE;
         else if (accept("trait")) kind = TypeKind.TRAIT;
+        else if (accept("enum")) kind = TypeKind.ENUM;
         else { take("class"); kind = TypeKind.CLASS; }
         if (abstractType && finalType || kind != TypeKind.CLASS && (abstractType || finalType)) fail("Invalid type modifiers");
         String name = declared(identifier());
+        String backingType = null;
+        if (kind == TypeKind.ENUM && accept(":")) {
+            backingType = identifier();
+            if (!List.of("int", "string").contains(backingType)) throw PhpError.fatal("Enum backing type must be int or string");
+        }
         String parent = null;
         var interfaces = new ArrayList<String>();
         if (accept("extends")) {
@@ -89,15 +113,25 @@ public final class Parser {
             else fail("A trait cannot extend a class");
         }
         if (accept("implements")) {
-            if (kind != TypeKind.CLASS) fail("Only classes can implement interfaces");
+            if (kind != TypeKind.CLASS && kind != TypeKind.ENUM) fail("Only classes and enums can implement interfaces");
             do { interfaces.add(qualified(identifier(), false)); } while (accept(","));
         }
         var properties = new ArrayList<PropertyDeclaration>();
         var methods = new ArrayList<MethodDeclaration>();
         var traits = new ArrayList<TraitUse>();
         var constants = new ArrayList<ClassConstantDeclaration>();
+        var cases = new ArrayList<EnumCase>();
         take("{");
         while (!accept("}")) {
+            if (kind == TypeKind.ENUM && accept("case")) {
+                String caseName = identifier();
+                Expression value = accept("=") ? expression(0) : null;
+                take(";");
+                if ((backingType == null) != (value == null))
+                    throw PhpError.fatal("Enum case " + name + "::" + caseName + " must match its backing declaration");
+                cases.add(new EnumCase(caseName, value));
+                continue;
+            }
             if (accept("use")) {
                 if (kind == TypeKind.INTERFACE) fail("Interfaces cannot use traits");
                 traits.add(traitUse());
@@ -148,7 +182,7 @@ public final class Parser {
         }
         return new ClassDeclaration(name, parent, List.copyOf(properties), List.copyOf(methods), kind,
                 abstractType || kind == TypeKind.INTERFACE, finalType, List.copyOf(interfaces),
-                List.copyOf(traits), List.copyOf(constants));
+                List.copyOf(traits), List.copyOf(constants), backingType, List.copyOf(cases));
     }
 
     private TraitUse traitUse() {
@@ -261,6 +295,7 @@ public final class Parser {
         int start = peek().start;
         Form form;
         if (at("{")) return block();
+        if (at("declare")) throw PhpError.fatal("strict_types declaration must be the very first statement in the script");
         if (atTypeDeclaration()) {
             var declaration = classDeclaration();
             return new Statement(start, previous().end - start, new DeclareClass(declaration));
@@ -313,6 +348,24 @@ public final class Parser {
         return List.copyOf(values);
     }
 
+    private Expression matchExpression() {
+        take("("); Expression subject = expression(0); take(")"); take("{");
+        var arms = new ArrayList<MatchArm>();
+        boolean defaultSeen = false;
+        while (!accept("}")) {
+            var conditions = new ArrayList<Expression>();
+            if (accept("default")) {
+                if (defaultSeen) throw PhpError.fatal("Match expressions may only contain one default arm");
+                defaultSeen = true;
+            } else {
+                do { conditions.add(expression(0)); } while (accept(",") && !at("=>"));
+            }
+            take("=>"); arms.add(new MatchArm(List.copyOf(conditions), expression(0)));
+            if (!accept(",")) { take("}"); break; }
+        }
+        return new Match(subject, List.copyOf(arms));
+    }
+
     private List<Expression> arguments() {
         take("(");
         var args = new ArrayList<Expression>();
@@ -346,8 +399,7 @@ public final class Parser {
             }
             if (accept("::")) {
                 String member = identifier();
-                if (at("(")) fail("Dynamic static method names are not implemented");
-                left = new ClassConstant(left, member);
+                left = at("(") ? new DynamicStaticCall(left, member, arguments()) : new ClassConstant(left, member);
                 continue;
             }
             if (at("(")) { left = new DynamicCall(left, arguments()); continue; }
@@ -387,6 +439,9 @@ public final class Parser {
 
     private Expression primary() {
         var token = peek();
+        if (accept("match")) return matchExpression();
+        if (accept("throw")) return new ThrowExpression(expression(0));
+        if (accept("clone")) return new Clone(expression(12));
         if (accept("(")) { var value = expression(0); take(")"); return value; }
         if (accept("!") || accept("-") || accept("+")) return new Unary(token.text, expression(11));
         if (accept("++") || accept("--")) return new Increment(expression(11), token.text.equals("++") ? 1 : -1, true);
@@ -419,7 +474,7 @@ public final class Parser {
             var args = at("(") ? arguments() : List.<Expression>of();
             if (type.equalsIgnoreCase("Exception")) return new Call("exception", args);
             if (type.startsWith("Async\\") && (type.endsWith("Exception") || type.endsWith("Cancellation"))
-                    || List.of("RuntimeException", "LogicException", "InvalidArgumentException", "Error", "TypeError", "ValueError").contains(type)) {
+                    || List.of("RuntimeException", "LogicException", "InvalidArgumentException", "Error", "TypeError", "ValueError", "UnhandledMatchError").contains(type)) {
                 var values = new ArrayList<Expression>();
                 values.add(new Literal(type));
                 values.addAll(args);

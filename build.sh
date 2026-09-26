@@ -124,14 +124,21 @@ case "${1:-build}" in
         "$jdk/bin/java" -cp "build/classes:build/test-classes:$deps/*" graalphp.lab.ValueModelTest
         "$jdk/bin/java" -cp "build/classes:build/test-classes:$deps/*" graalphp.runtime.CycleCollectorTest
         ;;
-    autoload-test|class-test)
+    autoload-test|class-test|enum-test|string-test|strict-test)
         # Oracles are explicit: do not silently compare a different PHP release.
         : "${PHP_ORACLE:?Set PHP_ORACLE to a PHP 8.6 executable}"
         : "${TRUEASYNC_ORACLE:?Set TRUEASYNC_ORACLE to the pinned TrueAsync executable}"
         language_test=AutoloadTest
-        if [[ "$1" == class-test ]]; then language_test=ClassContractsTest; fi
+        case "$1" in
+            class-test) language_test=ClassContractsTest ;;
+            enum-test) language_test=EnumMatchTest ;;
+            string-test) language_test=StringOffsetsTest ;;
+            strict-test) language_test=StrictTypesTest ;;
+        esac
+        language_sources=(tests/graalphp/ClassContractsTest.java)
+        if [[ "$language_test" != ClassContractsTest ]]; then language_sources+=("tests/graalphp/$language_test.java"); fi
         mkdir -p build/test-classes
-        "$jdk/bin/javac" --release 25 -proc:none -cp "build/classes:$deps/*" -d build/test-classes "tests/graalphp/$language_test.java"
+        "$jdk/bin/javac" --release 25 -proc:none -cp "build/classes:$deps/*" -d build/test-classes "${language_sources[@]}"
         autoload_executable=
         if [[ "${2:-}" == native ]]; then autoload_executable="$PWD/build/graalphp"; fi
         "$jdk/bin/java" --enable-native-access=ALL-UNNAMED -cp "build/classes:build/test-classes:$deps/*" \
