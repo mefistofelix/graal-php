@@ -173,8 +173,9 @@ primari: [enum backed](https://www.php.net/manual/en/language.enumerations.backe
 [clone](https://www.php.net/manual/en/language.oop5.cloning.php),
 [typing](https://www.php.net/manual/en/language.types.declarations.php).
 
-Questo blocco non chiude LANG-01 o l'intero progetto. Iteratori/generatori,
-attributi, unpacking, restante standard library, lifetime completo,
+Questo blocco non chiude LANG-01 o l'intero progetto. Iteratori e unpacking
+sono stati aggiunti nei [blocchi successivi](iteration.md) e [unpacking](unpacking.md).
+Restano generatori/Fiber, attributi/Reflection completi, standard library, lifetime completo,
 shared-memory threading, FFI completa e i target GUI/mobile rimangono
 tracciati in TODO.md. Le evidenze prestazionali precedenti non sono riscritte
 e le loro misure non sono attribuite ai nuovi eseguibili.

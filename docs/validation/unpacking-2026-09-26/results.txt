@@ -1,0 +1,79 @@
+LANG-01 argument unpacking and array spread, 2026-09-26
+
+FINAL DIFFERENTIAL RESULTS
+PASS Windows JVM: 46/46 programs, 44 output comparisons and 2 semantic rejections.
+PASS Windows Native Image: 46/46 programs, 44 output comparisons and 2 semantic rejections.
+PASS Windows Native Image --interpreter: 46/46 programs, 44 output comparisons and 2 semantic rejections.
+PASS Linux JVM: 46/46 programs, 44 output comparisons and 2 semantic rejections.
+PASS Linux Native Image: 46/46 programs, 44 output comparisons and 2 semantic rejections.
+PASS Linux Native Image --interpreter: 46/46 programs, 44 output comparisons and 2 semantic rejections.
+TOTAL: 276 executions of the same 46 programs; 264 output comparisons and
+12 semantic rejections. Rejections cover parse-time argument ordering rules;
+they require the relevant diagnostic category and forbidden paths not to run,
+not byte-identical Zend fatal text.
+
+Windows reference: PHP 8.6.0RC2 for synchronous cases and TrueAsync 0.10.0 /
+PHP 8.6.0-dev for asynchronous cases. Linux reference: pinned TrueAsync /
+PHP 8.6.0-dev for both synchronous and asynchronous cases; no separate stock
+Linux PHP reference was installed for this block.
+
+REGRESSIONS
+PASS Windows verify: 91 integration scenarios, 53 semantic scenarios,
+256 ownership graphs / 1280 collector phases, 56 field-iteration checks,
+52 attribute metadata/source-range checks and 82/82 TrueAsync JVM scenarios.
+PASS Linux verify: 85 integration scenarios, the same 53 semantic scenarios,
+256 graphs / 1280 phases, 56 field checks and 52 attribute checks. The six
+integration cases guarded by the Windows native DLL are not executed on Linux.
+PASS final Windows Native Image: 82/82 TrueAsync and 50/50 network/TLS/
+WebSocket/cURL/SQLite assertions.
+PASS final Linux Native Image: 82/82 TrueAsync and the same 50/50 network assertions.
+PASS examples/unpacking.php on Windows JAR, Native Image and --interpreter;
+Linux JAR, Native Image and --interpreter; copied build/graalphp-linux-x64
+also passes default and --interpreter. Expected output:
+21
+name=graalphp;0=7;ready=1;
+
+PRODUCTS
+Windows build/graalphp.exe: 91873280 bytes
+SHA256 5d8ab78c9a2914e3fee8699bf96bac9c9a678329955c75330b9ca9b6e8c9b63e
+Linux build/graalphp-linux-x64: 94898984 bytes
+SHA256 495095fb833ee267017fa93df8a51aad090f3eab512767e22f226de7d72592ee
+Windows build/graalphp.jar: 804657 bytes
+SHA256 cca89cbaed4c502b14fc647ed64bb19cbd682c1e652b37772bc888ebaec49227
+Linux build/linux-workspace/build/graalphp.jar: 804656 bytes
+SHA256 1702bf99cff4356f3fa83e521141193c2ef94c57dcd06ae87da55d2d28cb7a19
+
+IMPLEMENTATION / FAILURE EVIDENCE
+Argument unpacking preserves source/key order rather than normalizing a
+Traversable to an array first. This is required for duplicate named keys and
+integer keys following named keys. Array spread separately uses PHP array merge
+semantics. By-reference call unpack binds elements only when the source is a
+simple array variable; property/static-property/offset/expression sources use a
+temporary, matching the differential corpus. Traversable by-reference calls
+use temporary locations and emit the PHP warning rather than mutating iterator state.
+
+The first Windows Native Image attempt failed before producing a product:
+CallArguments.expand made java.util.HashMap.<init> and
+java.util.Collection.toArray(IntFunction) reachable from Truffle runtime
+compilation, which Native Image blocklists. The generic binding operation was
+moved behind a TruffleBoundary; the second Windows build and the Linux build
+both completed with guest JIT enabled. The failed build transcript is retained
+and is not counted as a successful mode.
+
+PARITY / LIMITS
+123 maintained files under src/tests/examples match the Linux workspace
+byte-for-byte; root build scripts, BuildSupport.java, dependency pins and
+xmake.lua match as well. Final Windows and Linux Native Images were built
+sequentially. The Linux product was copied to build/graalphp-linux-x64 and
+executed from there.
+
+No performance campaign was run. CompilerIdleDelay, JIT/GC defaults and native
+dependency versions were not changed. Build-time Native Image memory/timing and
+the duration printed by NetworkIntegrationTest are not runtime performance claims.
+
+This block does not implement global const declarations, generators/Fiber,
+Reflection attribute instantiation, ArrayAccess, the full SPL or complete
+builtin typing. Dynamic invalid array spread is covered; PHP's earlier
+compile-time rejection of some literal-invalid spreads is not claimed as a
+general constant-folding/fatal-phase implementation. Binary non-UTF-8 strings
+as named-argument keys remain outside the String-based argument-name model.

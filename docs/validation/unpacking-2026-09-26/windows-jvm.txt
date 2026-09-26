@@ -1,0 +1,61 @@
+build\generated\graalphp\truffle\PhpRootGen.java:6370: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+build\generated\graalphp\truffle\PhpRootGen.java:8282: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+Note: <workspace>\src\graalphp\truffle\PhpContext.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+2 warnings
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime (file:/<workspace>/build/deps/25.4.4.1.1/truffle-runtime-25.4.4.1.1.jar)
+WARNING: Please consider reporting this to the maintainers of class com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+PASS call-positional-array oracle=0 target=0 mode=output
+PASS call-named-array oracle=0 target=0 mode=output
+PASS call-mixed-integer-before-name oracle=0 target=0 mode=output
+PASS call-positional-after-named-unpack-errors oracle=0 target=0 mode=output
+PASS call-duplicate-name-across-spreads oracle=0 target=0 mode=output
+PASS call-duplicate-name-explicit-after-spread oracle=0 target=0 mode=output
+PASS call-multiple-positional-spreads oracle=0 target=0 mode=output
+PASS call-named-after-spread oracle=0 target=0 mode=output
+PASS call-unpack-after-named-is-syntax-error oracle=255 target=1 mode=rejection:argument unpacking
+PASS call-positional-after-unpack-is-syntax-error oracle=255 target=1 mode=rejection:argument unpacking
+PASS variadic-keeps-named-keys oracle=0 target=0 mode=output
+PASS unknown-named-from-spread oracle=0 target=0 mode=output
+PASS reference-original-array oracle=0 target=0 mode=output
+PASS reference-temporary-array oracle=0 target=0 mode=output
+PASS reference-nested-location-evaluated-once oracle=0 target=0 mode=output
+PASS reference-property-spread-is-temporary oracle=0 target=0 mode=output
+PASS reference-static-property-spread-is-temporary oracle=0 target=0 mode=output
+PASS constructor-unpack oracle=0 target=0 mode=output
+PASS method-unpack oracle=0 target=0 mode=output
+PASS static-method-unpack oracle=0 target=0 mode=output
+PASS dynamic-function-unpack oracle=0 target=0 mode=output
+PASS dynamic-static-callable-unpack oracle=0 target=0 mode=output
+PASS autoloaded-callable-unpack oracle=0 target=0 mode=output
+PASS strict-types-applies-after-unpack oracle=0 target=0 mode=output
+PASS defaults-and-named-unpack oracle=0 target=0 mode=output
+PASS argument-evaluation-order oracle=0 target=0 mode=output
+PASS invalid-call-spread-after-prior-expression oracle=0 target=0 mode=output
+PASS call-traversable-positional oracle=0 target=0 mode=output
+PASS call-traversable-named oracle=0 target=0 mode=output
+PASS call-traversable-duplicate-name oracle=0 target=0 mode=output
+PASS call-traversable-positional-after-name oracle=0 target=0 mode=output
+PASS call-traversable-reference-warning oracle=0 target=0 mode=output
+PASS async-call-traversable oracle=0 target=0 mode=output
+PASS array-spread-numeric-reindexes oracle=0 target=0 mode=output
+PASS array-spread-string-overwrites oracle=0 target=0 mode=output
+PASS array-spread-mixed-keys oracle=0 target=0 mode=output
+PASS array-spread-preserves-references oracle=0 target=0 mode=output
+PASS array-spread-temporary oracle=0 target=0 mode=output
+PASS array-spread-traversable-numeric oracle=0 target=0 mode=output
+PASS array-spread-traversable-named oracle=0 target=0 mode=output
+PASS array-spread-traversable-duplicate-overwrites oracle=0 target=0 mode=output
+PASS async-array-spread-traversable oracle=0 target=0 mode=output
+PASS array-spread-invalid-scalar oracle=0 target=0 mode=output
+PASS array-spread-evaluation-order oracle=0 target=0 mode=output
+PASS array-spread-copy-on-write oracle=0 target=0 mode=output
+PASS class-constant-array-spread oracle=0 target=0 mode=output
+Evidence: <workspace>\build\unpack-14745695634735328748
+PASS: 46 unpack programs; 2 semantic rejections (diagnostic text not asserted identical)

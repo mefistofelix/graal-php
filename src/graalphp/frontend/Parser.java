@@ -389,14 +389,20 @@ public final class Parser {
         take("(");
         var args = new ArrayList<Expression>();
         var names = new java.util.HashSet<String>();
+        boolean unpacked = false;
         if (!at(")")) do {
-            if (position + 1 < tokens.size() && tokens.get(position + 1).text().equals(":")) {
+            if (accept("...")) {
+                if (!names.isEmpty()) fail("Cannot use argument unpacking after named arguments");
+                unpacked = true;
+                args.add(new UnpackArgument(expression(0)));
+            } else if (position + 1 < tokens.size() && tokens.get(position + 1).text().equals(":")) {
                 String name = identifier();
                 take(":");
                 if (!names.add(name)) fail("Duplicate named argument " + name);
                 args.add(new NamedArgument(name, expression(0)));
             } else {
                 if (!names.isEmpty()) fail("Positional argument after named argument");
+                if (unpacked) fail("Cannot use positional argument after argument unpacking");
                 args.add(expression(0));
             }
         } while (accept(",") && !at(")"));
@@ -469,9 +475,13 @@ public final class Parser {
         if (accept("[")) {
             var entries = new ArrayList<ArrayEntry>();
             if (!at("]")) do {
+                if (accept("...")) {
+                    entries.add(new ArrayEntry(null, expression(0), false, true));
+                    continue;
+                }
                 boolean reference = accept("&"); var value = expression(0); Expression key = null;
                 if (accept("=>")) { key = value; reference = accept("&"); value = expression(0); }
-                entries.add(new ArrayEntry(key, value, reference));
+                entries.add(new ArrayEntry(key, value, reference, false));
             } while (accept(",") && !at("]"));
             take("]"); return new ArrayLiteral(List.copyOf(entries));
         }

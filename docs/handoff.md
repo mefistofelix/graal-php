@@ -13,14 +13,14 @@ di PHP; non sono completate tutte le milestone del design.
 
 **L'utente ha chiesto di continuare lo sviluppo funzionale e riverificare le
 performance più avanti.** Non riprendere automaticamente PERF-01. Il blocco
-corrente è [iterazione sospendibile e metadati degli attributi](iteration.md):
-Iterator/IteratorAggregate/Countable, foreach su oggetti e iteratori, builtin
-correlati e ReturnTypeWillChange. I contratti precedenti restano verificati;
-errori, ownership e generazioni continuano a usare la stessa pipeline Bytecode DSL.
+corrente è [argument unpacking e array spread](unpacking.md): array e
+Traversable possono alimentare chiamate e literal array mantenendo ordine,
+named arguments, reference e sospensioni nei casi documentati. I contratti
+precedenti restano verificati; errori, ownership e continuazioni usano la stessa
+pipeline Bytecode DSL.
 
-Il seguito funzionale immediato è argument unpacking e array spread, poi
-Reflection/attributi completi e generatori/Fiber, insieme a valori, firme dei
-builtin e TrueAsync. Il
+Il seguito funzionale immediato è **Reflection e semantica completa degli
+attributi**, poi generatori/Fiber, insieme a valori, firme dei builtin e TrueAsync. Il
 loader SPL predefinito, include_path e il binding completo tra unità restano
 aperti: non dichiarare Composer funzionante. Shared-memory threading e FFI
 restano priorità successive; Composer applicativo, Compose e mobile sono rinviati.
@@ -32,7 +32,45 @@ misura RAM/CPU/throughput/p99 è stata eseguita per i blocchi autoload/classi/va
 si tornerà alle performance, mantenere il vincolo di nessun warmup escluso e
 separare GC/invalidazioni, peer e lifetime reale dei compiler worker.
 
-## Blocco funzionale: iterazione e attributi, 26 settembre
+## Blocco funzionale: unpacking e spread, 26 settembre
+
+[Contratti e limiti](unpacking.md),
+[evidenze](validation/unpacking-2026-09-26/README.md),
+[esiti](validation/unpacking-2026-09-26/results.txt),
+[hash](validation/unpacking-2026-09-26/hashes.json).
+
+Il frontend distingue unpack di chiamata e spread di array. Le chiamate
+preservano la sequenza del Traversable fino al binder, quindi rilevano chiavi
+nominate duplicate e posizionali dopo named invece di perderle in un array
+intermedio. Gli array seguono invece le regole PHP di reindicizzazione numerica
+e sovrascrittura delle chiavi stringa. Entrambi i percorsi possono sospendersi
+attraverso i protocolli Iterator già implementati.
+
+La semantica by-reference distingue una semplice variabile array dalle sorgenti
+property/static-property/offset/temporanee: soltanto la prima mantiene il
+binding agli elementi originali. Un Traversable usa locazioni temporanee ed
+emette il warning PHP per un parametro by-reference senza mutare il valore
+sorgente. Sono coperti strict_types, autoload, constructor/method/static/dynamic
+callable, variadici, COW e array di costante di classe.
+
+Il corpus contiene 46 programmi: 44 confronti di output e 2 rifiuti sintattici.
+Passano su Windows/Linux JVM, Native Image e lo stesso Native Image con
+`--interpreter`: **276 esecuzioni**. Regressioni finali: Windows 91 integrazioni,
+Linux 85, 53 scenari valori, 256 grafi/1.280 fasi collector, 56 field-iteration,
+52 metadata; 82/82 TrueAsync e 50/50 rete su entrambi i prodotti Native Image.
+L'esempio `examples/unpacking.php` passa su JAR/native/interpreter su entrambe le
+piattaforme e sulla copia Linux consegnata nella root.
+
+La prima build Native Image Windows è stata correttamente rifiutata perché il
+binder generico rendeva HashMap/Collection.toArray raggiungibili dal guest JIT.
+`CallArguments.expand` è stato messo dietro `TruffleBoundary`; il JIT guest non è
+stato disabilitato. Il fallimento e le build finali riuscite sono conservati
+separatamente nelle evidenze. Nessun benchmark o cambio JIT/GC.
+
+LANG-01 resta aperto. Prossimo blocco: Reflection/attributi completi; poi
+generatori/Fiber e le altre aree del TODO.
+
+## Blocco precedente: iterazione e attributi, 26 settembre
 
 [Contratti e limiti](iteration.md),
 [evidenze](validation/iteration-2026-09-26/README.md),
@@ -66,8 +104,9 @@ nessun cambio a CompilerIdleDelay, GC/JIT o versioni delle dipendenze. Un doppio
 avvio transitorio della build Windows dovuto al timeout dello strumento è
 registrato nelle evidenze e non viene usato come misura.
 
-LANG-01 resta aperto. Prossimo blocco: unpacking/spread; poi Reflection completa,
-generatori/Fiber e le altre aree elencate nel TODO.
+LANG-01 resta aperto. Argument unpacking e array spread sono stati completati
+nel blocco successivo sopra; Reflection completa, generatori/Fiber e le altre
+aree elencate nel TODO restano aperte.
 
 ## Blocco precedente: enum e valori, 26 settembre
 
@@ -307,8 +346,8 @@ TrueAsync. Il confronto corrente è HTTP e non prova equivalenza dei backend TLS
 
 | File locale ricreabile | Byte | SHA-256 |
 | --- | ---: | --- |
-| `build/graalphp.exe` | 90.873.856 | `f60246011a38ce203581a19a1af6a1ddf0f80203c5a8bd1415ccd612bfd21b60` |
-| `build/graalphp-linux-x64` | 93.850.408 | `b57fe53978bc10ddf24988ecb93491397e2bf6705a3149527763a5f8196c5531` |
+| `build/graalphp.exe` | 91.873.280 | `5d8ab78c9a2914e3fee8699bf96bac9c9a678329955c75330b9ca9b6e8c9b63e` |
+| `build/graalphp-linux-x64` | 94.898.984 | `495095fb833ee267017fa93df8a51aad090f3eab512767e22f226de7d72592ee` |
 | `build/graalphp-before-memory.exe` | 90.161.152 | `f84539cde1b2976077f4b29c68d3737f1ab096add2e8662f78d0a5d328c36c53` |
 
 Le copie `build/before-autoload-2026-09-26/graalphp.exe` e

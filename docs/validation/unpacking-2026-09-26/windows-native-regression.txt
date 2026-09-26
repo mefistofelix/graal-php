@@ -1,0 +1,160 @@
+> tools/graalvm-25.4.4.1.1+1.1/bin/java.exe --enable-native-access=ALL-UNNAMED -cp build/classes;build/test-classes;build/deps/25.4.4.1.1/* graalphp.TrueAsyncTest tools/trueasync-0.10.0/php.exe <workspace>\build\graalphp.exe
+PASS curl-multi-empty-reference
+PASS curl-multi-membership
+PASS curl-multi-results-and-reuse
+PASS curl-multi-close-and-ownership
+PASS curl-multi-options-validation
+PASS curl-immediate-error-alias
+PASS named-arguments
+PASS thread-channel-buffered
+PASS named-reference-variadic
+PASS coroutine-result
+PASS capture-lifetime
+PASS scope-context
+PASS detached-scope-context
+PASS coroutine-private-context
+PASS scope-joins-descendants
+PASS detached-scope-reopens-after-descendants-finish
+PASS detached-scope-keeps-request-alive
+PASS timeout-cancels-wait-only
+PASS cancel-unwinds-finally
+PASS buffered-channel-close-drains
+PASS rendezvous-channel
+PASS channel-timeout-removes-waiter
+PASS future-array-cow
+PASS future-state
+PASS future-error
+PASS await-all-order-and-cow
+PASS await-errors-fill-null
+PASS await-first-success-errors
+PASS await-count-successes
+PASS await-race-keeps-other-tasks
+PASS await-fail-fast
+PASS await-combinator-timeout
+PASS await-empty-and-count-zero
+PASS await-duplicate-future
+PASS await-already-complete-no-yield
+PASS await-pending-same-token
+PASS protect-cancel-unwind
+PASS protect-context-and-return
+PASS cancel-reason-before-start
+PASS context-duplicate-and-unset
+PASS upstream-channel-001-channel_construct
+PASS upstream-channel-002-channel_buffered_basic
+PASS upstream-channel-007-channel_sendAsync
+PASS upstream-future-001-map-basic
+PASS upstream-future-002-map-chain
+PASS upstream-future-004-map-propagates-error
+PASS upstream-future-005-map-throws-exception
+PASS upstream-future-007-catch-basic
+PASS upstream-future-011-finally-on-success
+PASS upstream-future-012-finally-on-error
+PASS upstream-future-013-finally-throws-exception
+PASS upstream-future-014-map-catch-finally-chain
+PASS upstream-future-035-finally_exception_chain
+PASS upstream-await-005-awaitAnyOrFail_basic
+PASS upstream-await-006-awaitAnyOrFail_empty
+PASS upstream-await-007-awaitAnyOrFail_exception
+PASS upstream-await-008-awaitFirstSuccess_basic
+PASS upstream-await-011-awaitAllOrFail_exception
+PASS upstream-await-014-awaitAnyOfOrFail_basic
+PASS upstream-await-016-awaitAnyOf_basic
+PASS upstream-await-017-awaitAnyOf_all_success
+PASS upstream-await-045-awaitAnyOfOrFail_edge_cases
+PASS upstream-await-073-await_future_cancel_token_pre_completed
+PASS upstream-await-074-await_future_cancel_token_completed_during
+PASS upstream-await-075-await_future_cancel_token_pre_rejected
+PASS upstream-await-076-await_future_cancel_token_rejected_during
+PASS upstream-await-077-await_future_cancel_token_pre_rejected_cancellation
+PASS upstream-await-078-await_future_cancel_token_rejected_cancellation_during
+PASS upstream-await-079-await_completes_before_future_cancel_token
+PASS upstream-await-084-awaitAnyOrFail_already_completed_returns_immediately
+PASS upstream-await-093-awaitAnyOrFail_with_future_triggers
+PASS upstream-protect-001-protect_basic
+PASS upstream-protect-003-protect_nested
+PASS upstream-protect-007-protect_exception_in_closure
+PASS upstream-protect-008-protect_with_exception
+PASS upstream-protect-009-protect_with_spawn
+PASS upstream-protect-010-protect_with_await
+PASS upstream-scope-022-scope_awaitCompletion_basic
+PASS upstream-scope-041-scope_awaitCompletion_marks_future_used
+PASS upstream-scope-044-scope_awaitAfterCancellation_not_cancelled
+PASS upstream-scope-045-scope_awaitCompletion_self_deadlock
+PASS upstream-scope-051-scope_awaitCompletion_deadlock_from_grandchild
+PASS: 82 differential scenarios against TrueAsync 0.10.0
+
+exit=0
+> tools/graalvm-25.4.4.1.1+1.1/bin/java.exe --enable-native-access=ALL-UNNAMED -cp build/classes;build/test-classes;build/deps/25.4.4.1.1/* graalphp.NetworkIntegrationTest <workspace>\build\graalphp.exe
+PASS HTTP route
+PASS transaction rollback
+PASS ordinary curl TLS request
+PASS single-reader contract and cancellation
+PASS immediate curl failure, reuse and PHP 8 curl_close identity
+PASS curl cancellation task started
+PASS cancelled request reached HTTPS peer
+PASS curl cancellation and same-handle reuse before peer release
+PASS fragmented UTF-8 text
+PASS 64-bit frame length
+PASS fragmented binary, NUL and non-UTF-8 bytes
+PASS ping/pong
+PASS untrusted certificate rejected
+PASS curl deadline
+PASS explicit multi batch starts
+PASS two multi transfers reach the HTTPS barrier
+PASS HTTP progresses during explicit multi transfers
+PASS multi results, content, error queue, SQLite and close/reuse
+PASS native multi connection limit is respected
+PASS multi cancellation scenario starts
+PASS both cancellable multi requests reach the HTTPS peer
+PASS cancelling select preserves transfers and the other waiter
+PASS remove and same-handle reuse before peer release
+PASS surviving transfer completes, next multi starts
+PASS transfer is active before multi_close
+PASS multi_close wakes select and permits immediate reuse
+PASS eight reactor transfers reached the upstream concurrently
+PASS HTTP progresses while curl transfers are blocked
+PASS libuv ping progresses while curl transfers are blocked
+PASS 16 concurrent clients, 64 committed requests
+PASS curl concurrency exceeds the former four-worker pool
+WORKLOAD: 16 clients, 64 messages, 0.758 s, upstream peak concurrency 16
+PASS control frame between fragments
+PASS message after interleaved ping
+PASS close handshake
+PASS unmasked client frame
+PASS invalid text UTF-8
+PASS oversize frame rejected before allocation
+PASS invalid continuation
+PASS malformed upgrade rejected
+PASS server survives abrupt disconnect
+PASS persisted row count while serving
+PASS Chrome headers observed on the wire
+PASS TLS ClientHello contains Chrome cipher ordering and GREASE
+PASS profile changes TLS fingerprint beyond User-Agent
+PASS graceful stop route
+PASS idle connection drained within shutdown deadline
+PASS server exits without a live reactor/worker
+PASS fresh process reopens database
+PASS persisted values, rollback and SQLite binding types after restart
+PASS SQLite file format on disk
+PASS: 50 network assertions in 4.688 s; artifacts: <workspace>\build\network-native-15462045968624775631
+
+exit=0
+> tools/graalvm-25.4.4.1.1+1.1/bin/java.exe --enable-native-access=ALL-UNNAMED -jar build/graalphp.jar examples/unpacking.php
+21
+name=graalphp;0=7;ready=1;
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime (file:/<workspace>/build/deps/25.4.4.1.1/truffle-runtime-25.4.4.1.1.jar)
+WARNING: Please consider reporting this to the maintainers of class com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+
+exit=0
+> <workspace>\build\graalphp.exe examples/unpacking.php
+21
+name=graalphp;0=7;ready=1;
+
+exit=0
+> <workspace>\build\graalphp.exe --interpreter examples/unpacking.php
+21
+name=graalphp;0=7;ready=1;
+
+exit=0

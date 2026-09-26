@@ -3,7 +3,20 @@
 Toolchain: Oracle GraalVM 25.4.4.1.1+1.1, Java 25.0.4.1.1, Truffle 25.4.4.1.1.
 Oracoli: PHP 8.6.0RC2 e TrueAsync 0.10.0 / PHP 8.6.0-dev / ABI v0.26.0.
 
-Il blocco funzionale corrente implementa [iterazione sospendibile e metadati
+Il blocco funzionale corrente implementa [argument unpacking e array spread](unpacking.md).
+Passano **46/46 programmi** su Windows/Linux JVM, Native Image e Native Image
+`--interpreter`: 276 esecuzioni, 264 confronti di output e 12 rifiuti semantici.
+Le regressioni finali passano: 91/85 scenari integrati Windows/Linux, 53 scenari
+semantici, 256 grafi/1.280 fasi collector, 56 field-iteration e 52 metadata;
+82/82 TrueAsync e 50/50 rete/cURL/SQLite su entrambi i Native Image. La prima
+build Windows fallita per una blocklist del guest JIT è conservata e il binder
+generico è stato spostato dietro TruffleBoundary, senza disabilitare il JIT.
+Nessun benchmark o cambio JIT/GC.
+[Esiti](validation/unpacking-2026-09-26/results.txt),
+[hash](validation/unpacking-2026-09-26/hashes.json),
+[evidenze](validation/unpacking-2026-09-26/README.md).
+
+Il blocco precedente implementa [iterazione sospendibile e metadati
 degli attributi](iteration.md). Passano **74/74 programmi** su Windows/Linux JVM,
 Native Image e Native Image `--interpreter`: 444 esecuzioni, 408 confronti di
 output e 36 rifiuti semantici. Passano 56 controlli diretti di field-iteration

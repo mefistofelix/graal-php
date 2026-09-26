@@ -1,0 +1,7 @@
+PASS final JVM verification summaries retained for both platforms.
+PASS final Native Image TrueAsync/network regressions and JAR/native/interpreter examples on both platforms.
+PASS failed blocklist build and subsequent successful Windows Native Image are distinct evidence.
+PASS 123 maintained src/tests/examples files and root build inputs match Linux workspace byte-for-byte.
+PASS 142 final SHA256 manifest entries regenerated after documentation updates.
+PASS validation evidence is UTF-8/LF, no BOM/ANSI or private home path.
+PASS git diff --check.

@@ -429,6 +429,19 @@ public final class ObjectModel {
                     var array = scope.variable(scope.emptyArray());
                     for (var entry : literal.entries()) {
                         if (entry.reference()) throw new PhpError("References are not allowed in constant expressions");
+                        if (entry.unpack()) {
+                            Object value = constant(request, entry.value(), lexicalClass);
+                            try {
+                                Object source = PhpValues.unwrap(value);
+                                if (!(source instanceof PhpValues.PhpArray))
+                                    throw new PhpError("Error", "Only arrays can be unpacked in constant expressions");
+                                for (Object key : PhpValues.keys(source)) {
+                                    var destination = key instanceof Long ? array.append() : array.element(key);
+                                    PhpValues.copyElement(source, key, destination);
+                                }
+                            } finally { PhpValues.drop(value); }
+                            continue;
+                        }
                         Object key = entry.key() == null ? null : constant(request, entry.key(), lexicalClass);
                         Object value = constant(request, entry.value(), lexicalClass);
                         try { (entry.key() == null ? array.append() : array.element(PhpValues.unwrap(key))).set(PhpValues.unwrap(value)); }

@@ -315,6 +315,7 @@ public final class PhpCompiler {
                 else call(call);
             }
             case Ir.NamedArgument ignored -> throw new graalphp.runtime.PhpError("Named argument outside a call");
+            case Ir.UnpackArgument ignored -> throw new graalphp.runtime.PhpError("Argument unpacking outside a call");
             case Ir.EnumCaseValue ignored -> throw new PhpError("Enum case values are declaration constants");
             case Ir.Match match -> match(match);
             case Ir.ThrowExpression thrown -> { b.beginThrowValue(); expression(thrown.value()); b.endThrowValue(); }
@@ -333,6 +334,10 @@ public final class PhpCompiler {
             case Ir.ArrayLiteral array -> {
                 b.beginArray();
                 for (var item : array.entries()) {
+                    if (item.unpack()) {
+                        b.beginArraySpread(); materializeUnpack(item.value()); b.endArraySpread();
+                        continue;
+                    }
                     b.beginItem(item.reference());
                     if (item.key() == null) b.emitLoadConstant(PhpRoot.Append.KEY); else expression(item.key());
                     if (item.reference()) location(item.value()); else expression(item.value());
@@ -421,6 +426,10 @@ public final class PhpCompiler {
     private void arguments(List<Ir.Expression> arguments) {
         var b = builder;
         for (var argument : arguments) {
+            if (argument instanceof Ir.UnpackArgument unpack) {
+                argumentSpread(unpack.value());
+                continue;
+            }
             String name = null;
             if (argument instanceof Ir.NamedArgument named) {
                 name = named.name(); argument = named.value(); b.beginArgumentName(name);
@@ -429,6 +438,35 @@ public final class PhpCompiler {
             else { b.beginArgumentValue(); expression(argument); b.endArgumentValue(); }
             if (name != null) b.endArgumentName();
         }
+    }
+    private void materializeUnpack(Ir.Expression value) {
+        suspended(() -> {
+            builder.beginMaterializeUnpack(); expression(value); builder.endMaterializeUnpack();
+        });
+    }
+    private void materializeArgumentUnpack(Ir.Expression value) {
+        suspended(() -> {
+            builder.beginMaterializeArgumentUnpack(); expression(value); builder.endMaterializeArgumentUnpack();
+        });
+    }
+    private void argumentSpread(Ir.Expression value) {
+        var b = builder;
+        if (!(value instanceof Ir.Variable)) {
+            b.beginArgumentSpread(); materializeArgumentUnpack(value); b.emitLoadNull(); b.endArgumentSpread();
+            return;
+        }
+        b.beginBlock();
+        var location = b.createLocal();
+        b.beginStoreLocal(location); location(value); b.endStoreLocal();
+        b.beginArgumentSpread();
+        suspended(() -> {
+            b.beginMaterializeArgumentUnpack();
+            b.beginRead(); b.emitLoadLocal(location); b.endRead();
+            b.endMaterializeArgumentUnpack();
+        });
+        b.emitLoadLocal(location);
+        b.endArgumentSpread();
+        b.endBlock();
     }
     private void suspended(Runnable operation) {
         var b = builder;

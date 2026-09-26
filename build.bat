@@ -58,6 +58,7 @@ if /i "%~1"=="enum-test" goto enum_test
 if /i "%~1"=="string-test" goto string_test
 if /i "%~1"=="strict-test" goto strict_test
 if /i "%~1"=="iteration-test" goto iteration_test
+if /i "%~1"=="unpack-test" goto unpack_test
 if /i "%~1"=="benchmark" ("%GRAALPHP_JDK%\bin\java.exe" -cp "build\classes;%DEPS%/*" graalphp.lab.Main --benchmark & exit /b !errorlevel!)
 "%GRAALPHP_JDK%\bin\java.exe" --enable-native-access=ALL-UNNAMED -jar build\graalphp.jar --version
 exit /b %errorlevel%
@@ -166,6 +167,9 @@ set "LANGUAGE_TEST=StringOffsetsTest"
 goto language_test
 :iteration_test
 set "LANGUAGE_TEST=IterationTest"
+goto language_test
+:unpack_test
+set "LANGUAGE_TEST=UnpackTest"
 goto language_test
 :strict_test
 set "LANGUAGE_TEST=StrictTypesTest"

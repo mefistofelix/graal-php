@@ -265,7 +265,7 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
     @Operation @ConstantOperand(type = String.class, name = "name")
     public static final class ArgumentName {
         @Specialization static Argument run(String name, Argument argument) {
-            return new Argument(argument.value(), argument.location(), name);
+            return new Argument(argument.value(), argument.location(), name, argument.traversableUnpack());
         }
     }
     @Operation public static final class ArgumentLocation {
@@ -273,12 +273,28 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
             return new Argument(activation(frame).track(PhpValues.own(location.read())), location);
         }
     }
+    @Operation public static final class MaterializeUnpack {
+        @Specialization static Object run(VirtualFrame frame, Object value, @Cached IndirectCallNode call) {
+            return IterationApi.materialize(activation(frame), value, call);
+        }
+    }
+    @Operation public static final class MaterializeArgumentUnpack {
+        @Specialization static Object run(VirtualFrame frame, Object value, @Cached IndirectCallNode call) {
+            return IterationApi.materializeArguments(activation(frame), value, call);
+        }
+    }
+    @Operation public static final class ArgumentSpread {
+        @Specialization static CallArguments.Spread run(VirtualFrame frame, Object array, Object original) {
+            return new CallArguments.Spread(activation(frame), array,
+                    original instanceof PhpValues.Location location ? location : null);
+        }
+    }
     @Operation @ConstantOperand(type = String.class, name = "name") @ConstantOperand(type = boolean.class, name = "globalFallback")
     public static final class Invoke {
         @Specialization static Object run(VirtualFrame frame, String name, boolean globalFallback, @Variadic Object[] arguments,
                 @Cached IndirectCallNode call, @com.oracle.truffle.api.dsl.Bind BytecodeNode bytecode, @com.oracle.truffle.api.dsl.Bind("$bytecodeIndex") int bci) {
-            var args = java.util.Arrays.copyOf(arguments, arguments.length, Argument[].class);
             var caller = activation(frame).at(bytecode, bci);
+            var args = CallArguments.expand(arguments);
             return caller.track(Operations.invoke(caller, name, args, call, globalFallback));
         }
     }
@@ -287,9 +303,14 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
         @Specialization static Object run(VirtualFrame frame, String kind, String name, Object receiver,
                 @Variadic Object[] arguments, @Cached IndirectCallNode call,
                 @com.oracle.truffle.api.dsl.Bind BytecodeNode bytecode, @com.oracle.truffle.api.dsl.Bind("$bytecodeIndex") int bci) {
-            var args = java.util.Arrays.copyOf(arguments, arguments.length, Argument[].class);
             var caller = activation(frame).at(bytecode, bci);
-            return caller.track(Operations.invokeMember(caller, kind, name, receiver, args, call));
+            try {
+                var args = CallArguments.expand(arguments);
+                return caller.track(Operations.invokeMember(caller, kind, name, receiver, args, call));
+            } catch (RuntimeException error) {
+                PhpValues.drop(receiver);
+                throw error;
+            }
         }
     }
     @Operation public static final class Suspended {
@@ -306,9 +327,13 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
         }
     }
     public record ArrayItem(Object key, Object value, boolean reference) {}
+    public record ArraySpreadValue(Object value) {}
     @Operation @ConstantOperand(type = boolean.class, name = "reference")
     public static final class Item {
         @Specialization static ArrayItem run(boolean reference, Object key, Object value) { return new ArrayItem(key, value, reference); }
+    }
+    @Operation public static final class ArraySpread {
+        @Specialization static ArraySpreadValue run(Object value) { return new ArraySpreadValue(value); }
     }
     @Operation public static final class Array {
         @Specialization static Object run(VirtualFrame frame, @Variadic Object[] items) { return create(activation(frame), items); }
@@ -317,6 +342,17 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
             try (var scope = new PhpValues.Scope(activation.request.heap)) {
                 var array = scope.variable(scope.emptyArray());
                 for (var object : items) {
+                    if (object instanceof ArraySpreadValue spread) {
+                        try {
+                            Object source = PhpValues.unwrap(spread.value());
+                            if (!(source instanceof PhpValues.PhpArray)) throw new PhpError("TypeError", "Only arrays and Traversables can be unpacked");
+                            for (Object key : PhpValues.keys(source)) {
+                                var element = key instanceof Long ? array.append() : array.element(key);
+                                PhpValues.copyElement(source, key, element);
+                            }
+                        } finally { PhpValues.drop(spread.value()); }
+                        continue;
+                    }
                     var item = (ArrayItem) object;
                     var element = item.key == Append.KEY ? array.append() : array.element(PhpValues.unwrap(item.key));
                     if (item.reference) element.bind((PhpValues.Location) item.value);

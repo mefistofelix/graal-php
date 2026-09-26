@@ -65,9 +65,10 @@ public final class Ir {
     public record Continue() implements Form {}
     public sealed interface Expression permits Literal, Variable, Index, Assign, Binary, Unary, Call, ArrayLiteral,
             CompoundAssign, Increment, Conditional, Coalesce, Property, StaticProperty, MethodCall, StaticCall,
-            Construct, DynamicConstruct, DynamicCall, Closure, Constant, NamedArgument, ClassConstant, ClassName, InstanceOf, EnumCaseValue,
+            Construct, DynamicConstruct, DynamicCall, Closure, Constant, NamedArgument, UnpackArgument, ClassConstant, ClassName, InstanceOf, EnumCaseValue,
             Match, ThrowExpression, Clone, DynamicStaticCall {}
     public record NamedArgument(String name, Expression value) implements Expression {}
+    public record UnpackArgument(Expression value) implements Expression {}
     public record Literal(Object value) implements Expression {}
     public record Variable(String name) implements Expression {}
     public record Index(Expression array, Expression key) implements Expression {}
@@ -100,5 +101,7 @@ public final class Ir {
         public Call(String name, List<Expression> arguments) { this(name, arguments, false); }
     }
     public record ArrayLiteral(List<ArrayEntry> entries) implements Expression {}
-    public record ArrayEntry(Expression key, Expression value, boolean reference) {}
+    public record ArrayEntry(Expression key, Expression value, boolean reference, boolean unpack) {
+        public ArrayEntry(Expression key, Expression value, boolean reference) { this(key, value, reference, false); }
+    }
 }

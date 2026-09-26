@@ -313,7 +313,7 @@ public final class Operations {
     }
     private static Argument[] copyArguments(Argument[] arguments, int start) {
         var copy = new Argument[arguments.length - start];
-        for (int i = start; i < arguments.length; i++) copy[i - start] = new Argument(PhpValues.own(PhpValues.unwrap(arguments[i].value())), arguments[i].location(), arguments[i].name());
+        for (int i = start; i < arguments.length; i++) copy[i - start] = new Argument(PhpValues.own(PhpValues.unwrap(arguments[i].value())), arguments[i].location(), arguments[i].name(), arguments[i].traversableUnpack());
         return copy;
     }
     private static Path resolve(Activation activation, String filename) {

@@ -36,8 +36,9 @@ public final class Execution {
     }
     public record Unit(Path path, String content, Function main, Map<String, Function> functions,
                        Map<String, ObjectModel.Definition> classes) {}
-    public record Argument(Object value, PhpValues.Location location, String name) implements AutoCloseable {
-        public Argument(Object value, PhpValues.Location location) { this(value, location, null); }
+    public record Argument(Object value, PhpValues.Location location, String name, boolean traversableUnpack) implements AutoCloseable {
+        public Argument(Object value, PhpValues.Location location) { this(value, location, null, false); }
+        public Argument(Object value, PhpValues.Location location, String name) { this(value, location, name, false); }
         @Override public void close() { PhpValues.drop(value); }
     }
     public record NestedCall(ContinuationResult continuation, Activation activation) {}
@@ -250,6 +251,7 @@ public final class Execution {
                         for (int j = i; j < arguments.length; j++) {
                             if (parameter.reference()) {
                                 if (arguments[j].location == null) throw new PhpError("Variadic reference requires a variable");
+                                warnTraversableReference(arguments[j], j + 1);
                                 checkReference(parameter, arguments[j]);
                                 (arguments[j].name == null ? array.append() : array.element(arguments[j].name)).bind(arguments[j].location);
                             } else (arguments[j].name == null ? array.append() : array.element(arguments[j].name))
@@ -267,6 +269,7 @@ public final class Execution {
                     var argument = arguments[i];
                     if (parameter.reference()) {
                         if (argument.location == null) throw new PhpError("Argument " + parameter.name() + " must be a variable");
+                        warnTraversableReference(argument, i + 1);
                         checkReference(parameter, argument);
                         argument.close();
                         variable(parameter.name()).bind(argument.location);
@@ -277,6 +280,12 @@ public final class Execution {
         }
         private Object checkArgument(Object value, String type) {
             return TypeRelations.check(value, TypeRelations.contextual(type, request, function.owner(), function.owner()), strictArguments, argumentOrigin);
+        }
+        private void warnTraversableReference(Argument argument, int position) {
+            if (!argument.traversableUnpack() || argumentOrigin == null) return;
+            String name = function.owner() == null ? function.name() : function.owner() + "::" + function.name();
+            argumentOrigin.warning("Cannot pass by-reference argument " + position + " of " + name
+                    + "() by unpacking a Traversable, passing by-value instead");
         }
         private void checkReference(Ir.Parameter parameter, Argument argument) {
             Object value = argument.location.read();

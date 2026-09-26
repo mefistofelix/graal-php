@@ -1,0 +1,104 @@
+build\generated\graalphp\truffle\PhpRootGen.java:6370: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+build\generated\graalphp\truffle\PhpRootGen.java:8282: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+Note: <workspace>\src\graalphp\truffle\PhpContext.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+2 warnings
+using lock <workspace>\build\toolchain.lock
+already installed 12 packages in <workspace>\build\toolchain
+[100%]: build ok, spent 1.844s
+[100%]: build ok, spent 1.047s
+WARNING: Unknown module: com.oracle.truffle.enterprise.svm specified to --add-exports
+========================================================================================================================
+GraalVM Native Image: Generating 'graalphp.exe' (executable)...
+========================================================================================================================
+For detailed information and explanations on the build output, visit:
+https://github.com/oracle/graal/blob/master/docs/reference-manual/native-image/BuildOutput.md
+------------------------------------------------------------------------------------------------------------------------
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by com.oracle.truffle.polyglot.JDKSupport in module org.graalvm.truffle (file:/<workspace>/build/deps/25.4.4.1.1/truffle-api-25.4.4.1.1.jar)
+WARNING: Use --enable-native-access=org.graalvm.truffle to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+[1/8] Initializing...                                                                                   (6,8s @ 0,23GiB)
+ Builder configuration:
+ - Java version: 25.0.4.1.1+1-LTS, vendor version: Oracle GraalVM 25.4.4.1.1+1.1
+ - Graal compiler: optimization level: 3, target machine: compatibility, PGO: ML-inferred
+ - C compiler: cl.exe (microsoft, x64, 19.50.35739)
+ - Assertions: disabled, system assertions: disabled
+ - 9 user-specific feature(s):
+   - com.oracle.svm.enterprise.truffle.EnterpriseTruffleFeature: Provides enterprise extensions for the Truffle runtime.
+   - com.oracle.svm.enterprise.truffle.compiler.EnterpriseTruffleCompilerFeature: Provides additional optimizations and isolated compilation for Truffle.
+   - com.oracle.svm.truffle.TruffleBaseFeature: Provides internal support for Truffle
+   - com.oracle.svm.truffle.TruffleFeature: Provides internal support for Truffle runtime compilation
+   - com.oracle.svm.truffle.nfi.TruffleNFIFeature
+   - com.oracle.svm.truffle.nfi.windows.WindowsTruffleNFIFeature
+   - com.oracle.truffle.api.impl.TruffleAPIFeature: Provides basic support for Truffle
+   - com.oracle.truffle.api.object.DynamicObjectFeature: Provides support for DynamicObject
+   - org.graalvm.home.HomeFinderFeature: Finds GraalVM paths and its version number
+ Image configuration:
+ - Garbage collector: Serial GC (max heap size: 80% of RAM)
+ - Assertions: disabled (class-specific config may apply), system assertions: disabled
+------------------------------------------------------------------------------------------------------------------------
+Build resources:
+ - 6.00GiB of memory (38.1% of system memory, set via '-Xmx6g')
+ - 8 thread(s) (50,0% of 16 available processor(s), set via '--parallelism=8')
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.oracle.truffle.api.object.DynamicObject (file:/<workspace>/build/deps/25.4.4.1.1/truffle-api-25.4.4.1.1.jar)
+WARNING: Please consider reporting this to the maintainers of class com.oracle.truffle.api.object.DynamicObject
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+
+=== Found 2 compilation blocklist violations ===
+
+Blocklisted method
+   java.util.HashMap.<init>() (target: java.util.HashMap.<init>())
+trace:
+  at graalphp.runtime.CallArguments.expand(CallArguments.java:118) [bci: 101]
+  at graalphp.truffle.PhpRoot$InvokeMember.run(PhpRoot.java:308) [bci: 15]
+  at graalphp.truffle.PhpRootGen$InvokeMember_Node.execute(PhpRootGen.java:49576) [bci: 57]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.handleInvokeMember_(PhpRootGen.java:5812) [bci: 259]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.continueAt(PhpRootGen.java:4202) [bci: 2843]
+  at graalphp.truffle.PhpRootGen.continueAt(PhpRootGen.java:1130) [bci: 30]
+  at graalphp.truffle.PhpRootGen.execute(PhpRootGen.java:1122) [bci: 16]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.executeRootNode(OptimizedCallTarget.java:812) [bci: 5]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.callInlined(OptimizedCallTarget.java:590) [bci: 23]
+  [Root]
+Blocklisted method
+   java.util.Collection.toArray(IntFunction) (target: java.util.Collection.toArray(IntFunction))
+trace:
+  at graalphp.truffle.PhpRoot$InvokeMember.run(PhpRoot.java:308) [bci: 15]
+  at graalphp.truffle.PhpRootGen$InvokeMember_Node.execute(PhpRootGen.java:49576) [bci: 57]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.handleInvokeMember_(PhpRootGen.java:5812) [bci: 259]
+  at graalphp.truffle.PhpRootGen$CachedBytecodeNode.continueAt(PhpRootGen.java:4202) [bci: 2843]
+  at graalphp.truffle.PhpRootGen.continueAt(PhpRootGen.java:1130) [bci: 30]
+  at graalphp.truffle.PhpRootGen.execute(PhpRootGen.java:1122) [bci: 16]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.executeRootNode(OptimizedCallTarget.java:812) [bci: 5]
+  at com.oracle.truffle.runtime.OptimizedCallTarget.callInlined(OptimizedCallTarget.java:590) [bci: 23]
+  [Root]
+[2/8] Performing analysis...  [**********]                                                             (23,9s @ 1,36GiB)
+   12.868 types,  17.610 fields, and  65.126 methods found reachable
+      302 types,      91 fields, and     748 methods registered for reflection
+       68 types,      52 fields, and      58 methods registered for JNI access
+       67 resource accesses registered with 172,36KiB total size
+       29 native libraries: advapi32, bcrypt, boringssl, brotli, crypt32, curl-impersonate, dbghelp, graalphp-builtins, impersonate-nghttp2, iphlpapi, libuv, ncrypt, normaliz, ole32, pcre2, psapi, shell32, sqlite3, standard-boringssl, standard-curl, user32, userenv, version, winmm, ws2_32, zlib, zstd
+    2.980 runtime compiled methods (4,6% of all reachable methods)
+
+------------------------------------------------------------------------------------------------------------------------
+                       3,0s (9,0% of total time) in 429 GCs | Peak RSS: 2,19GiB | CPU load: 8,73
+------------------------------------------------------------------------------------------------------------------------
+Build artifacts:
+ <workspace>\build\svm_err_b_20260926T213612.137_pid6216.md (build_info, 39,94KiB)
+========================================================================================================================
+Failed generating 'graalphp' after 31,9s.
+
+The build process encountered an unexpected error:
+
+> com.oracle.svm.shared.util.VMError$HostedError: Blocklisted methods are reachable for runtime compilation
+
+Please inspect the generated error report at: '<workspace>\build\svm_err_b_20260926T213612.137_pid6216.md'
+
+If you are unable to resolve this problem, please file an issue with the error report at:
+https://graalvm.org/support

@@ -88,6 +88,15 @@ public final class IterationApi {
             } finally { __iter_close($state); }
         }
         function iterator_object_count($value, $origin) { return __count_result($value->count(), $origin); }
+        function unpack_values($value) { return iterator_to_array($value, true); }
+        function unpack_argument_values($state, $collector) {
+            try {
+                while (__iter_next($state)) {
+                    __unpack_collect($collector, __iter_key_value($state), __iter_current_value($state));
+                }
+                return $collector;
+            } finally { __iter_close($state); }
+        }
         """;
 
     public static boolean tentativeType(String name) {
@@ -235,6 +244,33 @@ public final class IterationApi {
     }
 
     @TruffleBoundary
+    public static Object materialize(Activation caller, Object value, IndirectCallNode call) {
+        Object raw = PhpValues.unwrap(value);
+        if (raw instanceof PhpValues.PhpArray) return value;
+        if (!iterable(raw)) {
+            PhpValues.drop(value);
+            throw new PhpError("Error", "Only arrays and Traversables can be unpacked");
+        }
+        return Operations.invokeFunction(caller, caller.request.context.asyncFunction("unpack_values"),
+                new Argument[] {new Argument(value, null)}, call);
+    }
+
+    @TruffleBoundary
+    public static Object materializeArguments(Activation caller, Object value, IndirectCallNode call) {
+        Object raw = PhpValues.unwrap(value);
+        if (raw instanceof PhpValues.PhpArray) return value;
+        if (!iterable(raw)) {
+            PhpValues.drop(value);
+            throw new PhpError("TypeError", "Only arrays and Traversables can be unpacked");
+        }
+        var state = open(caller, value, false);
+        state.buffered(true);
+        var collector = new CallArguments.Collected(caller);
+        return Operations.invokeFunction(caller, caller.request.context.asyncFunction("unpack_argument_values"),
+                new Argument[] {new Argument(state, null), new Argument(collector, null)}, call);
+    }
+
+    @TruffleBoundary
     public static Object function(Activation caller, String name, Argument[] arguments, IndirectCallNode call) {
         switch (name) {
             case "is_iterable", "is_countable": {
@@ -344,6 +380,10 @@ public final class IterationApi {
             case "__iter_next": return ((State) arguments[0].value()).advance(caller, call);
             case "__iter_current_value": return caller.track(PhpValues.own(((State) arguments[0].value()).valueTarget.read()));
             case "__iter_key_value": return caller.track(PhpValues.own(((State) arguments[0].value()).keyTarget.read()));
+            case "__unpack_collect": {
+                ((CallArguments.Collected) arguments[0].value()).add(arguments[1].value(), arguments[2].value());
+                return null;
+            }
             case "__iter_close": close((State) arguments[0].value()); return null;
             case "__iter_callback_class": {
                 String type = ClassLoading.callableClass(PhpValues.unwrap(((State) arguments[0].value()).callback));

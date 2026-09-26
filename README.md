@@ -29,6 +29,7 @@ build.bat enum-test
 build.bat string-test
 build.bat strict-test
 build.bat iteration-test
+build.bat unpack-test
 build.bat ffi-fatal-test
 build.bat native
 build.bat network-test
@@ -39,6 +40,7 @@ build\graalphp.exe examples\autoload.php
 build\graalphp.exe examples\class-contracts.php
 build\graalphp.exe examples\enums.php
 build\graalphp.exe examples\iteration.php
+build\graalphp.exe examples\unpacking.php
 build\graalphp.exe examples\trueasync.php
 build\graalphp.exe examples\async-composition.php
 build\graalphp.exe examples\native-callback.php
@@ -68,6 +70,9 @@ l'argomento ulteriore `--interpreter` disabilita il JIT guest.
 `iteration-test` confronta 74 programmi su Iterator/IteratorAggregate/Countable,
 foreach, builtin correlati e metadati degli attributi; la variante `native`
 verifica il prodotto. [Contratti di iterazione](docs/iteration.md).
+`unpack-test` verifica argument unpacking e array spread, compresi Traversable
+sospendibili, named arguments e reference; la variante `native` verifica lo
+stesso corpus sul prodotto. [Contratti unpacking](docs/unpacking.md).
 `network-test` esegue il percorso WebSocket → HTTPS/curl-impersonate → SQLite
 con peer di rete indipendenti; `network-test native` rigenera e verifica
 l'eseguibile. Vedere [network-integration.md](docs/network-integration.md).
@@ -97,6 +102,7 @@ bash build.sh verify
 bash build.sh native
 bash build.sh trueasync native
 bash build.sh iteration-test
+bash build.sh unpack-test
 bash build.sh network-test native
 build/graalphp examples/trueasync.php
 ```
@@ -146,9 +152,11 @@ della funzione; il catalogo completo dei builtin non è ancora centralizzato.
 Vedere [contratti e limiti](docs/language-values.md) e
 [l'esempio enum/COW](examples/enums.php). Sono inoltre implementati foreach
 sospendibile su Iterator/IteratorAggregate, Countable, i builtin di iterazione
-coperti e i metadati `#[...]` necessari a ReturnTypeWillChange; Reflection
-completa, generatori/Fiber e unpacking restano aperti. Vedere
-[iterazione](docs/iteration.md) e [l'esempio](examples/iteration.php).
+coperti e i metadati `#[...]` necessari a ReturnTypeWillChange. Argument
+unpacking e array spread sono inoltre sospendibili su Traversable e conservano
+named arguments/reference nei casi documentati. Reflection completa e
+generatori/Fiber restano aperti. Vedere [iterazione](docs/iteration.md),
+[unpacking](docs/unpacking.md) e i relativi esempi.
 
 L'API asincrona pubblica usa il namespace upstream:
 

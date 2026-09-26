@@ -381,7 +381,7 @@ public final class AsyncApi {
     }
     private static Argument[] copy(Argument[] args, int start) {
         var result = new Argument[args.length - start];
-        for (int i = start; i < args.length; i++) result[i - start] = new Argument(PhpValues.own(value(args, i)), args[i].location(), args[i].name());
+        for (int i = start; i < args.length; i++) result[i - start] = new Argument(PhpValues.own(value(args, i)), args[i].location(), args[i].name(), args[i].traversableUnpack());
         return result;
     }
 
