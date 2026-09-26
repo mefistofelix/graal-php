@@ -168,6 +168,7 @@ public final class TypeRelations {
                 if (value instanceof PhpValues.PhpObject object && object.descriptor instanceof ObjectModel.RuntimeClass clazz)
                     yield clazz.isA(type);
                 if (value instanceof PhpError error) yield error.matches(type);
+                if (ReflectionApi.isA(value, type)) yield true;
                 yield builtin != null && (builtin.equalsIgnoreCase(type)
                         || type.equals("async\\completable") && value instanceof Scheduler.Future);
             }

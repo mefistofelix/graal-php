@@ -1,0 +1,18 @@
+Reflection / runtime attributes, 2026-09-26
+
+PASS 25/25 programs Windows JVM.
+PASS 25/25 programs Windows Native Image.
+PASS 25/25 programs Windows Native Image --interpreter.
+PASS 25/25 programs Linux JVM.
+PASS 25/25 programs Linux Native Image.
+PASS 25/25 programs Linux Native Image --interpreter.
+TOTAL 150/150 program executions; no semantic rejection cases in this corpus.
+
+PASS Windows verify: 91 integration scenarios; 53 value scenarios; 256 ownership graphs / 1280 collection phases; 56 field-iteration checks; 52 attribute metadata/source-range checks; 82/82 TrueAsync differential.
+PASS Linux logs retain 85 integration scenarios plus corresponding value/ownership/field/metadata suites.
+PASS 105 src/tests files byte-identical between authoritative workspace and Linux build copy before product copy.
+
+Windows executable SHA256 888cc0c2beba407a0e774f29ef93c20cef7a4577cb0670462e82974bcfad1c2d
+Linux executable SHA256 591c404ad9d916d7b0324e1122591a0a02a1480a505b4712316c8d8ab93f9291
+
+No performance campaign and no JIT/GC/default change. Reflection is intentionally partial: ReflectionType/Enum advanced APIs, full modifier filtering, invoke/newInstanceArgs/property accessors and the complete internal-class catalog remain open.

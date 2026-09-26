@@ -41,6 +41,7 @@ build\graalphp.exe examples\class-contracts.php
 build\graalphp.exe examples\enums.php
 build\graalphp.exe examples\iteration.php
 build\graalphp.exe examples\unpacking.php
+build\graalphp.exe examples\reflection.php
 build\graalphp.exe examples\trueasync.php
 build\graalphp.exe examples\async-composition.php
 build\graalphp.exe examples\native-callback.php
@@ -73,6 +74,9 @@ verifica il prodotto. [Contratti di iterazione](docs/iteration.md).
 `unpack-test` verifica argument unpacking e array spread, compresi Traversable
 sospendibili, named arguments e reference; la variante `native` verifica lo
 stesso corpus sul prodotto. [Contratti unpacking](docs/unpacking.md).
+`reflection-test` confronta 25 programmi su Reflection e attributi runtime;
+`native` e `--interpreter` usano lo stesso corpus sul prodotto.
+[Contratti Reflection](docs/reflection.md).
 `network-test` esegue il percorso WebSocket → HTTPS/curl-impersonate → SQLite
 con peer di rete indipendenti; `network-test native` rigenera e verifica
 l'eseguibile. Vedere [network-integration.md](docs/network-integration.md).
@@ -154,9 +158,11 @@ Vedere [contratti e limiti](docs/language-values.md) e
 sospendibile su Iterator/IteratorAggregate, Countable, i builtin di iterazione
 coperti e i metadati `#[...]` necessari a ReturnTypeWillChange. Argument
 unpacking e array spread sono inoltre sospendibili su Traversable e conservano
-named arguments/reference nei casi documentati. Reflection completa e
-generatori/Fiber restano aperti. Vedere [iterazione](docs/iteration.md),
-[unpacking](docs/unpacking.md) e i relativi esempi.
+named arguments/reference nei casi documentati. È inoltre presente il nucleo
+Reflection per classi/funzioni/metodi/proprietà/costanti/parametri/attributi,
+compreso `ReflectionAttribute::newInstance()` sospendibile. Reflection avanzata
+e generatori/Fiber restano aperti. Vedere [iterazione](docs/iteration.md),
+[unpacking](docs/unpacking.md), [Reflection](docs/reflection.md) e i relativi esempi.
 
 L'API asincrona pubblica usa il namespace upstream:
 

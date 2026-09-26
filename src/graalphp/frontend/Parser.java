@@ -572,10 +572,11 @@ public final class Parser {
         return switch (operator) {
             case "=", "+=", "-=", ".=", "*=", "/=", "%=", "??=" -> 1;
             case "??" -> 3; case "||" -> 4; case "&&" -> 5;
-            case "==", "!=", "===", "!==" -> 6;
-            case "<", "<=", ">", ">=" -> 7;
-            case "instanceof" -> 11;
-            case "." -> 8; case "+", "-" -> 9; case "*", "/", "%" -> 10;
+            case "|", "^", "&" -> 6;
+            case "==", "!=", "===", "!==" -> 7;
+            case "<", "<=", ">", ">=" -> 8;
+            case "instanceof" -> 12;
+            case "." -> 9; case "+", "-" -> 10; case "*", "/", "%" -> 11;
             default -> -1;
         };
     }

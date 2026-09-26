@@ -1,0 +1,140 @@
+=== reflection JVM ===
+build/generated/graalphp/truffle/PhpRootGen.java:6370: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+build/generated/graalphp/truffle/PhpRootGen.java:8282: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+Note: src/graalphp/truffle/PhpContext.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+2 warnings
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime (file:<workspace>/build/linux-workspace/build/deps/25.4.4.1.1/truffle-runtime-25.4.4.1.1.jar)
+WARNING: Please consider reporting this to the maintainers of class com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+PASS class-basics oracle=0 target=0 mode=output
+PASS reflection-object oracle=0 target=0 mode=output
+PASS class-autoload oracle=0 target=0 mode=output
+PASS function-and-closure oracle=0 target=0 mode=output
+PASS method-metadata oracle=0 target=0 mode=output
+PASS class-method-queries oracle=0 target=0 mode=output
+PASS property-metadata oracle=0 target=0 mode=output
+PASS constant-metadata oracle=0 target=0 mode=output
+PASS attribute-arguments-and-instance oracle=0 target=0 mode=output
+PASS attribute-exact-filter oracle=0 target=0 mode=output
+PASS attribute-instanceof-filter oracle=0 target=0 mode=output
+PASS attribute-instanceof-autoload oracle=0 target=0 mode=output
+PASS unknown-attribute-remains-lazy oracle=0 target=0 mode=output
+PASS attribute-target-validation-is-lazy oracle=0 target=0 mode=output
+PASS attribute-repeat-validation-is-lazy oracle=0 target=0 mode=output
+PASS non-attribute-class-validation-is-lazy oracle=0 target=0 mode=output
+PASS attribute-alias-and-namespace oracle=0 target=0 mode=output
+PASS method-property-parameter-targets oracle=0 target=0 mode=output
+PASS attribute-constant-expression oracle=0 target=0 mode=output
+PASS parameter-default-reflection oracle=0 target=0 mode=output
+PASS reflection-type-relations oracle=0 target=0 mode=output
+PASS invalid-attribute-flags oracle=0 target=0 mode=output
+PASS missing-members oracle=0 target=0 mode=output
+PASS async-attribute-constructor oracle=0 target=0 mode=output
+PASS async-attribute-autoload oracle=0 target=0 mode=output
+Evidence: <workspace>/build/linux-workspace/build/reflection-15942812882148189955
+PASS: 25 reflection programs; 0 semantic rejections (diagnostic text not asserted identical)
+=== reflection native ===
+build/generated/graalphp/truffle/PhpRootGen.java:6370: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+build/generated/graalphp/truffle/PhpRootGen.java:8282: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+Note: src/graalphp/truffle/PhpContext.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+2 warnings
+PASS class-basics oracle=0 target=0 mode=output
+PASS reflection-object oracle=0 target=0 mode=output
+PASS class-autoload oracle=0 target=0 mode=output
+PASS function-and-closure oracle=0 target=0 mode=output
+PASS method-metadata oracle=0 target=0 mode=output
+PASS class-method-queries oracle=0 target=0 mode=output
+PASS property-metadata oracle=0 target=0 mode=output
+PASS constant-metadata oracle=0 target=0 mode=output
+PASS attribute-arguments-and-instance oracle=0 target=0 mode=output
+PASS attribute-exact-filter oracle=0 target=0 mode=output
+PASS attribute-instanceof-filter oracle=0 target=0 mode=output
+PASS attribute-instanceof-autoload oracle=0 target=0 mode=output
+PASS unknown-attribute-remains-lazy oracle=0 target=0 mode=output
+PASS attribute-target-validation-is-lazy oracle=0 target=0 mode=output
+PASS attribute-repeat-validation-is-lazy oracle=0 target=0 mode=output
+PASS non-attribute-class-validation-is-lazy oracle=0 target=0 mode=output
+PASS attribute-alias-and-namespace oracle=0 target=0 mode=output
+PASS method-property-parameter-targets oracle=0 target=0 mode=output
+PASS attribute-constant-expression oracle=0 target=0 mode=output
+PASS parameter-default-reflection oracle=0 target=0 mode=output
+PASS reflection-type-relations oracle=0 target=0 mode=output
+PASS invalid-attribute-flags oracle=0 target=0 mode=output
+PASS missing-members oracle=0 target=0 mode=output
+PASS async-attribute-constructor oracle=0 target=0 mode=output
+PASS async-attribute-autoload oracle=0 target=0 mode=output
+Evidence: <workspace>/build/linux-workspace/build/reflection-9657100344570574503
+PASS: 25 reflection programs; 0 semantic rejections (diagnostic text not asserted identical)
+=== reflection native interpreter ===
+build/generated/graalphp/truffle/PhpRootGen.java:6370: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+build/generated/graalphp/truffle/PhpRootGen.java:8282: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+Note: src/graalphp/truffle/PhpContext.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+2 warnings
+PASS class-basics oracle=0 target=0 mode=output
+PASS reflection-object oracle=0 target=0 mode=output
+PASS class-autoload oracle=0 target=0 mode=output
+PASS function-and-closure oracle=0 target=0 mode=output
+PASS method-metadata oracle=0 target=0 mode=output
+PASS class-method-queries oracle=0 target=0 mode=output
+PASS property-metadata oracle=0 target=0 mode=output
+PASS constant-metadata oracle=0 target=0 mode=output
+PASS attribute-arguments-and-instance oracle=0 target=0 mode=output
+PASS attribute-exact-filter oracle=0 target=0 mode=output
+PASS attribute-instanceof-filter oracle=0 target=0 mode=output
+PASS attribute-instanceof-autoload oracle=0 target=0 mode=output
+PASS unknown-attribute-remains-lazy oracle=0 target=0 mode=output
+PASS attribute-target-validation-is-lazy oracle=0 target=0 mode=output
+PASS attribute-repeat-validation-is-lazy oracle=0 target=0 mode=output
+PASS non-attribute-class-validation-is-lazy oracle=0 target=0 mode=output
+PASS attribute-alias-and-namespace oracle=0 target=0 mode=output
+PASS method-property-parameter-targets oracle=0 target=0 mode=output
+PASS attribute-constant-expression oracle=0 target=0 mode=output
+PASS parameter-default-reflection oracle=0 target=0 mode=output
+PASS reflection-type-relations oracle=0 target=0 mode=output
+PASS invalid-attribute-flags oracle=0 target=0 mode=output
+PASS missing-members oracle=0 target=0 mode=output
+PASS async-attribute-constructor oracle=0 target=0 mode=output
+PASS async-attribute-autoload oracle=0 target=0 mode=output
+Evidence: <workspace>/build/linux-workspace/build/reflection-14531588541351088533
+PASS: 25 reflection programs; 0 semantic rejections (diagnostic text not asserted identical)
+=== verify ===
+build/generated/graalphp/truffle/PhpRootGen.java:6370: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+build/generated/graalphp/truffle/PhpRootGen.java:8282: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+Note: src/graalphp/truffle/PhpContext.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+2 warnings
+[100%]: build ok, spent 35.087s
+[100%]: build ok, spent 34.357s
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime (file:<workspace>/build/linux-workspace/build/deps/25.4.4.1.1/truffle-runtime-25.4.4.1.1.jar)
+WARNING: Please consider reporting this to the maintainers of class com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+PASS: 85 integration scenarios (Truffle, async, reload, threads, NFI, host)
+PASS: 53 semantic scenarios + storage/lifetime invariants
+PASS: 256 ownership graphs, 1280 collection phases, exactly-once resource release
+PASS: 56 field-iteration ownership and ordering checks
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime (file:<workspace>/build/linux-workspace/build/deps/25.4.4.1.1/truffle-runtime-25.4.4.1.1.jar)
+WARNING: Please consider reporting this to the maintainers of class com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+PASS: 52 attribute metadata and source-range checks

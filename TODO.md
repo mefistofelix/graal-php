@@ -10,9 +10,7 @@ certificano soltanto il risultato descritto, non un'intera milestone del design.
 **L'utente ha rinviato le verifiche prestazionali.** Riprendere lo sviluppo
 funzionale, non PERF-01. Il blocco corrente di **LANG-01** implementa
 [argument unpacking e array spread sospendibili](docs/unpacking.md), sopra i
-precedenti contratti di iterazione, classi e valori. Il seguito immediato è
-**Reflection e semantica completa degli attributi**, poi generatori/Fiber e
-lifetime. Il loader SPL predefinito, include_path, binding completo fra unità
+precedenti contratti di iterazione, classi e valori. Il blocco corrente chiude **Reflection e semantica runtime degli attributi** entro i limiti documentati; il seguito immediato è **generatori/Fiber**, poi lifetime. Il loader SPL predefinito, include_path, binding completo fra unità
 e il typing delle restanti API native rimangono aperti.
 Linguaggio/TrueAsync/threading/FFI precedono Composer applicativo, Compose e mobile.
 
@@ -65,6 +63,11 @@ Linguaggio/TrueAsync/threading/FFI precedono Composer applicativo, Compose e mob
   arguments, duplicati/ordine delle chiavi, reference, strict_types, autoload,
   costanti di classe e iteratori sospendibili. 46 programmi differenziali,
   con percorsi separati per chiamate e merge array. [Contratto](docs/unpacking.md).
+
+- [x] ReflectionClass/Object/Function/Method/Property/ClassConstant/Parameter/Attribute,
+  filtri attributi lazy e `newInstance()` sospendibile con target/repeatability.
+  25 programmi in sei modalità Windows/Linux JVM/native/interpreter.
+  [Contratto](docs/reflection.md).
 
 ## Prestazioni e memoria: rinviate per richiesta dell'utente
 
@@ -123,8 +126,7 @@ Linguaggio/TrueAsync/threading/FFI precedono Composer applicativo, Compose e mob
   modello classi PHP. Enum, match/clone e strict_types delle chiamate utente
   sono implementati nel blocco valori. Iteratori utente, Countable e metadati
   degli attributi sono nel blocco iterazione; argument/array unpacking è nel
-  blocco successivo. Restano Reflection e semantica completa degli attributi,
-  generatori/Fiber, iteratori SPL concreti/ArrayAccess, named arguments e typing nei restanti builtin,
+  blocco successivo. Restano generatori/Fiber, iteratori SPL concreti/ArrayAccess, ReflectionType/Enum avanzata, named arguments e typing nei restanti builtin,
   readonly/hooks e diagnostica completa.
   Pianificare blocchi coerenti con valori, sospensioni e reload; le feature
   usate da Composer sono prioritarie, eseguire Composer non lo è.

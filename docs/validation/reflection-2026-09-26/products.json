@@ -1,0 +1,18 @@
+{
+  "build/graalphp.exe": {
+    "bytes": 92286976,
+    "sha256": "888cc0c2beba407a0e774f29ef93c20cef7a4577cb0670462e82974bcfad1c2d"
+  },
+  "build/graalphp-linux-x64": {
+    "bytes": 95095592,
+    "sha256": "591c404ad9d916d7b0324e1122591a0a02a1480a505b4712316c8d8ab93f9291"
+  },
+  "build/graalphp.jar": {
+    "bytes": 824059,
+    "sha256": "812933a02e1da27f58bfbaadbefac9220bad4ebbf27f640be280b36148279cca"
+  },
+  "build/linux-workspace/build/graalphp.jar": {
+    "bytes": 824058,
+    "sha256": "b720bed23afd88649c769dee7155ad6cf571196941371e3cb9d11cdea92a24ae"
+  }
+}

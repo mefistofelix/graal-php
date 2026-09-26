@@ -64,6 +64,10 @@ public final class Operations {
                 long divisor = number(b).longValue(); if (divisor == 0) throw new PhpError("Modulo by zero");
                 return number(a).longValue() % divisor;
             }
+            if (operator.equals("|") || operator.equals("&") || operator.equals("^")) {
+                long x = number(a).longValue(); long y = number(b).longValue();
+                return switch (operator) { case "|" -> x | y; case "&" -> x & y; default -> x ^ y; };
+            }
             var first = number(a); var second = number(b);
             if (first instanceof Long x && second instanceof Long y) {
                 if (operator.equals("/") && y != 0 && !(x == Long.MIN_VALUE && y == -1) && x % y == 0) return x / y;
@@ -125,6 +129,8 @@ public final class Operations {
         try {
             if (kind.equals("static") && string(receiver).equalsIgnoreCase("FFI")) return FfiApi.staticMethod(caller, name, args);
             if (PhpValues.unwrap(receiver) instanceof FfiApi.Binding binding) return FfiApi.invoke(caller, binding, name, args, call);
+            Object reflection = ReflectionApi.method(caller, receiver, name, args, call);
+            if (reflection != AsyncApi.UNHANDLED) return reflection;
             if (PhpValues.unwrap(receiver) instanceof AsyncMutex mutex) return mutexMethod(caller, mutex, name, args, call);
             if (!kind.equals("callable")) {
                 Object service = kind.equals("static")
@@ -163,6 +169,8 @@ public final class Operations {
     }
     @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
     private static Object builtin(Activation activation, String name, Argument[] args, IndirectCallNode call) {
+        Object reflection = ReflectionApi.function(activation, name, args);
+        if (reflection != AsyncApi.UNHANDLED) return reflection;
         Object iteration = IterationApi.function(activation, name, args, call);
         if (iteration != AsyncApi.UNHANDLED) return iteration;
         Object enumValue = EnumApi.function(activation, name, args);
@@ -197,7 +205,8 @@ public final class Operations {
             case "__mutex_abort": ((AsyncMutex) values[0]).abort(activation.task, future(values[1])); return null;
             case "get_class":
                 require(name, values, 1);
-                String builtinClass = AsyncApi.className(values[0]);
+                String builtinClass = ReflectionApi.className(values[0]);
+                if (builtinClass == null) builtinClass = AsyncApi.className(values[0]);
                 if (builtinClass == null) builtinClass = NetworkApi.className(values[0]);
                 if (builtinClass == null) builtinClass = SqliteApi.className(values[0]);
                 if (values[0] instanceof CurlApi.Handle) return "CurlHandle";

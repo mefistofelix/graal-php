@@ -139,7 +139,9 @@ public final class ObjectModel {
 
     @TruffleBoundary
     public static Object create(Activation caller, String name) {
-        Object builtin = AsyncApi.allocate(caller, name);
+        Object builtin = ReflectionApi.allocate(name);
+        if (builtin != AsyncApi.UNHANDLED) return builtin;
+        builtin = AsyncApi.allocate(caller, name);
         if (builtin != AsyncApi.UNHANDLED) return builtin;
         builtin = NetworkApi.allocate(caller, name);
         if (builtin != AsyncApi.UNHANDLED) return builtin;
@@ -496,7 +498,8 @@ public final class ObjectModel {
         value = PhpValues.unwrap(value);
         if (value instanceof PhpValues.PhpObject object)
             return object.descriptor instanceof RuntimeClass type ? type.definition.name : object.descriptor instanceof ClosureData ? "Closure" : null;
-        String name = AsyncApi.className(value);
+        String name = ReflectionApi.className(value);
+        if (name == null) name = AsyncApi.className(value);
         if (name == null) name = NetworkApi.className(value);
         if (name == null) name = SqliteApi.className(value);
         if (value instanceof CurlApi.Handle) return "CurlHandle";
@@ -537,6 +540,7 @@ public final class ObjectModel {
             if (raw instanceof PhpValues.PhpObject object && object.descriptor instanceof RuntimeClass runtimeClass)
                 return runtimeClass.isA(name);
             if (raw instanceof PhpError error) return error.matches(name);
+            if (ReflectionApi.isA(raw, name)) return true;
             String actual = className(raw);
             return actual != null && actual.equalsIgnoreCase(name);
         } finally { PhpValues.drop(value); PhpValues.drop(type); }

@@ -3,7 +3,17 @@
 Toolchain: Oracle GraalVM 25.4.4.1.1+1.1, Java 25.0.4.1.1, Truffle 25.4.4.1.1.
 Oracoli: PHP 8.6.0RC2 e TrueAsync 0.10.0 / PHP 8.6.0-dev / ABI v0.26.0.
 
-Il blocco funzionale corrente implementa [argument unpacking e array spread](unpacking.md).
+Il blocco funzionale corrente implementa [Reflection e attributi runtime](reflection.md).
+Passano **25/25 programmi** su Windows/Linux JVM, Native Image e Native Image
+`--interpreter`: 150 esecuzioni. La regressione Windows mantiene 91 scenari
+integrati, 53 scenari valori, 256 grafi/1.280 fasi collector, 56 field-iteration,
+52 metadata e 82/82 TrueAsync; i log Linux mantengono 85 integrazioni e le suite
+funzionali pertinenti. Nessun benchmark o cambio JIT/GC.
+[Esiti](validation/reflection-2026-09-26/results.txt),
+[hash](validation/reflection-2026-09-26/hashes.json),
+[evidenze](validation/reflection-2026-09-26/README.md).
+
+Il blocco precedente implementa [argument unpacking e array spread](unpacking.md).
 Passano **46/46 programmi** su Windows/Linux JVM, Native Image e Native Image
 `--interpreter`: 276 esecuzioni, 264 confronti di output e 12 rifiuti semantici.
 Le regressioni finali passano: 91/85 scenari integrati Windows/Linux, 53 scenari

@@ -13,14 +13,13 @@ di PHP; non sono completate tutte le milestone del design.
 
 **L'utente ha chiesto di continuare lo sviluppo funzionale e riverificare le
 performance più avanti.** Non riprendere automaticamente PERF-01. Il blocco
-corrente è [argument unpacking e array spread](unpacking.md): array e
-Traversable possono alimentare chiamate e literal array mantenendo ordine,
-named arguments, reference e sospensioni nei casi documentati. I contratti
-precedenti restano verificati; errori, ownership e continuazioni usano la stessa
-pipeline Bytecode DSL.
+corrente è [Reflection e attributi runtime](reflection.md), sopra
+[unpacking](unpacking.md), iterazione, classi e valori. Gli oggetti Reflection
+espongono metadati della generazione; filtri `IS_INSTANCEOF` e `newInstance()`
+possono autoloadare e sospendersi sulla normale pipeline Bytecode DSL.
 
-Il seguito funzionale immediato è **Reflection e semantica completa degli
-attributi**, poi generatori/Fiber, insieme a valori, firme dei builtin e TrueAsync. Il
+Il seguito funzionale immediato è **generatori/Fiber**, insieme a valori,
+firme dei builtin e TrueAsync. Il
 loader SPL predefinito, include_path e il binding completo tra unità restano
 aperti: non dichiarare Composer funzionante. Shared-memory threading e FFI
 restano priorità successive; Composer applicativo, Compose e mobile sono rinviati.
@@ -32,7 +31,24 @@ misura RAM/CPU/throughput/p99 è stata eseguita per i blocchi autoload/classi/va
 si tornerà alle performance, mantenere il vincolo di nessun warmup escluso e
 separare GC/invalidazioni, peer e lifetime reale dei compiler worker.
 
-## Blocco funzionale: unpacking e spread, 26 settembre
+## Blocco funzionale: Reflection e attributi, 26 settembre
+
+[Contratti e limiti](reflection.md).
+
+Il corpus contiene 25 programmi identici. Passano su Windows/Linux JVM,
+Native Image e lo stesso Native Image con `--interpreter`: **150 esecuzioni**.
+Passa inoltre `verify` su Windows (91 integrazioni, 53 scenari valori,
+256 grafi/1.280 fasi collector, 56 field-iteration, 52 metadata e 82/82
+TrueAsync); i log Linux già prodotti mantengono 85 integrazioni e le suite
+funzionali pertinenti. Nessun benchmark o cambio JIT/GC.
+
+Prodotti coerenti con questo snapshot: Windows SHA-256
+`888cc0c2beba407a0e774f29ef93c20cef7a4577cb0670462e82974bcfad1c2d`,
+Linux SHA-256 `591c404ad9d916d7b0324e1122591a0a02a1480a505b4712316c8d8ab93f9291`.
+I 105 file sotto `src/` e `tests/` coincidono con la copia Linux usata per la build.
+LANG-01 resta aperto: prossimo blocco generatori/Fiber.
+
+## Blocco precedente: unpacking e spread, 26 settembre
 
 [Contratti e limiti](unpacking.md),
 [evidenze](validation/unpacking-2026-09-26/README.md),

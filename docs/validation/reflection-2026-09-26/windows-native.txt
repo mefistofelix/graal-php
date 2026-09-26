@@ -1,0 +1,129 @@
+build\generated\graalphp\truffle\PhpRootGen.java:6370: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+build\generated\graalphp\truffle\PhpRootGen.java:8282: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+Note: <workspace>/src\graalphp\truffle\PhpContext.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+2 warnings
+using lock <workspace>/build\toolchain.lock
+already installed 12 packages in <workspace>/build\toolchain
+[100%]: build ok, spent 1.109s
+[100%]: build ok, spent 1.109s
+WARNING: Unknown module: com.oracle.truffle.enterprise.svm specified to --add-exports
+========================================================================================================================
+GraalVM Native Image: Generating 'graalphp.exe' (executable)...
+========================================================================================================================
+For detailed information and explanations on the build output, visit:
+https://github.com/oracle/graal/blob/master/docs/reference-manual/native-image/BuildOutput.md
+------------------------------------------------------------------------------------------------------------------------
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by com.oracle.truffle.polyglot.JDKSupport in module org.graalvm.truffle (file:/<workspace>/build/deps/25.4.4.1.1/truffle-api-25.4.4.1.1.jar)
+WARNING: Use --enable-native-access=org.graalvm.truffle to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+[1/8] Initializing...                                                                                   (6,9s @ 0,24GiB)
+ Builder configuration:
+ - Java version: 25.0.4.1.1+1-LTS, vendor version: Oracle GraalVM 25.4.4.1.1+1.1
+ - Graal compiler: optimization level: 3, target machine: compatibility, PGO: ML-inferred
+ - C compiler: cl.exe (microsoft, x64, 19.50.35739)
+ - Assertions: disabled, system assertions: disabled
+ - 9 user-specific feature(s):
+   - com.oracle.svm.enterprise.truffle.EnterpriseTruffleFeature: Provides enterprise extensions for the Truffle runtime.
+   - com.oracle.svm.enterprise.truffle.compiler.EnterpriseTruffleCompilerFeature: Provides additional optimizations and isolated compilation for Truffle.
+   - com.oracle.svm.truffle.TruffleBaseFeature: Provides internal support for Truffle
+   - com.oracle.svm.truffle.TruffleFeature: Provides internal support for Truffle runtime compilation
+   - com.oracle.svm.truffle.nfi.TruffleNFIFeature
+   - com.oracle.svm.truffle.nfi.windows.WindowsTruffleNFIFeature
+   - com.oracle.truffle.api.impl.TruffleAPIFeature: Provides basic support for Truffle
+   - com.oracle.truffle.api.object.DynamicObjectFeature: Provides support for DynamicObject
+   - org.graalvm.home.HomeFinderFeature: Finds GraalVM paths and its version number
+ Image configuration:
+ - Garbage collector: Serial GC (max heap size: 80% of RAM)
+ - Assertions: disabled (class-specific config may apply), system assertions: disabled
+------------------------------------------------------------------------------------------------------------------------
+Build resources:
+ - 6.00GiB of memory (38.1% of system memory, set via '-Xmx6g')
+ - 8 thread(s) (50,0% of 16 available processor(s), set via '--parallelism=8')
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.oracle.truffle.api.object.DynamicObject (file:/<workspace>/build/deps/25.4.4.1.1/truffle-api-25.4.4.1.1.jar)
+WARNING: Please consider reporting this to the maintainers of class com.oracle.truffle.api.object.DynamicObject
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[2/8] Performing analysis...  [***********]                                                            (24,7s @ 1,38GiB)
+   12.816 types,  17.519 fields, and  64.322 methods found reachable
+      302 types,      87 fields, and     634 methods registered for reflection
+       68 types,      52 fields, and      58 methods registered for JNI access
+       67 resource accesses registered with 172,36KiB total size
+       29 native libraries: advapi32, bcrypt, boringssl, brotli, crypt32, curl-impersonate, dbghelp, graalphp-builtins, impersonate-nghttp2, iphlpapi, libuv, ncrypt, normaliz, ole32, pcre2, psapi, shell32, sqlite3, standard-boringssl, standard-curl, user32, userenv, version, winmm, ws2_32, zlib, zstd
+    2.965 runtime compiled methods (4,6% of all reachable methods)
+[3/8] Building universe...                                                                              (4,1s @ 1,55GiB)
+[4/8] Parsing methods...      [****]                                                                   (16,1s @ 1,80GiB)
+[5/8] Inlining methods...     [***]                                                                     (2,1s @ 1,25GiB)
+[6/8] Compiling methods...    [*********]                                                              (84,7s @ 2,68GiB)
+[7/8] Laying out methods...   [***]                                                                    (11,6s @ 3,29GiB)
+[8/8] Creating image...       [***]                                                                     (6,3s @ 1,90GiB)
+  50,06MiB (56,88%) for code area:    38.274 compilation units
+  30,75MiB (34,94%) for image heap:  356.907 objects and 16 resources
+   7,20MiB ( 8,18%) for other data
+  88,01MiB in total image size, 88,01MiB in total file size
+------------------------------------------------------------------------------------------------------------------------
+Top 10 origins of code area:                                Top 10 object types in image heap:
+   3,45MiB o.g.truffle/com.oracle.truffle.polyglot            12,34MiB byte[] for code metadata
+   3,06MiB o.g.n.runtime/com.oracle.svm.core.code              4,02MiB byte[] for string data
+   2,25MiB graalphp.truffle                                    2,16MiB java.base/java.lang.String
+   1,86MiB graalphp.runtime                                    1,99MiB byte[] for graph encodings
+   1,77MiB java.base/java.util                                 1,95MiB java.base/java.lang.Class
+   1,55MiB o.g.truffle/com.oracle.truffle.host                 1,37MiB o.g.n.runtime/c.o.s.core.hub.DynamicHubCompanion
+   1,46MiB o.g.truffle/com.oracle.truffle.api.interop        836,30KiB byte[] for general heap data
+   1,10MiB j.g.compiler/jdk.graal.compiler.lir.amd64         533,31KiB java.base/java.lang.Object[]
+   0,98MiB j.g.compiler/jdk.graal.compiler.nodes             520,03KiB java.base/j.u.concurrent.ConcurrentHashMap$Node
+ 942,78KiB c.o.t.tru~_nfi/com.oracle.truffle.nfi             478,62KiB o.g.t.r.svm/c.o.s.t.api.SubstrateTruffleMethod
+  31,66MiB for 369 more packages                               4,60MiB for 3495 more object types
+                            Use '--emit build-report' to create a report with more details.
+------------------------------------------------------------------------------------------------------------------------
+Security report:
+ - Binary includes Java deserialization.
+ - CycloneDX SBOM with 11 component(s) is embedded in binary (743B). 396 type(s) could not be associated to a component.
+ - Advanced obfuscation not enabled; enable with '-H:AdvancedObfuscation=""' (experimental support).
+------------------------------------------------------------------------------------------------------------------------
+Recommendations:
+ G1GC: Use the G1 GC ('--gc=G1') for improved latency and throughput.
+ PGO:  Use Profile-Guided Optimizations ('--pgo') for improved throughput.
+ FUTR: Use '--future-defaults=all' to prepare for future releases.
+ HEAP: Set max heap for improved and more predictable memory usage.
+ QBM:  Use the quick build mode ('-Ob') to speed up builds during development.
+------------------------------------------------------------------------------------------------------------------------
+                      17,3s (10,7% of total time) in 2040 GCs | Peak RSS: 6,10GiB | CPU load: 9,35
+------------------------------------------------------------------------------------------------------------------------
+Build artifacts:
+ <workspace>/build\graalphp.exe (executable, 88,01MiB)
+========================================================================================================================
+Finished generating 'graalphp' in 2m 39s.
+PASS class-basics oracle=0 target=0 mode=output
+PASS reflection-object oracle=0 target=0 mode=output
+PASS class-autoload oracle=0 target=0 mode=output
+PASS function-and-closure oracle=0 target=0 mode=output
+PASS method-metadata oracle=0 target=0 mode=output
+PASS class-method-queries oracle=0 target=0 mode=output
+PASS property-metadata oracle=0 target=0 mode=output
+PASS constant-metadata oracle=0 target=0 mode=output
+PASS attribute-arguments-and-instance oracle=0 target=0 mode=output
+PASS attribute-exact-filter oracle=0 target=0 mode=output
+PASS attribute-instanceof-filter oracle=0 target=0 mode=output
+PASS attribute-instanceof-autoload oracle=0 target=0 mode=output
+PASS unknown-attribute-remains-lazy oracle=0 target=0 mode=output
+PASS attribute-target-validation-is-lazy oracle=0 target=0 mode=output
+PASS attribute-repeat-validation-is-lazy oracle=0 target=0 mode=output
+PASS non-attribute-class-validation-is-lazy oracle=0 target=0 mode=output
+PASS attribute-alias-and-namespace oracle=0 target=0 mode=output
+PASS method-property-parameter-targets oracle=0 target=0 mode=output
+PASS attribute-constant-expression oracle=0 target=0 mode=output
+PASS parameter-default-reflection oracle=0 target=0 mode=output
+PASS reflection-type-relations oracle=0 target=0 mode=output
+PASS invalid-attribute-flags oracle=0 target=0 mode=output
+PASS missing-members oracle=0 target=0 mode=output
+PASS async-attribute-constructor oracle=0 target=0 mode=output
+PASS async-attribute-autoload oracle=0 target=0 mode=output
+Evidence: <workspace>/build\reflection-1020114025775569951
+PASS: 25 reflection programs; 0 semantic rejections (diagnostic text not asserted identical)
