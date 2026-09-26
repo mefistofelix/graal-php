@@ -140,6 +140,12 @@ public final class Operations {
             if (kind.equals("callable") && PhpValues.unwrap(receiver) instanceof String function && !function.contains("::")) {
                 return invoke(caller, function, args, call);
             }
+            if (kind.equals("callable")) {
+                String type = ClassLoading.callableClass(receiver);
+                if (type != null && !ClassLoading.exists(caller.request, type)) {
+                    return ClassLoading.deferCallable(caller, receiver, args, type, call);
+                }
+            }
             var invocation = switch (kind) {
                 case "callable" -> ObjectModel.callable(caller, receiver);
                 case "static" -> ObjectModel.staticMethod(caller, string(receiver), name);
@@ -154,6 +160,8 @@ public final class Operations {
     }
     @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
     private static Object builtin(Activation activation, String name, Argument[] args, IndirectCallNode call) {
+        Object loading = ClassLoading.function(activation, name, args, call);
+        if (loading != AsyncApi.UNHANDLED) return loading;
         Object multi = CurlMultiApi.function(activation, name, args, call);
         if (multi != AsyncApi.UNHANDLED) return multi;
         if (name.equals("curl_init")) args = CallArguments.builtin(name, args, List.of("url", "provider"), 0, null, null);

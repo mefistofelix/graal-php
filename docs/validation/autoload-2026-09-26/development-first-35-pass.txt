@@ -1,0 +1,60 @@
+> cmd.exe /d /c build.bat
+GraalPHP 0.1 | PHP 8.6 subset | Truffle 25.4.4.1.1
+build\generated\graalphp\truffle\PhpRootGen.java:5810: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+build\generated\graalphp\truffle\PhpRootGen.java:7521: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+Note: src\graalphp\truffle\PhpContext.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+2 warnings
+
+exit=0
+> tools/graalvm-25.4.4.1.1+1.1/bin/javac.exe --release 25 -proc:none -cp build/classes;build/deps/25.4.4.1.1/* -d build/test-classes tests/graalphp/AutoloadTest.java
+
+exit=0
+> tools/graalvm-25.4.4.1.1+1.1/bin/java.exe --enable-native-access=ALL-UNNAMED -cp build/classes;build/test-classes;build/deps/25.4.4.1.1/* graalphp.AutoloadTest
+PASS empty-and-already-loaded oracle=0 target=0
+PASS queue-order-and-return-ignored oracle=0 target=0
+PASS function-identity oracle=0 target=0
+PASS static-callback-identity oracle=0 target=0
+PASS closure-and-object-lifetime oracle=0 target=0
+PASS private-method-registration oracle=0 target=0
+PASS invokable-loader oracle=0 target=0
+PASS list-is-a-snapshot oracle=0 target=0
+PASS live-append oracle=0 target=0
+PASS live-prepend oracle=0 target=0
+PASS remove-pending-and-current oracle=0 target=0
+PASS explicit-call-existing-and-recursion oracle=0 target=0
+PASS lookup-recursion-and-retry oracle=0 target=0
+PASS exception-unwinds-guard oracle=0 target=0
+PASS nested-loading oracle=0 target=0
+PASS namespace-and-alias oracle=0 target=0
+PASS dynamic-construction-and-argument-order oracle=0 target=0
+PASS static-property-and-method oracle=0 target=0
+PASS callable-array-and-reference oracle=0 target=0
+PASS callable-string-leading-separator oracle=0 target=0
+PASS registration-loads-callback-class oracle=0 target=0
+PASS parent-loads-at-declaration oracle=0 target=0
+PASS late-parent-not-hoisted oracle=0 target=0
+PASS conditional-and-function-local-classes oracle=0 target=0
+PASS missing-parent-does-not-publish oracle=0 target=0
+PASS validation-and-named-arguments oracle=0 target=0
+PASS invalid-names-do-not-autoload oracle=0 target=0
+PASS include-loader-scope oracle=0 target=0
+PASS included-child-parent-and-once oracle=0 target=0
+PASS async-loader-and-constructor oracle=0 target=0
+PASS async-live-removal-roots oracle=0 target=0
+PASS async-same-name-suppressed oracle=0 target=0
+PASS async-cancellation-releases-guard oracle=0 target=0
+PASS async-callable-arguments oracle=0 target=0
+PASS async-inherited-include oracle=0 target=0
+Evidence: build\autoload-test-17656906222007680735
+PASS: 35 identical autoload programs
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime (file:/build/deps/25.4.4.1.1/truffle-runtime-25.4.4.1.1.jar)
+WARNING: Please consider reporting this to the maintainers of class com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+
+exit=0

@@ -1,0 +1,6 @@
+> wsl.exe --exec bash -lc build/graalphp-linux-x64 --version && build/graalphp-linux-x64 examples/autoload.php && build/graalphp-linux-x64 --interpreter examples/autoload.php
+GraalPHP 0.1 | PHP 8.6 subset | Truffle 25.4.4.1.1
+Hello from autoload
+Hello from autoload
+
+exit=0

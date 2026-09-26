@@ -1,0 +1,468 @@
+{
+  "target": "windows-jvm",
+  "reference": "PHP 8.6.0RC2 for synchronous cases; pinned TrueAsync 0.10.0 for asynchronous cases",
+  "report": "Target: JVM\nPHP 8.6.0RC2 (cli) (built: Sep 23 2026 09:53:34) (NTS Visual C++ 2026 x64)\nCopyright © The PHP Group and Contributors\nBuilt by The PHP Group\nZend Engine v4.6.0RC2, Copyright © Zend by Perforce\n    with Zend OPcache v8.6.0RC2, Copyright ©, by Zend by Perforce\nPHP 8.6.0-dev (cli) (built: Sep 12 2026 13:03:46) (ZTS Visual C++ 2026 x64 TrueAsync ABI v0.26.0)\nCopyright © The PHP Group and Contributors\nZend Engine v4.6.0-dev, Copyright © Zend by Perforce\n    with Zend OPcache v8.6.0-dev, Copyright ©, by Zend by Perforce\nPASS empty-and-already-loaded oracle=0 target=0\nPASS queue-order-and-return-ignored oracle=0 target=0\nPASS function-identity oracle=0 target=0\nPASS static-callback-identity oracle=0 target=0\nPASS closure-and-object-lifetime oracle=0 target=0\nPASS private-method-registration oracle=0 target=0\nPASS invokable-loader oracle=0 target=0\nPASS list-is-a-snapshot oracle=0 target=0\nPASS live-append oracle=0 target=0\nPASS live-prepend oracle=0 target=0\nPASS remove-pending-and-current oracle=0 target=0\nPASS explicit-call-existing-and-recursion oracle=0 target=0\nPASS lookup-recursion-and-retry oracle=0 target=0\nPASS exception-unwinds-guard oracle=0 target=0\nPASS nested-loading oracle=0 target=0\nPASS namespace-and-alias oracle=0 target=0\nPASS dynamic-construction-and-argument-order oracle=0 target=0\nPASS dynamic-class-types oracle=0 target=0\nPASS remove-current-skips-next oracle=0 target=0\nPASS remove-earlier-keeps-next oracle=0 target=0\nPASS static-property-and-method oracle=0 target=0\nPASS callable-array-and-reference oracle=0 target=0\nPASS callable-string-leading-separator oracle=0 target=0\nPASS registration-loads-callback-class oracle=0 target=0\nPASS parent-loads-at-declaration oracle=0 target=0\nPASS late-parent-not-hoisted oracle=0 target=0\nPASS conditional-and-function-local-classes oracle=0 target=0\nPASS missing-parent-does-not-publish oracle=0 target=0\nPASS validation-and-named-arguments oracle=0 target=0\nPASS invalid-names-do-not-autoload oracle=0 target=0\nPASS include-loader-scope oracle=0 target=0\nPASS included-child-parent-and-once oracle=0 target=0\nPASS async-loader-and-constructor oracle=0 target=0\nPASS async-live-removal-roots oracle=0 target=0\nPASS async-same-name-suppressed oracle=0 target=0\nPASS async-cancellation-releases-guard oracle=0 target=0\nPASS async-callable-arguments oracle=0 target=0\nPASS async-inherited-include oracle=0 target=0\nCases: 38; failures: 0\n",
+  "cases": [
+    {
+      "name": "empty-and-already-loaded",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "0:1:1:1:1:1",
+      "target_stdout": "0:1:1:1:1:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "2ca599fa32983c3a946a44126138c9e2d18c2b79db22b8b3a903ec9fa8318e4f"
+      }
+    },
+    {
+      "name": "queue-order-and-return-ignored",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "AB1:3",
+      "target_stdout": "AB1:3",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "af0794594a5c85977d0f954b36b25a5450122429d6ded797e82b21fc3d4cc39a"
+      }
+    },
+    {
+      "name": "function-identity",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "Loader:Other:1::1",
+      "target_stdout": "Loader:Other:1::1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "d53700c48224f588d8e6fb951de930bed1b081137a1791813d96df09f40c431c"
+      }
+    },
+    {
+      "name": "static-callback-identity",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "1:Loader:Load:Missing:1",
+      "target_stdout": "1:Loader:Load:Missing:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "a9c621f4d658458b1ad9227bb079b0872e5e451097f8a693fdf6bb47b00d94db"
+      }
+    },
+    {
+      "name": "closure-and-object-lifetime",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "3:7:Missing",
+      "target_stdout": "3:7:Missing",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "b621521c15ad510c5978758cc4d26ce7bc97a2f075d1c85712f65a9912934093"
+      }
+    },
+    {
+      "name": "private-method-registration",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": ":Loaded1",
+      "target_stdout": ":Loaded1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "d18a8389c275a74e0493f5455bf056a8716e53890bf5f18e2ca9f3b85fcbf5e8"
+      }
+    },
+    {
+      "name": "invokable-loader",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "1:Missing:1",
+      "target_stdout": "1:Missing:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "7cf4ef80ae829f0cf3f6899e4e90e5d21a51948e8ec194845c7c9cd839db7dd0"
+      }
+    },
+    {
+      "name": "list-is-a-snapshot",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "1:A",
+      "target_stdout": "1:A",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "6622dcb6f33cff944fa217cd9e4ba6ac856d3eafd52b393cd9c34efeb9ef240d"
+      }
+    },
+    {
+      "name": "live-append",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "AB:AB",
+      "target_stdout": "AB:AB",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "d12ca6cef16806c8f502f50a5a0248b9a99f17fa4b89d4813b18000f06fa9073"
+      }
+    },
+    {
+      "name": "live-prepend",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "AA:BA",
+      "target_stdout": "AA:BA",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "6573672f200255e402f1e2671dcccaef81f3eb19140074878c9675516ed576ec"
+      }
+    },
+    {
+      "name": "remove-pending-and-current",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "A:C",
+      "target_stdout": "A:C",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "7d33170d4a548f273a3b375d72fc29dad08a65d2e2a1eed5708503517ad81513"
+      }
+    },
+    {
+      "name": "explicit-call-existing-and-recursion",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "Existing1:Existing2:Existing3:",
+      "target_stdout": "Existing1:Existing2:Existing3:",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "30989423614379bd6f92776fe79f05f0cbbf26647645f9dea7fbd286d64ffd1a"
+      }
+    },
+    {
+      "name": "lookup-recursion-and-retry",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "Missing:1;Missing:1;",
+      "target_stdout": "Missing:1;Missing:1;",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "9f3552c8901108fafbc03b6e9ac5024ae33897d4e312208c1caf4fca860bbb67"
+      }
+    },
+    {
+      "name": "exception-unwinds-guard",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "caught:1:2",
+      "target_stdout": "caught:1:2",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "b794c401406dbe7bfb0f63b11ced70f299bf9e8fa2daf7858f8d3aa37be3afd1"
+      }
+    },
+    {
+      "name": "nested-loading",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "OuterClass:InnerClass:1",
+      "target_stdout": "OuterClass:InnerClass:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "d4c14e9c5c88c5450b28d5ba559c7385568d99dcd9db9cf11062d4a3a9a46228"
+      }
+    },
+    {
+      "name": "namespace-and-alias",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "1:Vendor\\Package:Vendor\\Package:1",
+      "target_stdout": "1:Vendor\\Package:Vendor\\Package:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "9b00625e83a9e909d0d750bc7101a525f50bdd10f5b1281fbd812aee01a0f9c2"
+      }
+    },
+    {
+      "name": "dynamic-construction-and-argument-order",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "load:arg:8:Loaded",
+      "target_stdout": "load:arg:8:Loaded",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "2480fd6534c17a6af78c1fed3b6636e13338da3a051c0b33962885c948a98577"
+      }
+    },
+    {
+      "name": "dynamic-class-types",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "Error:Error:Error:Error:Existing:name:flag",
+      "target_stdout": "Error:Error:Error:Error:Existing:name:flag",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "0d6dcbe7e34869cb786caa3725b88da12b3ef07eda2ed55757e6f11682131ea9"
+      }
+    },
+    {
+      "name": "remove-current-skips-next",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "AC",
+      "target_stdout": "AC",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "63c8d182fe8823411d4725495dafb643c6f695782dc1b17e19371a177349bf8a"
+      }
+    },
+    {
+      "name": "remove-earlier-keeps-next",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "ABC",
+      "target_stdout": "ABC",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "fb74ef92436b535e7edc00ae1454de5fee3b385ead079a24d6050c45adef1620"
+      }
+    },
+    {
+      "name": "static-property-and-method",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "7",
+      "target_stdout": "7",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "4752d5356c07f2168f47428ff2aec3ad6bebf2a6492ef7ea427f18458941fca7"
+      }
+    },
+    {
+      "name": "callable-array-and-reference",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "8:8",
+      "target_stdout": "8:8",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "418aaf3b1e19877bbfba32dad80561ad39c7bb739fad2105d7ecd32df2dc3b63"
+      }
+    },
+    {
+      "name": "callable-string-leading-separator",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "9",
+      "target_stdout": "9",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "6290614ba4affc04dbe17d32d380e9db4ea745c8600c0db4c11fdbd5f2d9ce71"
+      }
+    },
+    {
+      "name": "registration-loads-callback-class",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "base:1:base:Missing",
+      "target_stdout": "base:1:base:Missing",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "466723f47b65eff69bd83bbaad71fc2ad9246b9871e8cfac826c462b924721d8"
+      }
+    },
+    {
+      "name": "parent-loads-at-declaration",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "before:load:MissingParent:after:7",
+      "target_stdout": "before:load:MissingParent:after:7",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "524eb89f5789d807b67660037a67a6dfea6ba881c909132493df0750c85bc230"
+      }
+    },
+    {
+      "name": "late-parent-not-hoisted",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "1:missing:1:Child",
+      "target_stdout": "1:missing:1:Child",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "1a7474400233a7f0dbed0ab760aad3230602887fe6bf4125c7c2abb2be5110cd"
+      }
+    },
+    {
+      "name": "conditional-and-function-local-classes",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "1:1:Present",
+      "target_stdout": "1:1:Present",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "a298aa2fb556d5d65352ca564462a72be7786a93a7df88111f9d48424ffb340c"
+      }
+    },
+    {
+      "name": "missing-parent-does-not-publish",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "missing:1",
+      "target_stdout": "missing:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "e4578fbe2ed709836763ffd1118d406ffc8752c9bf6618fdbcc390652bf3b159"
+      }
+    },
+    {
+      "name": "validation-and-named-arguments",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "callback:unregister:count:arity:name:1",
+      "target_stdout": "callback:unregister:count:arity:name:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "d8d12ba86174238bcb16e45582271d4b6262a7fe58f5867fd0648fd9b2813f1f"
+      }
+    },
+    {
+      "name": "invalid-names-do-not-autoload",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "111:0:1",
+      "target_stdout": "111:0:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "16132840e76633c7011c14483652ad81efeb0077975d4014f50e2826e3b8c1a6"
+      }
+    },
+    {
+      "name": "include-loader-scope",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "local:global:12",
+      "target_stdout": "local:global:12",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "loaded.php": "2c6a08be61d51b20325dc55bd2d723f534f6e0a3d35ee0418ea1fb7d13dd651b",
+        "main.php": "ac74232cf3146b66a386a14ba620590b6667ab6c3398a5d2e7274d1913b41fcb"
+      }
+    },
+    {
+      "name": "included-child-parent-and-once",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "Child:child-before:ParentClass:child-after:42:1",
+      "target_stdout": "Child:child-before:ParentClass:child-after:42:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "Child.php": "f87ca4a4e6c62d233a95de0f4d392d84a295404ed2d280250d36a8e8b9674d10",
+        "main.php": "9f74f0dccf41053d53d172429a1cad693100ec06052c23a02fb8638e85cae83a",
+        "ParentClass.php": "92082f121a89704e4bbae9cd4f82878231232a6445f59994e17a3e53ca50e3be"
+      }
+    },
+    {
+      "name": "async-loader-and-constructor",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "42",
+      "target_stdout": "42",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "a511fb98b6088e192fd51e96af01f03c981960adcbfb626e0ec59e8c32552df3"
+      }
+    },
+    {
+      "name": "async-live-removal-roots",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "9:finally:1:0",
+      "target_stdout": "9:finally:1:0",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "6c34efdf468dfb6e5ee3c11cb0f8dd43633ee4eea73dac6a416c8519fab1e3bf"
+      }
+    },
+    {
+      "name": "async-same-name-suppressed",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "1:1:1",
+      "target_stdout": "1:1:1",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "95f180c03aedba4741c9848cecd7036a6d3897c6c228872d6bfdbabe0c1ba557"
+      }
+    },
+    {
+      "name": "async-cancellation-releases-guard",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "finally:cancel:1:2",
+      "target_stdout": "finally:cancel:1:2",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "36e8aff95da7a17a403bddb30fc7516ab51396340687756a293a27f78d6ba640"
+      }
+    },
+    {
+      "name": "async-callable-arguments",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "9:9",
+      "target_stdout": "9:9",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "main.php": "56b9fd8126931c37524b0cf760f5c326babae34865d873fb3e6dad30ff0cb51e"
+      }
+    },
+    {
+      "name": "async-inherited-include",
+      "oracle_exit": 0,
+      "target_exit": 0,
+      "oracle_stdout": "11",
+      "target_stdout": "11",
+      "oracle_stderr": "",
+      "target_stderr": "",
+      "program_sha256": {
+        "Child.php": "1462b2a7348735303428781d5d888a2408a0521de34cef08152d91cdb9ad8ff1",
+        "main.php": "c994b18cf8a17b7ca20ca400630fdfcf4771d378950531f733f51affb20e44ad",
+        "ParentClass.php": "13c2ac3efd1d5347fc70eb9587f83559448490234ca32dc347d29fe125ed671c"
+      }
+    }
+  ]
+}

@@ -7,14 +7,14 @@ certificano soltanto il risultato descritto, non un'intera milestone del design.
 
 ## Punto di ripresa
 
-Completato il blocco tooling/diagnostica di **PERF-01**: confronto sullo stesso
-eseguibile, timeline con incertezza esplicita e tracce GC/JIT anche del peer.
-[Rapporto del 26 settembre](docs/curl-p99.md). Il p99 con 10.000 sospese resta
-più alto nell'A/B; nessuna correzione runtime è stata introdotta. Proseguire
-separando allocazioni/GC e invalidazioni dalle interferenze del peer, quindi
-misurare il lifetime effettivo dei compiler worker. Nessuna build interrotta.
-La priorità generale resta linguaggio/TrueAsync/threading/FFI: questo lavoro
-non è un ordine di rimandare tutte le feature.
+**L'utente ha rinviato le verifiche prestazionali.** Riprendere lo sviluppo
+funzionale, non PERF-01. Il blocco corrente di **LANG-01** introduce autoload con
+callback personalizzate, classi dichiarate a runtime e risoluzione sospendibile
+dei padri: [contratti e limiti](docs/autoload.md).
+Il seguito è completare i contratti delle classi, poi interfacce/trait e altre
+forme di dichiarazione, coordinandole con valori, TrueAsync e reload. Il loader
+SPL predefinito, include_path e il binding PHP completo tra unità restano aperti.
+Linguaggio/TrueAsync/threading/FFI precedono Composer applicativo, Compose e mobile.
 
 ## Concluso e da non rifare da zero
 
@@ -38,7 +38,12 @@ non è un ordine di rimandare tutte le feature.
   wall-time corretto, CPU temporale e report ricalcolabile; 26 controlli Java,
   7 test Python e 44/44 prove A/B/diagnostiche. Nessun fix runtime implicito.
 
-## Prestazioni e memoria: seguito dell'ultimo lavoro
+- [x] Nucleo autoload personalizzato: registro SPL per richiesta, callback con
+  ownership, sospensioni/cancellazione, costruzione dinamica e dichiarazioni
+  condizionali; 38 programmi differenziali e test di isolamento/reload.
+  Non comprende tutta la SPL né chiude LANG-01.
+
+## Prestazioni e memoria: rinviate per richiesta dell'utente
 
 - [ ] **PERF-01 — Spiegare e ridurre il costo del p99.** L'A/B sullo stesso
   eseguibile del 26 settembre conferma RSS p50 −47,18%/−41,86%, con p99
@@ -86,11 +91,13 @@ non è un ordine di rimandare tutte le feature.
   solo se utili. Completare ProcessContext, stato di processo e policy delle
   static properties; `FFI::definePool` oggi ha lifetime di richiesta.
   Dipende dalla barriera e dal lifetime, non soltanto dall'API dei lock.
-- [ ] **LANG-01 — Linguaggio e autoload.** Completare autoload, interfacce, trait,
-  enum, attributi, generatori/Fiber, unpacking, named arguments nei builtin,
-  tipi/coercizioni/errori e include_path. Pianificare blocchi coerenti con valori,
-  sospensioni e reload; usare la mappa del design per non perdere le dipendenze.
-  Le feature usate da Composer sono prioritarie; eseguire Composer non lo è.
+- [ ] **LANG-01 — Linguaggio e autoload.** Il nucleo con callback esplicite è
+  implementato: [autoload](docs/autoload.md). Completare loader SPL predefinito,
+  estensioni/include_path, callback builtin e diagnostica, binding tra unità e
+  regole complete di ereditarietà. Poi interfacce, trait, enum, attributi,
+  generatori/Fiber, unpacking, named arguments nei restanti builtin e typing.
+  Pianificare blocchi coerenti con valori, sospensioni e reload; le feature
+  usate da Composer sono prioritarie, eseguire Composer non lo è.
 - [ ] **FFI-01 — Modello C e callback generiche.** CData, puntatori/buffer con
   lifetime, strutture/union, variadiche e zero-copy; registrazione/unregistrazione
   persistente delle callback e callback da thread C esterni nel nuovo bridge.

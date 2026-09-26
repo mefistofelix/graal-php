@@ -1,0 +1,14 @@
+> cmd.exe /d /c build.bat
+src\graalphp\truffle\PhpRoot.java:69: error: Method run cannot be annotated with @TruffleBoundary and have a parameter of type VirtualFrame.
+
+        static Object run(VirtualFrame frame, Object type, @Cached IndirectCallNode call) {
+                      ^
+  To resolve this, either change the parameter to a MaterializedFrame, remove the parameter or remove the @TruffleBoundary.
+src\graalphp\truffle\PhpRoot.java:76: error: Method run cannot be annotated with @TruffleBoundary and have a parameter of type VirtualFrame.
+
+        static Object run(VirtualFrame frame, ObjectModel.Definition definition, @Cached IndirectCallNode call) {
+                      ^
+  To resolve this, either change the parameter to a MaterializedFrame, remove the parameter or remove the @TruffleBoundary.
+2 errors
+
+exit=1

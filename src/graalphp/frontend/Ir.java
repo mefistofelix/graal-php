@@ -17,7 +17,8 @@ public final class Ir {
     public record Capture(String name, boolean reference) {}
     public record Statement(int start, int length, Form form) {}
     public sealed interface Form permits ExpressionStatement, Echo, Return, If, While, Foreach, Try,
-            Throw, Unset, Global, Block, Break, Continue, For, DoWhile {}
+            Throw, Unset, Global, Block, Break, Continue, For, DoWhile, DeclareClass {}
+    public record DeclareClass(ClassDeclaration declaration) implements Form {}
     public record Block(List<Statement> statements) implements Form {}
     public record ExpressionStatement(Expression expression) implements Form {}
     public record Echo(List<Expression> expressions) implements Form {}
@@ -35,7 +36,7 @@ public final class Ir {
     public record Continue() implements Form {}
     public sealed interface Expression permits Literal, Variable, Index, Assign, Binary, Unary, Call, ArrayLiteral,
             CompoundAssign, Increment, Conditional, Coalesce, Property, StaticProperty, MethodCall, StaticCall,
-            Construct, DynamicCall, Closure, Constant, NamedArgument {}
+            Construct, DynamicConstruct, DynamicCall, Closure, Constant, NamedArgument {}
     public record NamedArgument(String name, Expression value) implements Expression {}
     public record Literal(Object value) implements Expression {}
     public record Variable(String name) implements Expression {}
@@ -50,6 +51,7 @@ public final class Ir {
     public record MethodCall(Expression object, String name, List<Expression> arguments) implements Expression {}
     public record StaticCall(String type, String name, List<Expression> arguments) implements Expression {}
     public record Construct(String type, List<Expression> arguments) implements Expression {}
+    public record DynamicConstruct(Expression type, List<Expression> arguments) implements Expression {}
     public record DynamicCall(Expression callable, List<Expression> arguments) implements Expression {}
     public record Closure(Function function, List<Capture> captures, boolean arrow) implements Expression {}
     public record Constant(String name) implements Expression {}

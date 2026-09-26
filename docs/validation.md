@@ -3,7 +3,27 @@
 Toolchain: Oracle GraalVM 25.4.4.1.1+1.1, Java 25.0.4.1.1, Truffle 25.4.4.1.1.
 Oracoli: PHP 8.6.0RC2 e TrueAsync 0.10.0 / PHP 8.6.0-dev / ABI v0.26.0.
 
-Il 26 settembre è stato verificato il [tooling e l'A/B p99 sullo stesso
+Il blocco funzionale corrente implementa [autoload personalizzato sospendibile](autoload.md)
+e dichiarazioni runtime: **38/38 programmi su Windows/Linux, JVM/Native Image**,
+per 152 confronti con input identici. Windows usa PHP 8.6.0RC2 per i casi sincroni
+e TrueAsync per quelli asincroni; Linux usa il binario TrueAsync/PHP 8.6 per tutti
+i casi, non un PHP stock separato. Passano 79/73 scenari integrati Windows/Linux,
+53 scenari semantici e 256 grafi/1.280 fasi collector su ciascuna piattaforma;
+82 confronti TrueAsync in tutte e quattro le combinazioni e 50 asserzioni
+rete/TLS/WebSocket/cURL/SQLite su ciascun Native Image. I sei scenari di
+integrazione nativeBundle condizionati alla DLL Windows non sono eseguiti su Linux.
+
+Eseguibili ricostruiti in sequenza, prodotto Linux copiato e avviato dalla root;
+87 file src/tests identici nelle due copie. L'esempio autoload passa anche in
+modalità `--interpreter`. Le fixture di reload usano un filesystem temporaneo
+nativo; nessuna nuova pretesa sul watcher /mnt/c. **Le performance sono rinviate
+per richiesta dell'utente:** nessuna nuova campagna, né modifica dei default
+JIT/GC. Suite FFI-bridge e cURL dedicate non rieseguite integralmente qui.
+[Esiti](validation/autoload-2026-09-26/results.txt),
+[hash](validation/autoload-2026-09-26/hashes.json),
+[evidenze e metodo](validation/autoload-2026-09-26/README.md).
+
+Il precedente blocco del 26 settembre ha verificato il [tooling e l'A/B p99 sullo stesso
 eseguibile](curl-p99.md): 32 prove principali, 8 diagnostiche JIT/GC e 4 con
 GC del peer, tutte passate. 5.767.168 richieste e 229.376 durate campionate;
 26 controlli Java, 7 test Python e 6 prove brevi GraalPHP/TrueAsync passati.

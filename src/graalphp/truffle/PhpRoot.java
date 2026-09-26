@@ -59,9 +59,23 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
         @Specialization @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
         static Object run(String name) { return ObjectModel.namedConstant(name); }
     }
-    @Operation @ConstantOperand(type = String.class, name = "type")
+    @Operation
     public static final class CreateObject {
         @Specialization static Object run(VirtualFrame frame, String type) { return ObjectModel.create(activation(frame), type); }
+    }
+    @Operation
+    public static final class EnsureClass {
+        @Specialization
+        static Object run(VirtualFrame frame, Object type, @Cached IndirectCallNode call) {
+            return ClassLoading.ensure(activation(frame), type, call);
+        }
+    }
+    @Operation @ConstantOperand(type = ObjectModel.Definition.class, name = "definition")
+    public static final class DeclareClass {
+        @Specialization
+        static Object run(VirtualFrame frame, ObjectModel.Definition definition, @Cached IndirectCallNode call) {
+            return ClassLoading.declare(activation(frame), definition, call);
+        }
     }
     @Operation @ConstantOperand(type = ObjectModel.ClosureTemplate.class, name = "template")
     public static final class CreateClosure {

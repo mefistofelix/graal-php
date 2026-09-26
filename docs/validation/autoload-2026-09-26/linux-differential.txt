@@ -1,0 +1,87 @@
+Linux oracle: pinned TrueAsync/PHP 8.6 used for both synchronous and asynchronous cases; no separate stock PHP binary.
+> tools/sdkman/candidates/java/25.4.4+1-graal/bin/java --enable-native-access=ALL-UNNAMED -cp build/classes:build/test-classes:build/deps/25.4.4.1.1/\* graalphp.AutoloadTest build/linux-workspace/tools/php-trueasync-0.10.0-php8.6-linux-x86_64/php build/linux-workspace/tools/php-trueasync-0.10.0-php8.6-linux-x86_64/php
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime (file:build/linux-workspace/build/deps/25.4.4.1.1/truffle-runtime-25.4.4.1.1.jar)
+WARNING: Please consider reporting this to the maintainers of class com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+PASS empty-and-already-loaded oracle=0 target=0
+PASS queue-order-and-return-ignored oracle=0 target=0
+PASS function-identity oracle=0 target=0
+PASS static-callback-identity oracle=0 target=0
+PASS closure-and-object-lifetime oracle=0 target=0
+PASS private-method-registration oracle=0 target=0
+PASS invokable-loader oracle=0 target=0
+PASS list-is-a-snapshot oracle=0 target=0
+PASS live-append oracle=0 target=0
+PASS live-prepend oracle=0 target=0
+PASS remove-pending-and-current oracle=0 target=0
+PASS explicit-call-existing-and-recursion oracle=0 target=0
+PASS lookup-recursion-and-retry oracle=0 target=0
+PASS exception-unwinds-guard oracle=0 target=0
+PASS nested-loading oracle=0 target=0
+PASS namespace-and-alias oracle=0 target=0
+PASS dynamic-construction-and-argument-order oracle=0 target=0
+PASS dynamic-class-types oracle=0 target=0
+PASS remove-current-skips-next oracle=0 target=0
+PASS remove-earlier-keeps-next oracle=0 target=0
+PASS static-property-and-method oracle=0 target=0
+PASS callable-array-and-reference oracle=0 target=0
+PASS callable-string-leading-separator oracle=0 target=0
+PASS registration-loads-callback-class oracle=0 target=0
+PASS parent-loads-at-declaration oracle=0 target=0
+PASS late-parent-not-hoisted oracle=0 target=0
+PASS conditional-and-function-local-classes oracle=0 target=0
+PASS missing-parent-does-not-publish oracle=0 target=0
+PASS validation-and-named-arguments oracle=0 target=0
+PASS invalid-names-do-not-autoload oracle=0 target=0
+PASS include-loader-scope oracle=0 target=0
+PASS included-child-parent-and-once oracle=0 target=0
+PASS async-loader-and-constructor oracle=0 target=0
+PASS async-live-removal-roots oracle=0 target=0
+PASS async-same-name-suppressed oracle=0 target=0
+PASS async-cancellation-releases-guard oracle=0 target=0
+PASS async-callable-arguments oracle=0 target=0
+PASS async-inherited-include oracle=0 target=0
+Evidence: build/linux-workspace/build/autoload-test-17328000749589114313
+PASS: 38 identical autoload programs
+> tools/sdkman/candidates/java/25.4.4+1-graal/bin/java --enable-native-access=ALL-UNNAMED -cp build/classes:build/test-classes:build/deps/25.4.4.1.1/\* graalphp.AutoloadTest build/linux-workspace/tools/php-trueasync-0.10.0-php8.6-linux-x86_64/php build/linux-workspace/tools/php-trueasync-0.10.0-php8.6-linux-x86_64/php build/linux-workspace/build/graalphp
+PASS empty-and-already-loaded oracle=0 target=0
+PASS queue-order-and-return-ignored oracle=0 target=0
+PASS function-identity oracle=0 target=0
+PASS static-callback-identity oracle=0 target=0
+PASS closure-and-object-lifetime oracle=0 target=0
+PASS private-method-registration oracle=0 target=0
+PASS invokable-loader oracle=0 target=0
+PASS list-is-a-snapshot oracle=0 target=0
+PASS live-append oracle=0 target=0
+PASS live-prepend oracle=0 target=0
+PASS remove-pending-and-current oracle=0 target=0
+PASS explicit-call-existing-and-recursion oracle=0 target=0
+PASS lookup-recursion-and-retry oracle=0 target=0
+PASS exception-unwinds-guard oracle=0 target=0
+PASS nested-loading oracle=0 target=0
+PASS namespace-and-alias oracle=0 target=0
+PASS dynamic-construction-and-argument-order oracle=0 target=0
+PASS dynamic-class-types oracle=0 target=0
+PASS remove-current-skips-next oracle=0 target=0
+PASS remove-earlier-keeps-next oracle=0 target=0
+PASS static-property-and-method oracle=0 target=0
+PASS callable-array-and-reference oracle=0 target=0
+PASS callable-string-leading-separator oracle=0 target=0
+PASS registration-loads-callback-class oracle=0 target=0
+PASS parent-loads-at-declaration oracle=0 target=0
+PASS late-parent-not-hoisted oracle=0 target=0
+PASS conditional-and-function-local-classes oracle=0 target=0
+PASS missing-parent-does-not-publish oracle=0 target=0
+PASS validation-and-named-arguments oracle=0 target=0
+PASS invalid-names-do-not-autoload oracle=0 target=0
+PASS include-loader-scope oracle=0 target=0
+PASS included-child-parent-and-once oracle=0 target=0
+PASS async-loader-and-constructor oracle=0 target=0
+PASS async-live-removal-roots oracle=0 target=0
+PASS async-same-name-suppressed oracle=0 target=0
+PASS async-cancellation-releases-guard oracle=0 target=0
+PASS async-callable-arguments oracle=0 target=0
+PASS async-inherited-include oracle=0 target=0
+Evidence: build/linux-workspace/build/autoload-test-8192362479428700510
+PASS: 38 identical autoload programs

@@ -1,0 +1,75 @@
+LANG-01 custom autoload / runtime class declarations, 2026-09-26
+
+FINAL FUNCTIONAL RESULTS
+PASS Windows JVM: 38/38 identical autoload programs.
+PASS Windows Native Image: 38/38 identical autoload programs.
+PASS Linux JVM: 38/38 identical autoload programs.
+PASS Linux Native Image: 38/38 identical autoload programs.
+TOTAL: 152 successful comparisons of the same 38 programs, not 152 unique cases.
+Reference and target stdout match after CRLF normalization; both exit codes
+are zero and both stderr streams empty for every final autoload case.
+All four runs use identical source/fixture snapshots (SHA256 verified).
+Windows reference: PHP 8.6.0RC2 for synchronous cases; TrueAsync 0.10.0 /
+PHP 8.6.0-dev for asynchronous cases. Linux reference: pinned TrueAsync /
+PHP 8.6 for all cases; no separate stock Linux PHP executable was used.
+Exact version output is retained in the per-platform JSON reports.
+
+PASS Windows JVM integration: 79 scenarios, including autoload request
+isolation, pinned old generation after publication, and the next request's
+new generation. Rerun after moving all watcher fixtures to native temp storage.
+PASS Linux JVM integration: 73 scenarios. The six nativeBundle checks guarded
+by the presence of the Windows DLL are not executed on Linux; do not present
+these counts as identical coverage of those six platform-specific checks.
+PASS Windows and Linux value model: 53 semantic scenarios per platform plus
+storage/lifetime invariants.
+PASS Windows and Linux collector: 256 ownership graphs / 1280 collection
+phases per platform, including exactly-once resource release.
+PASS TrueAsync differential: 82/82 scenarios on Windows JVM, Windows Native
+Image, Linux JVM and Linux Native Image (same existing corpus).
+PASS Windows Native Image network: 50 assertions, including TLS, WebSocket,
+cURL multi/cancellation/reuse, SQLite transactions/persistence and shutdown.
+PASS Linux Native Image network: the same 50 assertions.
+PASS Windows PHP 8.6 example comparison: compat.php and language.php.
+PASS autoload example on Windows/Linux JVM, Native Image and --interpreter;
+output is exactly 'Hello from autoload' followed by newline.
+PASS copied build/graalphp-linux-x64 version and autoload example, default
+and --interpreter, outside the Linux build copy.
+
+BUILD / PARITY
+PASS sequential Windows then Linux Native Image builds; no simultaneous
+Native Image builds. Normal -O3 / compatibility profile, existing dependency
+pins and native libraries; no new runtime dependency.
+PASS 87 files under src/tests match between the authoritative workspace and
+build/linux-workspace. hashes.json also covers root build scripts, new
+examples and final products: 99 entries total.
+Windows executable: 90013696 bytes; SHA256
+2f474e70d4b578a77aa188f300b604d1e1f542ecf6add5e89619c779d384b93d
+Linux executable: 93260584 bytes; SHA256
+543dfbba94a106189cd2869c956ad013c3ca2df0d0e8da682834167258555ff3
+JAR byte sizes and hashes are recorded separately in products.json.
+Pre-feature executables preserved locally under build/before-autoload-2026-09-26.
+
+SCOPE / LIMITATIONS
+No new performance campaign. CompilerIdleDelay remains 500; no changes to
+GC/JIT defaults, native dependency versions or scheduler implementation.
+Native Image build-time memory reports and durations printed by existing
+network assertions are not runtime performance comparisons.
+Dedicated full FFI-bridge and standalone cURL suites were not rerun here;
+the relevant integration coverage above is not presented as those entire suites.
+WatchService fixtures use native temporary filesystems; /mnt/c watcher support
+is not newly claimed. Linux was executed on Ubuntu x64 under WSL.
+LANG-01 is still open: default SPL filename loader/extensions/include_path,
+full inter-unit early binding and inheritance, builtin callback catalog,
+exact notices/coercions, interfaces/traits/enums and other language features.
+No macOS/mobile/UI or full Composer/application compatibility claim.
+
+DEVELOPMENT EVIDENCE
+Initial compile errors (TruffleBoundary on VirtualFrame operations) and the
+first differential failures (internal state types, plus a test fixture using
+the existing PHP builtin name 'define') are retained as development logs.
+They were corrected, not ignored. The final corpus contains 38 passing cases,
+including live queue mutation, cancellation, references and dynamic type errors.
+Expected compiler/runtime deprecation warnings from the pinned Truffle/JDK
+are retained in driver logs rather than suppressed.
+Text archives normalize CRLF, trailing horizontal whitespace and ANSI colors,
+and remove private absolute workspace prefixes. Numeric results are unchanged.

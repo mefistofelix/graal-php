@@ -124,6 +124,17 @@ case "${1:-build}" in
         "$jdk/bin/java" -cp "build/classes:build/test-classes:$deps/*" graalphp.lab.ValueModelTest
         "$jdk/bin/java" -cp "build/classes:build/test-classes:$deps/*" graalphp.runtime.CycleCollectorTest
         ;;
+    autoload-test)
+        # Oracles are explicit: do not silently compare a different PHP release.
+        : "${PHP_ORACLE:?Set PHP_ORACLE to a PHP 8.6 executable}"
+        : "${TRUEASYNC_ORACLE:?Set TRUEASYNC_ORACLE to the pinned TrueAsync executable}"
+        mkdir -p build/test-classes
+        "$jdk/bin/javac" --release 25 -proc:none -cp "build/classes:$deps/*" -d build/test-classes tests/graalphp/AutoloadTest.java
+        autoload_executable=
+        if [[ "${2:-}" == native ]]; then autoload_executable="$PWD/build/graalphp"; fi
+        "$jdk/bin/java" --enable-native-access=ALL-UNNAMED -cp "build/classes:build/test-classes:$deps/*" \
+            graalphp.AutoloadTest "$PHP_ORACLE" "$TRUEASYNC_ORACLE" "$autoload_executable"
+        ;;
     oracle)
         "${PHP_ORACLE:-php}" -n -r 'if (PHP_MAJOR_VERSION !== 8 || PHP_MINOR_VERSION !== 6) exit(1);'
         "${PHP_ORACLE:-php}" -n examples/compat.php > build/php-compat.txt

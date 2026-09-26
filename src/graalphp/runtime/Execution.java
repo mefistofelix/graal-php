@@ -62,6 +62,7 @@ public final class Execution {
         public final Map<String, ObjectModel.RuntimeClass> resolvedClasses = new HashMap<>();
         private final Set<String> resolvingClasses = new HashSet<>();
         public final Set<Path> included = new HashSet<>();
+        public final ClassLoading autoload = new ClassLoading();
         public final java.io.ByteArrayOutputStream output = new java.io.ByteArrayOutputStream();
         public final List<AutoCloseable> resources = new ArrayList<>();
         public final Scheduler scheduler;
@@ -125,7 +126,7 @@ public final class Execution {
             var resolved = resolvedClasses.get(key);
             if (resolved != null) return resolved;
             var definition = classes.get(key);
-            if (definition == null) throw new PhpError("Class not found: " + name);
+            if (definition == null) throw new PhpError("Error", "Class \"" + name + "\" not found");
             if (!resolvingClasses.add(key)) throw new PhpError("Cyclic class inheritance: " + name);
             try {
                 var parent = definition.parent() == null ? null : type(definition.parent());
@@ -161,7 +162,8 @@ public final class Execution {
                 }
             }
             resources.clear();
-            try { scheduler.close(); } finally { globals.close(); }
+            try { scheduler.close(); }
+            finally { try { autoload.close(); } finally { globals.close(); } }
             if (failure != null) throw failure;
         }
     }

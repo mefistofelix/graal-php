@@ -15,7 +15,7 @@ public final class ObjectModel {
 
     public record Method(Function function, boolean shared, String visibility) {}
     public record Definition(String name, String parent, List<Ir.PropertyDeclaration> properties,
-                             Map<String, Method> methods) {}
+                             Map<String, Method> methods) implements com.oracle.truffle.api.interop.TruffleObject {}
     public record ClosureData(Function function, List<Ir.Capture> captures) {}
     public record ClosureTemplate(Function function, List<Ir.Capture> captures, boolean arrow) {}
     public record Invocation(Function function, PhpValues.PhpObject receiver, RuntimeClass calledClass,
@@ -47,6 +47,7 @@ public final class ObjectModel {
     }
 
     public static RuntimeClass resolve(Activation caller, String name) {
+        if (name.startsWith("\\")) name = name.substring(1);
         String lexical = caller.function.owner();
         if (name.equals("static")) {
             if (caller.calledClass == null) throw new PhpError("static used outside a class");
@@ -199,6 +200,7 @@ public final class ObjectModel {
     public static Invocation callable(Activation caller, Object value) {
         value = PhpValues.unwrap(value);
         if (value instanceof String name) {
+            if (name.startsWith("\\")) name = name.substring(1);
             int separator = name.indexOf("::");
             if (separator >= 0) return staticMethod(caller, name.substring(0, separator), name.substring(separator + 2));
             return new Invocation(caller.request.function(name), null, null, null);

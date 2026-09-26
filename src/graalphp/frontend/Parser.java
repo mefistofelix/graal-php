@@ -47,7 +47,14 @@ public final class Parser {
             } else if (at("function")) {
                 functions.add(function(false));
             } else if (at("class")) {
-                classes.add(classDeclaration());
+                int start = peek().start;
+                var declaration = classDeclaration();
+                // Only declarations whose inheritance is known here can be bound early.
+                if (declaration.parent() == null || classes.stream().anyMatch(parent -> parent.name().equalsIgnoreCase(declaration.parent()))) {
+                    classes.add(declaration);
+                } else {
+                    statements.add(new Statement(start, previous().end - start, new DeclareClass(declaration)));
+                }
             } else {
                 statements.add(statement());
             }
@@ -146,6 +153,10 @@ public final class Parser {
         int start = peek().start;
         Form form;
         if (at("{")) return block();
+        if (at("class")) {
+            var declaration = classDeclaration();
+            return new Statement(start, previous().end - start, new DeclareClass(declaration));
+        }
         if (accept(";")) form = new Block(List.of());
         else if (accept("echo")) { form = new Echo(expressionList(";")); take(";"); }
         else if (accept("return")) { form = new Return(at(";") ? new Literal(null) : expression(0)); take(";"); }
@@ -278,6 +289,12 @@ public final class Parser {
         if (accept("false")) return new Literal(false);
         if (accept("null")) return new Literal(null);
         if (accept("new")) {
+            if (peek().text.startsWith("$") || at("(")) {
+                Expression type;
+                if (accept("(")) { type = expression(0); take(")"); }
+                else type = new Variable(variableName());
+                return new DynamicConstruct(type, at("(") ? arguments() : List.of());
+            }
             String type = qualified(identifier(), false);
             var args = at("(") ? arguments() : List.<Expression>of();
             if (type.equalsIgnoreCase("Exception")) return new Call("exception", args);

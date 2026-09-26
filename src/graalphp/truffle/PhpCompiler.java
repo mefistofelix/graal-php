@@ -41,18 +41,7 @@ public final class PhpCompiler {
         }
         var classes = new HashMap<String, graalphp.runtime.ObjectModel.Definition>();
         for (var declaration : ir.classes()) {
-            var methods = new HashMap<String, graalphp.runtime.ObjectModel.Method>();
-            for (var method : declaration.methods()) {
-                var value = method.function();
-                var compiled = function(language, source, path, value.name(), value.parameters(), value.body(),
-                        false, declaration.name(), value.returnType());
-                String key = value.name().toLowerCase(java.util.Locale.ROOT);
-                if (methods.putIfAbsent(key, new graalphp.runtime.ObjectModel.Method(compiled, method.shared(), method.visibility())) != null) {
-                    throw new PhpError("Cannot redeclare method " + declaration.name() + "::" + value.name());
-                }
-            }
-            var definition = new graalphp.runtime.ObjectModel.Definition(declaration.name(), declaration.parent(),
-                    declaration.properties(), java.util.Map.copyOf(methods));
+            var definition = definition(language, source, path, declaration);
             if (classes.putIfAbsent(declaration.name().toLowerCase(java.util.Locale.ROOT), definition) != null) {
                 throw new PhpError("Cannot redeclare class " + declaration.name());
             }
@@ -60,6 +49,20 @@ public final class PhpCompiler {
         return new Execution.Unit(path, source.getCharacters().toString(),
                 function(language, source, path, source.getName(), List.of(), ir.statements(), true, null, null),
                 java.util.Map.copyOf(functions), java.util.Map.copyOf(classes));
+    }
+    private static graalphp.runtime.ObjectModel.Definition definition(PhpLanguage language, Source source, Path path, Ir.ClassDeclaration declaration) {
+        var methods = new HashMap<String, graalphp.runtime.ObjectModel.Method>();
+        for (var method : declaration.methods()) {
+            var value = method.function();
+            var compiled = function(language, source, path, value.name(), value.parameters(), value.body(),
+                    false, declaration.name(), value.returnType());
+            String key = value.name().toLowerCase(java.util.Locale.ROOT);
+            if (methods.putIfAbsent(key, new graalphp.runtime.ObjectModel.Method(compiled, method.shared(), method.visibility())) != null) {
+                throw new PhpError("Cannot redeclare method " + declaration.name() + "::" + value.name());
+            }
+        }
+        return new graalphp.runtime.ObjectModel.Definition(declaration.name(), declaration.parent(),
+                declaration.properties(), java.util.Map.copyOf(methods));
     }
     private static Execution.Function function(PhpLanguage language, Source source, Path path, String name,
             List<Ir.Parameter> parameters, List<Ir.Statement> body, boolean main, String owner, String returnType) {
@@ -84,6 +87,12 @@ public final class PhpCompiler {
         var b = builder;
         b.beginSourceSection(statement.start(), statement.length());
         switch (statement.form()) {
+            case Ir.DeclareClass declared -> {
+                var definition = definition(language, source, path, declared.declaration());
+                b.beginDrop();
+                suspended(() -> b.emitDeclareClass(definition));
+                b.endDrop();
+            }
             case Ir.Block block -> { b.beginBlock(); for (var child : block.statements()) statement(child); b.endBlock(); }
             case Ir.ExpressionStatement expression -> { b.beginDrop(); expression(expression.expression()); b.endDrop(); }
             case Ir.Echo echo -> { for (var expression : echo.expressions()) { b.beginEcho(); expression(expression); b.endEcho(); } }
@@ -248,16 +257,8 @@ public final class PhpCompiler {
             case Ir.DynamicCall call -> memberCall("callable", "", call.callable(), call.arguments());
             case Ir.MethodCall call -> memberCall("method", call.name(), call.object(), call.arguments());
             case Ir.StaticCall call -> memberCall("static", call.name(), new Ir.Literal(call.type()), call.arguments());
-            case Ir.Construct construct -> {
-                b.beginBlock(); var object = b.createLocal();
-                b.beginStoreLocal(object); b.emitCreateObject(construct.type()); b.endStoreLocal();
-                b.beginDrop();
-                suspended(() -> {
-                    b.beginInvokeMember("constructor", "__construct"); b.emitLoadLocal(object);
-                    arguments(construct.arguments()); b.endInvokeMember();
-                });
-                b.endDrop(); b.emitLoadLocal(object); b.endBlock();
-            }
+            case Ir.Construct construct -> construct(new Ir.Literal(construct.type()), construct.arguments());
+            case Ir.DynamicConstruct construct -> construct(construct.type(), construct.arguments());
             case Ir.Closure closure -> {
                 var value = closure.function();
                 var compiled = function(language, source, path, value.name(), value.parameters(), value.body(), false, owner, value.returnType());
@@ -285,9 +286,28 @@ public final class PhpCompiler {
     private void memberCall(String kind, String name, Ir.Expression receiver, List<Ir.Expression> args) {
         suspended(() -> {
             builder.beginInvokeMember(kind, name);
-            expression(receiver); arguments(args);
+            if (kind.equals("static")) ensureClass(receiver); else expression(receiver);
+            arguments(args);
             builder.endInvokeMember();
         });
+    }
+    private void ensureClass(Ir.Expression type) {
+        suspended(() -> {
+            builder.beginEnsureClass(); expression(type); builder.endEnsureClass();
+        });
+    }
+    private void construct(Ir.Expression type, List<Ir.Expression> args) {
+        var b = builder;
+        b.beginBlock(); var object = b.createLocal();
+        b.beginStoreLocal(object);
+        b.beginCreateObject(); ensureClass(type); b.endCreateObject();
+        b.endStoreLocal();
+        b.beginDrop();
+        suspended(() -> {
+            b.beginInvokeMember("constructor", "__construct"); b.emitLoadLocal(object);
+            arguments(args); b.endInvokeMember();
+        });
+        b.endDrop(); b.emitLoadLocal(object); b.endBlock();
     }
     private void arguments(List<Ir.Expression> arguments) {
         var b = builder;
@@ -366,7 +386,10 @@ public final class PhpCompiler {
         else if (expression instanceof Ir.Property property) {
             b.beginProperty(property.name()); expression(property.object()); b.endProperty();
         } else if (expression instanceof Ir.StaticProperty property) {
+            b.beginBlock();
+            b.beginDrop(); ensureClass(new Ir.Literal(property.type())); b.endDrop();
             b.emitStaticProperty(property.type(), property.name());
+            b.endBlock();
         }
         else if (expression instanceof Ir.Index index) {
             b.beginElement(); location(index.array());

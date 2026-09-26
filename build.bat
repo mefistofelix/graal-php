@@ -51,6 +51,7 @@ if /i "%~1"=="network-test" goto network_test
 if /i "%~1"=="network-benchmark" goto network_benchmark
 if /i "%~1"=="trueasync" goto trueasync
 if /i "%~1"=="oracle" goto oracle
+if /i "%~1"=="autoload-test" goto autoload_test
 if /i "%~1"=="benchmark" ("%GRAALPHP_JDK%\bin\java.exe" -cp "build\classes;%DEPS%/*" graalphp.lab.Main --benchmark & exit /b !errorlevel!)
 "%GRAALPHP_JDK%\bin\java.exe" --enable-native-access=ALL-UNNAMED -jar build\graalphp.jar --version
 exit /b %errorlevel%
@@ -147,8 +148,28 @@ certutil -hashfile build\trueasync-source.zip SHA256 | findstr /i /c:"db06d553a9
 if not "!errorlevel!"=="0" exit /b 1
 tar.exe -xf build\trueasync-source.zip -C build\reference
 exit /b %errorlevel%
+:autoload_test
+call :setup_trueasync
+if not "!errorlevel!"=="0" exit /b 1
+call :setup_oracle
+if not "!errorlevel!"=="0" exit /b 1
+set "AUTOLOAD_EXECUTABLE="
+if /i "%~2"=="native" (
+    call :native
+    if not "!errorlevel!"=="0" exit /b 1
+    set "AUTOLOAD_EXECUTABLE=%~dp0build\graalphp.exe"
+)
+if not exist build\test-classes mkdir build\test-classes
+"%GRAALPHP_JDK%\bin\javac.exe" --release 25 -proc:none -cp "build\classes;%DEPS%/*" -d build\test-classes tests\graalphp\AutoloadTest.java
+if not "!errorlevel!"=="0" exit /b 1
+"%GRAALPHP_JDK%\bin\java.exe" --enable-native-access=ALL-UNNAMED -cp "build\classes;build\test-classes;%DEPS%/*" graalphp.AutoloadTest tools/php-8.6.0RC2/php.exe tools/trueasync-0.10.0/php.exe "!AUTOLOAD_EXECUTABLE!"
+exit /b %errorlevel%
 :oracle
-if exist tools\php-8.6.0RC2\php.exe goto compare
+call :setup_oracle
+if not "!errorlevel!"=="0" exit /b 1
+goto compare
+:setup_oracle
+if exist tools\php-8.6.0RC2\php.exe exit /b 0
 curl.exe --fail --location --retry 3 --output tools\php.zip https://downloads.php.net/~windows/qa/php-8.6.0RC2-nts-Win32-vs18-x64.zip
 if not "!errorlevel!"=="0" curl.exe --fail --location --retry 3 --output tools\php.zip https://downloads.php.net/~windows/qa/archives/php-8.6.0RC2-nts-Win32-vs18-x64.zip
 if not "!errorlevel!"=="0" exit /b 1
@@ -156,7 +177,7 @@ certutil -hashfile tools\php.zip SHA256 | findstr /i /c:"9fc46a9761a4799994085ca
 if not "!errorlevel!"=="0" exit /b 1
 if not exist tools\php-8.6.0RC2 mkdir tools\php-8.6.0RC2
 tar.exe -xf tools\php.zip -C tools\php-8.6.0RC2
-if not "!errorlevel!"=="0" exit /b 1
+exit /b %errorlevel%
 :compare
 for %%n in (compat language) do (
     tools\php-8.6.0RC2\php.exe -n examples\%%n.php > build\php-%%n.txt

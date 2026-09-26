@@ -92,6 +92,7 @@ public final class IntegrationTest {
         objectCycles();
         isolationAndHost();
         includesAndReload();
+        autoloadIsolationAndReload();
         nativeCall();
         if (Files.exists(Path.of("build/graalphp-native.dll"))) nativeBundle();
         readFile();
@@ -186,8 +187,57 @@ public final class IntegrationTest {
         }
         equal("host direct call and request isolation", "421", output.toString());
     }
+    private static void autoloadIsolationAndReload() throws Exception {
+        // A native temporary filesystem is also suitable for WatchService under WSL.
+        Path root = Files.createTempDirectory("graalphp-autoload-reload-").toAbsolutePath();
+        Path main = root.resolve("main.php");
+        Path library = root.resolve("Loaded.php");
+        Files.writeString(library, "<?php class Loaded { public function value() { return 'old'; } }");
+        Files.writeString(main, """
+            <?php
+            spl_autoload_register(function($name) { require __DIR__ . '/' . $name . '.php'; });
+            host_call('gate'); echo (new Loaded)->value();
+            """);
+        var output = new ByteArrayOutputStream();
+        try (var context = Context.newBuilder("php").allowAllAccess(true).out(output)
+                .environment("GRAALPHP_ROOT", root.toString()).environment("GRAALPHP_WATCH", "1").build()) {
+            var entered = new CountDownLatch(1);
+            var release = new CountDownLatch(1);
+            context.getPolyglotBindings().putMember("gate", (ProxyExecutable) values -> {
+                entered.countDown();
+                try { if (!release.await(10, TimeUnit.SECONDS)) throw new AssertionError("Autoload gate timeout"); }
+                catch (InterruptedException error) { Thread.currentThread().interrupt(); throw new AssertionError(error); }
+                return null;
+            });
+            var source = Source.newBuilder("php", main.toFile()).build();
+            var running = CompletableFuture.runAsync(() -> context.eval(source));
+            try {
+                if (!entered.await(10, TimeUnit.SECONDS)) throw new AssertionError("Autoload request did not enter");
+                equal("autoload queues belong to their request", 0L,
+                        context.eval("php", "return count(spl_autoload_functions());").asLong());
+                Files.writeString(library, "<?php class Loaded { public function value() { return 'new'; } }");
+                String value = "";
+                long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
+                while (!value.equals("new") && System.nanoTime() < deadline) {
+                    value = context.eval("php", "require 'Loaded.php'; return (new Loaded)->value();").asString();
+                    if (!value.equals("new")) Thread.sleep(20);
+                }
+                equal("autoload fixture new generation published", "new", value);
+            } finally { release.countDown(); }
+            running.get(10, TimeUnit.SECONDS);
+            equal("autoload after publication still uses pinned old generation", "old", output.toString());
+            output.reset();
+            context.eval(source);
+            equal("next autoload request sees new generation", "new", output.toString());
+            equal("autoload registration released after request", 0L,
+                    context.eval("php", "return count(spl_autoload_functions());").asLong());
+        }
+        check("unsupported default SPL loader fails explicitly", """
+            try { spl_autoload_register(); } catch (Error $error) { echo 'unsupported'; }
+            """, "unsupported");
+    }
     private static void includesAndReload() throws Exception {
-        Path root = Files.createTempDirectory(Path.of("build"), "reload-").toAbsolutePath();
+        Path root = Files.createTempDirectory("graalphp-reload-").toAbsolutePath();
         Path main = root.resolve("main.php"); Path library = root.resolve("library.php");
         Files.writeString(library, "<?php function version() { return 'old'; }");
         Files.writeString(main, "<?php include_once 'library.php'; include_once 'library.php'; host_call('gate'); echo version();");

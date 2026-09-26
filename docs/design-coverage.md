@@ -1,10 +1,11 @@
-# Copertura del design — 25 settembre 2026
+# Copertura del design — 26 settembre 2026
 
 Per la ripresa operativa vedere [TODO](../TODO.md) e
 [stato di consegna](handoff.md); per metodo e RAM,
 [benchmark da freddo](curl-memory.md) e [indagine p99 del 26 settembre](curl-p99.md).
-Quest'ultima aggiorna solo il tooling di misura, non la copertura runtime qui
-riportata. Le verifiche restano distinte in [validation.md](validation.md).
+Il successivo blocco [autoload](autoload.md) aggiorna la copertura funzionale.
+Le verifiche prestazionali sono ora rinviate per richiesta dell'utente;
+le campagne restano distinte in [validation.md](validation.md).
 
 Questa versione è un runtime eseguibile Windows e Linux, con target semantico PHP 8.6.
 Scheduler PHP e callback libuv condividono il thread proprietario; la patch
@@ -17,12 +18,12 @@ da un interprete estraneo a Truffle.
 
 | Area del design | Stato verificabile della prima versione | Lavoro ancora necessario |
 | --- | --- | --- |
-| Frontend / IR / Bytecode DSL (§3–4, 42) | Stessa pipeline per file/include/eval/reload; namespace e alias, classi, ereditarietà, proprietà, metodi, closure, arrow function, default, variadici e tipi semplici; argomenti nominati nelle chiamate utente; for/do/ternario/coalesce | Interfacce, trait, enum, attributi, generatori/fiber PHP, grammatica e typing completi, nomi in tutti i builtin, unpacking, autoload |
+| Frontend / IR / Bytecode DSL (§3–4, 42) | Stessa pipeline per file/include/eval/reload; namespace e alias, classi, ereditarietà, proprietà, metodi, closure, arrow function, default, variadici e tipi semplici; argomenti nominati nelle chiamate utente; for/do/ternario/coalesce; dichiarazioni condizionali e costruzione dinamica; autoload personalizzato sospendibile anche per i padri | Interfacce, trait, enum, attributi, generatori/fiber PHP, binding/ereditarietà e typing completi, nomi in tutti i builtin, unpacking, loader SPL predefinito/include_path |
 | Valori, COW, reference, l-value (§5–8, 40) | Heap per richiesta, array ordinati COW, reference, oggetti a identità e ambienti di closure nello stesso grafo; collezione cicli misti; append differito e LHS composto valutato una volta; byte binari preservati in rete, SQLite, concatenazione e output | Stringhe binarie in tutte le coercizioni e chiavi, destructor/weak reference PHP, return-by-reference nel frontend, reference a proprietà tipizzate, storage specializzato, coercizioni/diagnostica complete |
 | Primitive / JIT (§46–48) | Bytecode specializzato per aritmetica long con overflow, eliminazione boxing abilitata | Slot locali primitivi, array packed, inline cache polimorfe, misure guest JIT rappresentative |
-| Reload / generazioni (§9–10, 56) | WatchService ricorsivo, aggiornamento delle sole unità interessate, directory nuove, riconciliazione su overflow; pubblicazione atomica e batch non valido mantenuto pendente; richieste ancorate alla generazione iniziale | Indice delle dipendenze/simboli, copertura completa rename/delete/overflow, grandi alberi, watcher per ogni filesystem; /mnt/c WSL non supera il test eventi |
-| Include dinamici (§10.8) | Indice di codice distinto dall'esecuzione: include installa funzioni e usa il frame locale chiamante; include_once per richiesta | Warning PHP esatti, include_path, nuovi file fuori dalla root, namespace e autoload |
-| Continuazioni (§11–12) | Yield solo sulle sospensioni; metodi, costruttori, closure e catene Future conservano activation, ownership e finally | Generatori/fiber PHP, ulteriori interazioni con tutte le forme di controllo PHP |
+| Reload / generazioni (§9–10, 56) | WatchService ricorsivo, aggiornamento delle sole unità interessate, directory nuove, riconciliazione su overflow; pubblicazione atomica e batch non valido mantenuto pendente; richieste ancorate alla generazione iniziale, verificato anche quando il primo autoload avviene dopo una pubblicazione | Indice delle dipendenze/simboli, copertura completa rename/delete/overflow, grandi alberi, watcher per ogni filesystem; /mnt/c WSL non supera il test eventi |
+| Include dinamici (§10.8) | Indice di codice distinto dall'esecuzione: include installa funzioni e usa il frame locale chiamante; include_once per richiesta; callback autoload con scope del loader e generazione fissata | Warning PHP esatti, include_path, nuovi file fuori dalla root, loader SPL predefinito |
+| Continuazioni (§11–12) | Yield solo sulle sospensioni; metodi, costruttori, closure, catene Future e autoload conservano activation, ownership e finally | Generatori/fiber PHP, ulteriori interazioni con tutte le forme di controllo PHP |
 | Scheduler / structured concurrency (§13–14, 50, 57) | API TrueAsync per coroutine/scope/channel/future; combinatori, protect e cancellazione; pump host con checkpoint, notifiche e deadline reali; libuv per timer, server TCP HTTP/WebSocket e cURL multi/socket con API PHP curl_multi_*, limiti e waiter cancellabili; SQLite in pool nominato | Traversable nei combinatori, policy errori/disposal, TaskGroup/TaskSet, lifetime guest dei future, API socket/DNS complete, callback PHP cURL, riconfigurazione degli easy associati, cancellazione C generica |
 | Contesti logici (§15–16) | API TrueAsync: contesto condiviso per scope e gerarchico, contesto privato per coroutine, scope staccati; globals/heap senza ThreadLocal | Process state pubblico, lookup ottimizzato, SAPI e superglobali, promozione dei valori di contesto condivisi fra thread |
 | Thread / LOCAL→SHARED (§17–21) | Worker reali nello stesso contesto Truffle; SharedCounter promosso ad AtomicLong; mutex FIFO con ownership del task e ThreadChannel per scalari/capsule, verificati fra thread fisici | spawn_thread pubblico nello stesso runtime/heap, promozione dei grafi PHP completi, array/oggetti condivisi, semaphore/RWLock/condition e modello race completo |
@@ -32,7 +33,7 @@ da un interprete estraneo a Truffle.
 | Native standalone / JIT on-off (§33–34, 37, 39) | JAR e Native Image Windows/Linux x64; entrambe le build superano il corpus TrueAsync e mostrano compilazione guest Tier 1/2; modalità --interpreter | Profilo compatto, benchmark rappresentativi, riproducibilità e packaging completo |
 | Linux static / macOS / mobile (§35–38) | Build Ubuntu WSL tramite SDKMAN; nove target Xmake Linux collegati staticamente, compresi i runtime C++ del prodotto; dipendenze dinamiche limitate a libc/libm/loader | Linux fully-static vs FFI, altre dipendenze php-xmake, macOS, Android, iOS e integrazione UI |
 | Errori / shutdown / isolamento (§41, 54–55) | Eccezioni guest, cleanup ownership, separazione richieste verificata anche durante reload | Gerarchia completa Throwable/Error, warning/notice, shutdown hooks PHP, timeout di cleanup rigorosi |
-| Tooling / benchmark (§53, 65–68) | Sorgenti bytecode, differenziale PHP 8.6 e TrueAsync 0.10.0; 42 PHPT upstream inclusi negli 82 casi; errori cURL immediati e alias; crash con exit code negativo rilevati dallo script Windows | Suite PHPT completa, debugger/strumentazione completa, benchmark rappresentativi runtime e FFI senza warmup escluso |
+| Tooling / benchmark (§53, 65–68) | Sorgenti bytecode, differenziale PHP 8.6 e TrueAsync 0.10.0; 42 PHPT upstream inclusi negli 82 casi; errori cURL immediati e alias; crash con exit code negativo rilevati dallo script Windows; 38 programmi autoload identici e test request/reload | Suite PHPT completa, debugger/strumentazione completa, benchmark rappresentativi runtime e FFI senza warmup escluso |
 | Compose (documento dedicato) | Confine di chiamata managed in-process disponibile tramite Polyglot | Backend Compose/Skia, dispatcher UI condiviso, windowing, frame clock, binding generator, Android/iOS; nessuna UI già implementata |
 
 ## Contratti che evitano riscritture strutturali

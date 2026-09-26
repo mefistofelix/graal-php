@@ -23,11 +23,13 @@ build.bat
 build.bat native-libs
 build.bat verify
 build.bat oracle
+build.bat autoload-test
 build.bat native
 build.bat network-test
 build.bat network-test native
 build.bat network-benchmark
 build\graalphp.exe examples\language.php
+build\graalphp.exe examples\autoload.php
 build\graalphp.exe examples\trueasync.php
 build\graalphp.exe examples\async-composition.php
 build\graalphp.exe examples\native-callback.php
@@ -43,6 +45,9 @@ Il comando senza argomenti compila il JAR senza avviare test.
 `verify` esegue i test integrati, il laboratorio semantico e il confronto
 TrueAsync. `trueasync` esegue soltanto quest'ultimo; `oracle` confronta
 gli esempi `compat.php` e `language.php` con PHP 8.6.0RC2.
+`autoload-test` confronta 38 programmi di autoload con PHP/TrueAsync;
+`autoload-test native` ricostruisce e verifica l'eseguibile.
+[Contratti e limiti](docs/autoload.md).
 `network-test` esegue il percorso WebSocket → HTTPS/curl-impersonate → SQLite
 con peer di rete indipendenti; `network-test native` rigenera e verifica
 l'eseguibile. Vedere [network-integration.md](docs/network-integration.md).
@@ -102,7 +107,11 @@ proprietà/metodi pubblici, protetti, privati e statici, closure e arrow functio
 default, variadici, argomenti nominati nelle chiamate utente e tipi semplici. Include inoltre array COW e reference,
 l-value annidati, for/while/do/foreach, break/continue, ternario/coalesce,
 try/catch/finally, include ed eval. Classi e closure conservano ownership
-e continuazioni anche quando sospendono.
+e continuazioni anche quando sospendono. L'autoload con callback personalizzate
+usa la stessa pipeline sospendibile per costruzione, chiamate/proprietà statiche
+e caricamento dei padri. Sono presenti dichiarazioni condizionali e costruzione
+con nome dinamico; il caricatore SPL predefinito e `include_path` restano aperti.
+Vedere [autoload](docs/autoload.md) e [l'esempio](examples/autoload.php).
 
 L'API asincrona pubblica usa il namespace upstream:
 

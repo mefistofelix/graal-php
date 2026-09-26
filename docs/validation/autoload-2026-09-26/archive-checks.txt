@@ -1,0 +1,5 @@
+PASS 152 final autoload comparisons and all shared program SHA256 checks.
+PASS all 99 source/test/build/example/product SHA256 entries match.
+PASS 86 modified/new files UTF-8 without BOM, LF, no private home paths or ANSI; 138 relative Markdown links resolve.
+PASS 43 hidden-directory program snapshots are included in Git selection, not ignored.
+PASS git diff --check.

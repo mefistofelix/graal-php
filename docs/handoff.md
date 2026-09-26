@@ -11,26 +11,74 @@ Runtime sperimentale PHP 8.6 direttamente su Truffle Bytecode DSL, con JVM e
 Native Image Windows/Linux x64 funzionanti. Non ancora un sostituto generale
 di PHP; non sono completate tutte le milestone del design.
 
-L'ultimo intervento runtime è **concluso**: default CLI
-`engine.CompilerIdleDelay=500`, rispetto ai 10.000 ms precedenti, con JIT attivo.
-L'utente ha poi richiesto che **nessun benchmark escluda il warmup**: i driver
-sono stati aggiornati e il confronto cURL è stato rifatto da processi nuovi.
-La consegna documentale ha aggiunto AGENTS/TODO/handoff. Il 26 settembre sono
-stati inizializzati Git e il repository pubblico, poi è stato completato un
-blocco di `PERF-01`: A/B sullo stesso eseguibile e diagnostica temporale
-[cURL p99](curl-p99.md). **Nessuna modifica al runtime o ai binari** in questo
-blocco; non è ancora una correzione del p99.
+**L'utente ha chiesto di continuare lo sviluppo funzionale e riverificare le
+performance più avanti.** Non riprendere automaticamente PERF-01. Il blocco
+corrente è il nucleo di [autoload personalizzato](autoload.md), con callback
+riprendibili, costruzione dinamica, dichiarazioni condizionali e caricamento
+dei padri prima della pubblicazione della classe figlia.
 
-La continuazione di `PERF-01` deve separare allocazioni/GC, invalidazioni guest,
-interferenza della JVM del peer e lifetime effettivo dei compiler worker, senza
-perdere il risparmio RAM. Le trace di compilazione non dimostrano da sole un
-riavvio dei worker. Per le funzionalità, restano prioritari i contratti
-linguaggio/valori, TrueAsync, shared-memory threading e FFI; Composer applicativo,
-Compose e mobile sono rinviati. Procedere nel lavoro già autorizzato senza
-riconfermare queste decisioni; chiarire soltanto ambiguità che cambiano obiettivo
-o vincoli, usando giudizio sulle normali scelte implementative.
+Il seguito funzionale è completare i contratti delle classi e le dichiarazioni
+mancanti (interfacce/trait in particolare), insieme a valori e TrueAsync. Il
+loader SPL predefinito, include_path e il binding completo tra unità restano
+aperti: non dichiarare Composer funzionante. Shared-memory threading e FFI
+restano priorità successive; Composer applicativo, Compose e mobile sono rinviati.
+Procedere nel lavoro già autorizzato senza riconfermare queste decisioni.
 
-## Ultimo blocco: PERF-01, 26 settembre
+Il default CLI `engine.CompilerIdleDelay=500` rimane invariato e il JIT attivo.
+La diagnostica precedente [cURL p99](curl-p99.md) resta storica: nessuna nuova
+misura RAM/CPU/throughput/p99 è stata eseguita per il blocco autoload. Quando
+si tornerà alle performance, mantenere il vincolo di nessun warmup escluso e
+separare GC/invalidazioni, peer e lifetime reale dei compiler worker.
+
+## Blocco funzionale: autoload, 26 settembre
+
+[Contratti e limiti](autoload.md),
+[esiti e prodotti](validation/autoload-2026-09-26/results.txt),
+[hash](validation/autoload-2026-09-26/hashes.json).
+
+Il registro implementa class_exists e le operazioni SPL con callback esplicite.
+Le callback conservano receiver e ambiente anche durante auto-rimozione,
+sospensione o cancellazione; le chiamate differite mantengono locazioni per
+riferimento e argomenti nominati. La ricorsione implicita è protetta per nome,
+mentre spl_autoload_call rimane esplicita. I programmi differenziali coprono
+anche modifica della coda mentre è in esecuzione, namespace, costruzione
+con nome/oggetto, caricamento di padre/figlio e cleanup del guard dopo errore.
+
+Un nuovo test verifica che un autoload iniziato dopo la pubblicazione di una
+nuova generazione legga ancora il vecchio snapshot della richiesta. La richiesta
+successiva riceve il nuovo codice e un registro vuoto. Le fixture WatchService
+usano il filesystem temporaneo nativo: la build può stare su /mnt/c, ma non
+viene dichiarato funzionante il watcher sulla directory Windows montata.
+
+Windows: 38/38 programmi autoload su JVM e Native Image; 79 scenari integrati,
+53 scenari semantici e 256 grafi di ownership/1.280 fasi del collector passati.
+82 programmi differenziali TrueAsync passati su JVM e Native Image; 50
+asserzioni di rete/TLS/WebSocket/cURL/SQLite sul nuovo eseguibile. L'esempio
+`examples/autoload.php` passa su JVM, Native Image e con `--interpreter`.
+Linux: 38/38 programmi autoload su JVM e Native Image, usando l'oracolo
+TrueAsync/PHP 8.6 anche per i casi sincroni (non un PHP stock separato).
+73 scenari integrati, gli stessi 53 scenari/256 grafi e 82 confronti TrueAsync
+su entrambe le modalità passati; 50 asserzioni di rete nel nuovo binario.
+I sei scenari nativeBundle del runner di integrazione sono condizionati alla
+DLL Windows: il conteggio Linux inferiore non è una dichiarazione di parità
+per quei sei casi. L'esempio passa anche su Linux JVM/native/interpreter.
+
+I due Native Image sono stati ricostruiti in sequenza e il prodotto Linux è
+stato copiato in `build/graalphp-linux-x64`, quindi avviato anche da lì.
+87 file sotto src/tests sono identici fra workspace e copia Linux; gli hash
+includono inoltre build script, esempi e prodotti. Nessuna build o verifica
+interrotta da riprendere. Le suite FFI-bridge/cURL dedicate non sono state
+rieseguite integralmente in questo blocco; i percorsi coperti dall'integrazione
+restano distinti nel registro.
+
+La pipeline è la stessa Bytecode DSL: ClassLoading fornisce lo stato per
+richiesta e gli helper PHP riprendibili, non un altro interprete o un worker.
+`LANG-01` resta aperto; limiti del loader predefinito, class catalog, binding
+completo e diagnostica sono espliciti. Le vecchie baseline pre-autoload sono
+conservate localmente in `build/before-autoload-2026-09-26/` per il futuro
+confronto prestazionale, con gli hash precedenti, non come nuovi risultati.
+
+## Blocco precedente: PERF-01, 26 settembre
 
 [Rapporto](curl-p99.md), [esiti](validation/curl-p99-2026-09-26/results.txt),
 [hash](validation/curl-p99-2026-09-26/hashes.json),
@@ -119,9 +167,14 @@ TrueAsync. Il confronto corrente è HTTP e non prova equivalenza dei backend TLS
 
 | File locale ricreabile | Byte | SHA-256 |
 | --- | ---: | --- |
-| `build/graalphp.exe` | 90.210.304 | `911359acdf1069bdd382f1749da3ad33000a2dfbc7c2ca7cf57d54b47e95a712` |
-| `build/graalphp-linux-x64` | 92.932.904 | `efa0d5740382d7fcfa90d4c89a8bd271119d9a18f25f9cb5743c73ca53f4de9f` |
+| `build/graalphp.exe` | 90.013.696 | `2f474e70d4b578a77aa188f300b604d1e1f542ecf6add5e89619c779d384b93d` |
+| `build/graalphp-linux-x64` | 93.260.584 | `543dfbba94a106189cd2869c956ad013c3ca2df0d0e8da682834167258555ff3` |
 | `build/graalphp-before-memory.exe` | 90.161.152 | `f84539cde1b2976077f4b29c68d3737f1ab096add2e8662f78d0a5d328c36c53` |
+
+Le copie `build/before-autoload-2026-09-26/graalphp.exe` e
+`build/before-autoload-2026-09-26/graalphp-linux-x64` mantengono rispettivamente
+90.210.304 e 92.932.904 byte, con gli hash della precedente campagna PERF-01.
+Non scambiare le nuove dimensioni dei file per misure di RAM del runtime.
 
 `build/graalphp-before-latency.exe` e `build/graalphp-before-runtime-costs.exe`
 sono baseline più vecchie: non scambiarle per quella della riduzione RAM.
@@ -147,10 +200,13 @@ come checklist obbligatoria a ogni modifica:
 ./build.bat curl-test native        # ricostruisce Native Image e verifica cURL
 ./build.bat curl-test trueasync     # verifica sull'oracolo
 ./build.bat verify                  # integrazione/valori/differenziale TrueAsync
+./build.bat autoload-test           # 38 programmi contro PHP/TrueAsync
+./build.bat autoload-test native    # ricostruisce e verifica il prodotto
 ./build.bat ffi-bridge-test native  # callback e stack C; quando pertinenti
 ```
 
-Per ripetere soltanto le misure cURL dopo aver costruito e verificato i binari:
+Le performance sono rinviate. Quando l'utente le riprenderà, per ripetere
+soltanto le misure cURL dopo aver costruito e verificato i binari:
 
 ```powershell
 & tools/graalvm-25.4.4.1.1+1.1/bin/javac.exe --release 25 -proc:none -d build/test-classes tests/graalphp/NetworkBenchmark.java tests/graalphp/CurlBenchmark.java
