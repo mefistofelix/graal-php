@@ -1,0 +1,178 @@
+build\generated\graalphp\truffle\PhpRootGen.java:6236: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+build\generated\graalphp\truffle\PhpRootGen.java:8099: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+Note: <workspace>\src\graalphp\truffle\PhpContext.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+2 warnings
+using lock <workspace>\build\toolchain.lock
+already installed 12 packages in <workspace>\build\toolchain
+[100%]: build ok, spent 1.875s
+[100%]: build ok, spent 1.406s
+WARNING: Unknown module: com.oracle.truffle.enterprise.svm specified to --add-exports
+========================================================================================================================
+GraalVM Native Image: Generating 'graalphp.exe' (executable)...
+========================================================================================================================
+For detailed information and explanations on the build output, visit:
+https://github.com/oracle/graal/blob/master/docs/reference-manual/native-image/BuildOutput.md
+------------------------------------------------------------------------------------------------------------------------
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by com.oracle.truffle.polyglot.JDKSupport in module org.graalvm.truffle (file:/<workspace>/build/deps/25.4.4.1.1/truffle-api-25.4.4.1.1.jar)
+WARNING: Use --enable-native-access=org.graalvm.truffle to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+[1/8] Initializing...                                                                                  (13,8s @ 0,24GiB)
+ Builder configuration:
+ - Java version: 25.0.4.1.1+1-LTS, vendor version: Oracle GraalVM 25.4.4.1.1+1.1
+ - Graal compiler: optimization level: 3, target machine: compatibility, PGO: ML-inferred
+ - C compiler: cl.exe (microsoft, x64, 19.50.35739)
+ - Assertions: disabled, system assertions: disabled
+ - 9 user-specific feature(s):
+   - com.oracle.svm.enterprise.truffle.EnterpriseTruffleFeature: Provides enterprise extensions for the Truffle runtime.
+   - com.oracle.svm.enterprise.truffle.compiler.EnterpriseTruffleCompilerFeature: Provides additional optimizations and isolated compilation for Truffle.
+   - com.oracle.svm.truffle.TruffleBaseFeature: Provides internal support for Truffle
+   - com.oracle.svm.truffle.TruffleFeature: Provides internal support for Truffle runtime compilation
+   - com.oracle.svm.truffle.nfi.TruffleNFIFeature
+   - com.oracle.svm.truffle.nfi.windows.WindowsTruffleNFIFeature
+   - com.oracle.truffle.api.impl.TruffleAPIFeature: Provides basic support for Truffle
+   - com.oracle.truffle.api.object.DynamicObjectFeature: Provides support for DynamicObject
+   - org.graalvm.home.HomeFinderFeature: Finds GraalVM paths and its version number
+ Image configuration:
+ - Garbage collector: Serial GC (max heap size: 80% of RAM)
+ - Assertions: disabled (class-specific config may apply), system assertions: disabled
+------------------------------------------------------------------------------------------------------------------------
+Build resources:
+ - 6.00GiB of memory (38.1% of system memory, set via '-Xmx6g')
+ - 8 thread(s) (50,0% of 16 available processor(s), set via '--parallelism=8')
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.oracle.truffle.api.object.DynamicObject (file:/<workspace>/build/deps/25.4.4.1.1/truffle-api-25.4.4.1.1.jar)
+WARNING: Please consider reporting this to the maintainers of class com.oracle.truffle.api.object.DynamicObject
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[2/8] Performing analysis...  [***********]                                                            (55,0s @ 1,54GiB)
+   12.754 types,  17.476 fields, and  64.066 methods found reachable
+      302 types,      87 fields, and     636 methods registered for reflection
+       68 types,      52 fields, and      58 methods registered for JNI access
+       67 resource accesses registered with 172,36KiB total size
+       29 native libraries: advapi32, bcrypt, boringssl, brotli, crypt32, curl-impersonate, dbghelp, graalphp-builtins, impersonate-nghttp2, iphlpapi, libuv, ncrypt, normaliz, ole32, pcre2, psapi, shell32, sqlite3, standard-boringssl, standard-curl, user32, userenv, version, winmm, ws2_32, zlib, zstd
+    2.947 runtime compiled methods (4,6% of all reachable methods)
+[3/8] Building universe...                                                                              (8,1s @ 1,46GiB)
+[4/8] Parsing methods...      [*****]                                                                  (22,5s @ 1,75GiB)
+[5/8] Inlining methods...     [***]                                                                     (1,8s @ 1,87GiB)
+[6/8] Compiling methods...    [********]                                                               (73,9s @ 2,10GiB)
+[7/8] Laying out methods...   [***]                                                                     (9,5s @ 2,79GiB)
+[8/8] Creating image...       [***]                                                                     (5,0s @ 3,04GiB)
+  48,97MiB (56,50%) for code area:    38.074 compilation units
+  30,50MiB (35,19%) for image heap:  355.783 objects and 16 resources
+   7,20MiB ( 8,31%) for other data
+  86,66MiB in total image size, 86,66MiB in total file size
+------------------------------------------------------------------------------------------------------------------------
+Top 10 origins of code area:                                Top 10 object types in image heap:
+   3,44MiB o.g.truffle/com.oracle.truffle.polyglot            12,09MiB byte[] for code metadata
+   3,05MiB o.g.n.runtime/com.oracle.svm.core.code              4,00MiB byte[] for string data
+   2,04MiB graalphp.truffle                                    2,15MiB java.base/java.lang.String
+   1,76MiB java.base/java.util                                 1,98MiB byte[] for graph encodings
+   1,63MiB graalphp.runtime                                    1,95MiB java.base/java.lang.Class
+   1,55MiB o.g.truffle/com.oracle.truffle.host                 1,36MiB o.g.n.runtime/c.o.s.core.hub.DynamicHubCompanion
+   1,45MiB o.g.truffle/com.oracle.truffle.api.interop        834,95KiB byte[] for general heap data
+   1,06MiB j.g.compiler/jdk.graal.compiler.lir.amd64         532,92KiB java.base/java.lang.Object[]
+   0,99MiB j.g.compiler/jdk.graal.compiler.nodes             518,38KiB java.base/j.u.concurrent.ConcurrentHashMap$Node
+ 946,21KiB c.o.t.tru~_nfi/com.oracle.truffle.nfi             476,02KiB o.g.t.r.svm/c.o.s.t.api.SubstrateTruffleMethod
+  31,06MiB for 369 more packages                               4,66MiB for 3459 more object types
+                            Use '--emit build-report' to create a report with more details.
+------------------------------------------------------------------------------------------------------------------------
+Security report:
+ - Binary includes Java deserialization.
+ - CycloneDX SBOM with 11 component(s) is embedded in binary (742B). 374 type(s) could not be associated to a component.
+ - Advanced obfuscation not enabled; enable with '-H:AdvancedObfuscation=""' (experimental support).
+------------------------------------------------------------------------------------------------------------------------
+Recommendations:
+ G1GC: Use the G1 GC ('--gc=G1') for improved latency and throughput.
+ PGO:  Use Profile-Guided Optimizations ('--pgo') for improved throughput.
+ FUTR: Use '--future-defaults=all' to prepare for future releases.
+ HEAP: Set max heap for improved and more predictable memory usage.
+ QBM:  Use the quick build mode ('-Ob') to speed up builds during development.
+------------------------------------------------------------------------------------------------------------------------
+                      18,6s (9,3% of total time) in 2093 GCs | Peak RSS: 5,91GiB | CPU load: 7,51
+------------------------------------------------------------------------------------------------------------------------
+Build artifacts:
+ <workspace>\build\graalphp.exe (executable, 86,66MiB)
+========================================================================================================================
+Finished generating 'graalphp' in 3m 18s.
+PASS foreach-method-order oracle=0 target=0 mode=output
+PASS unused-key-not-called oracle=0 target=0 mode=output
+PASS repeat-loop-rewinds oracle=0 target=0 mode=output
+PASS break-does-not-advance oracle=0 target=0 mode=output
+PASS continue-advances oracle=0 target=0 mode=output
+PASS same-iterator-nested-loop oracle=0 target=0 mode=output
+PASS iterator-count-skips-current-and-key oracle=0 target=0 mode=output
+PASS iterator-array-uses-current-then-key oracle=0 target=0 mode=output
+PASS iterator-array-reindex-skips-key oracle=0 target=0 mode=output
+PASS iterator-apply-method-order oracle=0 target=0 mode=output
+PASS iterator-apply-counts-false-call oracle=0 target=0 mode=output
+PASS iterator-apply-callback-arguments oracle=0 target=0 mode=output
+PASS iterator-apply-named-arguments oracle=0 target=0 mode=output
+PASS iterator-apply-explicit-reference-argument oracle=0 target=0 mode=output
+PASS iterator-apply-private-callback-scope oracle=0 target=0 mode=output
+PASS iterator-apply-autoloads-callback-class oracle=0 target=0 mode=output
+PASS iterator-apply-invalid-callback-before-rewind oracle=0 target=0 mode=output
+PASS aggregate-chain oracle=0 target=0 mode=output
+PASS aggregate-fresh-iterator-per-loop oracle=0 target=0 mode=output
+PASS iterable-parameter-and-return oracle=0 target=0 mode=output
+PASS iterator-reference-forbidden-before-rewind oracle=0 target=0 mode=output
+PASS temporary-iterator-reference-forbidden oracle=0 target=0 mode=output
+PASS aggregate-reference-resolves-before-error oracle=0 target=0 mode=output
+PASS key-called-before-binding-value oracle=0 target=0 mode=output
+PASS iterator-key-can-be-an-array-or-object oracle=0 target=0 mode=output
+PASS array-conversion-rejects-non-array-key oracle=0 target=0 mode=output
+PASS countable-and-is-countable oracle=0 target=0 mode=output
+PASS countable-tentative-missing-return oracle=0 target=0 mode=output
+PASS countable-tentative-wrong-return oracle=0 target=0 mode=output
+PASS return-type-will-change-suppresses-only-return oracle=0 target=0 mode=output
+PASS tentative-notice-reported-once oracle=0 target=0 mode=output
+PASS return-type-attribute-namespaces-and-aliases oracle=0 target=0 mode=output
+PASS same-short-attribute-name-is-not-builtin oracle=0 target=0 mode=output
+PASS trait-attribute-survives-composition oracle=0 target=0 mode=output
+PASS unknown-attributes-remain-lazy oracle=0 target=0 mode=output
+PASS countable-return-conversion-is-internal-weak oracle=0 target=0 mode=output
+PASS countable-object-result-warning-location oracle=0 target=0 mode=output
+PASS count-recursive-and-repeated-noncyclic-array oracle=0 target=0 mode=output
+PASS count-recursion-warning-and-result oracle=0 target=0 mode=output
+PASS count-errors oracle=0 target=0 mode=output
+PASS nullable-scalar-builtin-deprecations oracle=0 target=0 mode=output
+PASS strict-iteration-builtin-scalars oracle=0 target=0 mode=output
+PASS array-inputs-and-result-copy-on-write oracle=0 target=0 mode=output
+PASS array-conversion-preserves-explicit-references oracle=0 target=0 mode=output
+PASS object-public-protected-private-visibility oracle=0 target=0 mode=output
+PASS object-live-mutation oracle=0 target=0 mode=output
+PASS object-dynamic-reinsert-appends oracle=0 target=0 mode=output
+PASS declared-reinsert-keeps-position oracle=0 target=0 mode=output
+PASS uninitialized-property-skipped-before-it-is-set oracle=0 target=0 mode=output
+PASS undefined-probe-does-not-reserve-property-order oracle=0 target=0 mode=output
+PASS object-by-reference-and-lingering-alias oracle=0 target=0 mode=output
+PASS temporary-array-reference-loop oracle=0 target=0 mode=output
+PASS temporary-object-reference-loop oracle=0 target=0 mode=output
+PASS get-object-vars-snapshot-and-mangled-keys oracle=0 target=0 mode=output
+PASS get-object-vars-preserves-explicit-references oracle=0 target=0 mode=output
+PASS closure-internals-are-not-object-properties oracle=0 target=0 mode=output
+PASS enum-properties-are-visible-but-not-referenceable oracle=0 target=0 mode=output
+PASS foreach-invalid-input-warning-keeps-binding oracle=0 target=0 mode=output
+PASS aggregate-invalid-result-is-exception oracle=0 target=0 mode=output
+PASS legacy-iterator-tentative-warning-order oracle=0 target=0 mode=output
+PASS truthy-valid-with-tentative-suppression oracle=0 target=0 mode=output
+PASS coerced-property-assignment-expression oracle=0 target=0 mode=output
+PASS async-every-iterator-method oracle=0 target=0 mode=output
+PASS async-aggregate-and-countable oracle=0 target=0 mode=output
+PASS async-callback-apply-and-shared-reference oracle=0 target=0 mode=output
+PASS async-cancellation-inside-current oracle=0 target=0 mode=output
+PASS iterator-exception-keeps-old-loop-binding oracle=0 target=0 mode=output
+PASS direct-traversable-rejected oracle=255 target=1 mode=rejection:traversable
+PASS abstract-traversable-is-allowed oracle=0 target=0 mode=output
+PASS concrete-traversable-child-rejected oracle=255 target=1 mode=rejection:traversable
+PASS both-iterator-protocols-rejected oracle=255 target=1 mode=rejection:both iterator and iteratoraggregate
+PASS required-parameter-still-incompatible oracle=255 target=1 mode=rejection:compatible
+PASS nonpublic-method-still-incompatible oracle=255 target=1 mode=rejection:compatible
+PASS static-method-still-incompatible oracle=255 target=1 mode=rejection:compatible
+Evidence: <workspace>\build\iteration-13322746869825192670
+PASS: 74 iteration programs; 6 semantic rejections (diagnostic text not asserted identical)

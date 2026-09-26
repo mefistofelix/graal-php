@@ -9,11 +9,11 @@ certificano soltanto il risultato descritto, non un'intera milestone del design.
 
 **L'utente ha rinviato le verifiche prestazionali.** Riprendere lo sviluppo
 funzionale, non PERF-01. Il blocco corrente di **LANG-01** implementa
-[enum, match, clone, offset di stringa e strict_types](docs/language-values.md),
-sui precedenti contratti delle classi. Il seguito riguarda iteratori/builtin,
-attributi, unpacking e lifetime, coordinati con TrueAsync e reload. Il loader
-SPL predefinito, include_path, binding completo fra unità e il typing delle
-restanti API native rimangono aperti.
+[iterazione sospendibile e metadati degli attributi](docs/iteration.md), sopra i
+precedenti contratti di classi e valori. Il seguito immediato è **argument
+unpacking e array spread**, poi Reflection/attributi completi, generatori/Fiber
+e lifetime. Il loader SPL predefinito, include_path, binding completo fra unità
+e il typing delle restanti API native rimangono aperti.
 Linguaggio/TrueAsync/threading/FFI precedono Composer applicativo, Compose e mobile.
 
 ## Concluso e da non rifare da zero
@@ -55,6 +55,11 @@ Linguaggio/TrueAsync/threading/FFI precedono Composer applicativo, Compose e mob
   binarie; strict_types per sorgente con propagazione attraverso trait,
   closure/include/eval. Corpus di 155 programmi, di cui 29 rifiuti semantici.
   [Contratti e limiti](docs/language-values.md); non chiude LANG-01 o VALUE-01.
+
+- [x] Foreach sospendibile su Iterator/IteratorAggregate/oggetti, Countable e
+  builtin iterator/count/object-vars; metadati degli attributi e tipi di ritorno
+  provvisori con ReturnTypeWillChange. 74 programmi in sei modalità, 56 controlli
+  diretti dei campi e 52 dei metadati. [Contratto](docs/iteration.md).
 
 ## Prestazioni e memoria: rinviate per richiesta dell'utente
 
@@ -111,8 +116,10 @@ Linguaggio/TrueAsync/threading/FFI precedono Composer applicativo, Compose e mob
   regole complete di ereditarietà. Il nucleo interfacce/trait, classi astratte,
   finalità, costanti e varianza è implementato in questo blocco, non tutto il
   modello classi PHP. Enum, match/clone e strict_types delle chiamate utente
-  sono implementati nel blocco valori. Restano attributi, iteratori/builtin,
-  generatori/Fiber, unpacking, named arguments e typing nei restanti builtin,
+  sono implementati nel blocco valori. Iteratori utente, Countable e metadati
+  degli attributi sono nel blocco iterazione. Restano argument/array unpacking,
+  Reflection e semantica completa degli attributi, generatori/Fiber, iteratori
+  SPL concreti/ArrayAccess, named arguments e typing nei restanti builtin,
   readonly/hooks e diagnostica completa.
   Pianificare blocchi coerenti con valori, sospensioni e reload; le feature
   usate da Composer sono prioritarie, eseguire Composer non lo è.

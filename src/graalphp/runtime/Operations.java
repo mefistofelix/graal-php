@@ -163,6 +163,8 @@ public final class Operations {
     }
     @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
     private static Object builtin(Activation activation, String name, Argument[] args, IndirectCallNode call) {
+        Object iteration = IterationApi.function(activation, name, args, call);
+        if (iteration != AsyncApi.UNHANDLED) return iteration;
         Object enumValue = EnumApi.function(activation, name, args);
         if (enumValue != AsyncApi.UNHANDLED) return enumValue;
         Object diagnostic = Diagnostics.function(activation, name, args);
@@ -193,7 +195,6 @@ public final class Operations {
             }
             case "__mutex_accept": ((AsyncMutex) values[0]).accept(activation.task, future(values[1])); return null;
             case "__mutex_abort": ((AsyncMutex) values[0]).abort(activation.task, future(values[1])); return null;
-            case "count": require(name, values, 1); return (long) PhpValues.keys(values[0]).size();
             case "get_class":
                 require(name, values, 1);
                 String builtinClass = AsyncApi.className(values[0]);

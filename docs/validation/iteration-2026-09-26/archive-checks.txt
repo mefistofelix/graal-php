@@ -1,0 +1,5 @@
+PASS 130 source/test/build/example/product hashes match.
+PASS six retained differential reports each contain 74 PASS and zero FAIL.
+PASS both retained native regression logs contain 82 TrueAsync and 50 network assertions.
+PASS 41 changed/new files UTF-8 LF, no private home paths/ANSI; 177 relative Markdown links resolve.
+PASS git diff --check.

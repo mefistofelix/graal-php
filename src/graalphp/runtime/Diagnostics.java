@@ -19,7 +19,7 @@ public final class Diagnostics {
             Map.entry("E_USER_DEPRECATED", 16384L), Map.entry("E_ALL", 30719L));
     public record LastError(long type, String message, String file, int line) {}
     public record Site(com.oracle.truffle.api.bytecode.BytecodeNode bytecode, int index, java.nio.file.Path file, String name, boolean strictTypes) {}
-    public record Origin(Request request, Site site) {
+    public record Origin(Request request, Site site) implements com.oracle.truffle.api.interop.TruffleObject {
         public void warning(String message) { emit(request, site, 2L, "Warning", message); }
         public void deprecated(String message) { emit(request, site, 8192L, "Deprecated", message); }
     }
@@ -42,6 +42,17 @@ public final class Diagnostics {
         SourceSection section = site.bytecode == null ? null : site.bytecode.getSourceLocation(site.index);
         String file = site.file != null ? site.file.toString() : section == null ? site.name : section.getSource().getName();
         int line = section == null ? 0 : section.getStartLine();
+        emitAt(request, file, line, type, label, message);
+    }
+
+    @TruffleBoundary
+    public static void declaration(Request request, Function function, String message) {
+        var section = function.declaration() == null ? null : function.declaration().section();
+        String file = function.file() != null ? function.file().toString() : section == null ? function.name() : section.getSource().getName();
+        emitAt(request, file, section == null ? 0 : section.getStartLine(), 8192L, "Deprecated", message);
+    }
+
+    private static void emitAt(Request request, String file, int line, long type, String label, String message) {
         request.lastError = new LastError(type, message, file, line);
         if ((request.errorReporting & type) != 0) {
             String text = "\n" + label + ": " + message + " in " + file + " on line " + line + "\n";

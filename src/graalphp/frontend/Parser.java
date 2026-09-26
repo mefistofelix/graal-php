@@ -49,6 +49,8 @@ public final class Parser {
                 continue;
             }
             declarationAllowed = false;
+            var attributes = attributes();
+            if (!attributes.isEmpty() && !atTypeDeclaration() && !at("function")) fail("Attributes require a declaration");
             if (accept("namespace")) {
                 namespace = identifier();
                 take(";");
@@ -63,10 +65,10 @@ public final class Parser {
                 } while (accept(","));
                 take(";");
             } else if (at("function")) {
-                functions.add(function(false));
+                functions.add(function(false, false, attributes));
             } else if (atTypeDeclaration()) {
                 int start = peek().start;
-                var declaration = classDeclaration();
+                var declaration = classDeclaration(attributes);
                 // Only declarations whose inheritance is known here can be bound early.
                 if (declaration.kind() != TypeKind.ENUM && declaration.interfaces().isEmpty() && declaration.traits().isEmpty()
                         && (declaration.parent() == null || classes.stream().anyMatch(parent -> parent.name().equalsIgnoreCase(declaration.parent())))) {
@@ -85,7 +87,21 @@ public final class Parser {
         return at("class") || at("interface") || at("trait") || at("enum") || at("abstract") || at("final");
     }
 
-    private ClassDeclaration classDeclaration() {
+    private List<Attribute> attributes() {
+        var result = new ArrayList<Attribute>();
+        while (accept("#[")) {
+            do {
+                int start = peek().start;
+                String name = qualified(identifier(), false);
+                var arguments = at("(") ? arguments() : List.<Expression>of();
+                result.add(new Attribute(name, arguments, start, previous().end - start));
+            } while (accept(",") && !at("]"));
+            take("]");
+        }
+        return List.copyOf(result);
+    }
+
+    private ClassDeclaration classDeclaration(List<Attribute> attributes) {
         boolean abstractType = false;
         boolean finalType = false;
         while (at("abstract") || at("final")) {
@@ -123,16 +139,18 @@ public final class Parser {
         var cases = new ArrayList<EnumCase>();
         take("{");
         while (!accept("}")) {
+            var memberAttributes = attributes();
             if (kind == TypeKind.ENUM && accept("case")) {
                 String caseName = identifier();
                 Expression value = accept("=") ? expression(0) : null;
                 take(";");
                 if ((backingType == null) != (value == null))
                     throw PhpError.fatal("Enum case " + name + "::" + caseName + " must match its backing declaration");
-                cases.add(new EnumCase(caseName, value));
+                cases.add(new EnumCase(caseName, value, memberAttributes));
                 continue;
             }
             if (accept("use")) {
+                if (!memberAttributes.isEmpty()) fail("Attributes cannot precede a trait use");
                 if (kind == TypeKind.INTERFACE) fail("Interfaces cannot use traits");
                 traits.add(traitUse());
                 continue;
@@ -160,13 +178,13 @@ public final class Parser {
                 if (kind == TypeKind.INTERFACE && (!visibility.equals("public") || finalMember || abstractMethod)) fail("Invalid interface method modifiers");
                 if (signatureOnly && finalMember) fail("An abstract method cannot be final");
                 if (abstractMethod && kind == TypeKind.CLASS && (!abstractType || visibility.equals("private"))) fail("Invalid abstract class method");
-                methods.add(new MethodDeclaration(function(true, signatureOnly), shared, visibility, signatureOnly, finalMember));
+                methods.add(new MethodDeclaration(function(true, signatureOnly, memberAttributes), shared, visibility, signatureOnly, finalMember));
             } else if (accept("const")) {
                 if (shared || abstractMethod) fail("Invalid constant modifiers");
                 String constantType = position + 1 < tokens.size() && tokens.get(position + 1).text.equals("=") ? null : type();
                 do {
                     String constantName = identifier(); take("=");
-                    constants.add(new ClassConstantDeclaration(constantName, expression(0), visibility, finalMember, constantType));
+                    constants.add(new ClassConstantDeclaration(constantName, expression(0), visibility, finalMember, constantType, memberAttributes));
                 } while (accept(","));
                 take(";");
             } else {
@@ -175,14 +193,14 @@ public final class Parser {
                 do {
                     String property = variableName();
                     Expression value = accept("=") ? expression(0) : null;
-                    properties.add(new PropertyDeclaration(property, value, shared, visibility, propertyType));
+                    properties.add(new PropertyDeclaration(property, value, shared, visibility, propertyType, memberAttributes));
                 } while (accept(","));
                 take(";");
             }
         }
         return new ClassDeclaration(name, parent, List.copyOf(properties), List.copyOf(methods), kind,
                 abstractType || kind == TypeKind.INTERFACE, finalType, List.copyOf(interfaces),
-                List.copyOf(traits), List.copyOf(constants), backingType, List.copyOf(cases));
+                List.copyOf(traits), List.copyOf(constants), backingType, List.copyOf(cases), attributes);
     }
 
     private TraitUse traitUse() {
@@ -216,9 +234,7 @@ public final class Parser {
         return new TraitUse(List.copyOf(names), List.copyOf(adaptations));
     }
 
-    private Function function(boolean method) { return function(method, false); }
-
-    private Function function(boolean method, boolean signatureOnly) {
+    private Function function(boolean method, boolean signatureOnly, List<Attribute> attributes) {
         int start = take("function").start;
         String name = identifier();
         if (!method) name = declared(name);
@@ -227,20 +243,21 @@ public final class Parser {
         List<Statement> body;
         if (signatureOnly) { take(";"); body = List.of(); }
         else body = ((Block) block().form()).statements();
-        return new Function(name, parameters, body, start, previous().end - start, returnType);
+        return new Function(name, parameters, body, start, previous().end - start, returnType, attributes);
     }
 
     private List<Parameter> parameters() {
         take("(");
         var parameters = new ArrayList<Parameter>();
         if (!at(")")) do {
+            var attributes = attributes();
             String type = at("&") || at("...") || peek().text.startsWith("$") ? null : type();
             boolean reference = accept("&");
             boolean variadic = accept("...");
             String name = variableName();
             Expression defaultValue = accept("=") ? expression(0) : null;
             if (variadic && defaultValue != null) fail("A variadic parameter cannot have a default");
-            parameters.add(new Parameter(name, reference, type, defaultValue, variadic));
+            parameters.add(new Parameter(name, reference, type, defaultValue, variadic, attributes));
             if (variadic && !at(")")) fail("A variadic parameter must be last");
         } while (accept(",") && !at(")"));
         take(")");
@@ -294,10 +311,12 @@ public final class Parser {
     private Statement statement() {
         int start = peek().start;
         Form form;
+        var attributes = attributes();
+        if (!attributes.isEmpty() && !atTypeDeclaration()) fail("Attributes require a class declaration in this position");
         if (at("{")) return block();
         if (at("declare")) throw PhpError.fatal("strict_types declaration must be the very first statement in the script");
         if (atTypeDeclaration()) {
-            var declaration = classDeclaration();
+            var declaration = classDeclaration(attributes);
             return new Statement(start, previous().end - start, new DeclareClass(declaration));
         }
         if (accept(";")) form = new Block(List.of());
@@ -438,6 +457,8 @@ public final class Parser {
     }
 
     private Expression primary() {
+        var attributes = attributes();
+        if (!attributes.isEmpty() && !at("function") && !at("fn")) fail("Attributes require a closure in this expression");
         var token = peek();
         if (accept("match")) return matchExpression();
         if (accept("throw")) return new ThrowExpression(expression(0));
@@ -454,7 +475,7 @@ public final class Parser {
             } while (accept(",") && !at("]"));
             take("]"); return new ArrayLiteral(List.copyOf(entries));
         }
-        if (at("function") || at("fn")) return closure();
+        if (at("function") || at("fn")) return closure(attributes);
         if (token.text.startsWith("$")) { position++; return new Variable(token.text.substring(1)); }
         if (at("<literal>")) {
             position++;
@@ -499,7 +520,7 @@ public final class Parser {
         return new Constant(name);
     }
 
-    private Expression closure() {
+    private Expression closure(List<Attribute> attributes) {
         var token = tokens.get(position++);
         boolean arrow = token.text.equals("fn");
         var parameters = parameters();
@@ -520,7 +541,7 @@ public final class Parser {
             body = List.of(new Statement(token.start, previous().end - token.start, new Return(value)));
         } else body = ((Block) block().form()).statements();
         var function = new Function("{closure#" + ++closureId + "}", parameters, body, token.start,
-                previous().end - token.start, returnType);
+                previous().end - token.start, returnType, attributes);
         return new Closure(function, List.copyOf(captures), arrow);
     }
 
@@ -580,7 +601,7 @@ public final class Parser {
             char c = text.charAt(i);
             if (Character.isWhitespace(c)) { i++; continue; }
             if (text.startsWith("?>", i)) { i += 2; if (!text.substring(i).isBlank()) throw new PhpError("Inline HTML is not implemented"); break; }
-            if (c == '#' || text.startsWith("//", i)) { while (i < text.length() && text.charAt(i) != '\n') i++; continue; }
+            if (c == '#' && !text.startsWith("#[", i) || text.startsWith("//", i)) { while (i < text.length() && text.charAt(i) != '\n') i++; continue; }
             if (text.startsWith("/*", i)) {
                 int end = text.indexOf("*/", i + 2); if (end < 0) throw new PhpError("Unterminated comment"); i = end + 2; continue;
             }
@@ -639,7 +660,7 @@ public final class Parser {
                 tokens.add(new Token(text.substring(start, i), null, start, i)); continue;
             }
             String operator = null;
-            for (String candidate : List.of("??=", "...", "===", "!==", "=>", "->", "::", "++", "--", "??", "==", "!=", "<=", ">=", "&&", "||", "+=", "-=", ".=", "*=", "/=", "%=")) {
+            for (String candidate : List.of("#[", "??=", "...",  "===", "!==", "=>", "->", "::", "++", "--", "??", "==", "!=", "<=", ">=", "&&", "||", "+=", "-=", ".=", "*=", "/=", "%=")) {
                 if (text.startsWith(candidate, i)) { operator = candidate; break; }
             }
             if (operator == null) operator = String.valueOf(c);

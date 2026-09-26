@@ -57,6 +57,7 @@ if /i "%~1"=="class-test" goto class_test
 if /i "%~1"=="enum-test" goto enum_test
 if /i "%~1"=="string-test" goto string_test
 if /i "%~1"=="strict-test" goto strict_test
+if /i "%~1"=="iteration-test" goto iteration_test
 if /i "%~1"=="benchmark" ("%GRAALPHP_JDK%\bin\java.exe" -cp "build\classes;%DEPS%/*" graalphp.lab.Main --benchmark & exit /b !errorlevel!)
 "%GRAALPHP_JDK%\bin\java.exe" --enable-native-access=ALL-UNNAMED -jar build\graalphp.jar --version
 exit /b %errorlevel%
@@ -127,6 +128,10 @@ if not "!errorlevel!"=="0" exit /b 1
 if not "!errorlevel!"=="0" exit /b 1
 "%GRAALPHP_JDK%\bin\java.exe" -cp "build\classes;build\test-classes;%DEPS%/*" graalphp.runtime.CycleCollectorTest
 if not "!errorlevel!"=="0" exit /b 1
+"%GRAALPHP_JDK%\bin\java.exe" -cp "build\classes;build\test-classes;%DEPS%/*" graalphp.runtime.FieldIterationTest
+if not "!errorlevel!"=="0" exit /b 1
+"%GRAALPHP_JDK%\bin\java.exe" --enable-native-access=ALL-UNNAMED -cp "build\classes;build\test-classes;%DEPS%/*" graalphp.frontend.AttributeMetadataTest
+if not "!errorlevel!"=="0" exit /b 1
 :trueasync
 call :setup_trueasync
 if not "!errorlevel!"=="0" exit /b 1
@@ -158,6 +163,9 @@ set "LANGUAGE_TEST=EnumMatchTest"
 goto language_test
 :string_test
 set "LANGUAGE_TEST=StringOffsetsTest"
+goto language_test
+:iteration_test
+set "LANGUAGE_TEST=IterationTest"
 goto language_test
 :strict_test
 set "LANGUAGE_TEST=StrictTypesTest"

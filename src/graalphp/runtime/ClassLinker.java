@@ -45,6 +45,7 @@ public final class ClassLinker {
                 throw failure("Non-backed enum " + definition.name() + " cannot implement BackedEnum");
             interfaces.add(type);
         }
+        IterationApi.validate(definition, parent, interfaces);
         var traits = new LinkedHashMap<String, RuntimeClass>();
         for (var use : definition.traits()) for (String name : use.names()) {
             var type = request.type(name);
@@ -106,7 +107,7 @@ public final class ClassLinker {
             if (changed.abstractMethod() && changed.finalMethod()) throw failure("An abstract trait method cannot be final");
             if (adaptation.alias() != null) {
                 var function = changed.function();
-                var aliasFunction = new Function(adaptation.alias(), function.parameters(), function.target(), function.file(), function.owner(), function.returnType(), function.builtin(), function.strictTypes());
+                var aliasFunction = new Function(adaptation.alias(), function.parameters(), function.target(), function.file(), function.owner(), function.returnType(), function.builtin(), function.strictTypes(), function.declaration());
                 changed = new Method(aliasFunction, changed.shared(), changed.visibility(), changed.abstractMethod(), changed.finalMethod());
                 if (aliases.putIfAbsent(key(adaptation.alias()), changed) != null) throw failure("Duplicate trait alias " + adaptation.alias());
             } else {

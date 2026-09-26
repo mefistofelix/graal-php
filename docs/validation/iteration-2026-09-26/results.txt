@@ -1,0 +1,66 @@
+LANG-01 resumable iteration and attribute metadata, 2026-09-26
+
+FINAL DIFFERENTIAL RESULTS
+PASS Windows JVM: 74/74 programs, 68 output comparisons and 6 semantic rejections.
+PASS Windows Native Image: 74/74 programs, 68 output comparisons and 6 semantic rejections.
+PASS Windows Native Image --interpreter: 74/74 programs, 68 output comparisons and 6 semantic rejections.
+PASS Linux JVM: 74/74 programs, 68 output comparisons and 6 semantic rejections.
+PASS Linux Native Image: 74/74 programs, 68 output comparisons and 6 semantic rejections.
+PASS Linux Native Image --interpreter: 74/74 programs, 68 output comparisons and 6 semantic rejections.
+TOTAL: 444 executions of the same 74 programs; 408 output comparisons and
+36 semantic rejections. Rejections require the relevant error category and
+forbidden paths not to execute; they do not claim byte-identical Zend diagnostics.
+
+Windows reference: PHP 8.6.0RC2 for synchronous cases and TrueAsync 0.10.0 /
+PHP 8.6.0-dev for asynchronous cases. Linux reference: pinned TrueAsync /
+PHP 8.6.0-dev for both synchronous and asynchronous cases; there is no separate
+stock Linux PHP reference in this campaign.
+
+REGRESSIONS
+PASS Windows verify: 91 integration scenarios, 53 semantic scenarios,
+256 ownership graphs / 1280 collector phases, 56 field-iteration ownership
+and ordering checks, 52 attribute metadata/source-range checks, and 82/82
+TrueAsync differential scenarios.
+PASS Linux verify: 85 integration scenarios, the same 53 semantic scenarios,
+256 graphs / 1280 phases, 56 field checks and 52 attribute checks. The six
+integration scenarios guarded by the Windows native DLL are not executed on Linux.
+PASS Windows Native Image: 82/82 TrueAsync and 50/50 network/TLS/WebSocket/
+cURL/SQLite assertions.
+PASS Linux Native Image: 82/82 TrueAsync and the same 50/50 network assertions.
+PASS examples/iteration.php on Windows JAR, Native Image and --interpreter;
+Linux JAR, Native Image and --interpreter; copied build/graalphp-linux-x64 also
+passes default and --interpreter. Output:
+0:parse
+1:execute
+2:execute
+
+PRODUCTS
+Windows build/graalphp.exe: 90873856 bytes
+SHA256 f60246011a38ce203581a19a1af6a1ddf0f80203c5a8bd1415ccd612bfd21b60
+Linux build/graalphp-linux-x64: 93850408 bytes
+SHA256 b57fe53978bc10ddf24988ecb93491397e2bf6705a3149527763a5f8196c5531
+Windows build/graalphp.jar: 779686 bytes
+SHA256 7f2a08aeadce2a5f81b263bc42089cdb55ea27227860309b16be10d35528e485
+Linux build/linux-workspace/build/graalphp.jar: 779685 bytes
+SHA256 e378d48c4446322c800965c419500ad9c91028f02b2d4a7ee8a827c8fe8e909b
+
+PARITY / LIMITS
+The Windows and Linux Native Images were built sequentially from matching
+maintained sources, tests, examples and root build inputs. The final Linux
+binary was copied to build/graalphp-linux-x64 and executed from the root.
+No performance campaign was run. CompilerIdleDelay, JIT/GC defaults and native
+dependency versions were not changed by this block.
+
+This block implements user Iterator/IteratorAggregate/Countable protocols,
+foreach over arrays/objects/user iterators, related iterator/count/object-var
+builtins, live field iteration, attribute metadata storage and tentative-return
+diagnostics including ReturnTypeWillChange. It does not implement all concrete
+SPL iterators, generators/Fiber, ArrayAccess, Reflection attributes, argument
+unpacking, full builtin typing or complete PHP lifetime semantics.
+
+The Native Image Windows build was accidentally started twice briefly because a
+foreground tool call timed out while its child continued; the earlier process
+exited before the retained final build completed. No performance result is
+derived from either build, and the final product/tests above refer to the
+successful retained build. Native Image builds for the final Windows/Linux
+products otherwise ran sequentially.

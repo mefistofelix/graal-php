@@ -1,0 +1,86 @@
+Target: graalphp
+PHP 8.6.0-dev (cli) (built: Sep 12 2026 13:16:10) (ZTS zig 0.16.0 TrueAsync ABI v0.26.0)
+Copyright © The PHP Group and Contributors
+Built by StaticPHP 3.0.0-alpha1
+Zend Engine v4.6.0-dev, Copyright © Zend by Perforce
+    with Zend OPcache v8.6.0-dev, Copyright ©, by Zend by Perforce
+PHP 8.6.0-dev (cli) (built: Sep 12 2026 13:16:10) (ZTS zig 0.16.0 TrueAsync ABI v0.26.0)
+Copyright © The PHP Group and Contributors
+Built by StaticPHP 3.0.0-alpha1
+Zend Engine v4.6.0-dev, Copyright © Zend by Perforce
+    with Zend OPcache v8.6.0-dev, Copyright ©, by Zend by Perforce
+PASS foreach-method-order oracle=0 target=0 mode=output
+PASS unused-key-not-called oracle=0 target=0 mode=output
+PASS repeat-loop-rewinds oracle=0 target=0 mode=output
+PASS break-does-not-advance oracle=0 target=0 mode=output
+PASS continue-advances oracle=0 target=0 mode=output
+PASS same-iterator-nested-loop oracle=0 target=0 mode=output
+PASS iterator-count-skips-current-and-key oracle=0 target=0 mode=output
+PASS iterator-array-uses-current-then-key oracle=0 target=0 mode=output
+PASS iterator-array-reindex-skips-key oracle=0 target=0 mode=output
+PASS iterator-apply-method-order oracle=0 target=0 mode=output
+PASS iterator-apply-counts-false-call oracle=0 target=0 mode=output
+PASS iterator-apply-callback-arguments oracle=0 target=0 mode=output
+PASS iterator-apply-named-arguments oracle=0 target=0 mode=output
+PASS iterator-apply-explicit-reference-argument oracle=0 target=0 mode=output
+PASS iterator-apply-private-callback-scope oracle=0 target=0 mode=output
+PASS iterator-apply-autoloads-callback-class oracle=0 target=0 mode=output
+PASS iterator-apply-invalid-callback-before-rewind oracle=0 target=0 mode=output
+PASS aggregate-chain oracle=0 target=0 mode=output
+PASS aggregate-fresh-iterator-per-loop oracle=0 target=0 mode=output
+PASS iterable-parameter-and-return oracle=0 target=0 mode=output
+PASS iterator-reference-forbidden-before-rewind oracle=0 target=0 mode=output
+PASS temporary-iterator-reference-forbidden oracle=0 target=0 mode=output
+PASS aggregate-reference-resolves-before-error oracle=0 target=0 mode=output
+PASS key-called-before-binding-value oracle=0 target=0 mode=output
+PASS iterator-key-can-be-an-array-or-object oracle=0 target=0 mode=output
+PASS array-conversion-rejects-non-array-key oracle=0 target=0 mode=output
+PASS countable-and-is-countable oracle=0 target=0 mode=output
+PASS countable-tentative-missing-return oracle=0 target=0 mode=output
+PASS countable-tentative-wrong-return oracle=0 target=0 mode=output
+PASS return-type-will-change-suppresses-only-return oracle=0 target=0 mode=output
+PASS tentative-notice-reported-once oracle=0 target=0 mode=output
+PASS return-type-attribute-namespaces-and-aliases oracle=0 target=0 mode=output
+PASS same-short-attribute-name-is-not-builtin oracle=0 target=0 mode=output
+PASS trait-attribute-survives-composition oracle=0 target=0 mode=output
+PASS unknown-attributes-remain-lazy oracle=0 target=0 mode=output
+PASS countable-return-conversion-is-internal-weak oracle=0 target=0 mode=output
+PASS countable-object-result-warning-location oracle=0 target=0 mode=output
+PASS count-recursive-and-repeated-noncyclic-array oracle=0 target=0 mode=output
+PASS count-recursion-warning-and-result oracle=0 target=0 mode=output
+PASS count-errors oracle=0 target=0 mode=output
+PASS nullable-scalar-builtin-deprecations oracle=0 target=0 mode=output
+PASS strict-iteration-builtin-scalars oracle=0 target=0 mode=output
+PASS array-inputs-and-result-copy-on-write oracle=0 target=0 mode=output
+PASS array-conversion-preserves-explicit-references oracle=0 target=0 mode=output
+PASS object-public-protected-private-visibility oracle=0 target=0 mode=output
+PASS object-live-mutation oracle=0 target=0 mode=output
+PASS object-dynamic-reinsert-appends oracle=0 target=0 mode=output
+PASS declared-reinsert-keeps-position oracle=0 target=0 mode=output
+PASS uninitialized-property-skipped-before-it-is-set oracle=0 target=0 mode=output
+PASS undefined-probe-does-not-reserve-property-order oracle=0 target=0 mode=output
+PASS object-by-reference-and-lingering-alias oracle=0 target=0 mode=output
+PASS temporary-array-reference-loop oracle=0 target=0 mode=output
+PASS temporary-object-reference-loop oracle=0 target=0 mode=output
+PASS get-object-vars-snapshot-and-mangled-keys oracle=0 target=0 mode=output
+PASS get-object-vars-preserves-explicit-references oracle=0 target=0 mode=output
+PASS closure-internals-are-not-object-properties oracle=0 target=0 mode=output
+PASS enum-properties-are-visible-but-not-referenceable oracle=0 target=0 mode=output
+PASS foreach-invalid-input-warning-keeps-binding oracle=0 target=0 mode=output
+PASS aggregate-invalid-result-is-exception oracle=0 target=0 mode=output
+PASS legacy-iterator-tentative-warning-order oracle=0 target=0 mode=output
+PASS truthy-valid-with-tentative-suppression oracle=0 target=0 mode=output
+PASS coerced-property-assignment-expression oracle=0 target=0 mode=output
+PASS async-every-iterator-method oracle=0 target=0 mode=output
+PASS async-aggregate-and-countable oracle=0 target=0 mode=output
+PASS async-callback-apply-and-shared-reference oracle=0 target=0 mode=output
+PASS async-cancellation-inside-current oracle=0 target=0 mode=output
+PASS iterator-exception-keeps-old-loop-binding oracle=0 target=0 mode=output
+PASS direct-traversable-rejected oracle=255 target=1 mode=rejection:traversable
+PASS abstract-traversable-is-allowed oracle=0 target=0 mode=output
+PASS concrete-traversable-child-rejected oracle=255 target=1 mode=rejection:traversable
+PASS both-iterator-protocols-rejected oracle=255 target=1 mode=rejection:both iterator and iteratoraggregate
+PASS required-parameter-still-incompatible oracle=255 target=1 mode=rejection:compatible
+PASS nonpublic-method-still-incompatible oracle=255 target=1 mode=rejection:compatible
+PASS static-method-still-incompatible oracle=255 target=1 mode=rejection:compatible
+Cases: 74; output comparisons: 68; semantic rejections: 6; failures: 0

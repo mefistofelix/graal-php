@@ -1,0 +1,289 @@
+build/generated/graalphp/truffle/PhpRootGen.java:6236: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+build/generated/graalphp/truffle/PhpRootGen.java:8099: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+Note: src/graalphp/truffle/PhpContext.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+2 warnings
+[100%]: build ok, spent 33.599s
+[100%]: build ok, spent 33.632s
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime (file:<workspace>/build/linux-workspace/build/deps/25.4.4.1.1/truffle-runtime-25.4.4.1.1.jar)
+WARNING: Please consider reporting this to the maintainers of class com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+PASS: 85 integration scenarios (Truffle, async, reload, threads, NFI, host)
+PASS: 53 semantic scenarios + storage/lifetime invariants
+PASS: 256 ownership graphs, 1280 collection phases, exactly-once resource release
+PASS: 56 field-iteration ownership and ordering checks
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime (file:<workspace>/build/linux-workspace/build/deps/25.4.4.1.1/truffle-runtime-25.4.4.1.1.jar)
+WARNING: Please consider reporting this to the maintainers of class com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+PASS: 52 attribute metadata and source-range checks
+build/generated/graalphp/truffle/PhpRootGen.java:6236: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+build/generated/graalphp/truffle/PhpRootGen.java:8099: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+Note: src/graalphp/truffle/PhpContext.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+2 warnings
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime (file:<workspace>/build/linux-workspace/build/deps/25.4.4.1.1/truffle-runtime-25.4.4.1.1.jar)
+WARNING: Please consider reporting this to the maintainers of class com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+PASS foreach-method-order oracle=0 target=0 mode=output
+PASS unused-key-not-called oracle=0 target=0 mode=output
+PASS repeat-loop-rewinds oracle=0 target=0 mode=output
+PASS break-does-not-advance oracle=0 target=0 mode=output
+PASS continue-advances oracle=0 target=0 mode=output
+PASS same-iterator-nested-loop oracle=0 target=0 mode=output
+PASS iterator-count-skips-current-and-key oracle=0 target=0 mode=output
+PASS iterator-array-uses-current-then-key oracle=0 target=0 mode=output
+PASS iterator-array-reindex-skips-key oracle=0 target=0 mode=output
+PASS iterator-apply-method-order oracle=0 target=0 mode=output
+PASS iterator-apply-counts-false-call oracle=0 target=0 mode=output
+PASS iterator-apply-callback-arguments oracle=0 target=0 mode=output
+PASS iterator-apply-named-arguments oracle=0 target=0 mode=output
+PASS iterator-apply-explicit-reference-argument oracle=0 target=0 mode=output
+PASS iterator-apply-private-callback-scope oracle=0 target=0 mode=output
+PASS iterator-apply-autoloads-callback-class oracle=0 target=0 mode=output
+PASS iterator-apply-invalid-callback-before-rewind oracle=0 target=0 mode=output
+PASS aggregate-chain oracle=0 target=0 mode=output
+PASS aggregate-fresh-iterator-per-loop oracle=0 target=0 mode=output
+PASS iterable-parameter-and-return oracle=0 target=0 mode=output
+PASS iterator-reference-forbidden-before-rewind oracle=0 target=0 mode=output
+PASS temporary-iterator-reference-forbidden oracle=0 target=0 mode=output
+PASS aggregate-reference-resolves-before-error oracle=0 target=0 mode=output
+PASS key-called-before-binding-value oracle=0 target=0 mode=output
+PASS iterator-key-can-be-an-array-or-object oracle=0 target=0 mode=output
+PASS array-conversion-rejects-non-array-key oracle=0 target=0 mode=output
+PASS countable-and-is-countable oracle=0 target=0 mode=output
+PASS countable-tentative-missing-return oracle=0 target=0 mode=output
+PASS countable-tentative-wrong-return oracle=0 target=0 mode=output
+PASS return-type-will-change-suppresses-only-return oracle=0 target=0 mode=output
+PASS tentative-notice-reported-once oracle=0 target=0 mode=output
+PASS return-type-attribute-namespaces-and-aliases oracle=0 target=0 mode=output
+PASS same-short-attribute-name-is-not-builtin oracle=0 target=0 mode=output
+PASS trait-attribute-survives-composition oracle=0 target=0 mode=output
+PASS unknown-attributes-remain-lazy oracle=0 target=0 mode=output
+PASS countable-return-conversion-is-internal-weak oracle=0 target=0 mode=output
+PASS countable-object-result-warning-location oracle=0 target=0 mode=output
+PASS count-recursive-and-repeated-noncyclic-array oracle=0 target=0 mode=output
+PASS count-recursion-warning-and-result oracle=0 target=0 mode=output
+PASS count-errors oracle=0 target=0 mode=output
+PASS nullable-scalar-builtin-deprecations oracle=0 target=0 mode=output
+PASS strict-iteration-builtin-scalars oracle=0 target=0 mode=output
+PASS array-inputs-and-result-copy-on-write oracle=0 target=0 mode=output
+PASS array-conversion-preserves-explicit-references oracle=0 target=0 mode=output
+PASS object-public-protected-private-visibility oracle=0 target=0 mode=output
+PASS object-live-mutation oracle=0 target=0 mode=output
+PASS object-dynamic-reinsert-appends oracle=0 target=0 mode=output
+PASS declared-reinsert-keeps-position oracle=0 target=0 mode=output
+PASS uninitialized-property-skipped-before-it-is-set oracle=0 target=0 mode=output
+PASS undefined-probe-does-not-reserve-property-order oracle=0 target=0 mode=output
+PASS object-by-reference-and-lingering-alias oracle=0 target=0 mode=output
+PASS temporary-array-reference-loop oracle=0 target=0 mode=output
+PASS temporary-object-reference-loop oracle=0 target=0 mode=output
+PASS get-object-vars-snapshot-and-mangled-keys oracle=0 target=0 mode=output
+PASS get-object-vars-preserves-explicit-references oracle=0 target=0 mode=output
+PASS closure-internals-are-not-object-properties oracle=0 target=0 mode=output
+PASS enum-properties-are-visible-but-not-referenceable oracle=0 target=0 mode=output
+PASS foreach-invalid-input-warning-keeps-binding oracle=0 target=0 mode=output
+PASS aggregate-invalid-result-is-exception oracle=0 target=0 mode=output
+PASS legacy-iterator-tentative-warning-order oracle=0 target=0 mode=output
+PASS truthy-valid-with-tentative-suppression oracle=0 target=0 mode=output
+PASS coerced-property-assignment-expression oracle=0 target=0 mode=output
+PASS async-every-iterator-method oracle=0 target=0 mode=output
+PASS async-aggregate-and-countable oracle=0 target=0 mode=output
+PASS async-callback-apply-and-shared-reference oracle=0 target=0 mode=output
+PASS async-cancellation-inside-current oracle=0 target=0 mode=output
+PASS iterator-exception-keeps-old-loop-binding oracle=0 target=0 mode=output
+PASS direct-traversable-rejected oracle=255 target=1 mode=rejection:traversable
+PASS abstract-traversable-is-allowed oracle=0 target=0 mode=output
+PASS concrete-traversable-child-rejected oracle=255 target=1 mode=rejection:traversable
+PASS both-iterator-protocols-rejected oracle=255 target=1 mode=rejection:both iterator and iteratoraggregate
+PASS required-parameter-still-incompatible oracle=255 target=1 mode=rejection:compatible
+PASS nonpublic-method-still-incompatible oracle=255 target=1 mode=rejection:compatible
+PASS static-method-still-incompatible oracle=255 target=1 mode=rejection:compatible
+Evidence: <workspace>/build/linux-workspace/build/iteration-15252512639029768180
+PASS: 74 iteration programs; 6 semantic rejections (diagnostic text not asserted identical)
+build/generated/graalphp/truffle/PhpRootGen.java:6236: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+build/generated/graalphp/truffle/PhpRootGen.java:8099: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+Note: src/graalphp/truffle/PhpContext.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+2 warnings
+PASS foreach-method-order oracle=0 target=0 mode=output
+PASS unused-key-not-called oracle=0 target=0 mode=output
+PASS repeat-loop-rewinds oracle=0 target=0 mode=output
+PASS break-does-not-advance oracle=0 target=0 mode=output
+PASS continue-advances oracle=0 target=0 mode=output
+PASS same-iterator-nested-loop oracle=0 target=0 mode=output
+PASS iterator-count-skips-current-and-key oracle=0 target=0 mode=output
+PASS iterator-array-uses-current-then-key oracle=0 target=0 mode=output
+PASS iterator-array-reindex-skips-key oracle=0 target=0 mode=output
+PASS iterator-apply-method-order oracle=0 target=0 mode=output
+PASS iterator-apply-counts-false-call oracle=0 target=0 mode=output
+PASS iterator-apply-callback-arguments oracle=0 target=0 mode=output
+PASS iterator-apply-named-arguments oracle=0 target=0 mode=output
+PASS iterator-apply-explicit-reference-argument oracle=0 target=0 mode=output
+PASS iterator-apply-private-callback-scope oracle=0 target=0 mode=output
+PASS iterator-apply-autoloads-callback-class oracle=0 target=0 mode=output
+PASS iterator-apply-invalid-callback-before-rewind oracle=0 target=0 mode=output
+PASS aggregate-chain oracle=0 target=0 mode=output
+PASS aggregate-fresh-iterator-per-loop oracle=0 target=0 mode=output
+PASS iterable-parameter-and-return oracle=0 target=0 mode=output
+PASS iterator-reference-forbidden-before-rewind oracle=0 target=0 mode=output
+PASS temporary-iterator-reference-forbidden oracle=0 target=0 mode=output
+PASS aggregate-reference-resolves-before-error oracle=0 target=0 mode=output
+PASS key-called-before-binding-value oracle=0 target=0 mode=output
+PASS iterator-key-can-be-an-array-or-object oracle=0 target=0 mode=output
+PASS array-conversion-rejects-non-array-key oracle=0 target=0 mode=output
+PASS countable-and-is-countable oracle=0 target=0 mode=output
+PASS countable-tentative-missing-return oracle=0 target=0 mode=output
+PASS countable-tentative-wrong-return oracle=0 target=0 mode=output
+PASS return-type-will-change-suppresses-only-return oracle=0 target=0 mode=output
+PASS tentative-notice-reported-once oracle=0 target=0 mode=output
+PASS return-type-attribute-namespaces-and-aliases oracle=0 target=0 mode=output
+PASS same-short-attribute-name-is-not-builtin oracle=0 target=0 mode=output
+PASS trait-attribute-survives-composition oracle=0 target=0 mode=output
+PASS unknown-attributes-remain-lazy oracle=0 target=0 mode=output
+PASS countable-return-conversion-is-internal-weak oracle=0 target=0 mode=output
+PASS countable-object-result-warning-location oracle=0 target=0 mode=output
+PASS count-recursive-and-repeated-noncyclic-array oracle=0 target=0 mode=output
+PASS count-recursion-warning-and-result oracle=0 target=0 mode=output
+PASS count-errors oracle=0 target=0 mode=output
+PASS nullable-scalar-builtin-deprecations oracle=0 target=0 mode=output
+PASS strict-iteration-builtin-scalars oracle=0 target=0 mode=output
+PASS array-inputs-and-result-copy-on-write oracle=0 target=0 mode=output
+PASS array-conversion-preserves-explicit-references oracle=0 target=0 mode=output
+PASS object-public-protected-private-visibility oracle=0 target=0 mode=output
+PASS object-live-mutation oracle=0 target=0 mode=output
+PASS object-dynamic-reinsert-appends oracle=0 target=0 mode=output
+PASS declared-reinsert-keeps-position oracle=0 target=0 mode=output
+PASS uninitialized-property-skipped-before-it-is-set oracle=0 target=0 mode=output
+PASS undefined-probe-does-not-reserve-property-order oracle=0 target=0 mode=output
+PASS object-by-reference-and-lingering-alias oracle=0 target=0 mode=output
+PASS temporary-array-reference-loop oracle=0 target=0 mode=output
+PASS temporary-object-reference-loop oracle=0 target=0 mode=output
+PASS get-object-vars-snapshot-and-mangled-keys oracle=0 target=0 mode=output
+PASS get-object-vars-preserves-explicit-references oracle=0 target=0 mode=output
+PASS closure-internals-are-not-object-properties oracle=0 target=0 mode=output
+PASS enum-properties-are-visible-but-not-referenceable oracle=0 target=0 mode=output
+PASS foreach-invalid-input-warning-keeps-binding oracle=0 target=0 mode=output
+PASS aggregate-invalid-result-is-exception oracle=0 target=0 mode=output
+PASS legacy-iterator-tentative-warning-order oracle=0 target=0 mode=output
+PASS truthy-valid-with-tentative-suppression oracle=0 target=0 mode=output
+PASS coerced-property-assignment-expression oracle=0 target=0 mode=output
+PASS async-every-iterator-method oracle=0 target=0 mode=output
+PASS async-aggregate-and-countable oracle=0 target=0 mode=output
+PASS async-callback-apply-and-shared-reference oracle=0 target=0 mode=output
+PASS async-cancellation-inside-current oracle=0 target=0 mode=output
+PASS iterator-exception-keeps-old-loop-binding oracle=0 target=0 mode=output
+PASS direct-traversable-rejected oracle=255 target=1 mode=rejection:traversable
+PASS abstract-traversable-is-allowed oracle=0 target=0 mode=output
+PASS concrete-traversable-child-rejected oracle=255 target=1 mode=rejection:traversable
+PASS both-iterator-protocols-rejected oracle=255 target=1 mode=rejection:both iterator and iteratoraggregate
+PASS required-parameter-still-incompatible oracle=255 target=1 mode=rejection:compatible
+PASS nonpublic-method-still-incompatible oracle=255 target=1 mode=rejection:compatible
+PASS static-method-still-incompatible oracle=255 target=1 mode=rejection:compatible
+Evidence: <workspace>/build/linux-workspace/build/iteration-3292473259907088316
+PASS: 74 iteration programs; 6 semantic rejections (diagnostic text not asserted identical)
+build/generated/graalphp/truffle/PhpRootGen.java:6236: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+build/generated/graalphp/truffle/PhpRootGen.java:8099: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+Note: src/graalphp/truffle/PhpContext.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+2 warnings
+PASS foreach-method-order oracle=0 target=0 mode=output
+PASS unused-key-not-called oracle=0 target=0 mode=output
+PASS repeat-loop-rewinds oracle=0 target=0 mode=output
+PASS break-does-not-advance oracle=0 target=0 mode=output
+PASS continue-advances oracle=0 target=0 mode=output
+PASS same-iterator-nested-loop oracle=0 target=0 mode=output
+PASS iterator-count-skips-current-and-key oracle=0 target=0 mode=output
+PASS iterator-array-uses-current-then-key oracle=0 target=0 mode=output
+PASS iterator-array-reindex-skips-key oracle=0 target=0 mode=output
+PASS iterator-apply-method-order oracle=0 target=0 mode=output
+PASS iterator-apply-counts-false-call oracle=0 target=0 mode=output
+PASS iterator-apply-callback-arguments oracle=0 target=0 mode=output
+PASS iterator-apply-named-arguments oracle=0 target=0 mode=output
+PASS iterator-apply-explicit-reference-argument oracle=0 target=0 mode=output
+PASS iterator-apply-private-callback-scope oracle=0 target=0 mode=output
+PASS iterator-apply-autoloads-callback-class oracle=0 target=0 mode=output
+PASS iterator-apply-invalid-callback-before-rewind oracle=0 target=0 mode=output
+PASS aggregate-chain oracle=0 target=0 mode=output
+PASS aggregate-fresh-iterator-per-loop oracle=0 target=0 mode=output
+PASS iterable-parameter-and-return oracle=0 target=0 mode=output
+PASS iterator-reference-forbidden-before-rewind oracle=0 target=0 mode=output
+PASS temporary-iterator-reference-forbidden oracle=0 target=0 mode=output
+PASS aggregate-reference-resolves-before-error oracle=0 target=0 mode=output
+PASS key-called-before-binding-value oracle=0 target=0 mode=output
+PASS iterator-key-can-be-an-array-or-object oracle=0 target=0 mode=output
+PASS array-conversion-rejects-non-array-key oracle=0 target=0 mode=output
+PASS countable-and-is-countable oracle=0 target=0 mode=output
+PASS countable-tentative-missing-return oracle=0 target=0 mode=output
+PASS countable-tentative-wrong-return oracle=0 target=0 mode=output
+PASS return-type-will-change-suppresses-only-return oracle=0 target=0 mode=output
+PASS tentative-notice-reported-once oracle=0 target=0 mode=output
+PASS return-type-attribute-namespaces-and-aliases oracle=0 target=0 mode=output
+PASS same-short-attribute-name-is-not-builtin oracle=0 target=0 mode=output
+PASS trait-attribute-survives-composition oracle=0 target=0 mode=output
+PASS unknown-attributes-remain-lazy oracle=0 target=0 mode=output
+PASS countable-return-conversion-is-internal-weak oracle=0 target=0 mode=output
+PASS countable-object-result-warning-location oracle=0 target=0 mode=output
+PASS count-recursive-and-repeated-noncyclic-array oracle=0 target=0 mode=output
+PASS count-recursion-warning-and-result oracle=0 target=0 mode=output
+PASS count-errors oracle=0 target=0 mode=output
+PASS nullable-scalar-builtin-deprecations oracle=0 target=0 mode=output
+PASS strict-iteration-builtin-scalars oracle=0 target=0 mode=output
+PASS array-inputs-and-result-copy-on-write oracle=0 target=0 mode=output
+PASS array-conversion-preserves-explicit-references oracle=0 target=0 mode=output
+PASS object-public-protected-private-visibility oracle=0 target=0 mode=output
+PASS object-live-mutation oracle=0 target=0 mode=output
+PASS object-dynamic-reinsert-appends oracle=0 target=0 mode=output
+PASS declared-reinsert-keeps-position oracle=0 target=0 mode=output
+PASS uninitialized-property-skipped-before-it-is-set oracle=0 target=0 mode=output
+PASS undefined-probe-does-not-reserve-property-order oracle=0 target=0 mode=output
+PASS object-by-reference-and-lingering-alias oracle=0 target=0 mode=output
+PASS temporary-array-reference-loop oracle=0 target=0 mode=output
+PASS temporary-object-reference-loop oracle=0 target=0 mode=output
+PASS get-object-vars-snapshot-and-mangled-keys oracle=0 target=0 mode=output
+PASS get-object-vars-preserves-explicit-references oracle=0 target=0 mode=output
+PASS closure-internals-are-not-object-properties oracle=0 target=0 mode=output
+PASS enum-properties-are-visible-but-not-referenceable oracle=0 target=0 mode=output
+PASS foreach-invalid-input-warning-keeps-binding oracle=0 target=0 mode=output
+PASS aggregate-invalid-result-is-exception oracle=0 target=0 mode=output
+PASS legacy-iterator-tentative-warning-order oracle=0 target=0 mode=output
+PASS truthy-valid-with-tentative-suppression oracle=0 target=0 mode=output
+PASS coerced-property-assignment-expression oracle=0 target=0 mode=output
+PASS async-every-iterator-method oracle=0 target=0 mode=output
+PASS async-aggregate-and-countable oracle=0 target=0 mode=output
+PASS async-callback-apply-and-shared-reference oracle=0 target=0 mode=output
+PASS async-cancellation-inside-current oracle=0 target=0 mode=output
+PASS iterator-exception-keeps-old-loop-binding oracle=0 target=0 mode=output
+PASS direct-traversable-rejected oracle=255 target=1 mode=rejection:traversable
+PASS abstract-traversable-is-allowed oracle=0 target=0 mode=output
+PASS concrete-traversable-child-rejected oracle=255 target=1 mode=rejection:traversable
+PASS both-iterator-protocols-rejected oracle=255 target=1 mode=rejection:both iterator and iteratoraggregate
+PASS required-parameter-still-incompatible oracle=255 target=1 mode=rejection:compatible
+PASS nonpublic-method-still-incompatible oracle=255 target=1 mode=rejection:compatible
+PASS static-method-still-incompatible oracle=255 target=1 mode=rejection:compatible
+Evidence: <workspace>/build/linux-workspace/build/iteration-7299737498690646274
+PASS: 74 iteration programs; 6 semantic rejections (diagnostic text not asserted identical)
+0:parse
+1:execute
+2:execute
+0:parse
+1:execute
+2:execute

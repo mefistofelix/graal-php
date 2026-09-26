@@ -100,6 +100,7 @@ public final class IntegrationTest {
         autoloadIsolationAndReload();
         classContractsReload();
         enumAndTypingReload();
+        iteratorReload();
         nativeCall();
         if (Files.exists(Path.of("build/graalphp-native.dll"))) nativeBundle();
         readFile();
@@ -328,6 +329,59 @@ public final class IntegrationTest {
                 equal("enum singleton cache belongs to request " + request, true,
                         context.eval("php", "enum Fresh{case A;}return Fresh::A===Fresh::cases()[0];").asBoolean());
             }
+        }
+    }
+    private static void iteratorReload() throws Exception {
+        Path root = Files.createTempDirectory("graalphp-iterator-reload-").toAbsolutePath();
+        Path main = root.resolve("main.php");
+        Path definitions = root.resolve("definitions.php");
+        String template = """
+            <?php
+            function version() { return '%s'; }
+            class Values implements Iterator {
+                public $position = 0;
+                public function rewind(): void { $this->position = 0; }
+                public function valid(): bool { return $this->position < 1; }
+                public function current(): mixed { host_call('gate'); Async\\delay(1); return '%s'; }
+                public function key(): mixed { return 'value'; }
+                public function next(): void { $this->position++; }
+            }
+            class Collection implements IteratorAggregate, Countable {
+                public function getIterator(): Traversable { Async\\delay(1); return new Values; }
+                public function count(): int { Async\\delay(1); return %d; }
+            }
+            """;
+        Files.writeString(definitions, template.formatted("old", "old", 1));
+        Files.writeString(main, "<?php require 'definitions.php'; $values = new Collection; foreach ($values as $key => $value) echo $key, ':', $value; echo ':', count($values);");
+        var output = new ByteArrayOutputStream();
+        try (var context = Context.newBuilder("php").allowAllAccess(true).out(output)
+                .environment("GRAALPHP_ROOT", root.toString()).environment("GRAALPHP_WATCH", "1").build()) {
+            var entered = new CountDownLatch(1);
+            var release = new CountDownLatch(1);
+            context.getPolyglotBindings().putMember("gate", (ProxyExecutable) values -> {
+                entered.countDown();
+                try { if (!release.await(10, TimeUnit.SECONDS)) throw new AssertionError("Iterator gate timeout"); }
+                catch (InterruptedException error) { Thread.currentThread().interrupt(); throw new AssertionError(error); }
+                return null;
+            });
+            var source = Source.newBuilder("php", main.toFile()).build();
+            var running = CompletableFuture.runAsync(() -> context.eval(source));
+            try {
+                if (!entered.await(10, TimeUnit.SECONDS)) throw new AssertionError("Iterator request did not enter current()");
+                Files.writeString(definitions, template.formatted("new", "new", 2));
+                String version = "";
+                long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
+                while (!version.equals("new") && System.nanoTime() < deadline) {
+                    version = context.eval("php", "require 'definitions.php'; return version();").asString();
+                    if (!version.equals("new")) Thread.sleep(20);
+                }
+                equal("iterator new generation published", "new", version);
+            } finally { release.countDown(); }
+            running.get(10, TimeUnit.SECONDS);
+            equal("active iterator pins methods, data and Countable contract", "value:old:1", output.toString());
+            output.reset();
+            context.eval(source);
+            equal("new request uses new iterator and Countable implementations", "value:new:2", output.toString());
         }
     }
     private static void includesAndReload() throws Exception {

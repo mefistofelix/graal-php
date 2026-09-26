@@ -358,17 +358,19 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
     }
     @Operation @ConstantOperand(type = boolean.class, name = "reference")
     public static final class OpenCursor {
-        @Specialization static Cursor run(VirtualFrame frame, boolean reference, Object source) { return open(activation(frame), reference, source); }
-        @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
-        static Cursor open(Activation activation, boolean reference, Object source) {
-            var cursor = new Cursor(source, reference); activation.resources.add(cursor); return cursor;
+        @Specialization static IterationApi.State run(VirtualFrame frame, boolean reference, Object source,
+                @com.oracle.truffle.api.dsl.Bind BytecodeNode bytecode, @com.oracle.truffle.api.dsl.Bind("$bytecodeIndex") int bci) {
+            return IterationApi.open(activation(frame).at(bytecode, bci), source, reference);
         }
     }
     @Operation public static final class Next {
-        @Specialization static boolean run(Cursor cursor, PhpValues.Location value, Object key) { return cursor.next(value, (PhpValues.Location) key); }
+        @Specialization static Object run(VirtualFrame frame, IterationApi.State cursor, PhpValues.Location value, Object key,
+                @Cached IndirectCallNode call) {
+            return IterationApi.next(activation(frame), cursor, value, (PhpValues.Location) key, call);
+        }
     }
     @Operation public static final class CloseCursor {
         @Specialization @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
-        static void run(Cursor cursor) { cursor.close(); }
+        static void run(IterationApi.State cursor) { IterationApi.close(cursor); }
     }
 }

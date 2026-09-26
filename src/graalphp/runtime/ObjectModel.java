@@ -16,7 +16,7 @@ public final class ObjectModel {
     public record Method(Function function, boolean shared, String visibility, boolean abstractMethod,
                          boolean finalMethod) {
         public Method inClass(String owner) {
-            var rebound = new Function(function.name(), function.parameters(), function.target(), function.file(), owner, function.returnType(), function.builtin(), function.strictTypes());
+            var rebound = new Function(function.name(), function.parameters(), function.target(), function.file(), owner, function.returnType(), function.builtin(), function.strictTypes(), function.declaration());
             return new Method(rebound, shared, visibility, abstractMethod, finalMethod);
         }
     }
@@ -24,7 +24,7 @@ public final class ObjectModel {
                              Map<String, Method> methods, Ir.TypeKind kind, boolean abstractType,
                              boolean finalType, List<String> interfaces, List<Ir.TraitUse> traits,
                              List<Ir.ClassConstantDeclaration> constants, String backingType,
-                             List<Ir.EnumCase> cases) implements com.oracle.truffle.api.interop.TruffleObject {
+                             List<Ir.EnumCase> cases, List<Ir.Attribute> attributes) implements com.oracle.truffle.api.interop.TruffleObject {
         public List<String> dependencies() {
             var dependencies = new java.util.ArrayList<String>();
             if (parent != null) dependencies.add(parent);
@@ -283,7 +283,7 @@ public final class ObjectModel {
     @TruffleBoundary
     public static Object closure(Activation caller, Function function, List<Ir.Capture> captures, boolean arrow) {
         if (function.owner() != null && caller.function.owner() != null && !function.owner().equals(caller.function.owner()))
-            function = new Function(function.name(), function.parameters(), function.target(), function.file(), caller.function.owner(), function.returnType(), function.builtin(), function.strictTypes());
+            function = new Function(function.name(), function.parameters(), function.target(), function.file(), caller.function.owner(), function.returnType(), function.builtin(), function.strictTypes(), function.declaration());
         var object = new PhpValues.PhpObject(caller.request.heap, new ClosureData(function, captures));
         Object owned = caller.track(PhpValues.own(object));
         if (arrow) {
@@ -467,6 +467,8 @@ public final class ObjectModel {
             case "PHP_INT_MAX" -> Long.MAX_VALUE;
             case "PHP_INT_MIN" -> Long.MIN_VALUE;
             case "PHP_INT_SIZE" -> 8L;
+            case "COUNT_NORMAL" -> 0L;
+            case "COUNT_RECURSIVE" -> 1L;
             case "PHP_EOL" -> System.lineSeparator();
             case "DIRECTORY_SEPARATOR" -> java.io.File.separator;
             default -> throw new PhpError("Undefined constant " + name);

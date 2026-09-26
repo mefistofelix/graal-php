@@ -42,7 +42,7 @@ public final class PhpCompiler {
         var functions = new HashMap<String, Execution.Function>();
         for (var function : ir.functions()) {
             String key = function.name().toLowerCase(java.util.Locale.ROOT);
-            var compiled = function(language, source, path, function.name(), function.parameters(), function.body(), false, null, function.returnType(), ir.strictTypes());
+            var compiled = function(language, source, path, function.name(), function.parameters(), function.body(), false, null, function.returnType(), ir.strictTypes()).annotated(source, function, false);
             if (functions.putIfAbsent(key, compiled) != null) throw new PhpError("Cannot redeclare " + key);
         }
         var classes = new java.util.LinkedHashMap<String, graalphp.runtime.ObjectModel.Definition>();
@@ -73,7 +73,8 @@ public final class PhpCompiler {
         for (var method : declaration.methods()) {
             var value = method.function();
             var compiled = function(language, source, path, value.name(), value.parameters(), value.body(),
-                    false, declaration.name(), value.returnType(), strictTypes, declaration.kind() == Ir.TypeKind.TRAIT ? declaration.name() : null);
+                    false, declaration.name(), value.returnType(), strictTypes, declaration.kind() == Ir.TypeKind.TRAIT ? declaration.name() : null)
+                    .annotated(source, value, source.isInternal() && graalphp.runtime.IterationApi.tentativeType(declaration.name()));
             String key = value.name().toLowerCase(java.util.Locale.ROOT);
             if (methods.putIfAbsent(key, new graalphp.runtime.ObjectModel.Method(compiled, method.shared(), method.visibility(), method.abstractMethod(), method.finalMethod())) != null) {
                 throw new PhpError("Cannot redeclare method " + declaration.name() + "::" + value.name());
@@ -85,7 +86,7 @@ public final class PhpCompiler {
             interfaces.add("UnitEnum");
             if (declaration.backingType() != null) interfaces.add("BackedEnum");
             for (var enumCase : declaration.cases()) constants.add(new Ir.ClassConstantDeclaration(enumCase.name(),
-                    new Ir.EnumCaseValue(enumCase.name()), "public", false, null));
+                    new Ir.EnumCaseValue(enumCase.name()), "public", false, null, enumCase.attributes()));
             for (var generated : graalphp.runtime.EnumApi.generatedMethods().methods()) {
                 var value = generated.function();
                 String key = value.name().toLowerCase(java.util.Locale.ROOT);
@@ -101,7 +102,7 @@ public final class PhpCompiler {
         return new graalphp.runtime.ObjectModel.Definition(declaration.name(), declaration.parent(),
                 declaration.properties(), java.util.Collections.unmodifiableMap(methods), declaration.kind(), declaration.abstractType(),
                 declaration.finalType() || declaration.kind() == Ir.TypeKind.ENUM, List.copyOf(interfaces), declaration.traits(),
-                List.copyOf(constants), declaration.backingType(), declaration.cases());
+                List.copyOf(constants), declaration.backingType(), declaration.cases(), declaration.attributes());
     }
     private static Execution.Function function(PhpLanguage language, Source source, Path path, String name,
             List<Ir.Parameter> parameters, List<Ir.Statement> body, boolean main, String owner, String returnType, boolean strictTypes) {
@@ -232,13 +233,16 @@ public final class PhpCompiler {
         var b = builder;
         b.beginBlock(); var cursor = b.createLocal();
         b.beginStoreLocal(cursor); b.beginOpenCursor(loop.reference());
-        if (loop.reference()) location(loop.source()); else expression(loop.source());
+        if (loop.reference() && isLocation(loop.source())) location(loop.source()); else expression(loop.source());
         b.endOpenCursor(); b.endStoreLocal();
         b.beginTryFinally(() -> { b.beginCloseCursor(); b.emitLoadLocal(cursor); b.endCloseCursor(); });
         b.beginBlock(); var exit = b.createLabel();
-        b.beginWhile(); b.beginNext(); b.emitLoadLocal(cursor); b.emitVariable(loop.value());
-        if (loop.key() == null) b.emitLoadNull(); else b.emitVariable(loop.key());
-        b.endNext();
+        b.beginWhile();
+        suspended(() -> {
+            b.beginNext(); b.emitLoadLocal(cursor); b.emitVariable(loop.value());
+            if (loop.key() == null) b.emitLoadNull(); else b.emitVariable(loop.key());
+            b.endNext();
+        });
         b.beginBlock(); var next = b.createLabel(); loops.push(new Loop(exit, next));
         checkpoint(); statement(loop.body()); b.emitLabel(next); loops.pop(); b.endBlock();
         b.endWhile(); b.emitLabel(exit); b.endBlock(); b.endTryFinally(); b.endBlock();
@@ -323,7 +327,7 @@ public final class PhpCompiler {
             case Ir.DynamicConstruct construct -> construct(construct.type(), construct.arguments());
             case Ir.Closure closure -> {
                 var value = closure.function();
-                var compiled = function(language, source, path, value.name(), value.parameters(), value.body(), false, owner, value.returnType(), strictTypes, traitName);
+                var compiled = function(language, source, path, value.name(), value.parameters(), value.body(), false, owner, value.returnType(), strictTypes, traitName).annotated(source, value, false);
                 b.emitCreateClosure(new graalphp.runtime.ObjectModel.ClosureTemplate(compiled, closure.captures(), closure.arrow()));
             }
             case Ir.ArrayLiteral array -> {

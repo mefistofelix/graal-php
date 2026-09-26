@@ -28,6 +28,7 @@ build.bat class-test
 build.bat enum-test
 build.bat string-test
 build.bat strict-test
+build.bat iteration-test
 build.bat ffi-fatal-test
 build.bat native
 build.bat network-test
@@ -37,6 +38,7 @@ build\graalphp.exe examples\language.php
 build\graalphp.exe examples\autoload.php
 build\graalphp.exe examples\class-contracts.php
 build\graalphp.exe examples\enums.php
+build\graalphp.exe examples\iteration.php
 build\graalphp.exe examples\trueasync.php
 build\graalphp.exe examples\async-composition.php
 build\graalphp.exe examples\native-callback.php
@@ -63,6 +65,9 @@ compresi i rifiuti semantici; `class-test native` ricostruisce e verifica la CLI
 38 programmi; la variante `native` ricostruisce e verifica il prodotto e
 l'argomento ulteriore `--interpreter` disabilita il JIT guest.
 [Contratti enum e valori](docs/language-values.md).
+`iteration-test` confronta 74 programmi su Iterator/IteratorAggregate/Countable,
+foreach, builtin correlati e metadati degli attributi; la variante `native`
+verifica il prodotto. [Contratti di iterazione](docs/iteration.md).
 `network-test` esegue il percorso WebSocket → HTTPS/curl-impersonate → SQLite
 con peer di rete indipendenti; `network-test native` rigenera e verifica
 l'eseguibile. Vedere [network-integration.md](docs/network-integration.md).
@@ -91,6 +96,7 @@ bash build.sh
 bash build.sh verify
 bash build.sh native
 bash build.sh trueasync native
+bash build.sh iteration-test
 bash build.sh network-test native
 build/graalphp examples/trueasync.php
 ```
@@ -138,7 +144,11 @@ sospendibile, offset byte-oriented delle stringhe e strict_types per sorgente.
 I controlli degli argomenti usano il file chiamante, quelli dei ritorni il file
 della funzione; il catalogo completo dei builtin non è ancora centralizzato.
 Vedere [contratti e limiti](docs/language-values.md) e
-[l'esempio enum/COW](examples/enums.php).
+[l'esempio enum/COW](examples/enums.php). Sono inoltre implementati foreach
+sospendibile su Iterator/IteratorAggregate, Countable, i builtin di iterazione
+coperti e i metadati `#[...]` necessari a ReturnTypeWillChange; Reflection
+completa, generatori/Fiber e unpacking restano aperti. Vedere
+[iterazione](docs/iteration.md) e [l'esempio](examples/iteration.php).
 
 L'API asincrona pubblica usa il namespace upstream:
 

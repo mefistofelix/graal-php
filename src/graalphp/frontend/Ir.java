@@ -8,22 +8,39 @@ public final class Ir {
     private Ir() {}
     public record Unit(Source source, List<Statement> statements, List<Function> functions,
                        List<ClassDeclaration> classes, boolean strictTypes) {}
+    public record Attribute(String name, List<Expression> arguments, int start, int length) {}
     public record Function(String name, List<Parameter> parameters, List<Statement> body, int start, int length,
-                           String returnType) {}
-    public record Parameter(String name, boolean reference, String type, Expression defaultValue, boolean variadic) {}
+                           String returnType, List<Attribute> attributes) {
+        public Function(String name, List<Parameter> parameters, List<Statement> body, int start, int length, String returnType) {
+            this(name, parameters, body, start, length, returnType, List.of());
+        }
+    }
+    public record Parameter(String name, boolean reference, String type, Expression defaultValue, boolean variadic, List<Attribute> attributes) {
+        public Parameter(String name, boolean reference, String type, Expression defaultValue, boolean variadic) {
+            this(name, reference, type, defaultValue, variadic, List.of());
+        }
+    }
     public enum TypeKind { CLASS, INTERFACE, TRAIT, ENUM }
     public record ClassDeclaration(String name, String parent, List<PropertyDeclaration> properties,
                                    List<MethodDeclaration> methods, TypeKind kind, boolean abstractType,
                                    boolean finalType, List<String> interfaces, List<TraitUse> traits,
                                    List<ClassConstantDeclaration> constants, String backingType,
-                                   List<EnumCase> cases) {}
-    public record EnumCase(String name, Expression value) {}
+                                   List<EnumCase> cases, List<Attribute> attributes) {}
+    public record EnumCase(String name, Expression value, List<Attribute> attributes) {}
     public record TraitUse(List<String> names, List<TraitAdaptation> adaptations) {}
     public record TraitAdaptation(String trait, String method, List<String> excluded, String alias,
                                   String visibility, boolean finalMethod) {}
     public record ClassConstantDeclaration(String name, Expression value, String visibility,
-                                           boolean finalConstant, String type) {}
-    public record PropertyDeclaration(String name, Expression value, boolean shared, String visibility, String type) {}
+                                           boolean finalConstant, String type, List<Attribute> attributes) {
+        public ClassConstantDeclaration(String name, Expression value, String visibility, boolean finalConstant, String type) {
+            this(name, value, visibility, finalConstant, type, List.of());
+        }
+    }
+    public record PropertyDeclaration(String name, Expression value, boolean shared, String visibility, String type, List<Attribute> attributes) {
+        public PropertyDeclaration(String name, Expression value, boolean shared, String visibility, String type) {
+            this(name, value, shared, visibility, type, List.of());
+        }
+    }
     public record MethodDeclaration(Function function, boolean shared, String visibility,
                                     boolean abstractMethod, boolean finalMethod) {}
     public record Capture(String name, boolean reference) {}

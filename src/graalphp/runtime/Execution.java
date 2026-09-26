@@ -15,8 +15,18 @@ import java.util.Set;
 
 public final class Execution {
     private Execution() {}
+    public record Declaration(com.oracle.truffle.api.source.SourceSection section, List<Ir.Attribute> attributes, boolean tentativeReturn) {
+        public boolean hasAttribute(String name) { return attributes.stream().anyMatch(attribute -> attribute.name().equalsIgnoreCase(name)); }
+    }
     public record Function(String name, List<Ir.Parameter> parameters, CallTarget target, Path file,
-                           String owner, String returnType, boolean builtin, boolean strictTypes) {
+                           String owner, String returnType, boolean builtin, boolean strictTypes, Declaration declaration) {
+        public Function(String name, List<Ir.Parameter> parameters, CallTarget target, Path file, String owner, String returnType, boolean builtin, boolean strictTypes) {
+            this(name, parameters, target, file, owner, returnType, builtin, strictTypes, null);
+        }
+        public Function annotated(com.oracle.truffle.api.source.Source source, Ir.Function syntax, boolean tentativeReturn) {
+            var declaration = new Declaration(source.createSection(syntax.start(), syntax.length()), syntax.attributes(), tentativeReturn);
+            return new Function(name, parameters, target, file, owner, returnType, builtin, strictTypes, declaration);
+        }
         public Function(String name, List<Ir.Parameter> parameters, CallTarget target, Path file, String owner, String returnType) {
             this(name, parameters, target, file, owner, returnType, false, false);
         }
@@ -74,6 +84,7 @@ public final class Execution {
         public final ClassLoading autoload = new ClassLoading();
         public long errorReporting = 30719L;
         public Diagnostics.LastError lastError;
+        public final Set<String> declarationWarnings = new HashSet<>();
         public volatile PhpError fatalFailure;
         public final java.io.ByteArrayOutputStream output = new java.io.ByteArrayOutputStream();
         public final List<AutoCloseable> resources = new ArrayList<>();
@@ -331,8 +342,10 @@ public final class Execution {
             } else {
                 if (position == keys.size()) return false;
                 key = keys.get(position++);
-                var read = PhpValues.element(snapshot, key);
-                try { value.set(PhpValues.unwrap(read)); } finally { PhpValues.drop(read); }
+                if (value != null) {
+                    var read = PhpValues.element(snapshot, key);
+                    try { value.set(PhpValues.unwrap(read)); } finally { PhpValues.drop(read); }
+                }
             }
             if (keyLocation != null) keyLocation.set(key);
             return true;

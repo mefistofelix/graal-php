@@ -55,6 +55,13 @@ public final class PhpValues {
         return own(slot.read());
     }
 
+    @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+    public static void copyElement(Object array, Object key, Location destination) {
+        var slot = ((PhpArray) unwrap(array)).entries.get(normalizeKey(key));
+        if (slot == null) throw new PhpError("Error", "Undefined array key");
+        destination.copySlot(slot);
+    }
+
     public record Statistics(long storageCopies, long liveArrays, long liveCells, int cycleCandidates) {}
 
     public static Statistics statistics(Heap heap) {
@@ -170,8 +177,9 @@ public final class PhpValues {
             // Preserve the RHS before resolving a destination inside that same array.
             retain(value);
             try {
-                resolve(true).set(value, origin);
-                return value;
+                var slot = resolve(true);
+                slot.set(value, origin);
+                return slot.read();
             } finally {
                 release(value);
             }
@@ -189,6 +197,16 @@ public final class PhpValues {
         }
 
         @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+        public void copyValueFrom(Location other) {
+            var slot = other.resolve(false);
+            if (slot == null) set(null); else copySlot(slot);
+        }
+        private void copySlot(Slot slot) {
+            if (slot.content instanceof Cell cell && cell.owners > 1) {
+                try (var reference = new Reference(cell)) { bind(reference); }
+            } else set(slot.read());
+        }
+
         public void bind(Reference reference) {
             if (stringOffset()) throw new PhpError("Error", "Cannot create references to/from string offsets");
             resolve(true).bind(reference.cell());
@@ -209,6 +227,7 @@ public final class PhpValues {
             if (readonly) throw new PhpError("Error", "Cannot unset readonly property");
             if (parent == null) {
                 if (local.readonlyLabel != null) throw new PhpError("Error", "Cannot unset readonly property " + local.readonlyLabel);
+                if (local.container != null && !local.declared) local.container.fields.remove(local.fieldName, local);
                 local.clear();
                 return;
             }
@@ -249,8 +268,16 @@ public final class PhpValues {
         private Slot resolve(boolean write) {
             if (write && readonly) throw new PhpError("Error", "Cannot modify readonly property");
             if (parent == null) {
+                Slot slot = local;
                 if (write) local.checkWritable();
-                return write || local.defined ? local : null;
+                if (local.container != null) {
+                    var current = local.container.fields.get(local.fieldName);
+                    if (current != null) slot = current;
+                    else if (write) local.container.attach(local.fieldName, local);
+                    else return null;
+                }
+                if (write) slot.checkWritable();
+                return write || slot.defined ? slot : null;
             }
             PhpArray array;
             if (write) {
@@ -370,6 +397,7 @@ public final class PhpValues {
     public static final class PhpObject extends HeapNode implements TruffleObject {
         public final Object descriptor;
         private final LinkedHashMap<String, Slot> fields = new LinkedHashMap<>();
+        private final ArrayList<FieldBucket> fieldOrder = new ArrayList<>();
         private String sealedType;
 
         public PhpObject(Heap heap, Object descriptor) {
@@ -386,7 +414,8 @@ public final class PhpValues {
                 slot.writeError = "Cannot create dynamic property " + sealedType + "::$" + name;
             } else if (slot == null) {
                 slot = new Slot(heap);
-                fields.put(name, slot);
+                slot.container = this;
+                slot.fieldName = name;
             }
             return new Location(slot, null, null);
         }
@@ -405,14 +434,27 @@ public final class PhpValues {
                 cloned.type = slot.type;
                 cloned.readonlyLabel = slot.readonlyLabel;
                 cloned.writeError = slot.writeError;
-                copy.fields.put(entry.getKey(), cloned);
+                cloned.declared = slot.declared;
+                copy.attach(entry.getKey(), cloned);
             }
             copy.sealedType = sealedType;
             return copy;
         }
 
-        public void fieldType(String name, String type) { fields.get(name).type = type; }
+        private void attach(String name, Slot slot) {
+            slot.container = this;
+            slot.fieldName = name;
+            fields.put(name, slot);
+            fieldOrder.add(new FieldBucket(name, slot));
+        }
+        public void fieldType(String name, String type) {
+            Slot slot = fields.get(name);
+            if (slot == null) { slot = new Slot(heap); attach(name, slot); }
+            slot.type = type;
+            slot.declared = true;
+        }
         public List<String> fieldNames() { return List.copyOf(fields.keySet()); }
+        public FieldCursor iterateFields() { return new FieldCursor(this); }
 
         @Override void children(Consumer<HeapNode> visit) {
             for (var slot : fields.values()) if (slot.content instanceof HeapNode node) visit.accept(node);
@@ -421,6 +463,7 @@ public final class PhpValues {
         @Override void discard() {
             fields.values().forEach(Slot::forget);
             fields.clear();
+            fieldOrder.clear();
             heap.liveObjects--;
         }
     }
@@ -470,6 +513,29 @@ public final class PhpValues {
             positions.clear();
             source.close();
         }
+    }
+
+    private record FieldBucket(String name, Slot slot) {}
+
+    /** Live object property order: deleted dynamic slots stay as holes; reinsertion appends. */
+    public static final class FieldCursor implements AutoCloseable {
+        private PhpObject object;
+        private Object owner;
+        private int position;
+        private FieldBucket current;
+        private FieldCursor(PhpObject object) { this.object = object; owner = own(object); }
+        public PhpObject object() { return object; }
+        public String name() { return current.name; }
+        public Location location() { return new Location(current.slot, null, null); }
+        public boolean next() {
+            while (object != null && position < object.fieldOrder.size()) {
+                current = object.fieldOrder.get(position++);
+                if (current.slot.defined) return true;
+            }
+            current = null;
+            return false;
+        }
+        @Override public void close() { drop(owner); owner = null; object = null; current = null; }
     }
 
     /** An owning, direct reference, also usable as a return-by-reference result. */
@@ -541,6 +607,9 @@ public final class PhpValues {
         String type;
         String readonlyLabel;
         String writeError;
+        PhpObject container;
+        String fieldName;
+        boolean declared;
 
         void checkWritable() {
             if (writeError != null) throw new PhpError("Error", writeError);
@@ -622,7 +691,7 @@ public final class PhpValues {
             }
             return string;
         }
-        throw new PhpError("Array keys currently support int|string|bool|null");
+        throw new PhpError("TypeError", "Illegal offset type");
     }
 
     private static void validateValue(Object value) {

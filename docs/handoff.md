@@ -13,13 +13,14 @@ di PHP; non sono completate tutte le milestone del design.
 
 **L'utente ha chiesto di continuare lo sviluppo funzionale e riverificare le
 performance più avanti.** Non riprendere automaticamente PERF-01. Il blocco
-corrente è [enum, match, clone, offset di stringa e strict_types](language-values.md),
-con singleton per richiesta, valutazione lazy e hook sospendibili. I contratti
-delle classi precedenti rimangono verificati; errori, ownership e generazioni
-continuano a usare la stessa pipeline Bytecode DSL.
+corrente è [iterazione sospendibile e metadati degli attributi](iteration.md):
+Iterator/IteratorAggregate/Countable, foreach su oggetti e iteratori, builtin
+correlati e ReturnTypeWillChange. I contratti precedenti restano verificati;
+errori, ownership e generazioni continuano a usare la stessa pipeline Bytecode DSL.
 
-Il seguito funzionale riguarda iteratori, attributi e unpacking, insieme a
-valori, firme dei builtin e TrueAsync. Il
+Il seguito funzionale immediato è argument unpacking e array spread, poi
+Reflection/attributi completi e generatori/Fiber, insieme a valori, firme dei
+builtin e TrueAsync. Il
 loader SPL predefinito, include_path e il binding completo tra unità restano
 aperti: non dichiarare Composer funzionante. Shared-memory threading e FFI
 restano priorità successive; Composer applicativo, Compose e mobile sono rinviati.
@@ -31,7 +32,44 @@ misura RAM/CPU/throughput/p99 è stata eseguita per i blocchi autoload/classi/va
 si tornerà alle performance, mantenere il vincolo di nessun warmup escluso e
 separare GC/invalidazioni, peer e lifetime reale dei compiler worker.
 
-## Blocco funzionale: enum e valori, 26 settembre
+## Blocco funzionale: iterazione e attributi, 26 settembre
+
+[Contratti e limiti](iteration.md),
+[evidenze](validation/iteration-2026-09-26/README.md),
+[esiti](validation/iteration-2026-09-26/results.txt),
+[hash](validation/iteration-2026-09-26/hashes.json).
+
+Il runtime implementa Traversable, Iterator, IteratorAggregate e Countable nel
+modello delle classi. Foreach su iteratori/aggregate usa le normali continuation:
+getIterator, rewind, valid, current, key e next possono sospendersi o essere
+cancellati. Foreach su oggetti usa un cursore vivo con visibilità PHP e mantiene
+reference/ownership. Sono disponibili iterator_count, iterator_to_array,
+iterator_apply, count/sizeof, is_iterable/is_countable, get_object_vars e
+get_mangled_object_vars entro i contratti documentati.
+
+Il frontend conserva metadati #[...] su dichiarazioni e parametri. Attribute e
+ReturnTypeWillChange sono modellati abbastanza da verificare i tipi di ritorno
+provvisori degli iteratori; Reflection, target/repeatability completi e
+newInstance restano aperti.
+
+Il corpus contiene 74 programmi. Passano su Windows/Linux JVM, Native Image e
+lo stesso Native Image con --interpreter: 444 esecuzioni, 408 confronti di
+output e 36 rifiuti semantici. Passano inoltre 56 controlli diretti di
+field-iteration e 52 di metadata. Regressioni: 91/85 scenari integrati,
+53 scenari semantici, 256 grafi/1.280 fasi collector per piattaforma, 82/82
+TrueAsync e 50/50 rete/cURL/SQLite su entrambi i prodotti native. L'esempio
+iteration.php passa in JAR/native/interpreter su entrambe le piattaforme.
+
+I Native Image finali sono stati costruiti dallo stesso snapshot mantenuto e
+quello Linux è stato copiato/avviato dalla root. Nessuna campagna prestazionale,
+nessun cambio a CompilerIdleDelay, GC/JIT o versioni delle dipendenze. Un doppio
+avvio transitorio della build Windows dovuto al timeout dello strumento è
+registrato nelle evidenze e non viene usato come misura.
+
+LANG-01 resta aperto. Prossimo blocco: unpacking/spread; poi Reflection completa,
+generatori/Fiber e le altre aree elencate nel TODO.
+
+## Blocco precedente: enum e valori, 26 settembre
 
 [Contratti e limiti](language-values.md),
 [evidenze](validation/language-values-2026-09-26/README.md),
@@ -269,8 +307,8 @@ TrueAsync. Il confronto corrente è HTTP e non prova equivalenza dei backend TLS
 
 | File locale ricreabile | Byte | SHA-256 |
 | --- | ---: | --- |
-| `build/graalphp.exe` | 90.918.912 | `ff54657630d2318f28a047d8173ffc3ac66026bc358a222e3c50f5bb6c2aef43` |
-| `build/graalphp-linux-x64` | 93.653.800 | `eb259141b03e7028d101b8d108f8cc5571a0ad1588673af2aa0a9651feefac51` |
+| `build/graalphp.exe` | 90.873.856 | `f60246011a38ce203581a19a1af6a1ddf0f80203c5a8bd1415ccd612bfd21b60` |
+| `build/graalphp-linux-x64` | 93.850.408 | `b57fe53978bc10ddf24988ecb93491397e2bf6705a3149527763a5f8196c5531` |
 | `build/graalphp-before-memory.exe` | 90.161.152 | `f84539cde1b2976077f4b29c68d3737f1ab096add2e8662f78d0a5d328c36c53` |
 
 Le copie `build/before-autoload-2026-09-26/graalphp.exe` e

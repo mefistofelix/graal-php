@@ -256,8 +256,17 @@ public final class TypeRelations {
             }
         }
         if (expected.returnType() != null && (actual.returnType() == null
-                || !subtype(request, signature(actual.returnType(), request, actual.owner()), signature(expected.returnType(), request, expected.owner()))))
-            throw PhpError.fatal(message);
+                || !subtype(request, signature(actual.returnType(), request, actual.owner()), signature(expected.returnType(), request, expected.owner())))) {
+            if (expected.declaration() == null || !expected.declaration().tentativeReturn()) throw PhpError.fatal(message);
+            if (actual.declaration() != null && actual.declaration().hasAttribute("ReturnTypeWillChange")) return;
+            String key = actual.owner() + "::" + actual.name() + "->" + expected.owner() + "::" + expected.name();
+            if (request.declarationWarnings.add(key)) {
+                String declaration = actual.owner() + "::" + actual.name() + "()" + (actual.returnType() == null ? "" : ": " + actual.returnType());
+                Diagnostics.declaration(request, actual, "Return type of " + declaration + " should either be compatible with "
+                        + expected.owner() + "::" + expected.name() + "(): " + expected.returnType()
+                        + ", or the #[\\ReturnTypeWillChange] attribute should be used to temporarily suppress the notice");
+            }
+        }
     }
 
     private static int required(List<Ir.Parameter> parameters) {
