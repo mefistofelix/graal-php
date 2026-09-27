@@ -69,6 +69,7 @@ Gli attributi builtin ulteriori e la verifica di ogni combinazione di target
 restano da estendere insieme al catalogo linguistico.
 
 Il blocco non chiude LANG-01. I generatori sono stati completati nel
-[blocco successivo](generators.md); Fiber, lifetime, loader SPL
-predefinito/include_path e typing dei builtin rimangono tracciati nel TODO. Nessuna misura prestazionale è stata
+[blocco successivo](generators.md); Fiber è stato escluso dagli obiettivi di
+compatibilità, mentre lifetime, loader SPL predefinito/include_path e typing dei
+builtin rimangono tracciati nel TODO. Nessuna misura prestazionale è stata
 eseguita o reinterpretata.

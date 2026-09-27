@@ -28,6 +28,10 @@ solo perché sono ancora descritti nel design.
 - API async basata su TrueAsync: confrontare stub, sorgenti e binari della
   release fissata, senza dedurre i dettagli dai nomi delle funzioni. Distinguere
   estensioni nostre e API upstream. Vedere [contratto](docs/trueasync-compatibility.md).
+  **PHP Fiber non è un obiettivo di compatibilità né un building block interno**:
+  non implementare `Fiber`/`FiberError` o un secondo scheduler salvo una futura
+  necessità architetturale concreta approvata esplicitamente. Le sospensioni
+  implicite restano basate sulle continuation Truffle e su TrueAsync.
 - Lo spawn su thread previsto condivide **runtime e heap PHP**; non deve creare
   un'altra istanza PHP né sostituire la condivisione con copie. Il vecchio
   `parallel` è un laboratorio. LOCAL→SHARED deve preservare identità, COW,

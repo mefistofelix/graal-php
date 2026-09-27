@@ -163,7 +163,8 @@ Reflection per classi/funzioni/metodi/proprietà/costanti/parametri/attributi,
 compreso `ReflectionAttribute::newInstance()` sospendibile. Sono inoltre
 implementati i generatori PHP lazy sopra le continuation Truffle, inclusi
 `send`/`throw`/`getReturn`, `yield from`, generatori by-reference e cleanup
-`finally` alla distruzione. Reflection avanzata e Fiber restano aperti. Vedere
+`finally` alla distruzione. Reflection avanzata resta aperta; PHP Fiber è
+fuori scope per scelta progettuale perché l'async supportato è TrueAsync. Vedere
 [iterazione](docs/iteration.md), [unpacking](docs/unpacking.md),
 [Reflection](docs/reflection.md), [generatori](docs/generators.md) e i relativi esempi.
 

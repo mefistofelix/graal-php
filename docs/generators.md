@@ -120,8 +120,10 @@ combina `send`, delega, return value e `finally`.
 
 ## Limiti
 
-Questo blocco implementa i generatori, non `Fiber`: l'API Fiber e le sue
-interazioni con TrueAsync restano il prossimo blocco di LANG-01. Restano inoltre
+Questo blocco implementa i generatori. `Fiber` è deliberatamente fuori scope:
+GraalPHP non richiede compatibilità con codice che usa PHP Fiber e non lo usa
+come building block interno; l'async supportato resta TrueAsync sopra le
+continuation Truffle. Restano inoltre
 aperti i limiti generali già tracciati per gerarchia completa Throwable,
 diagnostiche byte-identiche, shutdown/lifetime PHP globale, loader SPL,
 Reflection avanzata e typing dei builtin rimanenti.

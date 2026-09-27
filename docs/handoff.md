@@ -18,8 +18,10 @@ iterazione, classi e valori. I generatori sono lazy, usano le continuation del
 Bytecode DSL e coprono delega, reference, distruzione/finally e sospensioni
 TrueAsync.
 
-Il seguito funzionale immediato è **Fiber**, insieme a lifetime, valori,
-firme dei builtin e TrueAsync. Il
+Il seguito funzionale immediato è **ArrayAccess + SPL minima utile**, insieme a
+lifetime, valori, firme dei builtin e TrueAsync. PHP Fiber è deliberatamente
+fuori scope: non serve compatibilità con codice Fiber e non è un building block
+interno; l'async pubblico resta TrueAsync sopra le continuation Truffle. Il
 loader SPL predefinito, include_path e il binding completo tra unità restano
 aperti: non dichiarare Composer funzionante. Shared-memory threading e FFI
 restano priorità successive; Composer applicativo, Compose e mobile sono rinviati.
@@ -69,9 +71,9 @@ L'esempio `examples/generators.php` passa su PHP 8.6, JAR, native e
 interpreter Windows, oltre al prodotto Linux native/interpreter copiato nella
 root. Nessuna campagna prestazionale e nessun cambio a JIT/GC/default.
 
-LANG-01 resta aperto. Il prossimo blocco funzionale è **Fiber**; lifetime PHP
-generale, SPL/default loader, ArrayAccess, Reflection avanzata e typing dei
-builtin restano separatamente aperti.
+LANG-01 resta aperto. Il prossimo blocco funzionale è **ArrayAccess + SPL
+minima utile**; lifetime PHP generale, SPL/default loader, Reflection avanzata
+e typing dei builtin restano separatamente aperti. Fiber non è pianificato.
 
 ## Blocco precedente: Reflection e attributi, 26 settembre
 
@@ -88,7 +90,8 @@ Prodotti coerenti con questo snapshot: Windows SHA-256
 `888cc0c2beba407a0e774f29ef93c20cef7a4577cb0670462e82974bcfad1c2d`,
 Linux SHA-256 `591c404ad9d916d7b0324e1122591a0a02a1480a505b4712316c8d8ab93f9291`.
 I 105 file sotto `src/` e `tests/` coincidono con la copia Linux usata per la build.
-LANG-01 resta aperto: i generatori sono completati nel blocco sopra; il prossimo blocco è Fiber.
+LANG-01 resta aperto: i generatori sono completati nel blocco sopra; Fiber è
+fuori scope e il prossimo blocco è ArrayAccess + SPL minima utile.
 
 ## Blocco precedente: unpacking e spread, 26 settembre
 
@@ -126,7 +129,8 @@ stato disabilitato. Il fallimento e le build finali riuscite sono conservati
 separatamente nelle evidenze. Nessun benchmark o cambio JIT/GC.
 
 LANG-01 resta aperto. Reflection e generatori sono stati completati nei blocchi
-successivi sopra; Fiber è il prossimo blocco.
+successivi sopra; Fiber è fuori scope e il prossimo blocco è ArrayAccess + SPL
+minima utile.
 
 ## Blocco precedente: iterazione e attributi, 26 settembre
 
@@ -163,8 +167,8 @@ avvio transitorio della build Windows dovuto al timeout dello strumento è
 registrato nelle evidenze e non viene usato come misura.
 
 LANG-01 resta aperto. Argument unpacking, Reflection e generatori sono stati
-completati nei blocchi successivi sopra; Fiber e le altre aree elencate nel
-TODO restano aperte.
+completati nei blocchi successivi sopra; Fiber è fuori scope e le altre aree
+elencate nel TODO restano aperte.
 
 ## Blocco precedente: enum e valori, 26 settembre
 

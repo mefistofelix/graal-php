@@ -176,7 +176,8 @@ primari: [enum backed](https://www.php.net/manual/en/language.enumerations.backe
 Questo blocco non chiude LANG-01 o l'intero progetto. Iteratori e unpacking
 sono stati aggiunti nei [blocchi successivi](iteration.md) e [unpacking](unpacking.md).
 Generatori e il nucleo Reflection sono stati aggiunti nei blocchi successivi.
-Restano Fiber, Reflection avanzata, standard library, lifetime completo,
+Fiber è fuori scope per decisione successiva. Restano Reflection avanzata,
+standard library, lifetime completo,
 shared-memory threading, FFI completa e i target GUI/mobile rimangono
 tracciati in TODO.md. Le evidenze prestazionali precedenti non sono riscritte
 e le loro misure non sono attribuite ai nuovi eseguibili.
