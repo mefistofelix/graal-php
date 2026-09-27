@@ -1,0 +1,23 @@
+PHP ArrayAccess, 2026-09-27
+
+PASS 20/20 programs Windows JVM.
+PASS 20/20 programs Windows Native Image.
+PASS 20/20 programs Windows Native Image --interpreter.
+PASS 20/20 programs Linux JVM.
+PASS 20/20 programs Linux Native Image.
+PASS 20/20 programs Linux Native Image --interpreter.
+TOTAL 120/120 program executions: 108 output comparisons and 12 semantic rejections.
+
+PASS Windows verify: 91 integration scenarios; 53 value scenarios; 256 ownership graphs / 1280 collection phases; 56 field-iteration checks; 52 metadata checks; 82/82 TrueAsync.
+PASS Linux verify: 85 integration scenarios; 53 value scenarios; 256 ownership graphs / 1280 collection phases; 56 field-iteration checks; 52 metadata checks.
+PASS Generator regression: 37/37 Windows JVM and 37/37 Linux JVM.
+PASS Unpack regression: 46/46 Windows JVM and 46/46 Linux JVM.
+PASS 109 src/tests files byte-identical between authoritative workspace and Linux validation copy.
+
+Windows executable SHA256 b06dc17d16b6a5ae27651853ce5bbe33b55a318f9b5efde591f0a7f2162de639
+Linux executable SHA256 1a4412276e5b9317fcb30ad69bffe131a1577cd8d576116df6b01e5214446538
+Windows JAR SHA256 272d8572c89b60e1b41fed92debe44fc24eaaca555d4a1e10ab59f2d6a71ff84
+Linux JAR SHA256 2d4550f14410bbe87d95e8835702c73e8a84a8293c8449bddabf2b9d34dd7f03
+
+Known limit: offsetGet declared by-reference does not yet expose the returned location to callers; nested/reference modification depends on general return-by-reference work in VALUE-01.
+No performance campaign and no JIT/GC/default change.

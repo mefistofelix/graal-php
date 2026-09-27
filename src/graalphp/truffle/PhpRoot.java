@@ -175,6 +175,58 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
         }
     }
     @Operation
+    public static final class PrepareOffset {
+        @Specialization static ArrayAccessApi.Access run(VirtualFrame frame, Object source, Object key,
+                @com.oracle.truffle.api.dsl.Bind BytecodeNode bytecode, @com.oracle.truffle.api.dsl.Bind("$bytecodeIndex") int bci) {
+            return ArrayAccessApi.Access.create(activation(frame).at(bytecode, bci), source, key);
+        }
+    }
+    @Operation public static final class OffsetDirectLocation {
+        @Specialization static boolean run(ArrayAccessApi.Access access) { return access.directLocation(); }
+    }
+    @Operation public static final class OffsetLocation {
+        @Specialization static PhpValues.Location run(ArrayAccessApi.Access access) { return access.location(); }
+    }
+    @Operation public static final class OffsetRead {
+        @Specialization static Object run(ArrayAccessApi.Access access, @Cached IndirectCallNode call) { return access.read(call); }
+    }
+    @Operation public static final class OffsetExists {
+        @Specialization static Object run(ArrayAccessApi.Access access, @Cached IndirectCallNode call) { return access.exists(call); }
+    }
+    @Operation public static final class OffsetReadForAssign {
+        @Specialization static Object run(ArrayAccessApi.Access access, @Cached IndirectCallNode call) { return access.readForAssign(call); }
+    }
+    @Operation public static final class OffsetWrite {
+        @Specialization static Object run(ArrayAccessApi.Access access, Object value, @Cached IndirectCallNode call) {
+            return access.write(value, call);
+        }
+    }
+    @Operation public static final class OffsetUnset {
+        @Specialization static Object run(ArrayAccessApi.Access access, @Cached IndirectCallNode call) { return access.unset(call); }
+    }
+    @Operation @ConstantOperand(type = String.class, name = "operator")
+    public static final class OffsetCompoundValue {
+        @Specialization static Object run(String operator, ArrayAccessApi.Access access, Object previous, Object value) {
+            try { access.checkAssignOperation(); return Operations.binary(operator, previous, value); }
+            finally { PhpValues.drop(previous); PhpValues.drop(value); }
+        }
+    }
+    @Operation @ConstantOperand(type = int.class, name = "delta") @ConstantOperand(type = boolean.class, name = "before")
+    public static final class OffsetIndirectIncrement {
+        @Specialization static Object run(int delta, boolean before, ArrayAccessApi.Access access, Object previous) {
+            Object raw = PhpValues.unwrap(previous);
+            Object old = before ? null : PhpValues.own(raw);
+            Object next = Operations.binary("+", previous, (long) delta);
+            access.indirectModification();
+            if (before) return next;
+            PhpValues.drop(next);
+            return old;
+        }
+    }
+    @Operation public static final class CloseOffset {
+        @Specialization static void run(ArrayAccessApi.Access access) { access.close(); }
+    }
+    @Operation
     public static final class Write {
         @Specialization static Object run(PhpValues.Location location, Object value) {
             Object result = location.write(PhpValues.unwrap(value));

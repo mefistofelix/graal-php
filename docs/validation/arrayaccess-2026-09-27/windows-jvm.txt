@@ -1,0 +1,35 @@
+build\generated\graalphp\truffle\PhpRootGen.java:6818: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+build\generated\graalphp\truffle\PhpRootGen.java:8904: warning: [removal] ThreadDeath in java.lang has been deprecated and marked for removal
+                if (throwable instanceof java.lang.ThreadDeath) {
+                                                  ^
+Note: <workspace>\src\graalphp\truffle\PhpContext.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+2 warnings
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime (file:/<workspace>/build/deps/25.4.4.1.1/truffle-runtime-25.4.4.1.1.jar)
+WARNING: Please consider reporting this to the maintainers of class com.oracle.truffle.runtime.hotspot.HotSpotTruffleRuntime
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+PASS interface-identity oracle=0 target=0 mode=output
+PASS read-write-append-unset oracle=0 target=0 mode=output
+PASS isset-empty-coalesce oracle=0 target=0 mode=output
+PASS coalesce-assign oracle=0 target=0 mode=output
+PASS compound-assignment oracle=0 target=0 mode=output
+PASS increment-is-indirect oracle=0 target=0 mode=output
+PASS temporary-receiver-and-key-once oracle=0 target=0 mode=output
+PASS property-receiver oracle=0 target=0 mode=output
+PASS nested-read oracle=0 target=0 mode=output
+PASS native-array-location-regression oracle=0 target=0 mode=output
+PASS string-offset-regression oracle=0 target=0 mode=output
+PASS by-value-argument oracle=0 target=0 mode=output
+PASS append-passes-null oracle=0 target=0 mode=output
+PASS async-offset-get oracle=0 target=0 mode=output
+PASS async-offset-set oracle=0 target=0 mode=output
+PASS async-offset-exists oracle=0 target=0 mode=output
+PASS async-offset-unset oracle=0 target=0 mode=output
+PASS return-type-will-change oracle=0 target=0 mode=output
+PASS missing-required-method-rejected oracle=255 target=1 mode=rejection:abstract
+PASS non-arrayaccess-object-rejected oracle=255 target=1 mode=rejection:array
+Evidence: <workspace>\build\arrayaccess-6979103646017300083
+PASS: 20 arrayaccess programs; 2 semantic rejections (diagnostic text not asserted identical)

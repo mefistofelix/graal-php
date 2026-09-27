@@ -2,9 +2,11 @@ package graalphp.truffle;
 
 import com.oracle.truffle.api.bytecode.BytecodeConfig;
 import com.oracle.truffle.api.bytecode.BytecodeLabel;
+import com.oracle.truffle.api.bytecode.BytecodeLocal;
 import com.oracle.truffle.api.source.Source;
 import graalphp.frontend.Ir;
 import graalphp.frontend.Parser;
+import graalphp.runtime.ArrayAccessApi;
 import graalphp.runtime.Execution;
 import graalphp.runtime.GeneratorApi;
 import graalphp.runtime.PhpError;
@@ -187,7 +189,12 @@ public final class PhpCompiler {
                 if (guarded.cleanup() != null) b.endTryFinally();
             }
             case Ir.Throw thrown -> { b.beginThrow(); expression(thrown.value()); b.endThrow(); }
-            case Ir.Unset unset -> { for (var variable : unset.locations()) { b.beginUnset(); location(variable); b.endUnset(); } }
+            case Ir.Unset unset -> {
+                for (var variable : unset.locations()) {
+                    if (variable instanceof Ir.Index index) offsetUnset(index);
+                    else { b.beginUnset(); location(variable); b.endUnset(); }
+                }
+            }
             case Ir.Global global -> { for (String name : global.names()) b.emitGlobal(name); }
             case Ir.Break ignored -> { if (loops.isEmpty()) throw new PhpError("break outside a loop"); b.emitBranch(loops.peek().exit()); }
             case Ir.Continue ignored -> { if (loops.isEmpty()) throw new PhpError("continue outside a loop"); b.emitBranch(loops.peek().next()); }
@@ -295,19 +302,26 @@ public final class PhpCompiler {
             case Ir.InstanceOf instance -> {
                 b.beginIsInstanceOf(); expression(instance.value()); expression(instance.type()); b.endIsInstanceOf();
             }
-            case Ir.Index index -> {
-                if (isLocation(index)) { b.beginRead(); location(index); b.endRead(); }
-                else { b.beginLookup(); expression(index.array()); expression(index.key()); b.endLookup(); }
-            }
+            case Ir.Index index -> offsetRead(index);
             case Ir.Assign assignment -> {
-                if (assignment.reference()) { b.beginBind(); location(assignment.target()); location(assignment.value()); b.endBind(); }
+                if (!assignment.reference() && assignment.target() instanceof Ir.Index index) offsetAssign(index, assignment.value());
+                else if (assignment.reference()) { b.beginBind(); location(assignment.target()); location(assignment.value()); b.endBind(); }
                 else { b.beginWrite(); location(assignment.target()); expression(assignment.value()); b.endWrite(); }
             }
-            case Ir.CompoundAssign assignment -> compound(assignment);
-            case Ir.Increment increment -> {
-                b.beginIncrement(increment.delta(), increment.before()); location(increment.target()); b.endIncrement();
+            case Ir.CompoundAssign assignment -> {
+                if (assignment.target() instanceof Ir.Index index) {
+                    if (assignment.operator().equals("??")) offsetCoalesceAssign(index, assignment.value());
+                    else offsetCompound(assignment.operator(), index, assignment.value());
+                } else compound(assignment);
             }
-            case Ir.Coalesce coalesce -> coalesce(coalesce.left(), coalesce.right());
+            case Ir.Increment increment -> {
+                if (increment.target() instanceof Ir.Index index) offsetIncrement(index, increment.delta(), increment.before());
+                else { b.beginIncrement(increment.delta(), increment.before()); location(increment.target()); b.endIncrement(); }
+            }
+            case Ir.Coalesce coalesce -> {
+                if (coalesce.left() instanceof Ir.Index index) offsetCoalesce(index, coalesce.right());
+                else coalesce(coalesce.left(), coalesce.right());
+            }
             case Ir.Conditional conditional -> {
                 if (conditional.yes() != null) {
                     b.beginConditional(); truth(conditional.condition()); expression(conditional.yes()); expression(conditional.no()); b.endConditional();
@@ -479,7 +493,8 @@ public final class PhpCompiler {
             if (argument instanceof Ir.NamedArgument named) {
                 name = named.name(); argument = named.value(); b.beginArgumentName(name);
             }
-            if (isLocation(argument)) { b.beginArgumentLocation(); location(argument); b.endArgumentLocation(); }
+            if (argument instanceof Ir.Index index) offsetArgument(index);
+            else if (isLocation(argument)) { b.beginArgumentLocation(); location(argument); b.endArgumentLocation(); }
             else { b.beginArgumentValue(); expression(argument); b.endArgumentValue(); }
             if (name != null) b.endArgumentName();
         }
@@ -513,6 +528,195 @@ public final class PhpCompiler {
         b.endArgumentSpread();
         b.endBlock();
     }
+
+    private void prepareOffset(Ir.Index index, boolean writable) {
+        var b = builder;
+        b.beginPrepareOffset();
+        if (writable && isLocation(index.array())) location(index.array());
+        else expression(index.array());
+        if (index.key() == null) b.emitLoadConstant(ArrayAccessApi.APPEND); else expression(index.key());
+        b.endPrepareOffset();
+    }
+    private void closeOffset(BytecodeLocal access) {
+        builder.beginCloseOffset(); builder.emitLoadLocal(access); builder.endCloseOffset();
+    }
+    private void offsetRead(BytecodeLocal access) {
+        suspended(() -> {
+            builder.beginOffsetRead(); builder.emitLoadLocal(access); builder.endOffsetRead();
+        });
+    }
+    private void offsetReadForAssign(BytecodeLocal access) {
+        suspended(() -> {
+            builder.beginOffsetReadForAssign(); builder.emitLoadLocal(access); builder.endOffsetReadForAssign();
+        });
+    }
+    private void offsetExists(BytecodeLocal access) {
+        var b = builder;
+        b.beginTruth();
+        suspended(() -> {
+            b.beginOffsetExists(); b.emitLoadLocal(access); b.endOffsetExists();
+        });
+        b.endTruth();
+    }
+    private void offsetWrite(BytecodeLocal access, BytecodeLocal value) {
+        var b = builder;
+        b.beginDrop();
+        suspended(() -> {
+            b.beginOffsetWrite(); b.emitLoadLocal(access);
+            b.beginRetain(); b.emitLoadLocal(value); b.endRetain();
+            b.endOffsetWrite();
+        });
+        b.endDrop();
+    }
+    private void offsetRead(Ir.Index index) {
+        var b = builder;
+        b.beginBlock(); var access = b.createLocal(); var result = b.createLocal();
+        b.beginStoreLocal(access); prepareOffset(index, false); b.endStoreLocal();
+        b.beginTryFinally(() -> closeOffset(access));
+        b.beginStoreLocal(result); offsetRead(access); b.endStoreLocal();
+        b.endTryFinally();
+        b.emitLoadLocal(result); b.endBlock();
+    }
+    private void offsetAssign(Ir.Index index, Ir.Expression value) {
+        var b = builder;
+        b.beginBlock(); var access = b.createLocal(); var result = b.createLocal();
+        b.beginStoreLocal(access); prepareOffset(index, true); b.endStoreLocal();
+        b.beginTryFinally(() -> closeOffset(access));
+        b.beginStoreLocal(result); offsetWriteExpression(access, value); b.endStoreLocal();
+        b.endTryFinally();
+        b.emitLoadLocal(result); b.endBlock();
+    }
+    private void offsetWriteExpression(BytecodeLocal access, Ir.Expression value) {
+        var b = builder;
+        b.beginBlock(); var assigned = b.createLocal();
+        b.beginStoreLocal(assigned); expression(value); b.endStoreLocal();
+        offsetWrite(access, assigned);
+        b.emitLoadLocal(assigned); b.endBlock();
+    }
+    private void offsetUnset(Ir.Index index) {
+        var b = builder;
+        b.beginBlock(); var access = b.createLocal();
+        b.beginStoreLocal(access); prepareOffset(index, true); b.endStoreLocal();
+        b.beginTryFinally(() -> closeOffset(access));
+        b.beginDrop();
+        suspended(() -> {
+            b.beginOffsetUnset(); b.emitLoadLocal(access); b.endOffsetUnset();
+        });
+        b.endDrop();
+        b.endTryFinally(); b.endBlock();
+    }
+    private void offsetExists(Ir.Index index) {
+        var b = builder;
+        b.beginBlock(); var access = b.createLocal(); var result = b.createLocal();
+        b.beginStoreLocal(access); prepareOffset(index, false); b.endStoreLocal();
+        b.beginTryFinally(() -> closeOffset(access));
+        b.beginStoreLocal(result); offsetExists(access); b.endStoreLocal();
+        b.endTryFinally();
+        b.emitLoadLocal(result); b.endBlock();
+    }
+    private void offsetEmpty(Ir.Index index) {
+        var b = builder;
+        b.beginBlock(); var access = b.createLocal(); var result = b.createLocal();
+        b.beginStoreLocal(access); prepareOffset(index, false); b.endStoreLocal();
+        b.beginTryFinally(() -> closeOffset(access));
+        b.beginStoreLocal(result);
+        b.beginConditional(); offsetExists(access);
+        b.beginUnary("!"); offsetRead(access); b.endUnary();
+        b.emitLoadConstant(true);
+        b.endConditional();
+        b.endStoreLocal();
+        b.endTryFinally();
+        b.emitLoadLocal(result); b.endBlock();
+    }
+    private void offsetCoalesce(Ir.Index index, Ir.Expression fallback) {
+        var b = builder;
+        b.beginBlock(); var access = b.createLocal(); var result = b.createLocal();
+        b.beginStoreLocal(access); prepareOffset(index, false); b.endStoreLocal();
+        b.beginTryFinally(() -> closeOffset(access));
+        b.beginStoreLocal(result);
+        b.beginConditional(); offsetExists(access);
+        offsetReadOrFallback(access, fallback);
+        expression(fallback);
+        b.endConditional();
+        b.endStoreLocal();
+        b.endTryFinally();
+        b.emitLoadLocal(result); b.endBlock();
+    }
+    private void offsetReadOrFallback(BytecodeLocal access, Ir.Expression fallback) {
+        var b = builder;
+        b.beginBlock(); var value = b.createLocal();
+        b.beginStoreLocal(value); offsetRead(access); b.endStoreLocal();
+        b.beginConditional(); b.beginNonNull(); b.emitLoadLocal(value); b.endNonNull();
+        b.emitLoadLocal(value);
+        b.beginBlock(); b.beginDrop(); b.emitLoadLocal(value); b.endDrop(); expression(fallback); b.endBlock();
+        b.endConditional(); b.endBlock();
+    }
+    private void offsetCoalesceAssign(Ir.Index index, Ir.Expression fallback) {
+        var b = builder;
+        b.beginBlock(); var access = b.createLocal(); var result = b.createLocal();
+        b.beginStoreLocal(access); prepareOffset(index, true); b.endStoreLocal();
+        b.beginTryFinally(() -> closeOffset(access));
+        b.beginStoreLocal(result);
+        b.beginConditional(); offsetExists(access);
+        offsetReadOrAssign(access, fallback);
+        offsetWriteExpression(access, fallback);
+        b.endConditional();
+        b.endStoreLocal();
+        b.endTryFinally();
+        b.emitLoadLocal(result); b.endBlock();
+    }
+    private void offsetReadOrAssign(BytecodeLocal access, Ir.Expression fallback) {
+        var b = builder;
+        b.beginBlock(); var value = b.createLocal();
+        b.beginStoreLocal(value); offsetRead(access); b.endStoreLocal();
+        b.beginConditional(); b.beginNonNull(); b.emitLoadLocal(value); b.endNonNull();
+        b.emitLoadLocal(value);
+        b.beginBlock(); b.beginDrop(); b.emitLoadLocal(value); b.endDrop(); offsetWriteExpression(access, fallback); b.endBlock();
+        b.endConditional(); b.endBlock();
+    }
+    private void offsetCompound(String operator, Ir.Index index, Ir.Expression value) {
+        var b = builder;
+        b.beginBlock(); var access = b.createLocal(); var result = b.createLocal(); var previous = b.createLocal();
+        b.beginStoreLocal(access); prepareOffset(index, true); b.endStoreLocal();
+        b.beginTryFinally(() -> closeOffset(access));
+        b.beginBlock();
+        b.beginStoreLocal(previous); offsetReadForAssign(access); b.endStoreLocal();
+        b.beginStoreLocal(result);
+        b.beginOffsetCompoundValue(operator); b.emitLoadLocal(access); b.emitLoadLocal(previous); expression(value); b.endOffsetCompoundValue();
+        b.endStoreLocal();
+        offsetWrite(access, result);
+        b.endBlock();
+        b.endTryFinally();
+        b.emitLoadLocal(result); b.endBlock();
+    }
+    private void offsetIncrement(Ir.Index index, int delta, boolean before) {
+        var b = builder;
+        b.beginBlock(); var access = b.createLocal(); var result = b.createLocal();
+        b.beginStoreLocal(access); prepareOffset(index, true); b.endStoreLocal();
+        b.beginTryFinally(() -> closeOffset(access));
+        b.beginStoreLocal(result);
+        b.beginConditional(); b.beginOffsetDirectLocation(); b.emitLoadLocal(access); b.endOffsetDirectLocation();
+        b.beginIncrement(delta, before); b.beginOffsetLocation(); b.emitLoadLocal(access); b.endOffsetLocation(); b.endIncrement();
+        b.beginOffsetIndirectIncrement(delta, before); b.emitLoadLocal(access); offsetRead(access); b.endOffsetIndirectIncrement();
+        b.endConditional();
+        b.endStoreLocal();
+        b.endTryFinally();
+        b.emitLoadLocal(result); b.endBlock();
+    }
+    private void offsetArgument(Ir.Index index) {
+        var b = builder;
+        b.beginBlock(); var access = b.createLocal(); var result = b.createLocal();
+        b.beginStoreLocal(access); prepareOffset(index, isLocation(index.array())); b.endStoreLocal();
+        b.beginTryFinally(() -> closeOffset(access));
+        b.beginStoreLocal(result);
+        b.beginConditional(); b.beginOffsetDirectLocation(); b.emitLoadLocal(access); b.endOffsetDirectLocation();
+        b.beginArgumentLocation(); b.beginOffsetLocation(); b.emitLoadLocal(access); b.endOffsetLocation(); b.endArgumentLocation();
+        b.beginArgumentValue(); offsetRead(access); b.endArgumentValue();
+        b.endConditional();
+        b.endStoreLocal();
+        b.endTryFinally();
+        b.emitLoadLocal(result); b.endBlock();
+    }
     private void suspended(Runnable operation) {
         var b = builder;
         b.beginBlock(); var result = b.createLocal();
@@ -544,9 +748,12 @@ public final class PhpCompiler {
         var b = builder;
         if (name.equals("empty")) {
             if (args.size() != 1) throw new PhpError("empty requires one argument");
-            b.beginUnary("!"); quietRead(args.getFirst(), true); b.endUnary();
+            if (args.getFirst() instanceof Ir.Index offset) offsetEmpty(offset);
+            else { b.beginUnary("!"); quietRead(args.getFirst(), true); b.endUnary(); }
         } else {
-            b.beginConditional(); b.beginIsSet(); quietRead(args.get(index), true); b.endIsSet();
+            b.beginConditional();
+            if (args.get(index) instanceof Ir.Index offset) offsetExists(offset);
+            else { b.beginIsSet(); quietRead(args.get(index), true); b.endIsSet(); }
             if (index + 1 == args.size()) b.emitLoadConstant(true); else specialRead(name, args, index + 1);
             b.emitLoadConstant(false); b.endConditional();
         }

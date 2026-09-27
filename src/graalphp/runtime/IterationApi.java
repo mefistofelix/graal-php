@@ -24,6 +24,12 @@ public final class IterationApi {
         }
         interface IteratorAggregate extends Traversable { public function getIterator(): Traversable; }
         interface Countable { public function count(): int; }
+        interface ArrayAccess {
+            public function offsetExists(mixed $offset): bool;
+            public function offsetGet(mixed $offset): mixed;
+            public function offsetSet(mixed $offset, mixed $value): void;
+            public function offsetUnset(mixed $offset): void;
+        }
         #[Attribute(1)]
         final class Attribute {
             public const TARGET_CLASS = 1;
@@ -100,7 +106,7 @@ public final class IterationApi {
         """;
 
     public static boolean tentativeType(String name) {
-        return List.of("Iterator", "IteratorAggregate", "Countable").contains(name);
+        return List.of("Iterator", "IteratorAggregate", "Countable", "ArrayAccess").contains(name);
     }
 
     static void validate(ObjectModel.Definition definition, ObjectModel.RuntimeClass parent,

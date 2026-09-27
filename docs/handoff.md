@@ -12,13 +12,12 @@ Native Image Windows/Linux x64 funzionanti. Non ancora un sostituto generale
 di PHP; non sono completate tutte le milestone del design.
 
 **L'utente ha chiesto di continuare lo sviluppo funzionale e riverificare le
-performance più avanti.** Non riprendere automaticamente PERF-01. Il blocco
-corrente è [generatori PHP](generators.md), sopra Reflection, unpacking,
-iterazione, classi e valori. I generatori sono lazy, usano le continuation del
-Bytecode DSL e coprono delega, reference, distruzione/finally e sospensioni
-TrueAsync.
+performance più avanti.** Non riprendere automaticamente PERF-01. Il blocco corrente è [ArrayAccess](arrayaccess.md), sopra generatori,
+Reflection, unpacking, iterazione, classi e valori. Gli offset overloaded usano
+il normale dispatcher PHP e possono sospendersi attraverso TrueAsync senza
+sostituire le location native di array/stringhe.
 
-Il seguito funzionale immediato è **ArrayAccess + SPL minima utile**, insieme a
+Il seguito funzionale immediato è la **SPL concreta minima utile**, insieme a
 lifetime, valori, firme dei builtin e TrueAsync. PHP Fiber è deliberatamente
 fuori scope: non serve compatibilità con codice Fiber e non è un building block
 interno; l'async pubblico resta TrueAsync sopra le continuation Truffle. Il
@@ -33,7 +32,45 @@ misura RAM/CPU/throughput/p99 è stata eseguita per i blocchi autoload/classi/va
 si tornerà alle performance, mantenere il vincolo di nessun warmup escluso e
 separare GC/invalidazioni, peer e lifetime reale dei compiler worker.
 
-## Blocco funzionale: generatori, 27 settembre
+## Blocco funzionale: ArrayAccess, 27 settembre
+
+[Contratti e limiti](arrayaccess.md),
+[evidenze](validation/arrayaccess-2026-09-27/README.md),
+[esiti](validation/arrayaccess-2026-09-27/results.txt),
+[hash](validation/arrayaccess-2026-09-27/hashes.json).
+
+L'overloading degli offset è integrato nel Bytecode DSL tramite un handle
+dinamico che conserva le normali `PhpValues.Location` per array/stringhe e
+instrada gli oggetti `ArrayAccess` sui quattro metodi PHP. Receiver e chiave
+sono valutati una volta e restano posseduti attraverso eventuali sospensioni.
+`offsetGet`, `offsetSet`, `offsetExists` e `offsetUnset` possono quindi
+usare TrueAsync senza un percorso sincrono parallelo.
+
+Sono coperti read/write/append/unset, isset/empty, `??` e `??=`, compound
+assignment, incremento overloaded con notice PHP, receiver temporanei e
+passaggio by-value. Il corpus contiene 20 programmi: 18 confronti di output e
+2 rifiuti semantici. Passa su Windows/Linux JVM, Native Image e sullo stesso
+Native Image con `--interpreter`: **120 esecuzioni**.
+
+Regressioni finali: Windows `verify` 91 integrazioni + 82/82 TrueAsync, Linux
+85 integrazioni; Generator 37/37 e Unpack 46/46 restano verdi su entrambe le
+piattaforme. I 109 file `src/tests` coincidono con la copia Linux.
+
+Prodotti coerenti con lo snapshot: Windows SHA-256
+`b06dc17d16b6a5ae27651853ce5bbe33b55a318f9b5efde591f0a7f2162de639`,
+Linux SHA-256
+`1a4412276e5b9317fcb30ad69bffe131a1577cd8d576116df6b01e5214446538`.
+
+Limite esplicito: `offsetGet()` dichiarato by-reference non espone ancora la
+location restituita al chiamante; nested/reference modification resta parte del
+return-by-reference generale di VALUE-01. Nessuna campagna prestazionale e
+nessun cambio JIT/GC/default.
+
+LANG-01 resta aperto. Il prossimo blocco è la **SPL concreta minima utile**;
+loader SPL predefinito/include_path, lifetime, Reflection avanzata e typing
+restano separatamente aperti. Fiber resta fuori scope.
+
+## Blocco precedente: generatori, 27 settembre
 
 [Contratti e limiti](generators.md),
 [evidenze](validation/generators-2026-09-27/README.md),
@@ -71,9 +108,10 @@ L'esempio `examples/generators.php` passa su PHP 8.6, JAR, native e
 interpreter Windows, oltre al prodotto Linux native/interpreter copiato nella
 root. Nessuna campagna prestazionale e nessun cambio a JIT/GC/default.
 
-LANG-01 resta aperto. Il prossimo blocco funzionale è **ArrayAccess + SPL
-minima utile**; lifetime PHP generale, SPL/default loader, Reflection avanzata
-e typing dei builtin restano separatamente aperti. Fiber non è pianificato.
+LANG-01 resta aperto. ArrayAccess è completato nel blocco sopra; il prossimo
+blocco è la SPL concreta minima utile. Lifetime PHP generale, SPL/default
+loader, Reflection avanzata e typing restano separatamente aperti. Fiber non è
+pianificato.
 
 ## Blocco precedente: Reflection e attributi, 26 settembre
 

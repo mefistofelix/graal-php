@@ -56,6 +56,15 @@ public final class PhpValues {
     }
 
     @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+    public static Object probeElement(Object value, Object key, Diagnostics.Origin origin) {
+        Object raw = unwrap(value);
+        if (StringOffsets.isString(raw)) return StringOffsets.read(raw, key, StringOffsets.ReadMode.PROBE, origin);
+        if (!(raw instanceof PhpArray array)) return null;
+        var slot = array.entries.get(normalizeKey(key));
+        return slot == null ? null : own(slot.read());
+    }
+
+    @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
     public static void copyElement(Object array, Object key, Location destination) {
         var slot = ((PhpArray) unwrap(array)).entries.get(normalizeKey(key));
         if (slot == null) throw new PhpError("Error", "Undefined array key");

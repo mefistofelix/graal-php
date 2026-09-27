@@ -60,7 +60,8 @@ if /i "%~1"=="strict-test" goto strict_test
 if /i "%~1"=="iteration-test" goto iteration_test
 if /i "%~1"=="unpack-test" goto unpack_test
 if /i "%~1"=="reflection-test" goto reflection_test
-if /i "%~1"=="generator-test" goto generator_test
+if /i "%~1"=="generator-test" (set "LANGUAGE_TEST=GeneratorTest" & goto language_test)
+if /i "%~1"=="arrayaccess-test" (set "LANGUAGE_TEST=ArrayAccessTest" & goto language_test)
 if /i "%~1"=="benchmark" ("%GRAALPHP_JDK%\bin\java.exe" -cp "build\classes;%DEPS%/*" graalphp.lab.Main --benchmark & exit /b !errorlevel!)
 "%GRAALPHP_JDK%\bin\java.exe" --enable-native-access=ALL-UNNAMED -jar build\graalphp.jar --version
 exit /b %errorlevel%
@@ -175,9 +176,6 @@ set "LANGUAGE_TEST=UnpackTest"
 goto language_test
 :reflection_test
 set "LANGUAGE_TEST=ReflectionTest"
-goto language_test
-:generator_test
-set "LANGUAGE_TEST=GeneratorTest"
 goto language_test
 :strict_test
 set "LANGUAGE_TEST=StrictTypesTest"

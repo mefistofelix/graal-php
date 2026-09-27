@@ -158,8 +158,9 @@ e un Iterator il cui current sospende; stampa:
 ```
 
 Non sono ancora comprese le classi concrete dell'intera SPL (ArrayIterator,
-EmptyIterator, filtri e wrapper), tutti i callable builtin, ArrayAccess,
-reference di proprietà tipizzate o il sistema completo di attributi/Reflection.
+EmptyIterator, filtri e wrapper), tutti i callable builtin, reference di
+proprietà tipizzate o il sistema completo di attributi/Reflection. ArrayAccess è
+stato aggiunto nel [blocco successivo](arrayaccess.md).
 I generatori sono stati aggiunti in un blocco successivo; Fiber è stato poi
 escluso dagli obiettivi di compatibilità in favore di TrueAsync. Argument unpacking e array spread sono stati aggiunti nel
 [blocco successivo](unpacking.md). Il sostegno dei protocolli non implica la disponibilità

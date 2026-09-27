@@ -8,10 +8,10 @@ certificano soltanto il risultato descritto, non un'intera milestone del design.
 ## Punto di ripresa
 
 **L'utente ha rinviato le verifiche prestazionali.** Riprendere lo sviluppo
-funzionale, non PERF-01. Il blocco corrente di **LANG-01** chiude i
-[generatori PHP](docs/generators.md) sopra Reflection, unpacking, iterazione,
-classi e valori. Il seguito immediato è **ArrayAccess + SPL minima utile**, poi lifetime e le
-altre aree linguistiche aperte. PHP Fiber è deliberatamente fuori scope: il
+funzionale, non PERF-01. Il blocco corrente di **LANG-01** chiude
+[ArrayAccess](docs/arrayaccess.md) sopra generatori, Reflection, unpacking,
+iterazione, classi e valori. Il seguito immediato è la **SPL concreta minima
+utile**, poi lifetime e le altre aree linguistiche aperte. PHP Fiber è deliberatamente fuori scope: il
 modello async supportato è TrueAsync e non serve compatibilità con codice Fiber. Il loader SPL predefinito, include_path, binding completo
 fra unità e il typing delle restanti API native rimangono aperti.
 Linguaggio/TrueAsync/threading/FFI precedono Composer applicativo, Compose e mobile.
@@ -77,6 +77,12 @@ Linguaggio/TrueAsync/threading/FFI precedono Composer applicativo, Compose e mob
   sei modalità Windows/Linux JVM/native/interpreter: 222 esecuzioni.
   [Contratto](docs/generators.md).
 
+- [x] ArrayAccess integrato nel normale offset lowering: read/write/append/unset,
+  isset/empty/coalesce, `??=`, compound/increment, receiver temporanei e tutti i
+  quattro metodi sospendibili via TrueAsync. 20 programmi in sei modalità:
+  120 esecuzioni. `&offsetGet` resta legato a return-by-reference di VALUE-01.
+  [Contratto](docs/arrayaccess.md).
+
 ## Prestazioni e memoria: rinviate per richiesta dell'utente
 
 - [ ] **PERF-01 — Spiegare e ridurre il costo del p99.** L'A/B sullo stesso
@@ -134,9 +140,8 @@ Linguaggio/TrueAsync/threading/FFI precedono Composer applicativo, Compose e mob
   modello classi PHP. Enum, match/clone e strict_types delle chiamate utente
   sono implementati nel blocco valori. Iteratori utente, Countable e metadati
   degli attributi sono nel blocco iterazione; argument/array unpacking è nel
-  blocco successivo. Restano iteratori SPL concreti/ArrayAccess, ReflectionType/Enum avanzata,
-  named arguments e typing nei restanti builtin, readonly/hooks e diagnostica
-  completa. PHP Fiber è un non-obiettivo deliberato: l'async pubblico è TrueAsync.
+  blocco successivo. Restano le classi SPL concrete, ReflectionType/Enum avanzata, named arguments
+  e typing nei restanti builtin, readonly/hooks e diagnostica completa. PHP Fiber è un non-obiettivo deliberato: l'async pubblico è TrueAsync.
   Pianificare blocchi coerenti con valori, sospensioni e reload; le feature
   usate da Composer sono prioritarie, eseguire Composer non lo è.
 - [ ] **FFI-01 — Modello C e callback generiche.** CData, puntatori/buffer con
