@@ -1,6 +1,6 @@
 # Attività aperte GraalPHP
 
-Aggiornato: 26 settembre 2026. Leggere prima [AGENTS.md](AGENTS.md) e
+Aggiornato: 27 settembre 2026. Leggere prima [AGENTS.md](AGENTS.md) e
 [handoff](docs/handoff.md). Questa lista è operativa; la copertura completa
 rimane in [design-coverage.md](docs/design-coverage.md). Le caselle completate
 certificano soltanto il risultato descritto, non un'intera milestone del design.
@@ -8,10 +8,11 @@ certificano soltanto il risultato descritto, non un'intera milestone del design.
 ## Punto di ripresa
 
 **L'utente ha rinviato le verifiche prestazionali.** Riprendere lo sviluppo
-funzionale, non PERF-01. Il blocco corrente di **LANG-01** implementa
-[argument unpacking e array spread sospendibili](docs/unpacking.md), sopra i
-precedenti contratti di iterazione, classi e valori. Il blocco corrente chiude **Reflection e semantica runtime degli attributi** entro i limiti documentati; il seguito immediato è **generatori/Fiber**, poi lifetime. Il loader SPL predefinito, include_path, binding completo fra unità
-e il typing delle restanti API native rimangono aperti.
+funzionale, non PERF-01. Il blocco corrente di **LANG-01** chiude i
+[generatori PHP](docs/generators.md) sopra Reflection, unpacking, iterazione,
+classi e valori. Il seguito immediato è **Fiber**, poi lifetime e le altre aree
+linguistiche aperte. Il loader SPL predefinito, include_path, binding completo
+fra unità e il typing delle restanti API native rimangono aperti.
 Linguaggio/TrueAsync/threading/FFI precedono Composer applicativo, Compose e mobile.
 
 ## Concluso e da non rifare da zero
@@ -68,6 +69,12 @@ Linguaggio/TrueAsync/threading/FFI precedono Composer applicativo, Compose e mob
   filtri attributi lazy e `newInstance()` sospendibile con target/repeatability.
   25 programmi in sei modalità Windows/Linux JVM/native/interpreter.
   [Contratto](docs/reflection.md).
+
+- [x] Generatori PHP lazy su continuation Truffle: `yield`, chiavi, send/throw,
+  getReturn, `yield from`, generatori by-reference, Iterator/Reflection,
+  sospensioni TrueAsync e unwind `finally` alla distruzione. 37 programmi in
+  sei modalità Windows/Linux JVM/native/interpreter: 222 esecuzioni.
+  [Contratto](docs/generators.md).
 
 ## Prestazioni e memoria: rinviate per richiesta dell'utente
 
@@ -126,7 +133,7 @@ Linguaggio/TrueAsync/threading/FFI precedono Composer applicativo, Compose e mob
   modello classi PHP. Enum, match/clone e strict_types delle chiamate utente
   sono implementati nel blocco valori. Iteratori utente, Countable e metadati
   degli attributi sono nel blocco iterazione; argument/array unpacking è nel
-  blocco successivo. Restano generatori/Fiber, iteratori SPL concreti/ArrayAccess, ReflectionType/Enum avanzata, named arguments e typing nei restanti builtin,
+  blocco successivo. Restano Fiber, iteratori SPL concreti/ArrayAccess, ReflectionType/Enum avanzata, named arguments e typing nei restanti builtin,
   readonly/hooks e diagnostica completa.
   Pianificare blocchi coerenti con valori, sospensioni e reload; le feature
   usate da Composer sono prioritarie, eseguire Composer non lo è.

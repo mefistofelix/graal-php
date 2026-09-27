@@ -313,6 +313,25 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
             }
         }
     }
+    @Operation @ConstantOperand(type = boolean.class, name = "reference")
+    public static final class GeneratorYield {
+        @Specialization static Object run(VirtualFrame frame, boolean reference, Object key, Object value,
+                @com.oracle.truffle.api.dsl.Bind BytecodeNode bytecode, @com.oracle.truffle.api.dsl.Bind("$bytecodeIndex") int bci) {
+            var activation = activation(frame).at(bytecode, bci);
+            if (reference && !(value instanceof PhpValues.Location))
+                Diagnostics.origin(activation).notice("Only variable references should be yielded by reference");
+            activation.escape(key);
+            if (!reference) activation.escape(value);
+            boolean automatic = key == GeneratorApi.AUTO_KEY;
+            return new Scheduler.GeneratorYield(key, value, automatic, reference);
+        }
+    }
+    @Operation public static final class GeneratorDelegate {
+        @Specialization static Object run(VirtualFrame frame, Object source) {
+            activation(frame).escape(source);
+            return new Scheduler.GeneratorDelegate(source);
+        }
+    }
     @Operation public static final class Suspended {
         @Specialization static boolean run(VirtualFrame frame, Object value) {
             boolean suspended = value instanceof NestedCall || value instanceof Scheduler.Effect;

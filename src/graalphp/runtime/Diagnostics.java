@@ -21,6 +21,7 @@ public final class Diagnostics {
     public record Site(com.oracle.truffle.api.bytecode.BytecodeNode bytecode, int index, java.nio.file.Path file, String name, boolean strictTypes) {}
     public record Origin(Request request, Site site) implements com.oracle.truffle.api.interop.TruffleObject {
         public void warning(String message) { emit(request, site, 2L, "Warning", message); }
+        public void notice(String message) { emit(request, site, 8L, "Notice", message); }
         public void deprecated(String message) { emit(request, site, 8192L, "Deprecated", message); }
     }
     public static Origin origin(Activation caller) { return new Origin(caller.request, site(caller)); }

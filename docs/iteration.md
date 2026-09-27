@@ -158,9 +158,9 @@ e un Iterator il cui current sospende; stampa:
 ```
 
 Non sono ancora comprese le classi concrete dell'intera SPL (ArrayIterator,
-EmptyIterator, filtri e wrapper), generatori/Fiber, tutti i callable builtin,
-ArrayAccess, reference di proprietà tipizzate o il sistema completo di
-attributi/Reflection. Argument unpacking e array spread sono stati aggiunti nel
+EmptyIterator, filtri e wrapper), Fiber, tutti i callable builtin, ArrayAccess,
+reference di proprietà tipizzate o il sistema completo di attributi/Reflection.
+I generatori sono stati aggiunti in un blocco successivo. Argument unpacking e array spread sono stati aggiunti nel
 [blocco successivo](unpacking.md). Il sostegno dei protocolli non implica la disponibilità
 di quelle classi. Le conversioni generali e le diagnostiche non coperte restano
 nel backlog. La suite non è una misura prestazionale e non chiude LANG-01.

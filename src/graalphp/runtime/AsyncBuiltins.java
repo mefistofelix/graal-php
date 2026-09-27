@@ -48,7 +48,7 @@ public final class AsyncBuiltins {
 
     @TruffleBoundary
     public static java.util.Map<String, Function> compile(PhpContext context) {
-        return PhpCompiler.compile(context.language, Source.newBuilder("php", SOURCE + ReflectionApi.SOURCE + IterationApi.SOURCE + ClassLoading.SOURCE + NativeInvocation.SOURCE + NetworkApi.SOURCE + CurlMultiApi.SOURCE + SqliteApi.SOURCE, "<async-library>").build()).functions();
+        return PhpCompiler.compile(context.language, Source.newBuilder("php", SOURCE + GeneratorApi.SOURCE + ReflectionApi.SOURCE + IterationApi.SOURCE + ClassLoading.SOURCE + NativeInvocation.SOURCE + NetworkApi.SOURCE + CurlMultiApi.SOURCE + SqliteApi.SOURCE, "<async-library>").build()).functions();
     }
 
     @TruffleBoundary

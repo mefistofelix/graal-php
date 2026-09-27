@@ -1,0 +1,23 @@
+PHP generators, 2026-09-27
+
+PASS 37/37 programs Windows JVM.
+PASS 37/37 programs Windows Native Image.
+PASS 37/37 programs Windows Native Image --interpreter.
+PASS 37/37 programs Linux JVM.
+PASS 37/37 programs Linux Native Image.
+PASS 37/37 programs Linux Native Image --interpreter.
+TOTAL 222/222 program executions: 210 output comparisons and 12 semantic rejections.
+
+PASS Windows verify: 91 integration scenarios; 53 value scenarios; 256 ownership graphs / 1280 collection phases; 56 field-iteration checks; 52 attribute metadata/source-range checks.
+PASS Linux verify: 85 integration scenarios; 53 value scenarios; 256 ownership graphs / 1280 collection phases; 56 field-iteration checks; 52 attribute metadata/source-range checks.
+PASS Windows Native Image TrueAsync: 82/82 differential scenarios.
+PASS Linux Native Image TrueAsync: 82/82 differential scenarios.
+PASS 107 src/tests files byte-identical between authoritative workspace and clean Linux copy.
+PASS copied Linux product from the Windows root under WSL: --version, generators example, and --interpreter example.
+
+Windows executable SHA256 79b857f0472b639f8fdee6b275e6e421d9361409957aab1c4e6aca27253681a3
+Linux executable SHA256 d01b53cb3d8951f179982ae5ada29bc46b6d4a4939058be3da1ad2370f8f6390
+Windows JAR SHA256 3e6e4c2ba23bda12b03541d29809c5bf884d5e8acfe167c54886d1b6d8e259ed
+Linux JAR SHA256 93c576e794f282bc22ccb399a3cd8582d74b6079f5dfb904596970c5bd0a1a6b
+
+No performance campaign and no JIT/GC/default change. Fiber remains open and is the next language milestone.

@@ -6,6 +6,7 @@ import com.oracle.truffle.api.source.Source;
 import graalphp.frontend.Ir;
 import graalphp.frontend.Parser;
 import graalphp.runtime.Execution;
+import graalphp.runtime.GeneratorApi;
 import graalphp.runtime.PhpError;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
@@ -23,8 +24,11 @@ public final class PhpCompiler {
     private final String functionName;
     private final String traitName;
     private final boolean strictTypes;
+    private final boolean generatorFunction;
+    private final boolean returnsReference;
     private final ArrayDeque<Loop> loops = new ArrayDeque<>();
-    private PhpCompiler(PhpRootGen.Builder builder, PhpLanguage language, Source source, Path path, String owner, String functionName, boolean strictTypes, String traitName) {
+    private PhpCompiler(PhpRootGen.Builder builder, PhpLanguage language, Source source, Path path, String owner, String functionName,
+                        boolean strictTypes, boolean generatorFunction, boolean returnsReference, String traitName) {
         this.builder = builder;
         this.language = language;
         this.source = source;
@@ -33,6 +37,8 @@ public final class PhpCompiler {
         this.functionName = functionName;
         this.traitName = traitName;
         this.strictTypes = strictTypes;
+        this.generatorFunction = generatorFunction;
+        this.returnsReference = returnsReference;
     }
 
     @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
@@ -42,7 +48,7 @@ public final class PhpCompiler {
         var functions = new HashMap<String, Execution.Function>();
         for (var function : ir.functions()) {
             String key = function.name().toLowerCase(java.util.Locale.ROOT);
-            var compiled = function(language, source, path, function.name(), function.parameters(), function.body(), false, null, function.returnType(), ir.strictTypes()).annotated(source, function, false);
+            var compiled = function(language, source, path, function.name(), function.parameters(), function.body(), false, null, function.returnType(), ir.strictTypes(), function.generator(), function.returnsReference()).annotated(source, function, false);
             if (functions.putIfAbsent(key, compiled) != null) throw new PhpError("Cannot redeclare " + key);
         }
         var classes = new java.util.LinkedHashMap<String, graalphp.runtime.ObjectModel.Definition>();
@@ -53,7 +59,7 @@ public final class PhpCompiler {
             }
         }
         return new Execution.Unit(path, source.getCharacters().toString(),
-                function(language, source, path, source.getName(), List.of(), ir.statements(), true, null, null, ir.strictTypes()),
+                function(language, source, path, source.getName(), List.of(), ir.statements(), true, null, null, ir.strictTypes(), false, false),
                 java.util.Map.copyOf(functions), java.util.Collections.unmodifiableMap(classes));
     }
     public static java.util.Map<String, graalphp.runtime.ObjectModel.Definition> builtinTypes(PhpLanguage language, Source source) {
@@ -73,7 +79,7 @@ public final class PhpCompiler {
         for (var method : declaration.methods()) {
             var value = method.function();
             var compiled = function(language, source, path, value.name(), value.parameters(), value.body(),
-                    false, declaration.name(), value.returnType(), strictTypes, declaration.kind() == Ir.TypeKind.TRAIT ? declaration.name() : null)
+                    false, declaration.name(), value.returnType(), strictTypes, value.generator(), value.returnsReference(), declaration.kind() == Ir.TypeKind.TRAIT ? declaration.name() : null)
                     .annotated(source, value, source.isInternal() && graalphp.runtime.IterationApi.tentativeType(declaration.name()));
             String key = value.name().toLowerCase(java.util.Locale.ROOT);
             if (methods.putIfAbsent(key, new graalphp.runtime.ObjectModel.Method(compiled, method.shared(), method.visibility(), method.abstractMethod(), method.finalMethod())) != null) {
@@ -94,7 +100,7 @@ public final class PhpCompiler {
                 if (methods.containsKey(key)) throw PhpError.fatal("Cannot redeclare enum method " + declaration.name() + "::" + value.name());
                 Source builtinSource = graalphp.runtime.EnumApi.methodSource();
                 var body = function(language, builtinSource, null, value.name(), value.parameters(), value.body(), false,
-                        declaration.name(), value.returnType(), false);
+                        declaration.name(), value.returnType(), false, false, false);
                 var builtin = new Execution.Function(body.name(), body.parameters(), body.target(), body.file(), body.owner(), body.returnType(), true);
                 methods.put(key, new graalphp.runtime.ObjectModel.Method(builtin, true, "public", false, false));
             }
@@ -105,26 +111,34 @@ public final class PhpCompiler {
                 List.copyOf(constants), declaration.backingType(), declaration.cases(), declaration.attributes());
     }
     private static Execution.Function function(PhpLanguage language, Source source, Path path, String name,
-            List<Ir.Parameter> parameters, List<Ir.Statement> body, boolean main, String owner, String returnType, boolean strictTypes) {
-        return function(language, source, path, name, parameters, body, main, owner, returnType, strictTypes, null);
+            List<Ir.Parameter> parameters, List<Ir.Statement> body, boolean main, String owner, String returnType, boolean strictTypes, boolean generator) {
+        return function(language, source, path, name, parameters, body, main, owner, returnType, strictTypes, generator, false, null);
     }
     private static Execution.Function function(PhpLanguage language, Source source, Path path, String name,
-            List<Ir.Parameter> parameters, List<Ir.Statement> body, boolean main, String owner, String returnType, boolean strictTypes, String traitName) {
+            List<Ir.Parameter> parameters, List<Ir.Statement> body, boolean main, String owner, String returnType,
+            boolean strictTypes, boolean generator, boolean returnsReference) {
+        return function(language, source, path, name, parameters, body, main, owner, returnType, strictTypes, generator, returnsReference, null);
+    }
+    private static Execution.Function function(PhpLanguage language, Source source, Path path, String name,
+            List<Ir.Parameter> parameters, List<Ir.Statement> body, boolean main, String owner, String returnType,
+            boolean strictTypes, boolean generator, boolean returnsReference, String traitName) {
+        if (generator && !graalphp.runtime.TypeRelations.acceptsGenerator(returnType))
+            throw PhpError.fatal("Generator return type must be a supertype of Generator, " + returnType + " given");
         var roots = PhpRootGen.create(language, BytecodeConfig.WITH_SOURCE, builder -> {
             builder.beginRoot();
             builder.beginSource(source);
-            var compiler = new PhpCompiler(builder, language, source, path, owner, name, strictTypes, traitName);
+            var compiler = new PhpCompiler(builder, language, source, path, owner, name, strictTypes, generator, returnsReference, traitName);
             for (var statement : body) compiler.statement(statement);
             builder.beginReturn();
-            builder.beginCheckReturn();
+            if (!generator) builder.beginCheckReturn();
             if (main) builder.emitLoadConstant(1L); else builder.emitLoadNull();
-            builder.endCheckReturn();
+            if (!generator) builder.endCheckReturn();
             builder.endReturn();
             builder.endSource();
             builder.endRoot();
         });
         var root = roots.getNode(0); root.name = name;
-        return new Execution.Function(name, parameters, root.getCallTarget(), path, owner, returnType, false, strictTypes);
+        return new Execution.Function(name, parameters, root.getCallTarget(), path, owner, returnType, false, strictTypes, generator, returnsReference);
     }
     @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
     private void statement(Ir.Statement statement) {
@@ -140,7 +154,13 @@ public final class PhpCompiler {
             case Ir.Block block -> { b.beginBlock(); for (var child : block.statements()) statement(child); b.endBlock(); }
             case Ir.ExpressionStatement expression -> { b.beginDrop(); expression(expression.expression()); b.endDrop(); }
             case Ir.Echo echo -> { for (var expression : echo.expressions()) { b.beginEcho(); expression(expression); b.endEcho(); } }
-            case Ir.Return returned -> { b.beginReturn(); b.beginCheckReturn(); expression(returned.value()); b.endCheckReturn(); b.endReturn(); }
+            case Ir.Return returned -> {
+                b.beginReturn();
+                if (!generatorFunction) b.beginCheckReturn();
+                expression(returned.value());
+                if (!generatorFunction) b.endCheckReturn();
+                b.endReturn();
+            }
             case Ir.If conditional -> {
                 if (conditional.no() == null) b.beginIfThen(); else b.beginIfThenElse();
                 truth(conditional.condition()); statement(conditional.yes());
@@ -320,6 +340,8 @@ public final class PhpCompiler {
             case Ir.Match match -> match(match);
             case Ir.ThrowExpression thrown -> { b.beginThrowValue(); expression(thrown.value()); b.endThrowValue(); }
             case Ir.Clone clone -> cloneObject(clone.value());
+            case Ir.Yield yielded -> generatorYield(yielded);
+            case Ir.YieldFrom delegated -> generatorDelegate(delegated.value());
             case Ir.DynamicStaticCall call -> memberCall("static", call.name(), call.type(), call.arguments());
             case Ir.DynamicCall call -> memberCall("callable", "", call.callable(), call.arguments());
             case Ir.MethodCall call -> memberCall("method", call.name(), call.object(), call.arguments());
@@ -328,7 +350,7 @@ public final class PhpCompiler {
             case Ir.DynamicConstruct construct -> construct(construct.type(), construct.arguments());
             case Ir.Closure closure -> {
                 var value = closure.function();
-                var compiled = function(language, source, path, value.name(), value.parameters(), value.body(), false, owner, value.returnType(), strictTypes, traitName).annotated(source, value, false);
+                var compiled = function(language, source, path, value.name(), value.parameters(), value.body(), false, owner, value.returnType(), strictTypes, value.generator(), value.returnsReference(), traitName).annotated(source, value, false);
                 b.emitCreateClosure(new graalphp.runtime.ObjectModel.ClosureTemplate(compiled, closure.captures(), closure.arrow()));
             }
             case Ir.ArrayLiteral array -> {
@@ -346,6 +368,29 @@ public final class PhpCompiler {
                 b.endArray();
             }
         }
+    }
+    private void generatorDelegate(Ir.Expression source) {
+        if (returnsReference) throw PhpError.fatal("Cannot use yield from inside a by-reference generator");
+        var b = builder;
+        b.beginResume();
+        b.beginYield();
+        b.beginGeneratorDelegate();
+        expression(source);
+        b.endGeneratorDelegate();
+        b.endYield();
+        b.endResume();
+    }
+    private void generatorYield(Ir.Yield yielded) {
+        var b = builder;
+        b.beginResume();
+        b.beginYield();
+        boolean reference = returnsReference;
+        b.beginGeneratorYield(reference);
+        if (yielded.key() == null) b.emitLoadConstant(GeneratorApi.AUTO_KEY); else expression(yielded.key());
+        if (reference && isLocation(yielded.value())) location(yielded.value()); else expression(yielded.value());
+        b.endGeneratorYield();
+        b.endYield();
+        b.endResume();
     }
     private void call(Ir.Call call) {
         suspended(() -> {

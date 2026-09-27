@@ -15,7 +15,7 @@ public final class PhpContext implements AutoCloseable {
     private java.util.Map<String, ObjectModel.Definition> builtinTypes;
     public synchronized java.util.Map<String, ObjectModel.Definition> builtinTypes() {
         if (builtinTypes == null) builtinTypes = PhpCompiler.builtinTypes(language,
-                com.oracle.truffle.api.source.Source.newBuilder("php", EnumApi.INTERFACES + IterationApi.TYPES + ReflectionApi.TYPES + "\nclass stdClass {}", "<builtin-types>").internal(true).build());
+                com.oracle.truffle.api.source.Source.newBuilder("php", EnumApi.INTERFACES + IterationApi.TYPES + GeneratorApi.TYPES + ReflectionApi.TYPES + "\nclass stdClass {}", "<builtin-types>").internal(true).build());
         return builtinTypes;
     }
     public synchronized Execution.Function asyncFunction(String name) {

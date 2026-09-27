@@ -14,8 +14,10 @@ import static graalphp.runtime.Execution.*;
 
 /** Request event loop, nested task scopes and explicit ownership across continuations. */
 public final class Scheduler implements AutoCloseable {
-    public sealed interface Effect permits Delay, Await, Cooperate {}
+    public sealed interface Effect permits Delay, Await, Cooperate, GeneratorYield, GeneratorDelegate {}
     public record Cooperate() implements Effect {}
+    public record GeneratorYield(Object key, Object value, boolean automatic, boolean reference) implements Effect {}
+    public record GeneratorDelegate(Object source) implements Effect {}
     public record Delay(long milliseconds) implements Effect {}
     /** Optional synchronous completion runs on the owner just before guest resumption,
      * including cancellation delivery. It must preserve ownership of its input. */
@@ -65,6 +67,7 @@ public final class Scheduler implements AutoCloseable {
         public int protectionDepth;
         public int checkpoints = 128;
         private WaitRegistration registration;
+        GeneratorApi.State generator;
         Task(ContextNode context, Scope scope) {
             this.context = context;
             this.scope = scope;
@@ -99,6 +102,7 @@ public final class Scheduler implements AutoCloseable {
     private volatile Runnable wakeup = () -> {};
     private long cleanupDeadline = Long.MAX_VALUE;
     private int activeMembers; // Also counts detached scopes, which have no rootScope ancestor.
+    private int generatorCleanup;
 
     public Scheduler(Request request) {
         this.request = request;
@@ -144,6 +148,53 @@ public final class Scheduler implements AutoCloseable {
             finally { task.running = false; }
         });
         return task.future;
+    }
+    Task createGenerator(Activation caller, ObjectModel.Invocation invocation, Argument[] args) {
+        var task = new Task(caller.task.context, caller.task.scope);
+        task.activation = new Activation(request, invocation.function(), task, false, args, Diagnostics.origin(caller));
+        ObjectModel.bind(task.activation, invocation);
+        tasks.add(task);
+        return task;
+    }
+    void startGenerator(Task task) {
+        enqueue(() -> {
+            if (task.future.completion.isDone()) return;
+            task.started = true;
+            task.running = true;
+            try { advance(task, task.activation.function.target().call(task.activation), null); }
+            catch (PhpError error) { advance(task, null, error); }
+            finally { task.running = false; }
+        });
+    }
+    void resumeGenerator(Task task, Object value) {
+        if (task.waiting == null) { PhpValues.drop(value); throw new PhpError("Generator is not suspended"); }
+        resumeLater(task, task.ticket, value);
+    }
+    void closeGenerator(Task task) {
+        if (!task.started) {
+            if (task.activation != null) task.activation.close();
+            task.future.completion.complete(null);
+            return;
+        }
+        if (task.future.completion.isDone()) return;
+        generatorCleanup++;
+        var continuation = task.waiting;
+        if (continuation == null) {
+            generatorCleanup--;
+            return;
+        }
+        task.waiting = null;
+        task.running = true;
+        try {
+            advance(task, continuation.continueWith(new Failure(PhpError.generatorClose())), null);
+        } catch (PhpError error) {
+            advance(task, null, error);
+        } finally {
+            task.running = false;
+        }
+    }
+    void generatorClosed() {
+        if (generatorCleanup > 0) generatorCleanup--;
     }
     public Scope newScope(Scope parent) {
         var scope = new Scope(parent, rootScope.deadline);
@@ -350,7 +401,7 @@ public final class Scheduler implements AutoCloseable {
     }
 
     public boolean pending() {
-        return activeMembers != 0;
+        return activeMembers != 0 || generatorCleanup != 0;
     }
 
     private static PhpError failure(Future future) {
@@ -463,7 +514,19 @@ public final class Scheduler implements AutoCloseable {
                             ? new PhpError("Async\\AsyncCancellation", "Coroutine cancelled") : task.cancellation));
                     return;
                 }
+                if (task.generator != null) {
+                    if (continuation.getResult() instanceof GeneratorYield yielded) {
+                        task.generator.yielded(yielded);
+                        return;
+                    }
+                    if (continuation.getResult() instanceof GeneratorDelegate delegated) {
+                        task.generator.delegated(delegated);
+                        return;
+                    }
+                }
                 switch (continuation.getResult()) {
+                    case GeneratorYield ignored -> throw new PhpError("yield outside a generator task");
+                    case GeneratorDelegate ignored -> throw new PhpError("yield from outside a generator task");
                     case Cooperate ignored -> resumeLater(task, ticket, null);
                     case Delay delay -> {
                         if (request.nativeReactor && delay.milliseconds > 0) {
@@ -484,6 +547,10 @@ public final class Scheduler implements AutoCloseable {
             try { task.activation.close(); }
             catch (PhpError cleanup) { if (failure == null) failure = cleanup; else failure.addSuppressed(cleanup); }
             if (task.parents.isEmpty()) {
+                if (task.generator != null) {
+                    task.generator.completed(result, failure);
+                    return;
+                }
                 if (failure == null) task.future.completion.complete(result);
                 else { PhpValues.drop(result); task.future.completion.completeExceptionally(failure); }
                 memberFinished(task.scope);

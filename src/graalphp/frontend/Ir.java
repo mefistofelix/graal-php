@@ -10,9 +10,16 @@ public final class Ir {
                        List<ClassDeclaration> classes, boolean strictTypes) {}
     public record Attribute(String name, List<Expression> arguments, int start, int length) {}
     public record Function(String name, List<Parameter> parameters, List<Statement> body, int start, int length,
-                           String returnType, List<Attribute> attributes) {
+                           String returnType, List<Attribute> attributes, boolean generator, boolean returnsReference) {
         public Function(String name, List<Parameter> parameters, List<Statement> body, int start, int length, String returnType) {
-            this(name, parameters, body, start, length, returnType, List.of());
+            this(name, parameters, body, start, length, returnType, List.of(), false, false);
+        }
+        public Function(String name, List<Parameter> parameters, List<Statement> body, int start, int length, String returnType, List<Attribute> attributes) {
+            this(name, parameters, body, start, length, returnType, attributes, false, false);
+        }
+        public Function(String name, List<Parameter> parameters, List<Statement> body, int start, int length,
+                        String returnType, List<Attribute> attributes, boolean generator) {
+            this(name, parameters, body, start, length, returnType, attributes, generator, false);
         }
     }
     public record Parameter(String name, boolean reference, String type, Expression defaultValue, boolean variadic, List<Attribute> attributes) {
@@ -66,7 +73,7 @@ public final class Ir {
     public sealed interface Expression permits Literal, Variable, Index, Assign, Binary, Unary, Call, ArrayLiteral,
             CompoundAssign, Increment, Conditional, Coalesce, Property, StaticProperty, MethodCall, StaticCall,
             Construct, DynamicConstruct, DynamicCall, Closure, Constant, NamedArgument, UnpackArgument, ClassConstant, ClassName, InstanceOf, EnumCaseValue,
-            Match, ThrowExpression, Clone, DynamicStaticCall {}
+            Match, ThrowExpression, Clone, DynamicStaticCall, Yield, YieldFrom {}
     public record NamedArgument(String name, Expression value) implements Expression {}
     public record UnpackArgument(Expression value) implements Expression {}
     public record Literal(Object value) implements Expression {}
@@ -94,6 +101,8 @@ public final class Ir {
     public record MatchArm(List<Expression> conditions, Expression value) {}
     public record ThrowExpression(Expression value) implements Expression {}
     public record Clone(Expression value) implements Expression {}
+    public record Yield(Expression key, Expression value) implements Expression {}
+    public record YieldFrom(Expression value) implements Expression {}
     public record DynamicStaticCall(Expression type, String name, List<Expression> arguments) implements Expression {}
     public record Binary(String operator, Expression left, Expression right) implements Expression {}
     public record Unary(String operator, Expression value) implements Expression {}

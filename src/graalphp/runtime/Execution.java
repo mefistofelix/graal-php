@@ -19,19 +19,26 @@ public final class Execution {
         public boolean hasAttribute(String name) { return attributes.stream().anyMatch(attribute -> attribute.name().equalsIgnoreCase(name)); }
     }
     public record Function(String name, List<Ir.Parameter> parameters, CallTarget target, Path file,
-                           String owner, String returnType, boolean builtin, boolean strictTypes, Declaration declaration) {
+                           String owner, String returnType, boolean builtin, boolean strictTypes, boolean generator, boolean returnsReference, Declaration declaration) {
         public Function(String name, List<Ir.Parameter> parameters, CallTarget target, Path file, String owner, String returnType, boolean builtin, boolean strictTypes) {
-            this(name, parameters, target, file, owner, returnType, builtin, strictTypes, null);
+            this(name, parameters, target, file, owner, returnType, builtin, strictTypes, false, false, null);
         }
         public Function annotated(com.oracle.truffle.api.source.Source source, Ir.Function syntax, boolean tentativeReturn) {
             var declaration = new Declaration(source.createSection(syntax.start(), syntax.length()), syntax.attributes(), tentativeReturn);
-            return new Function(name, parameters, target, file, owner, returnType, builtin, strictTypes, declaration);
+            return new Function(name, parameters, target, file, owner, returnType, builtin, strictTypes, generator, returnsReference, declaration);
         }
         public Function(String name, List<Ir.Parameter> parameters, CallTarget target, Path file, String owner, String returnType) {
-            this(name, parameters, target, file, owner, returnType, false, false);
+            this(name, parameters, target, file, owner, returnType, false, false, false, false, null);
         }
         public Function(String name, List<Ir.Parameter> parameters, CallTarget target, Path file, String owner, String returnType, boolean builtin) {
-            this(name, parameters, target, file, owner, returnType, builtin, false);
+            this(name, parameters, target, file, owner, returnType, builtin, false, false, false, null);
+        }
+        public Function(String name, List<Ir.Parameter> parameters, CallTarget target, Path file, String owner, String returnType, boolean builtin, boolean strictTypes, boolean generator) {
+            this(name, parameters, target, file, owner, returnType, builtin, strictTypes, generator, false, null);
+        }
+        public Function(String name, List<Ir.Parameter> parameters, CallTarget target, Path file, String owner, String returnType,
+                        boolean builtin, boolean strictTypes, boolean generator, boolean returnsReference) {
+            this(name, parameters, target, file, owner, returnType, builtin, strictTypes, generator, returnsReference, null);
         }
     }
     public record Unit(Path path, String content, Function main, Map<String, Function> functions,

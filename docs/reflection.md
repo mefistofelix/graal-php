@@ -68,7 +68,7 @@ modifier, catalogo completo dei tipi interni e diversi dettagli diagnostici.
 Gli attributi builtin ulteriori e la verifica di ogni combinazione di target
 restano da estendere insieme al catalogo linguistico.
 
-Il blocco non chiude LANG-01. Il prossimo salto semantico principale resta
-generatori/Fiber; lifetime, loader SPL predefinito/include_path e typing dei
-builtin rimangono tracciati nel TODO. Nessuna misura prestazionale è stata
+Il blocco non chiude LANG-01. I generatori sono stati completati nel
+[blocco successivo](generators.md); Fiber, lifetime, loader SPL
+predefinito/include_path e typing dei builtin rimangono tracciati nel TODO. Nessuna misura prestazionale è stata
 eseguita o reinterpretata.

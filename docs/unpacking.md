@@ -97,8 +97,9 @@ build Windows rifiutata dalla blocklist e il successivo fix con TruffleBoundary.
 
 ## Limiti
 
-Questo blocco non implementa generatori/Fiber, ArrayAccess, l'intera SPL,
-Reflection completa o tutte le firme builtin. I nomi binari non UTF-8 usati
+Questo blocco non implementava generatori/Fiber, ArrayAccess, l'intera SPL,
+Reflection completa o tutte le firme builtin. Reflection e generatori sono
+stati aggiunti nei blocchi successivi; Fiber e gli altri limiti restano aperti. I nomi binari non UTF-8 usati
 come named-argument key richiedono ancora una rappresentazione del nome
 argomento non limitata a `String`. Il frontend non aggiunge con questo blocco
 la dichiarazione `const` globale: le costanti di classe già supportate coprono

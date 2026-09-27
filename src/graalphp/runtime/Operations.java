@@ -113,6 +113,7 @@ public final class Operations {
         } finally { for (var argument : arguments) argument.close(); }
     }
     public static Object invokeFunction(Activation caller, Function function, Argument[] arguments, IndirectCallNode call) {
+        if (function.generator()) return GeneratorApi.create(caller, new ObjectModel.Invocation(function, null, null, null), arguments);
         var child = new Activation(caller.request, function, caller.task, false, arguments, Diagnostics.origin(caller));
         return executeChild(caller, child, call);
     }
@@ -129,6 +130,8 @@ public final class Operations {
         try {
             if (kind.equals("static") && string(receiver).equalsIgnoreCase("FFI")) return FfiApi.staticMethod(caller, name, args);
             if (PhpValues.unwrap(receiver) instanceof FfiApi.Binding binding) return FfiApi.invoke(caller, binding, name, args, call);
+            Object generator = GeneratorApi.method(caller, receiver, name, args, call);
+            if (generator != AsyncApi.UNHANDLED) return generator;
             Object reflection = ReflectionApi.method(caller, receiver, name, args, call);
             if (reflection != AsyncApi.UNHANDLED) return reflection;
             if (PhpValues.unwrap(receiver) instanceof AsyncMutex mutex) return mutexMethod(caller, mutex, name, args, call);
@@ -205,17 +208,8 @@ public final class Operations {
             case "__mutex_abort": ((AsyncMutex) values[0]).abort(activation.task, future(values[1])); return null;
             case "get_class":
                 require(name, values, 1);
-                String builtinClass = ReflectionApi.className(values[0]);
-                if (builtinClass == null) builtinClass = AsyncApi.className(values[0]);
-                if (builtinClass == null) builtinClass = NetworkApi.className(values[0]);
-                if (builtinClass == null) builtinClass = SqliteApi.className(values[0]);
-                if (values[0] instanceof CurlApi.Handle) return "CurlHandle";
-                if (values[0] instanceof CurlMultiApi.Handle) return "CurlMultiHandle";
-                if (values[0] instanceof FfiApi.Binding) return "FFI";
+                String builtinClass = ObjectModel.className(values[0]);
                 if (builtinClass != null) return builtinClass;
-                if (values[0] instanceof PhpValues.PhpObject object) {
-                    return object.descriptor instanceof ObjectModel.RuntimeClass type ? type.definition.name() : "Closure";
-                }
                 throw new PhpError("get_class requires an object");
             case "is_array": require(name, values, 1); return values[0] instanceof PhpValues.PhpArray;
             case "is_object": require(name, values, 1); return values[0] instanceof com.oracle.truffle.api.interop.TruffleObject;

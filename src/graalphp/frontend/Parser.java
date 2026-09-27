@@ -19,6 +19,7 @@ public final class Parser {
     private String namespace = "";
     private int position;
     private int closureId;
+    private final java.util.ArrayDeque<Boolean> generatorStack = new java.util.ArrayDeque<>();
 
     public Parser(Source source) {
         this.source = source;
@@ -236,14 +237,20 @@ public final class Parser {
 
     private Function function(boolean method, boolean signatureOnly, List<Attribute> attributes) {
         int start = take("function").start;
+        boolean returnsReference = accept("&");
         String name = identifier();
         if (!method) name = declared(name);
         var parameters = parameters();
         String returnType = accept(":") ? type() : null;
         List<Statement> body;
+        boolean generator = false;
         if (signatureOnly) { take(";"); body = List.of(); }
-        else body = ((Block) block().form()).statements();
-        return new Function(name, parameters, body, start, previous().end - start, returnType, attributes);
+        else {
+            generatorStack.push(false);
+            body = ((Block) block().form()).statements();
+            generator = generatorStack.pop();
+        }
+        return new Function(name, parameters, body, start, previous().end - start, returnType, attributes, generator, returnsReference);
     }
 
     private List<Parameter> parameters() {
@@ -469,6 +476,15 @@ public final class Parser {
         if (accept("match")) return matchExpression();
         if (accept("throw")) return new ThrowExpression(expression(0));
         if (accept("clone")) return new Clone(expression(12));
+        if (accept("yield")) {
+            if (generatorStack.isEmpty()) fail("The yield expression can only be used inside a function");
+            generatorStack.pop(); generatorStack.push(true);
+            if (accept("from")) return new YieldFrom(expression(0));
+            if (at(";") || at(")") || at("]") || at(",")) return new Yield(null, new Literal(null));
+            var first = expression(0);
+            if (accept("=>")) return new Yield(first, expression(0));
+            return new Yield(null, first);
+        }
         if (accept("(")) { var value = expression(0); take(")"); return value; }
         if (accept("!") || accept("-") || accept("+")) return new Unary(token.text, expression(11));
         if (accept("++") || accept("--")) return new Increment(expression(11), token.text.equals("++") ? 1 : -1, true);
@@ -533,6 +549,7 @@ public final class Parser {
     private Expression closure(List<Attribute> attributes) {
         var token = tokens.get(position++);
         boolean arrow = token.text.equals("fn");
+        boolean returnsReference = !arrow && accept("&");
         var parameters = parameters();
         var captures = new ArrayList<Capture>();
         if (!arrow && accept("use")) {
@@ -545,13 +562,15 @@ public final class Parser {
         }
         String returnType = accept(":") ? type() : null;
         List<Statement> body;
+        generatorStack.push(false);
         if (arrow) {
             take("=>");
             var value = expression(1);
             body = List.of(new Statement(token.start, previous().end - token.start, new Return(value)));
         } else body = ((Block) block().form()).statements();
+        boolean generator = generatorStack.pop();
         var function = new Function("{closure#" + ++closureId + "}", parameters, body, token.start,
-                previous().end - token.start, returnType, attributes);
+                previous().end - token.start, returnType, attributes, generator, returnsReference);
         return new Closure(function, List.copyOf(captures), arrow);
     }
 

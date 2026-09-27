@@ -461,6 +461,7 @@ public final class PhpValues {
         }
 
         @Override void discard() {
+            if (descriptor instanceof GeneratorApi.State generator) generator.close();
             fields.values().forEach(Slot::forget);
             fields.clear();
             fieldOrder.clear();

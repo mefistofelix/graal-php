@@ -16,7 +16,7 @@ public final class ObjectModel {
     public record Method(Function function, boolean shared, String visibility, boolean abstractMethod,
                          boolean finalMethod) {
         public Method inClass(String owner) {
-            var rebound = new Function(function.name(), function.parameters(), function.target(), function.file(), owner, function.returnType(), function.builtin(), function.strictTypes(), function.declaration());
+            var rebound = new Function(function.name(), function.parameters(), function.target(), function.file(), owner, function.returnType(), function.builtin(), function.strictTypes(), function.generator(), function.returnsReference(), function.declaration());
             return new Method(rebound, shared, visibility, abstractMethod, finalMethod);
         }
     }
@@ -139,6 +139,7 @@ public final class ObjectModel {
 
     @TruffleBoundary
     public static Object create(Activation caller, String name) {
+        if (name.equalsIgnoreCase("Generator")) throw new PhpError("Error", "The \"Generator\" class is reserved for internal use and cannot be manually instantiated");
         Object builtin = ReflectionApi.allocate(name);
         if (builtin != AsyncApi.UNHANDLED) return builtin;
         builtin = AsyncApi.allocate(caller, name);
@@ -161,6 +162,8 @@ public final class ObjectModel {
         try {
             Object raw = PhpValues.unwrap(value);
             if (!(raw instanceof PhpValues.PhpObject object)) throw new PhpError("Error", "__clone method called on non-object");
+            if (object.descriptor instanceof GeneratorApi.State)
+                throw new PhpError("Error", "Trying to clone an uncloneable object of class Generator");
             if (object.descriptor instanceof RuntimeClass type && type.definition.kind() == Ir.TypeKind.ENUM)
                 throw new PhpError("Error", "Trying to clone an uncloneable object of class " + type.definition.name());
             return caller.track(PhpValues.own(object.copyObject()));
@@ -285,7 +288,7 @@ public final class ObjectModel {
     @TruffleBoundary
     public static Object closure(Activation caller, Function function, List<Ir.Capture> captures, boolean arrow) {
         if (function.owner() != null && caller.function.owner() != null && !function.owner().equals(caller.function.owner()))
-            function = new Function(function.name(), function.parameters(), function.target(), function.file(), caller.function.owner(), function.returnType(), function.builtin(), function.strictTypes(), function.declaration());
+            function = new Function(function.name(), function.parameters(), function.target(), function.file(), caller.function.owner(), function.returnType(), function.builtin(), function.strictTypes(), function.generator(), function.returnsReference(), function.declaration());
         var object = new PhpValues.PhpObject(caller.request.heap, new ClosureData(function, captures));
         Object owned = caller.track(PhpValues.own(object));
         if (arrow) {
@@ -336,6 +339,7 @@ public final class ObjectModel {
     public static Object invoke(Activation caller, Invocation invocation, Argument[] args, IndirectCallNode call) {
         try {
             if (invocation == null) return null;
+            if (invocation.function.generator()) return GeneratorApi.create(caller, invocation, args);
             if (invocation.calledClass != null && invocation.calledClass.definition.kind == Ir.TypeKind.TRAIT
                     && invocation.environment == null && invocation.receiver == null) {
                 Diagnostics.deprecated(caller, "Calling static trait method " + invocation.calledClass.definition.name + "::" + invocation.function.name()
@@ -497,7 +501,9 @@ public final class ObjectModel {
     public static String className(Object value) {
         value = PhpValues.unwrap(value);
         if (value instanceof PhpValues.PhpObject object)
-            return object.descriptor instanceof RuntimeClass type ? type.definition.name : object.descriptor instanceof ClosureData ? "Closure" : null;
+            return object.descriptor instanceof RuntimeClass type ? type.definition.name
+                    : object.descriptor instanceof ClosureData ? "Closure"
+                    : object.descriptor instanceof GeneratorApi.State ? "Generator" : null;
         String name = ReflectionApi.className(value);
         if (name == null) name = AsyncApi.className(value);
         if (name == null) name = NetworkApi.className(value);
@@ -537,6 +543,7 @@ public final class ObjectModel {
                     caller.calledClass == null ? caller.function.owner() : caller.calledClass.definition.name);
             if (name.startsWith("\\")) name = name.substring(1);
             Object raw = PhpValues.unwrap(value);
+            if (GeneratorApi.isA(raw, name)) return true;
             if (raw instanceof PhpValues.PhpObject object && object.descriptor instanceof RuntimeClass runtimeClass)
                 return runtimeClass.isA(name);
             if (raw instanceof PhpError error) return error.matches(name);

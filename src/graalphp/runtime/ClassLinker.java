@@ -107,7 +107,7 @@ public final class ClassLinker {
             if (changed.abstractMethod() && changed.finalMethod()) throw failure("An abstract trait method cannot be final");
             if (adaptation.alias() != null) {
                 var function = changed.function();
-                var aliasFunction = new Function(adaptation.alias(), function.parameters(), function.target(), function.file(), function.owner(), function.returnType(), function.builtin(), function.strictTypes(), function.declaration());
+                var aliasFunction = new Function(adaptation.alias(), function.parameters(), function.target(), function.file(), function.owner(), function.returnType(), function.builtin(), function.strictTypes(), function.generator(), function.returnsReference(), function.declaration());
                 changed = new Method(aliasFunction, changed.shared(), changed.visibility(), changed.abstractMethod(), changed.finalMethod());
                 if (aliases.putIfAbsent(key(adaptation.alias()), changed) != null) throw failure("Duplicate trait alias " + adaptation.alias());
             } else {

@@ -1,6 +1,6 @@
 # Stato di consegna GraalPHP
 
-Aggiornato: **26 settembre 2026**. Punto d'ingresso: [AGENTS.md](../AGENTS.md).
+Aggiornato: **27 settembre 2026**. Punto d'ingresso: [AGENTS.md](../AGENTS.md).
 Questo documento permette di riprendere senza la chat; [TODO.md](../TODO.md)
 contiene il lavoro aperto. Gli hash e i risultati sono quelli dell'ultima
 campagna indicata, non una garanzia che ogni futuro checkout vi corrisponda.
@@ -13,12 +13,12 @@ di PHP; non sono completate tutte le milestone del design.
 
 **L'utente ha chiesto di continuare lo sviluppo funzionale e riverificare le
 performance più avanti.** Non riprendere automaticamente PERF-01. Il blocco
-corrente è [Reflection e attributi runtime](reflection.md), sopra
-[unpacking](unpacking.md), iterazione, classi e valori. Gli oggetti Reflection
-espongono metadati della generazione; filtri `IS_INSTANCEOF` e `newInstance()`
-possono autoloadare e sospendersi sulla normale pipeline Bytecode DSL.
+corrente è [generatori PHP](generators.md), sopra Reflection, unpacking,
+iterazione, classi e valori. I generatori sono lazy, usano le continuation del
+Bytecode DSL e coprono delega, reference, distruzione/finally e sospensioni
+TrueAsync.
 
-Il seguito funzionale immediato è **generatori/Fiber**, insieme a valori,
+Il seguito funzionale immediato è **Fiber**, insieme a lifetime, valori,
 firme dei builtin e TrueAsync. Il
 loader SPL predefinito, include_path e il binding completo tra unità restano
 aperti: non dichiarare Composer funzionante. Shared-memory threading e FFI
@@ -31,7 +31,49 @@ misura RAM/CPU/throughput/p99 è stata eseguita per i blocchi autoload/classi/va
 si tornerà alle performance, mantenere il vincolo di nessun warmup escluso e
 separare GC/invalidazioni, peer e lifetime reale dei compiler worker.
 
-## Blocco funzionale: Reflection e attributi, 26 settembre
+## Blocco funzionale: generatori, 27 settembre
+
+[Contratti e limiti](generators.md),
+[evidenze](validation/generators-2026-09-27/README.md),
+[esiti](validation/generators-2026-09-27/results.txt),
+[hash](validation/generators-2026-09-27/hashes.json).
+
+Il frontend e il Bytecode DSL implementano generatori lazy con `yield`,
+chiavi esplicite/automatiche, `send`, `throw`, `getReturn`, `yield from`
+e funzioni/foreach by-reference. Array, generatori e Iterator utente possono
+essere delegati; send/throw e il valore di ritorno attraversano la delega. Le
+sospensioni TrueAsync dentro il corpo restano sulla stessa continuation.
+
+La distruzione di un generator mai avviato non esegue il corpo. Quella di un
+generator sospeso riprende invece la continuation con un unwind interno
+`GeneratorExit` non catturabile dal guest: i `finally` vengono eseguiti,
+mentre `catch (Throwable)` non può proseguire il corpo. Il receiver temporaneo
+resta posseduto durante metodi sospesi e la cancellazione TrueAsync usa il
+normale unwind della coroutine.
+
+Il corpus contiene 37 programmi: 35 confronti di output e 2 rifiuti semantici.
+Passa su Windows/Linux JVM, Native Image e sullo stesso Native Image con
+`--interpreter`: **222 esecuzioni**. Regressioni finali: Windows 91
+integrazioni, Linux 85, 53 scenari valori, 256 grafi/1.280 fasi collector,
+56 field-iteration e 52 metadata; TrueAsync sul prodotto Native Image passa
+82/82 su entrambe le piattaforme.
+
+I 107 file sotto `src/` e `tests/` sono byte-identici fra workspace
+autorevole e copia Linux pulita. Prodotti coerenti con questo snapshot:
+Windows SHA-256
+`79b857f0472b639f8fdee6b275e6e421d9361409957aab1c4e6aca27253681a3`,
+Linux SHA-256
+`d01b53cb3d8951f179982ae5ada29bc46b6d4a4939058be3da1ad2370f8f6390`.
+
+L'esempio `examples/generators.php` passa su PHP 8.6, JAR, native e
+interpreter Windows, oltre al prodotto Linux native/interpreter copiato nella
+root. Nessuna campagna prestazionale e nessun cambio a JIT/GC/default.
+
+LANG-01 resta aperto. Il prossimo blocco funzionale è **Fiber**; lifetime PHP
+generale, SPL/default loader, ArrayAccess, Reflection avanzata e typing dei
+builtin restano separatamente aperti.
+
+## Blocco precedente: Reflection e attributi, 26 settembre
 
 [Contratti e limiti](reflection.md).
 
@@ -46,7 +88,7 @@ Prodotti coerenti con questo snapshot: Windows SHA-256
 `888cc0c2beba407a0e774f29ef93c20cef7a4577cb0670462e82974bcfad1c2d`,
 Linux SHA-256 `591c404ad9d916d7b0324e1122591a0a02a1480a505b4712316c8d8ab93f9291`.
 I 105 file sotto `src/` e `tests/` coincidono con la copia Linux usata per la build.
-LANG-01 resta aperto: prossimo blocco generatori/Fiber.
+LANG-01 resta aperto: i generatori sono completati nel blocco sopra; il prossimo blocco è Fiber.
 
 ## Blocco precedente: unpacking e spread, 26 settembre
 
@@ -83,8 +125,8 @@ binder generico rendeva HashMap/Collection.toArray raggiungibili dal guest JIT.
 stato disabilitato. Il fallimento e le build finali riuscite sono conservati
 separatamente nelle evidenze. Nessun benchmark o cambio JIT/GC.
 
-LANG-01 resta aperto. Prossimo blocco: Reflection/attributi completi; poi
-generatori/Fiber e le altre aree del TODO.
+LANG-01 resta aperto. Reflection e generatori sono stati completati nei blocchi
+successivi sopra; Fiber è il prossimo blocco.
 
 ## Blocco precedente: iterazione e attributi, 26 settembre
 
@@ -120,9 +162,9 @@ nessun cambio a CompilerIdleDelay, GC/JIT o versioni delle dipendenze. Un doppio
 avvio transitorio della build Windows dovuto al timeout dello strumento è
 registrato nelle evidenze e non viene usato come misura.
 
-LANG-01 resta aperto. Argument unpacking e array spread sono stati completati
-nel blocco successivo sopra; Reflection completa, generatori/Fiber e le altre
-aree elencate nel TODO restano aperte.
+LANG-01 resta aperto. Argument unpacking, Reflection e generatori sono stati
+completati nei blocchi successivi sopra; Fiber e le altre aree elencate nel
+TODO restano aperte.
 
 ## Blocco precedente: enum e valori, 26 settembre
 

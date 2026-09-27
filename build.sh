@@ -126,7 +126,7 @@ case "${1:-build}" in
         "$jdk/bin/java" -cp "build/classes:build/test-classes:$deps/*" graalphp.runtime.FieldIterationTest
         "$jdk/bin/java" --enable-native-access=ALL-UNNAMED -cp "build/classes:build/test-classes:$deps/*" graalphp.frontend.AttributeMetadataTest
         ;;
-    autoload-test|class-test|enum-test|string-test|strict-test|iteration-test|unpack-test|reflection-test)
+    autoload-test|class-test|enum-test|string-test|strict-test|iteration-test|unpack-test|reflection-test|generator-test)
         # Oracles are explicit: do not silently compare a different PHP release.
         : "${PHP_ORACLE:?Set PHP_ORACLE to a PHP 8.6 executable}"
         : "${TRUEASYNC_ORACLE:?Set TRUEASYNC_ORACLE to the pinned TrueAsync executable}"
@@ -139,6 +139,7 @@ case "${1:-build}" in
             iteration-test) language_test=IterationTest ;;
             unpack-test) language_test=UnpackTest ;;
             reflection-test) language_test=ReflectionTest ;;
+            generator-test) language_test=GeneratorTest ;;
         esac
         language_sources=(tests/graalphp/ClassContractsTest.java)
         if [[ "$language_test" != ClassContractsTest ]]; then language_sources+=("tests/graalphp/$language_test.java"); fi

@@ -351,6 +351,8 @@ public final class ReflectionApi {
                 yield required;
             }
             case "isvariadic" -> empty(arguments, method, !function.parameters().isEmpty() && function.parameters().getLast().variadic());
+            case "isgenerator" -> empty(arguments, method, function.generator());
+            case "returnsreference" -> empty(arguments, method, function.returnsReference());
             case "hasreturntype" -> empty(arguments, method, function.returnType() != null);
             case "getfilename" -> empty(arguments, method, function.file() == null ? false : function.file().toString());
             case "getstartline" -> empty(arguments, method, declaration(function).section() == null ? false : (long) declaration(function).section().getStartLine());

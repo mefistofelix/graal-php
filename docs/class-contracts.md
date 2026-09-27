@@ -182,9 +182,10 @@ contract satisfied
 
 ## Limiti e seguito
 
-Il blocco non chiude LANG-01 né il progetto. Restano enum, attributi,
-reflection completa, generatori/Fiber, iteratori builtin, unpacking,
-proprietà readonly/hooks e accessori, return-by-reference e altre forme PHP.
+Il blocco non chiude LANG-01 né il progetto. Enum, unpacking, Reflection e
+generatori sono stati completati nei blocchi successivi. Restano Fiber,
+Reflection avanzata, iteratori builtin, proprietà readonly/hooks e accessori,
+return-by-reference e altre forme PHP.
 La grammatica dei tipi accetta le forme composte implementate, ma non ha ancora
 tutti i controlli di validità delle combinazioni illegali né tutti i casi di
 risoluzione del tipo attraverso autoload. I riferimenti a proprietà tipizzate

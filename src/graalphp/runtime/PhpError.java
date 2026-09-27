@@ -7,18 +7,21 @@ public final class PhpError extends AbstractTruffleException {
     public final String type;
     public final PhpError previous;
     public final boolean fatal;
+    public final boolean catchable;
     public PhpError(String message) { this("Exception", message, null); }
     public PhpError(String type, String message) { this(type, message, null); }
-    public PhpError(String type, String message, PhpError previous) { this(type, message, previous, false); }
-    private PhpError(String type, String message, PhpError previous, boolean fatal) {
+    public PhpError(String type, String message, PhpError previous) { this(type, message, previous, false, true); }
+    private PhpError(String type, String message, PhpError previous, boolean fatal, boolean catchable) {
         super(message);
         this.type = type;
         this.previous = previous;
         this.fatal = fatal;
+        this.catchable = catchable;
     }
-    public static PhpError fatal(String message) { return new PhpError("Error", message, null, true); }
+    public static PhpError fatal(String message) { return new PhpError("Error", message, null, true, false); }
+    static PhpError generatorClose() { return new PhpError("GeneratorExit", "Generator closed", null, false, false); }
     public boolean matches(String types) {
-        if (fatal) return false;
+        if (fatal || !catchable) return false;
         for (String expected : types.split("\\|")) {
             if (expected.equalsIgnoreCase(type) || expected.equalsIgnoreCase("Throwable")) return true;
             if (expected.equalsIgnoreCase("Exception") && !type.endsWith("Error")) return true;

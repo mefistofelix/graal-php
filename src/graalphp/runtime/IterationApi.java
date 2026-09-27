@@ -115,7 +115,8 @@ public final class IterationApi {
     }
 
     private static boolean implementsType(Object value, String name) {
-        return value instanceof PhpValues.PhpObject object && object.descriptor instanceof ObjectModel.RuntimeClass type && type.isA(name);
+        return GeneratorApi.isA(value, name)
+                || value instanceof PhpValues.PhpObject object && object.descriptor instanceof ObjectModel.RuntimeClass type && type.isA(name);
     }
     public static boolean iterable(Object value) { return value instanceof PhpValues.PhpArray || implementsType(value, "Traversable"); }
     public static boolean countable(Object value) { return value instanceof PhpValues.PhpArray || implementsType(value, "Countable"); }
@@ -361,7 +362,10 @@ public final class IterationApi {
             }
             case "__iter_ready": {
                 var state = (State) arguments[0].value();
-                if (state.reference) throw new PhpError("Error", "An iterator cannot be used with foreach by reference");
+                if (state.reference && !GeneratorApi.byReference(state.iterator))
+                    throw new PhpError("Exception", GeneratorApi.isGenerator(state.iterator)
+                            ? "You can only iterate a generator by-reference if it declared that it yields by-reference"
+                            : "An iterator cannot be used with foreach by reference");
                 state.aggregating.clear();
                 return null;
             }
@@ -373,7 +377,11 @@ public final class IterationApi {
             case "__iter_want_key": return ((State) arguments[0].value()).keyTarget != null;
             case "__iter_assign": {
                 var state = (State) arguments[0].value();
-                if (state.valueTarget != null) state.valueTarget.set(PhpValues.unwrap(arguments[1].value()));
+                if (state.valueTarget != null) {
+                    if (state.reference && GeneratorApi.isGenerator(state.iterator))
+                        state.valueTarget.bind(GeneratorApi.currentReference(state.iterator));
+                    else state.valueTarget.set(PhpValues.unwrap(arguments[1].value()));
+                }
                 if (state.keyTarget != null) state.keyTarget.set(PhpValues.unwrap(arguments[2].value()));
                 return null;
             }

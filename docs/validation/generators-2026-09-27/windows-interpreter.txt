@@ -1,0 +1,38 @@
+PASS lazy-start-and-basic-state oracle=0 target=0 mode=output
+PASS next-before-start oracle=0 target=0 mode=output
+PASS send-before-start oracle=0 target=0 mode=output
+PASS send-expression-result oracle=0 target=0 mode=output
+PASS automatic-and-explicit-keys oracle=0 target=0 mode=output
+PASS empty-yield oracle=0 target=0 mode=output
+PASS rewind-first-position oracle=0 target=0 mode=output
+PASS get-return-early oracle=0 target=0 mode=output
+PASS throw-into-generator oracle=0 target=0 mode=output
+PASS terminal-exception-state oracle=0 target=0 mode=output
+PASS completed-send-and-throw oracle=0 target=0 mode=output
+PASS generator-identity-and-interfaces oracle=0 target=0 mode=output
+PASS accepted-generator-return-types oracle=0 target=0 mode=output
+PASS bad-generator-return-type-is-declaration-fatal oracle=255 target=1 mode=rejection:generator return type
+PASS parameters-checked-before-body oracle=0 target=0 mode=output
+PASS nested-generator-does-not-convert-outer oracle=0 target=0 mode=output
+PASS generator-closure oracle=0 target=0 mode=output
+PASS generator-method-and-trait oracle=0 target=0 mode=output
+PASS yield-from-array oracle=0 target=0 mode=output
+PASS yield-from-generator-return oracle=0 target=0 mode=output
+PASS yield-from-forwards-send oracle=0 target=0 mode=output
+PASS yield-from-forwards-throw oracle=0 target=0 mode=output
+PASS yield-from-iterator oracle=0 target=0 mode=output
+PASS yield-from-invalid oracle=0 target=0 mode=output
+PASS by-reference-generator oracle=0 target=0 mode=output
+PASS non-reference-generator-rejects-reference-foreach oracle=0 target=0 mode=output
+PASS by-reference-yield-notice oracle=0 target=0 mode=output
+PASS yield-from-forbidden-in-reference-generator oracle=255 target=1 mode=rejection:yield from
+PASS destruction-runs-finally-before-next-statement oracle=0 target=0 mode=output
+PASS unstarted-destruction-does-not-run-body oracle=0 target=0 mode=output
+PASS destruction-unwind-is-not-catchable oracle=0 target=0 mode=output
+PASS temporary-generator-receiver oracle=0 target=0 mode=output
+PASS async-generator-methods oracle=0 target=0 mode=output
+PASS iterator-builtins-on-generator oracle=0 target=0 mode=output
+PASS reflection-generator-metadata oracle=0 target=0 mode=output
+PASS generator-cannot-be-created-or-cloned oracle=0 target=0 mode=output
+PASS async-cancellation-unwinds-generator oracle=0 target=0 mode=output
+PASS: 37 generator programs; 2 semantic rejections (diagnostic text not asserted identical)

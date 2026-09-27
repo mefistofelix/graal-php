@@ -97,6 +97,22 @@ public final class TypeRelations {
         return List.of(List.of(type.toLowerCase(Locale.ROOT)));
     }
 
+    /** Whether PHP's concrete Generator object is permitted by a declared return type. */
+    public static boolean acceptsGenerator(String type) {
+        if (type == null) return true;
+        for (var alternative : alternatives(type)) {
+            boolean accepted = true;
+            for (String atom : alternative) {
+                if (!Set.of("generator", "iterator", "traversable", "object", "mixed").contains(atom)) {
+                    accepted = false;
+                    break;
+                }
+            }
+            if (accepted) return true;
+        }
+        return false;
+    }
+
     public static boolean subtype(Request request, String source, String target) {
         for (var offered : alternatives(source)) {
             boolean accepted = false;
@@ -165,6 +181,7 @@ public final class TypeRelations {
                     || value instanceof PhpValues.PhpObject object && (object.descriptor instanceof ObjectModel.ClosureData
                     || object.descriptor instanceof ObjectModel.RuntimeClass clazz && clazz.method("__invoke") != null);
             default -> {
+                if (GeneratorApi.isA(value, type)) yield true;
                 if (value instanceof PhpValues.PhpObject object && object.descriptor instanceof ObjectModel.RuntimeClass clazz)
                     yield clazz.isA(type);
                 if (value instanceof PhpError error) yield error.matches(type);
