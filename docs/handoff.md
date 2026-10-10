@@ -19,8 +19,8 @@ classi e valori. Gli offset overloaded usano
 il normale dispatcher PHP e possono sospendersi attraverso TrueAsync senza
 sostituire le location native di array/stringhe.
 
-Il seguito funzionale immediato è ampliare la **SPL concreta** con
-`ArrayIterator`/`ArrayObject`, insieme a lifetime, valori, firme dei builtin e
+Il seguito funzionale immediato è completare la **SPL concreta** con
+il resto di `ArrayIterator` e `ArrayObject`, insieme a lifetime, valori, firme dei builtin e
 TrueAsync. PHP Fiber è deliberatamente
 fuori scope: non serve compatibilità con codice Fiber e non è un building block
 interno; l'async pubblico resta TrueAsync sopra le continuation Truffle. Il
@@ -34,6 +34,32 @@ La diagnostica precedente [cURL p99](curl-p99.md) resta storica: nessuna nuova
 misura RAM/CPU/throughput/p99 è stata eseguita per i blocchi autoload/classi/valori. Quando
 si tornerà alle performance, mantenere il vincolo di nessun warmup escluso e
 separare GC/invalidazioni, peer e lifetime reale dei compiler worker.
+
+## Blocco funzionale: ArrayIterator (parziale), 10 ottobre
+
+[Contratto e limiti](spl.md). `SeekableIterator` e il sottoinsieme
+`ArrayIterator` usano i normali metodi PHP compilati dal Bytecode DSL. La
+costruzione da array stacca le reference di origine; i cloni condividono il
+backing heap tramite un oggetto PHP, con cursore indipendente. Le operazioni
+coperte comprendono iterazione, accessi/append/unset, count, copy e seek.
+I dodici nuovi programmi differenziali passano con i 77 precedenti:
+**89/89 Windows JVM, Native Image e `--interpreter`**, ovvero
+**267 esecuzioni**, di cui 83 output e 6 rifiuti per modalità.
+[Evidenze e hash](validation/arrayiterator-2026-10-10/README.md).
+Native Image Windows 89,55 MiB, SHA-256
+`810a41b7fc300b566323f8db8fe7219933e034c374c30c55ef5d24cf4dcf21b0`.
+JAR SHA-256 `83497100b9689b3b55a5cbe903d933aea203c00ba33af649f1ea396923838d40`.
+L'esempio `examples/arrayiterator.php` passa su oracolo, JAR e Native Image.
+La regressione `build.bat verify` passa: 91 integrazioni, 53 casi valori,
+256 grafi/1.280 fasi collector, 56 field-iteration, 52 metadata, 82/82 TrueAsync.
+
+Il nome `:native` nel batch Windows condivideva un prefisso con le altre
+label `native*`; alcuni tentativi di `build.bat native` finivano nel runner
+linguistico con test-name vuoto. Il nuovo nome univoco
+`:build_native_image`, aggiornato in tutti i call/goto pertinenti, permette
+ora all'entrypoint di completare Xmake e Native Image. Le API `ArrayIterator` ancora mancanti
+sono documentate in [spl.md](spl.md); `ArrayObject` è aperto. Nessuna misura
+prestazionale nuova e nessuna verifica Linux in questa sessione.
 
 ## Blocco funzionale: primo SPL, 10 ottobre
 

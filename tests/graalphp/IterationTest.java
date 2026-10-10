@@ -17,6 +17,70 @@ public final class IterationTest {
         """;
     private static Case iterator(String name, String body) { return new Case(name, ITERATOR + body); }
     private static final List<Case> CASES = List.of(
+        new Case("spl-array-iterator-order-and-protocol", """
+            $it=new ArrayIterator(['left'=>11,3=>22,'right'=>33]);
+            echo $it instanceof SeekableIterator,':',$it instanceof ArrayAccess,':',is_countable($it),':';
+            foreach($it as$k=>$v)echo $k,'=',$v,';';
+            echo ':',count($it),':',iterator_count($it);
+            """),
+        new Case("spl-array-iterator-empty", """
+            $it=new ArrayIterator;echo $it->valid()===false,':',$it->key()===null,':',$it->current()===null,':';
+            echo iterator_count($it),':',count($it->getArrayCopy()),':';
+            $it->append('first');echo $it->valid(),':',$it->key(),':',$it->current();
+            """),
+        new Case("spl-array-iterator-copy-on-write", """
+            $a=['a'=>1,'b'=>2];$it=new ArrayIterator($a);$a['a']=7;$it['b']=8;
+            $copy=$it->getArrayCopy();$copy['a']=9;
+            echo $a['a'],':',$a['b'],':',$it['a'],':',$it['b'],':',$copy['a'];
+            """),
+        new Case("spl-array-iterator-read-write-delete-append", """
+            $it=new ArrayIterator(['x'=>1]);$it['y']=2;$it[]=3;$it->append(4);
+            echo $it->offsetExists('x'),':',$it->offsetExists('missing'),':',$it['x'],':';
+            unset($it['y']);foreach($it as$k=>$v)echo $k,'=',$v,';';
+            """),
+        new Case("spl-array-iterator-delete-before-cursor", """
+            $it=new ArrayIterator(['a'=>1,'b'=>2,'c'=>3]);$it->next();
+            unset($it['a']);echo $it->key(),':',$it->current(),':';
+            unset($it['b']);echo $it->key(),':',$it->current(),':';
+            unset($it['c']);echo $it->valid()===false;
+            """),
+        new Case("spl-array-iterator-append-after-end", """
+            $it=new ArrayIterator([1,2]);$it->seek(1);$it->next();
+            echo $it->valid()===false,':';$it->append(3);
+            echo $it->valid(),':',$it->key(),':',$it->current();
+            """),
+        new Case("spl-array-iterator-offset-exists-null", """
+            $it=new ArrayIterator([null,0]);
+            echo $it->offsetExists(0),':',$it->offsetExists(1),':',$it->offsetExists(2),':';
+            echo $it->offsetGet(0)===null,':',$it->offsetGet(1)===0;
+            """),
+        new Case("spl-array-iterator-rewind-and-seek", """
+            $it=new ArrayIterator(['x'=>10,'y'=>20,'z'=>30]);
+            $it->next();echo $it->key(),':',$it->current(),':';
+            $it->seek(2);echo $it->key(),':',$it->current(),':';
+            $it->rewind();echo $it->key(),':',$it->current();
+            """),
+        new Case("spl-array-iterator-invalid-seek", """
+            $it=new ArrayIterator(['x'=>1,'y'=>2]);
+            try{$it->seek(-1);}catch(OutOfBoundsException$e){echo $e->getMessage(),':',$it->key(),';';}
+            try{$it->seek(2);}catch(OutOfBoundsException$e){echo $e->getMessage(),':',$it->valid(),':',$it->key()===null;}
+            """),
+        new Case("spl-array-iterator-reference-source", """
+            $n=1;$a=['n'=>&$n];$it=new ArrayIterator($a);$it['n']=4;
+            echo $n,':',$a['n'],':',$it['n'];
+            """),
+        new Case("spl-array-iterator-clone-and-inheritance", """
+            class CustomArrayIterator extends ArrayIterator { public function current():mixed{return parent::current()*2;} }
+            $a=new CustomArrayIterator([4,5]);$b=clone $a;$b[0]=7;
+            echo $a->current(),':',$b->current(),':';
+            foreach($b as $v)echo $v,';';
+            """),
+        new Case("spl-array-iterator-async-method", """
+            class AsyncArrayIterator extends ArrayIterator {
+                public function current():mixed{Async\\delay(1);return parent::current();}
+            }
+            foreach(new AsyncArrayIterator([2,3]) as$k=>$v)echo $k,':',$v,';';
+            """,true),
         new Case("spl-empty-iterator-protocol", """
             $empty=new EmptyIterator;
             echo is_iterable($empty),':',$empty instanceof Iterator,':',$empty->valid()===false,':';

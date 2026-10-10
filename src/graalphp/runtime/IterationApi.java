@@ -37,6 +37,49 @@ public final class IterationApi {
             public function offsetSet(mixed $offset, mixed $value): void;
             public function offsetUnset(mixed $offset): void;
         }
+        interface SeekableIterator extends Iterator { public function seek(int $offset): void; }
+        class ArrayIterator implements SeekableIterator, ArrayAccess, Countable {
+            public const STD_PROP_LIST = 1;
+            public const ARRAY_AS_PROPS = 2;
+            private $store;
+            private int $position = 0;
+            public function __construct(array $array = [], int $flags = 0) {
+                $copy = [];
+                foreach ($array as $key => $value) $copy[$key] = $value;
+                $this->store = new stdClass;
+                $this->store->data = $copy;
+            }
+            public function getArrayCopy(): array { return $this->store->data; }
+            public function count(): int { return count($this->store->data); }
+            public function rewind(): void { $this->position = 0; }
+            public function valid(): bool { return $this->position < count($this->store->data); }
+            public function key(): mixed {
+                $keys = __spl_array_keys($this->store->data);
+                return $keys[$this->position] ?? null;
+            }
+            public function current(): mixed {
+                if (!$this->valid()) return null;
+                return $this->store->data[$this->key()];
+            }
+            public function next(): void { $this->position++; }
+            public function seek(int $offset): void {
+                if ($offset < 0) throw __spl_seek_error($offset);
+                $this->position = $offset;
+                if (!$this->valid()) throw __spl_seek_error($offset);
+            }
+            public function offsetExists(mixed $offset): bool { return __spl_array_has($this->store->data, $offset); }
+            public function offsetGet(mixed $offset): mixed { return $this->store->data[$offset] ?? null; }
+            public function offsetSet(mixed $offset, mixed $value): void {
+                if ($offset === null) $this->store->data[] = $value;
+                else $this->store->data[$offset] = $value;
+            }
+            public function append(mixed $value): void { $this->store->data[] = $value; }
+            public function offsetUnset(mixed $offset): void {
+                $index = __spl_array_position($this->store->data, $offset);
+                if ($index >= 0 && $index < $this->position) $this->position--;
+                unset($this->store->data[$offset]);
+            }
+        }
         #[Attribute(1)]
         final class Attribute {
             public const TARGET_CLASS = 1;
@@ -287,6 +330,26 @@ public final class IterationApi {
     @TruffleBoundary
     public static Object function(Activation caller, String name, Argument[] arguments, IndirectCallNode call) {
         switch (name) {
+            case "__spl_array_keys", "__spl_array_has": {
+                var args = CallArguments.builtin(name, arguments,
+                        name.equals("__spl_array_keys") ? List.of("array") : List.of("array", "key"),
+                        name.equals("__spl_array_keys") ? 1 : 2);
+                Object source = checked(caller, args[0].value(), "array");
+                if (name.equals("__spl_array_has")) return PhpValues.hasKey(source, args[1].value());
+                try (var scope = new PhpValues.Scope(caller.request.heap)) {
+                    var array = scope.variable(scope.emptyArray());
+                    for (Object key : PhpValues.keys(source)) array.append().set(key);
+                    return caller.track(PhpValues.own(array.read()));
+                }
+            }
+            case "__spl_array_position": {
+                var args = CallArguments.builtin(name, arguments, List.of("array", "key"), 2);
+                return PhpValues.keyPosition(checked(caller, args[0].value(), "array"), args[1].value());
+            }
+            case "__spl_seek_error": {
+                var args = CallArguments.builtin(name, arguments, List.of("offset"), 1);
+                return new PhpError("OutOfBoundsException", "Seek position " + args[0].value() + " is out of range");
+            }
             case "__spl_empty_error": {
                 var args = CallArguments.builtin(name, arguments, List.of("member"), 1);
                 return new PhpError("BadMethodCallException", "Accessing the " + args[0].value() + " of an EmptyIterator");

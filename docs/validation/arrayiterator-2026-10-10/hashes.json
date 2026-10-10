@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-10",
+  "platform": "Windows x64",
+  "artifacts": {
+    "build/graalphp.exe": {
+      "sha256": "810a41b7fc300b566323f8db8fe7219933e034c374c30c55ef5d24cf4dcf21b0",
+      "native_image_file_size_mib": 89.55
+    },
+    "build/graalphp.jar": {
+      "sha256": "83497100b9689b3b55a5cbe903d933aea203c00ba33af649f1ea396923838d40"
+    }
+  }
+}

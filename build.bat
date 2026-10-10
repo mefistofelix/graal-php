@@ -37,9 +37,9 @@ if not "!errorlevel!"=="0" exit /b 1
 "%GRAALPHP_JDK%\bin\jar.exe" --create --file build\graalphp.jar --manifest build\manifest.mf -C build\classes .
 if not "!errorlevel!"=="0" exit /b 1
 if /i "%~1"=="run" ("%GRAALPHP_JDK%\bin\java.exe" --enable-native-access=ALL-UNNAMED -jar build\graalphp.jar "%~2" & exit /b !errorlevel!)
-if /i "%~1"=="native" goto native
-if /i "%~1"=="profile-native" goto native
-if /i "%~1"=="reactor-probe" goto native
+if /i "%~1"=="native" goto build_native_image
+if /i "%~1"=="profile-native" goto build_native_image
+if /i "%~1"=="reactor-probe" goto build_native_image
 if /i "%~1"=="native-libs" goto native_libraries
 if /i "%~1"=="native-stack-probe" goto native_stack_probe
 if /i "%~1"=="ffi-bridge-test" goto ffi_bridge_test
@@ -71,7 +71,7 @@ if not "!errorlevel!"=="0" exit /b 1
 tools\xmake.exe -y curl-native-benchmark
 exit /b %errorlevel%
 :curl_benchmark
-call :native
+call :build_native_image
 if not "!errorlevel!"=="0" exit /b 1
 call :setup_trueasync
 if not "!errorlevel!"=="0" exit /b 1
@@ -86,7 +86,7 @@ if /i "%~2"=="trueasync" (
     call :setup_trueasync
     set "CURL_EXECUTABLE=trueasync"
 ) else if /i "%~2"=="native" (
-    call :native
+    call :build_native_image
     set "CURL_EXECUTABLE=%~dp0build\graalphp.exe"
 ) else (call :native_libraries)
 if not "!errorlevel!"=="0" exit /b 1
@@ -96,7 +96,7 @@ if not "!errorlevel!"=="0" exit /b 1
 "%GRAALPHP_JDK%\bin\java.exe" --enable-native-access=ALL-UNNAMED -cp build\test-classes graalphp.CurlIntegrationTest "!CURL_EXECUTABLE!"
 exit /b %errorlevel%
 :network_benchmark
-call :native
+call :build_native_image
 if not "!errorlevel!"=="0" exit /b 1
 call :setup_trueasync
 if not "!errorlevel!"=="0" exit /b 1
@@ -192,7 +192,7 @@ call :setup_oracle
 if not "!errorlevel!"=="0" exit /b 1
 set "AUTOLOAD_EXECUTABLE="
 if /i not "%~2"=="native" goto language_compile
-call :native
+call :build_native_image
 if not "!errorlevel!"=="0" exit /b 1
 set "AUTOLOAD_EXECUTABLE=%~dp0build\graalphp.exe"
 :language_compile
@@ -247,7 +247,7 @@ exit /b %errorlevel%
 :ffi_fatal_run
 set "FATAL_EXECUTABLE="
 if /i not "%~2"=="native" goto ffi_fatal_execute
-call :native
+call :build_native_image
 if not "!errorlevel!"=="0" exit /b 1
 set "FATAL_EXECUTABLE=%~dp0build\graalphp.exe"
 :ffi_fatal_execute
@@ -269,7 +269,7 @@ if /i "%~2"=="native" (
     "%GRAALPHP_JDK%\bin\java.exe" --enable-native-access=ALL-UNNAMED -cp "build\classes;build\test-classes;%DEPS%/*" graalphp.NativeStackProbe build\native-stack-probe.dll
 )
 exit /b %errorlevel%
-:native
+:build_native_image
 call :native_libraries
 if not "!errorlevel!"=="0" exit /b 1
 set "NATIVE_NAME=graalphp"

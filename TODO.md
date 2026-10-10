@@ -11,8 +11,9 @@ certificano soltanto il risultato descritto, non un'intera milestone del design.
 funzionale, non PERF-01. Il blocco corrente di **LANG-01** chiude
 [ArrayAccess](docs/arrayaccess.md) sopra generatori, Reflection, unpacking,
 iterazione, classi e valori. La SPL concreta è iniziata da
-[EmptyIterator](docs/spl.md), ma il blocco resta aperto: proseguire con
-`ArrayIterator`/`ArrayObject`, lifetime e le altre aree linguistiche. PHP Fiber è deliberatamente fuori scope: il
+[EmptyIterator](docs/spl.md) e ha ora un primo sottoinsieme di
+`ArrayIterator`, ma il blocco resta aperto: completare `ArrayIterator`,
+`ArrayObject`, lifetime e le altre aree linguistiche. PHP Fiber è deliberatamente fuori scope: il
 modello async supportato è TrueAsync e non serve compatibilità con codice Fiber. Il loader SPL predefinito, include_path, binding completo
 fra unità e il typing delle restanti API native rimangono aperti.
 Linguaggio/TrueAsync/threading/FFI precedono Composer applicativo, Compose e mobile.
@@ -90,6 +91,16 @@ Linguaggio/TrueAsync/threading/FFI precedono Composer applicativo, Compose e mob
   `--interpreter` (231 esecuzioni, 6 rifiuti semantici per modalità).
   [Evidenze](docs/validation/spl-2026-10-10/README.md). [Contratto](docs/spl.md).
   Questo NON chiude la SPL né LANG-01.
+
+- [x] Sottoinsieme `ArrayIterator` e interfaccia `SeekableIterator`: costruttore
+  da array, detach delle reference di origine, backing condiviso tra cloni,
+  COW del valore, offset, `seek`, cursor e foreach, override sospendibili.
+  Aggiunti 12 casi differenziali: 89/89 Windows/JVM, Native Image e
+  `--interpreter` (**267 esecuzioni**, 83 output e 6 rifiuti per modalità),
+  più `verify` Windows (91 integrazioni, 82/82 TrueAsync, suite valori/collector).
+  [Contratto e limiti](docs/spl.md),
+  [evidenze e hash](docs/validation/arrayiterator-2026-10-10/README.md). `ArrayObject`, flags, sorting, serializzazione,
+  object backing e diagnostica completano il backlog SPL; LANG-01 resta aperto.
 
 ## Prestazioni e memoria: rinviate per richiesta dell'utente
 

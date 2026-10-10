@@ -44,6 +44,22 @@ public final class PhpValues {
         return List.copyOf(array.entries.keySet());
     }
     @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+    public static boolean hasKey(Object value, Object key) {
+        if (!(unwrap(value) instanceof PhpArray array)) throw new PhpError("Expected an array");
+        return array.entries.containsKey(normalizeKey(unwrap(key)));
+    }
+    @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+    public static long keyPosition(Object value, Object key) {
+        if (!(unwrap(value) instanceof PhpArray array)) throw new PhpError("Expected an array");
+        Object normalized = normalizeKey(unwrap(key));
+        long index = 0;
+        for (Object candidate : array.entries.keySet()) {
+            if (candidate.equals(normalized)) return index;
+            index++;
+        }
+        return -1;
+    }
+    @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
     public static Object element(Object value, Object key) { return element(value, key, null); }
     @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
     public static Object element(Object value, Object key, Diagnostics.Origin origin) {
