@@ -56,7 +56,7 @@ public final class ClassLoading implements AutoCloseable {
 
     // Only names already represented by this runtime, not the full PHP/SPL class catalog.
     private static final Set<String> BUILTINS = Set.of(
-            "closure", "exception", "runtimeexception", "logicexception", "invalidargumentexception",
+            "closure", "exception", "runtimeexception", "logicexception", "invalidargumentexception", "badmethodcallexception",
             "error", "typeerror", "valueerror", "argumentcounterror", "unhandledmatcherror", "ffi", "curlhandle", "curlmultihandle",
             "sqlite3", "sqlite3stmt", "sqlite3result", "async\\coroutine", "async\\scope", "async\\context",
             "async\\channel", "async\\mutex", "async\\threadchannel", "async\\future", "async\\futurestate",

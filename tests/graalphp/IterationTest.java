@@ -17,6 +17,24 @@ public final class IterationTest {
         """;
     private static Case iterator(String name, String body) { return new Case(name, ITERATOR + body); }
     private static final List<Case> CASES = List.of(
+        new Case("spl-empty-iterator-protocol", """
+            $empty=new EmptyIterator;
+            echo is_iterable($empty),':',$empty instanceof Iterator,':',$empty->valid()===false,':';
+            foreach($empty as $value)echo 'UNEXPECTED';
+            echo iterator_count($empty),':',count(iterator_to_array($empty)),':';
+            echo iterator_apply($empty,function(){echo 'UNEXPECTED';return true;}),':';
+            echo method_exists($empty,'rewind'),':',class_exists('EmptyIterator');
+            """),
+        new Case("spl-empty-iterator-exceptions", """
+            $empty=new EmptyIterator;
+            try{$empty->current();}catch(BadMethodCallException $error){echo get_class($error),':',$error->getMessage(),';';}
+            try{$empty->key();}catch(Exception $error){echo get_class($error),':',$error->getMessage();}
+            """),
+        new Case("spl-empty-iterator-extendable", """
+            class CustomEmpty extends EmptyIterator { public function valid():false{return false;} }
+            $empty=new CustomEmpty;
+            echo $empty instanceof EmptyIterator,':',is_iterable($empty),':',iterator_count($empty);
+            """),
         iterator("foreach-method-order", "foreach(new Items as$key=>$value)echo '['.$key.':'.$value.']';"),
         iterator("unused-key-not-called", "foreach(new Items as$value)echo '['.$value.']';"),
         iterator("repeat-loop-rewinds", "$i=new Items;foreach($i as$v){echo $v;break;}echo '|';foreach($i as$v)echo $v;"),

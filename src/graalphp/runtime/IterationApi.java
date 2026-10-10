@@ -22,6 +22,13 @@ public final class IterationApi {
             public function valid(): bool;
             public function rewind(): void;
         }
+        class EmptyIterator implements Iterator {
+            public function current(): never { throw __spl_empty_error('value'); }
+            public function next(): void {}
+            public function key(): never { throw __spl_empty_error('key'); }
+            public function valid(): false { return false; }
+            public function rewind(): void {}
+        }
         interface IteratorAggregate extends Traversable { public function getIterator(): Traversable; }
         interface Countable { public function count(): int; }
         interface ArrayAccess {
@@ -280,6 +287,10 @@ public final class IterationApi {
     @TruffleBoundary
     public static Object function(Activation caller, String name, Argument[] arguments, IndirectCallNode call) {
         switch (name) {
+            case "__spl_empty_error": {
+                var args = CallArguments.builtin(name, arguments, List.of("member"), 1);
+                return new PhpError("BadMethodCallException", "Accessing the " + args[0].value() + " of an EmptyIterator");
+            }
             case "is_iterable", "is_countable": {
                 var args = CallArguments.builtin(name, arguments, List.of("value"), 1);
                 Object value = PhpValues.unwrap(args[0].value());
@@ -369,7 +380,7 @@ public final class IterationApi {
             case "__iter_ready": {
                 var state = (State) arguments[0].value();
                 if (state.reference && !GeneratorApi.byReference(state.iterator))
-                    throw new PhpError("Exception", GeneratorApi.isGenerator(state.iterator)
+                    throw new PhpError("Error", GeneratorApi.isGenerator(state.iterator)
                             ? "You can only iterate a generator by-reference if it declared that it yields by-reference"
                             : "An iterator cannot be used with foreach by reference");
                 state.aggregating.clear();

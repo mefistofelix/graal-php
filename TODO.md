@@ -1,6 +1,6 @@
 # Attività aperte GraalPHP
 
-Aggiornato: 27 settembre 2026. Leggere prima [AGENTS.md](AGENTS.md) e
+Aggiornato: 10 ottobre 2026. Leggere prima [AGENTS.md](AGENTS.md) e
 [handoff](docs/handoff.md). Questa lista è operativa; la copertura completa
 rimane in [design-coverage.md](docs/design-coverage.md). Le caselle completate
 certificano soltanto il risultato descritto, non un'intera milestone del design.
@@ -10,8 +10,9 @@ certificano soltanto il risultato descritto, non un'intera milestone del design.
 **L'utente ha rinviato le verifiche prestazionali.** Riprendere lo sviluppo
 funzionale, non PERF-01. Il blocco corrente di **LANG-01** chiude
 [ArrayAccess](docs/arrayaccess.md) sopra generatori, Reflection, unpacking,
-iterazione, classi e valori. Il seguito immediato è la **SPL concreta minima
-utile**, poi lifetime e le altre aree linguistiche aperte. PHP Fiber è deliberatamente fuori scope: il
+iterazione, classi e valori. La SPL concreta è iniziata da
+[EmptyIterator](docs/spl.md), ma il blocco resta aperto: proseguire con
+`ArrayIterator`/`ArrayObject`, lifetime e le altre aree linguistiche. PHP Fiber è deliberatamente fuori scope: il
 modello async supportato è TrueAsync e non serve compatibilità con codice Fiber. Il loader SPL predefinito, include_path, binding completo
 fra unità e il typing delle restanti API native rimangono aperti.
 Linguaggio/TrueAsync/threading/FFI precedono Composer applicativo, Compose e mobile.
@@ -82,6 +83,13 @@ Linguaggio/TrueAsync/threading/FFI precedono Composer applicativo, Compose e mob
   quattro metodi sospendibili via TrueAsync. 20 programmi in sei modalità:
   120 esecuzioni. `&offsetGet` resta legato a return-by-reference di VALUE-01.
   [Contratto](docs/arrayaccess.md).
+
+- [x] Primo componente SPL concreto: `EmptyIterator`, metodi `current`/`key`
+  con `BadMethodCallException`, firme interne `never`/`false` e regressione
+  `foreach` by-reference (`Error`). 77/77 casi `IterationTest` su Windows in JVM, Native Image e
+  `--interpreter` (231 esecuzioni, 6 rifiuti semantici per modalità).
+  [Evidenze](docs/validation/spl-2026-10-10/README.md). [Contratto](docs/spl.md).
+  Questo NON chiude la SPL né LANG-01.
 
 ## Prestazioni e memoria: rinviate per richiesta dell'utente
 

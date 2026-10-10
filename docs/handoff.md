@@ -1,6 +1,6 @@
 # Stato di consegna GraalPHP
 
-Aggiornato: **27 settembre 2026**. Punto d'ingresso: [AGENTS.md](../AGENTS.md).
+Aggiornato: **10 ottobre 2026**. Punto d'ingresso: [AGENTS.md](../AGENTS.md).
 Questo documento permette di riprendere senza la chat; [TODO.md](../TODO.md)
 contiene il lavoro aperto. Gli hash e i risultati sono quelli dell'ultima
 campagna indicata, non una garanzia che ogni futuro checkout vi corrisponda.
@@ -12,13 +12,16 @@ Native Image Windows/Linux x64 funzionanti. Non ancora un sostituto generale
 di PHP; non sono completate tutte le milestone del design.
 
 **L'utente ha chiesto di continuare lo sviluppo funzionale e riverificare le
-performance più avanti.** Non riprendere automaticamente PERF-01. Il blocco corrente è [ArrayAccess](arrayaccess.md), sopra generatori,
-Reflection, unpacking, iterazione, classi e valori. Gli offset overloaded usano
+performance più avanti.** Non riprendere automaticamente PERF-01. Il blocco
+corrente è la [SPL concreta](spl.md), iniziata da `EmptyIterator` dopo
+[ArrayAccess](arrayaccess.md), generatori, Reflection, unpacking, iterazione,
+classi e valori. Gli offset overloaded usano
 il normale dispatcher PHP e possono sospendersi attraverso TrueAsync senza
 sostituire le location native di array/stringhe.
 
-Il seguito funzionale immediato è la **SPL concreta minima utile**, insieme a
-lifetime, valori, firme dei builtin e TrueAsync. PHP Fiber è deliberatamente
+Il seguito funzionale immediato è ampliare la **SPL concreta** con
+`ArrayIterator`/`ArrayObject`, insieme a lifetime, valori, firme dei builtin e
+TrueAsync. PHP Fiber è deliberatamente
 fuori scope: non serve compatibilità con codice Fiber e non è un building block
 interno; l'async pubblico resta TrueAsync sopra le continuation Truffle. Il
 loader SPL predefinito, include_path e il binding completo tra unità restano
@@ -31,6 +34,24 @@ La diagnostica precedente [cURL p99](curl-p99.md) resta storica: nessuna nuova
 misura RAM/CPU/throughput/p99 è stata eseguita per i blocchi autoload/classi/valori. Quando
 si tornerà alle performance, mantenere il vincolo di nessun warmup escluso e
 separare GC/invalidazioni, peer e lifetime reale dei compiler worker.
+
+## Blocco funzionale: primo SPL, 10 ottobre
+
+[Contratti e limiti](spl.md). `EmptyIterator` usa i normali metodi
+Bytecode DSL ed è estendibile; `current`/`key` generano `BadMethodCallException`,
+`valid` restituisce `false`, `rewind`/`next` non operano. La proibizione di
+`foreach` by-reference su Iterator ora genera un `Error` intercettabile.
+Aggiunti tre programmi differenziali, superati insieme alla suite esistente:
+**77/77** su Windows/JVM, Native Image e stesso Native Image con
+`--interpreter`: **231 esecuzioni**, 6 rifiuti semantici per modalità.
+[Evidenze](validation/spl-2026-10-10/README.md). L'eseguibile Native Image
+Windows misura **89,32 MiB**, SHA-256
+`7badcef10e52302a64ab9d4ca7e6e46035730b6e18a3d9e356d48006c90c39f0`;
+il JAR SHA-256 è
+`2af20af4ee94526fbf303be906e29fe5f05f0406a7a233e32eb750b4fb93769f`.
+La gerarchia SPL delle eccezioni e le altre classi concrete sono ancora
+incomplete. Non sono stati eseguiti nuovi benchmark; **Linux resta da
+validare per questa modifica**. Prossimo blocco: `ArrayIterator`/`ArrayObject`.
 
 ## Blocco funzionale: ArrayAccess, 27 settembre
 
