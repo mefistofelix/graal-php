@@ -1,5 +1,8 @@
 # Verifica — 26 settembre 2026
 
+[Ritorni per riferimento](validation/reference-return-2026-11-18/README.md)
+confronta Windows/Linux e misura a freddo chiamate e accessi annidati.
+
 Il [rapporto sul lifetime async](validation/future-lifetime-2026-11-18/README.md)
 aggiorna la copertura dei future TrueAsync e le misure cURL prima/dopo.
 

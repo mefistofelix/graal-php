@@ -126,6 +126,139 @@ public final class ArrayAccessTest {
             }
             $a=new A;$a[]=9;
             """),
+        new Case("reference-local-finally-and-cow", """
+            function &values() {
+                $local = [1]; try { return $local; } finally { $local[] = 2; }
+            }
+            $alias =& values(); $copy = $alias; $alias[0] = 9;
+            echo $alias[0], ':', $alias[1], ':', $copy[0], ':', $copy[1];
+            """),
+        new Case("reference-calls-forward-and-name", """
+            function &expose(&$value) { return $value; }
+            function &forward(&$value) { return expose($value); }
+            function bump(&$target) { $target++; }
+            $n = 1; $fn = 'forward'; $alias =& $fn($n);
+            bump(target: expose($n));
+            $alias = 4; echo $n, ':';
+            $closure = function &() use (&$n) { return $n; };
+            bump($closure()); echo $alias;
+            """),
+        new Case("reference-return-value-snapshot", """
+            function &get_value(&$value) { return $value; }
+            function show($first, $second) { echo $first[0], ':', $second[0]; }
+            $v = [1]; show(get_value($v), $v = [2]); echo ':', $v[0];
+            """),
+        new Case("reference-return-autoloaded-callable", """
+            spl_autoload_register(function($class) {
+                eval('class AutoloadedReference { public static function &get(&$source) { return $source; } }');
+            });
+            $source = [1]; $callable = 'AutoloadedReference::get';
+            $alias =& $callable($source);
+            $alias[] = 9; echo $source[1];
+            """),
+        new Case("reference-call-as-offset-parent", """
+            function &matrix(&$value) { return $value; }
+            $value = [[1]]; $copy = $value;
+            matrix($value)[0][] = 5;
+            matrix($value)[0][0] = 4;
+            echo $value[0][0], ':', $value[0][1], ':', $copy[0][0];
+            """),
+        new Case("reference-return-weak-typed-writeback", """
+            function &ref(&$value): int { return $value; }
+            $value = '12'; $alias =& ref($value);
+            echo $value === 12 ? 'int' : 'other', ':', $alias;
+            """),
+        new Case("reference-return-notices", """
+            error_reporting(0);
+            function value() { return 5; }
+            function &fallback() { return value(); }
+            $n = 1; $alias =& $n; $alias =& value(); echo $n, ':';
+            $err = error_get_last(); echo $err['type'], ':', $err['message'], '|';
+            echo fallback(), ':';
+            $err = error_get_last(); echo $err['type'], ':', $err['message'];
+            """),
+        new Case("reference-empty-return-notices", """
+            error_reporting(0);
+            function &explicit_return() { return; }
+            function &implicit_return() {}
+            echo explicit_return() === null ? 'null:' : 'wrong:';
+            echo error_get_last()['message'], '|';
+            error_clear_last();
+            echo implicit_return() === null ? 'null:' : 'wrong:';
+            echo error_get_last()['message'];
+            """),
+        new Case("reference-return-foreach", """
+            function &values(&$items) { return $items; }
+            $items = [1, 2];
+            foreach (values($items) as &$item) { $item += 5; }
+            $item = 9; unset($item);
+            echo $items[0], ':', $items[1];
+            """),
+        new Case("reference-return-inheritance-rejected", """
+            class ParentReference { public function &read() { $value = 1; return $value; } }
+            class ChildReference extends ParentReference { public function read() { return 1; } }
+            echo 'UNEXPECTED_AFTER';
+            """, "compatible"),
+        new Case("reference-offset-increment-and-compound", """
+            class A implements ArrayAccess {
+                public array $data = ['x' => 2];
+                function offsetExists(mixed $key): bool { return true; }
+                function &offsetGet(mixed $key): mixed { echo 'G|'; return $this->data[$key]; }
+                function offsetSet(mixed $key, mixed $value): void { echo 'S|'; $this->data[$key] = $value; }
+                function offsetUnset(mixed $key): void { unset($this->data[$key]); }
+            }
+            $a = new A(); echo ++$a['x'], ':', $a['x']++, ':', $a->data['x'], ':';
+            echo ($a['x'] += 2), ':', $a->data['x'];
+            """),
+        new Case("reference-offset-nested-and-alias", """
+            class A implements ArrayAccess {
+                public array $data = ['x' => [[2]], 'y' => 3];
+                function offsetExists(mixed $key): bool { return true; }
+                function &offsetGet(mixed $key): mixed { echo $key, '|'; return $this->data[$key]; }
+                function offsetSet(mixed $key, mixed $value): void {}
+                function offsetUnset(mixed $key): void {}
+            }
+            function bump(&$value) { $value++; }
+            $a = new A(); $snapshot = $a->data;
+            $a['x'][0][] = 5;
+            $a['x'][0][0] = 8;
+            bump($a['x'][0][0]);
+            $alias =& $a['y']; $alias = 7;
+            echo $a->data['x'][0][0], ':', $a->data['x'][0][1], ':', $a->data['y'], ':', $snapshot['x'][0][0];
+            """),
+        new Case("reference-offset-destination-rejected", """
+            class A implements ArrayAccess {
+                public $value = 3;
+                function offsetExists(mixed $key): bool { return true; }
+                function &offsetGet(mixed $key): mixed { echo 'G|'; return $this->value; }
+                function offsetSet(mixed $key, mixed $value): void {}
+                function offsetUnset(mixed $key): void {}
+            }
+            $a = new A(); $x = 9;
+            try { $a['x'] =& $x; } catch (Error $error) { echo $error->getMessage(); }
+            echo ':', $a->value;
+            """),
+        new Case("reference-return-suspends-through-finally", """
+            function &suspended_ref(&$value) {
+                try { Async\\suspend(); return $value; }
+                finally { Async\\suspend(); $value[] = 7; }
+            }
+            $value = [1]; $alias =& suspended_ref($value);
+            $alias[0] = 9; echo $value[0], ':', $value[1];
+            """, true),
+        new Case("reference-offset-suspends-and-forwards", """
+            class A implements ArrayAccess {
+                public array $data = ['x' => [3]];
+                function offsetExists(mixed $key): bool { return true; }
+                function &offsetGet(mixed $key): mixed { Async\\suspend(); return $this->data[$key]; }
+                function offsetSet(mixed $key, mixed $value): void {}
+                function offsetUnset(mixed $key): void {}
+            }
+            function &forward($object) { return $object['x']; }
+            $a = new A(); $alias =& forward($a);
+            $alias[] = 5; $a['x'][0] = 8;
+            echo $alias[0], ':', $alias[1];
+            """, true),
         new Case("async-offset-get", """
             class A implements ArrayAccess {
                 public function offsetExists(mixed $o): bool{return true;}

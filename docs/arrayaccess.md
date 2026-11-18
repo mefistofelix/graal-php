@@ -57,6 +57,23 @@ Il lowering segue l'ordine osservabile di PHP 8.6:
 Le scritture su receiver temporanei oggetto sono valide: l'identità dell'oggetto
 viene trattenuta fino alla fine dell'operazione.
 
+## Riferimenti restituiti
+
+Il Bytecode DSL può restituire una cella quando la dichiarazione usa `&`.
+Il risultato possiede quella cella oltre la chiusura del frame. Un chiamante
+che legge per valore acquisisce il valore corrente con le normali regole COW.
+L'assegnazione per riferimento, gli argomenti e foreach by-reference possono
+usare direttamente la cella. Un argomento preserva la copia per valore al
+momento della valutazione anche se un argomento successivo modifica la cella.
+
+Un `&offsetGet` può sospendersi e poi restituire la cella. Incrementi,
+modifiche a elementi annidati, alias e argomenti by-reference possono usarla.
+Un'assegnazione diretta o composta all'offset continua a chiamare `offsetSet`.
+Associare un riferimento alla dimensione stessa di un oggetto ArrayAccess
+solleva l'errore PHP. Le letture `empty` e `??` degli offset nativi seguono
+le rispettive modalità di diagnostica di PHP. L'assegnazione a un offset di
+stringa restituisce il byte scritto o null quando la posizione è fuori range.
+
 ## Native Image
 
 Il path di riconoscimento dinamico `implements ArrayAccess` è dietro una
@@ -70,23 +87,11 @@ stati disabilitati o cambiati.
 
 ## Limiti
 
-Questo blocco non chiude il return-by-reference generale di VALUE-01.
-In particolare un `offsetGet()` dichiarato **by-reference** non espone ancora
-la location restituita al chiamante. Di conseguenza restano aperti:
+Rimangono aperti i riferimenti a proprietà tipizzate e i casi di modifica
+indiretta sugli offset restituiti per valore. Per la semantica SPL
+consultare il [contratto separato](spl.md).
 
-- modifica annidata che dipende da `&offsetGet`, per esempio
-  `$a['nested']['x'] = ...` quando l'offset deve essere una reference;
-- passaggio by-reference di un offset overloaded con la semantica completa di
-  `&offsetGet`;
-- altre combinazioni che richiedono return-by-reference dal frontend/runtime.
-
-Le normali location array/stringa non hanno questo limite e sono incluse nel
-corpus di regressione.
-
-Le classi SPL concrete (`ArrayIterator`, `ArrayObject`, ecc.) non sono
-implementate da questo blocco; sono il passo successivo.
-
-## Verifica
+## Verifica del blocco iniziale
 
 `tests/graalphp/ArrayAccessTest.java` contiene 20 programmi: 18 confrontano
 l'output con PHP 8.6 / TrueAsync 0.10.0 e due richiedono rifiuto semantico.

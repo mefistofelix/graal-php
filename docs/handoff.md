@@ -31,6 +31,26 @@ Riprendere da VALUE-01 e ASYNC-01 nel [TODO](../TODO.md), poi pubblicazione
 LOCAL→SHARED. PHP Fiber è fuori scope. I blocchi datati sotto conservano la
 copertura osservata al momento di ciascuna consegna.
 
+## Ritorni per riferimento e offset, 18 novembre
+
+I frame PHP possono restituire la cella con `&`, anche attraverso
+finally sospendibili. Sono coperti assegnazione per riferimento,
+forwarding di funzioni e metodi, argomenti, foreach e lo stesso percorso per
+`&offsetGet`. Il blocco corregge anche sei differenze preesistenti sugli
+offset di stringa e il tipo di eccezione per foreach su generatori per valore.
+
+Passano 99/99 casi mirati su Windows e Linux in JVM, Native Image e
+modalità interprete. TrueAsync Native Image passa 88/88 su entrambe le
+piattaforme. A freddo su Linux le 524.288 chiamate con aggiornamento scalare
+hanno wall mediano 0,75 → 0,74 s rispetto a `10ccfd0`. Con accesso annidato
+il tempo passa da 0,88 a 0,92 s e il picco RSS mediano da 177,06 a 184,81 MiB.
+[Evidenze e hash dei prodotti](validation/reference-return-2026-11-18/README.md).
+
+La prossima fondazione di VALUE-01 è il lifetime degli oggetti, con
+distruttori, weak reference e resurrezione. Per completare i riferimenti
+restano i vincoli delle proprietà tipizzate e i casi ArrayAccess che
+restituiscono per valore. [Contratto](arrayaccess.md).
+
 ## Lifetime dei future TrueAsync, 18 novembre
 
 I risultati di FutureState, Future, coroutine, combinatori e recvAsync

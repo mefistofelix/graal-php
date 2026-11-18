@@ -22,6 +22,8 @@ public final class ArrayAccessApi {
 
     /** One evaluated offset expression. It owns temporary receiver/key values until closed. */
     public static final class Access implements AutoCloseable, TruffleObject {
+        private record Parent(PhpValues.Location location, Object owner) {}
+
         final Activation caller;
         final PhpValues.Location location;
         final Object source;
@@ -38,19 +40,27 @@ public final class ArrayAccessApi {
         }
 
         public static Access create(Activation caller, Object source, Object key) {
-            if (source instanceof PhpValues.Location parent) {
+            var view = source instanceof Parent prepared ? prepared : null;
+            var parent = view != null ? view.location
+                    : source instanceof PhpValues.Location variable ? variable
+                    : PhpValues.isReferenceResult(source) ? PhpValues.referenceLocation(source) : null;
+            if (parent != null) {
+                Object pin = view != null ? view.owner : source instanceof PhpValues.Location ? null : source;
                 Object raw = parent.readOrNull();
                 if (implementsArrayAccess(raw)) {
-                    return new Access(caller, null, PhpValues.own(raw), key, true);
+                    var access = new Access(caller, null, PhpValues.own(raw), key, true);
+                    PhpValues.drop(pin);
+                    return access;
                 }
                 var location = key == APPEND ? parent.deferredAppend() : parent.element(PhpValues.unwrap(key));
-                return new Access(caller, location.at(caller), null, key, false);
+                return new Access(caller, location.at(caller), pin, key, false);
             }
             Object raw = PhpValues.unwrap(source);
             return new Access(caller, null, source, key, implementsArrayAccess(raw));
         }
 
         public boolean directLocation() { return !overloaded && location != null; }
+        public boolean overloaded() { return overloaded; }
         public PhpValues.Location location() {
             if (!directLocation()) throw new PhpError("Error", "ArrayAccess offset is not a PHP variable");
             return location;
@@ -83,6 +93,23 @@ public final class ArrayAccessApi {
             return caller.track(PhpValues.element(source, PhpValues.unwrap(key), Diagnostics.origin(caller)));
         }
 
+        @TruffleBoundary
+        public Object reference(IndirectCallNode call) {
+            return directLocation() ? caller.track(location.referenceResult()) : read(call);
+        }
+
+        @TruffleBoundary
+        public Object parent() {
+            if (source == null) return location;
+            return new Parent(location, caller.track(PhpValues.copyReferenceResult(source)));
+        }
+
+        @TruffleBoundary
+        public Argument argument() {
+            var value = caller.track(PhpValues.own(location().read()));
+            return new Argument(value, location, null, false, caller.track(PhpValues.copyReferenceResult(source)));
+        }
+
         public Object readForAssign(IndirectCallNode call) {
             if (overloaded) return call("offsetGet", new Object[0], call);
             if (location == null) return read(call);
@@ -98,13 +125,25 @@ public final class ArrayAccessApi {
             finally { PhpValues.drop(value); }
         }
 
+        @TruffleBoundary
+        public Object quiet(boolean probe) {
+            if (location != null) return caller.track(PhpValues.own(probe ? location.probe() : location.readOrNull()));
+            if (key == APPEND) return null;
+            return caller.track(PhpValues.quietElement(source, PhpValues.unwrap(key),
+                    probe ? StringOffsets.ReadMode.PROBE : StringOffsets.ReadMode.COALESCE, Diagnostics.origin(caller)));
+        }
+
         /** Consumes the supplied owned value. */
         public Object write(Object value, IndirectCallNode call) {
             if (overloaded) return call("offsetSet", new Object[] {value}, call);
             try {
                 if (location == null) throw new PhpError("Error", "Cannot modify a temporary array value");
-                location.write(PhpValues.unwrap(value));
-                return null;
+                Object raw = PhpValues.unwrap(value);
+                Object result = location.write(raw);
+                if (result != raw) return caller.track(PhpValues.own(result));
+                Object assigned = value;
+                value = null;
+                return assigned;
             } finally { PhpValues.drop(value); }
         }
 

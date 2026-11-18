@@ -13,7 +13,7 @@ implementa array packed con promozione al formato associativo, cardinalità e ac
 storage COW, estremità
 degli array e un sottoinsieme da array di ArrayObject. Il blocco async collega i risultati
 all'ownership guest e rimuove i ricevitori pendenti abbandonati. I prossimi
-passi sono return-by-reference (anche per ArrayAccess), lifetime degli oggetti
+passi sono lifetime degli oggetti, riferimenti a proprietà tipizzate
 e policy degli errori di scope, poi promozione dei grafi per lo spawn su thread. Per SPL restano flags, sorting,
 backing da oggetto, classi di iteratore personalizzate e serializzazione.
 Compose e mobile restano in coda. Le misure SPL riguardano questo percorso.
@@ -112,6 +112,11 @@ Compose e mobile restano in coda. Le misure SPL riguardano questo percorso.
   sottoscrizioni trattengono l'operazione fino alla consegna.
   [Verifiche e misure](docs/validation/future-lifetime-2026-11-18/README.md).
 
+- [x] Ritorni per riferimento, forwarding, argomenti, foreach e
+  `&offsetGet` sospendibile. Corrette le regressioni sugli offset delle
+  stringhe e la classe di eccezione del generatore per valore.
+  [99 casi per modalità e A/B](docs/validation/reference-return-2026-11-18/README.md).
+
 ## Prestazioni e memoria
 
 - [ ] **PERF-01 — Spiegare e ridurre il costo del p99.** L'A/B sullo stesso
@@ -140,8 +145,8 @@ Compose e mobile restano in coda. Le misure SPL riguardano questo percorso.
 ## Fondamenta prioritarie
 
 - [ ] **VALUE-01 — Lifetime PHP completo.** Distruttori, weak reference,
-  resurrection, errori/shutdown e rilascio dei receiver temporanei; return-by-ref,
-  proprietà tipizzate e stringhe binarie nelle restanti coercizioni. Chiavi
+  resurrection, errori/shutdown e rilascio dei receiver temporanei. Restano
+  riferimenti a proprietà tipizzate e stringhe binarie nelle restanti coercizioni. Chiavi
   binarie e offset byte-oriented sono ora coperti dal blocco valori. Verificare
   ordine osservabile contro PHP 8.6 e invarianti dei cicli anche nelle sospensioni.
   Un miglior RSS della VM non chiude queste semantiche.

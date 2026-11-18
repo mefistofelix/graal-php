@@ -133,7 +133,7 @@ public final class ClassLoading implements AutoCloseable {
             this.arguments = new Argument[arguments.length];
             for (int i = 0; i < arguments.length; i++) {
                 var argument = arguments[i];
-                this.arguments[i] = new Argument(PhpValues.own(PhpValues.unwrap(argument.value())), argument.location(), argument.name(), argument.traversableUnpack());
+                this.arguments[i] = argument.copy();
             }
         }
         @Override public void close() {

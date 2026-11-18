@@ -43,10 +43,24 @@ public final class Execution {
     }
     public record Unit(Path path, String content, Function main, Map<String, Function> functions,
                        Map<String, ObjectModel.Definition> classes) {}
-    public record Argument(Object value, PhpValues.Location location, String name, boolean traversableUnpack) implements AutoCloseable {
+    public record Argument(Object value, PhpValues.Location location, String name, boolean traversableUnpack,
+                           Object referenceResult) implements AutoCloseable {
+        public Argument(Object value, PhpValues.Location location, String name, boolean traversableUnpack) {
+            this(value, location, name, traversableUnpack, null);
+        }
         public Argument(Object value, PhpValues.Location location) { this(value, location, null, false); }
         public Argument(Object value, PhpValues.Location location, String name) { this(value, location, name, false); }
-        @Override public void close() { PhpValues.drop(value); }
+        public Argument named(String name) {
+            return new Argument(value, location, name, traversableUnpack, referenceResult);
+        }
+        public Argument copy() {
+            return new Argument(PhpValues.own(PhpValues.unwrap(value)), location, name, traversableUnpack,
+                    PhpValues.copyReferenceResult(referenceResult));
+        }
+        @Override public void close() {
+            PhpValues.drop(value);
+            PhpValues.drop(referenceResult);
+        }
     }
     public record NestedCall(ContinuationResult continuation, Activation activation) {}
     public record Failure(PhpError error) {}
@@ -278,8 +292,9 @@ public final class Execution {
                         if (argument.location == null) throw new PhpError("Argument " + parameter.name() + " must be a variable");
                         warnTraversableReference(argument, i + 1);
                         checkReference(parameter, argument);
-                        argument.close();
+                        PhpValues.drop(argument.value);
                         variable(parameter.name()).bind(argument.location);
+                        argument.close();
                     } else variable(parameter.name()).set(function.builtin() ? PhpValues.unwrap(argument.value)
                             : checkArgument(argument.value, parameter.type()));
                 }

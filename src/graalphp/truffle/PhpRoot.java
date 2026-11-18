@@ -126,8 +126,26 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
                     caller.calledClass == null ? caller.function.owner() : caller.calledClass.definition.name());
             Object checked = TypeRelations.check(value, returnType, caller.function.strictTypes(), Diagnostics.origin(caller));
             if (checked == PhpValues.unwrap(value)) return value;
+            if (PhpValues.isReferenceResult(value)) {
+                PhpValues.referenceLocation(value).set(checked);
+                return value;
+            }
             PhpValues.drop(value);
             return checked;
+        }
+    }
+    @Operation public static final class ReturnReference {
+        @Specialization
+        static Object run(VirtualFrame frame, Object value,
+                @com.oracle.truffle.api.dsl.Bind BytecodeNode bytecode, @com.oracle.truffle.api.dsl.Bind("$bytecodeIndex") int bci) {
+            return checked(activation(frame).at(bytecode, bci), value);
+        }
+        @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+        static Object checked(Activation caller, Object value) {
+            if (value instanceof PhpValues.Location location) return caller.track(location.referenceResult());
+            if (!PhpValues.isReferenceResult(value))
+                Diagnostics.origin(caller).notice("Only variable references should be returned by reference");
+            return value;
         }
     }
     @Operation @ConstantOperand(type = int.class, name = "delta") @ConstantOperand(type = boolean.class, name = "before")
@@ -184,11 +202,33 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
     @Operation public static final class OffsetDirectLocation {
         @Specialization static boolean run(ArrayAccessApi.Access access) { return access.directLocation(); }
     }
+    @Operation public static final class OffsetOverloaded {
+        @Specialization static boolean run(ArrayAccessApi.Access access) { return access.overloaded(); }
+    }
+    @Operation @ConstantOperand(type = boolean.class, name = "probe")
+    public static final class OffsetQuiet {
+        @Specialization static Object run(boolean probe, ArrayAccessApi.Access access) { return access.quiet(probe); }
+    }
     @Operation public static final class OffsetLocation {
         @Specialization static PhpValues.Location run(ArrayAccessApi.Access access) { return access.location(); }
     }
     @Operation public static final class OffsetRead {
         @Specialization static Object run(ArrayAccessApi.Access access, @Cached IndirectCallNode call) { return access.read(call); }
+    }
+    @Operation public static final class OffsetReference {
+        @Specialization static Object run(ArrayAccessApi.Access access, @Cached IndirectCallNode call) { return access.reference(call); }
+    }
+    @Operation public static final class OffsetParent {
+        @Specialization static Object run(ArrayAccessApi.Access access) { return access.parent(); }
+    }
+    @Operation public static final class OffsetDirectArgument {
+        @Specialization static Argument run(ArrayAccessApi.Access access) { return access.argument(); }
+    }
+    @Operation public static final class RejectOffsetBind {
+        @Specialization static Object run(Object previous) {
+            PhpValues.drop(previous);
+            throw new PhpError("Error", "Cannot assign by reference to an array dimension of an object");
+        }
     }
     @Operation public static final class OffsetExists {
         @Specialization static Object run(ArrayAccessApi.Access access, @Cached IndirectCallNode call) { return access.exists(call); }
@@ -214,6 +254,10 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
     @Operation @ConstantOperand(type = int.class, name = "delta") @ConstantOperand(type = boolean.class, name = "before")
     public static final class OffsetIndirectIncrement {
         @Specialization static Object run(int delta, boolean before, ArrayAccessApi.Access access, Object previous) {
+            if (PhpValues.isReferenceResult(previous)) {
+                try { return Increment.run(delta, before, PhpValues.referenceLocation(previous)); }
+                finally { PhpValues.drop(previous); }
+            }
             Object raw = PhpValues.unwrap(previous);
             Object old = before ? null : PhpValues.own(raw);
             Object next = Operations.binary("+", previous, (long) delta);
@@ -237,8 +281,22 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
     }
     @Operation
     public static final class Bind {
-        @Specialization static Object run(VirtualFrame frame, PhpValues.Location destination, PhpValues.Location source) {
-            destination.bind(source); return activation(frame).track(PhpValues.own(destination.read()));
+        @Specialization
+        static Object run(VirtualFrame frame, PhpValues.Location destination, Object source,
+                @com.oracle.truffle.api.dsl.Bind BytecodeNode bytecode, @com.oracle.truffle.api.dsl.Bind("$bytecodeIndex") int bci) {
+            return bind(activation(frame).at(bytecode, bci), destination, source);
+        }
+        @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+        static Object bind(Activation caller, PhpValues.Location destination, Object source) {
+            var location = source instanceof PhpValues.Location variable ? variable : PhpValues.referenceLocation(source);
+            if (location == null) {
+                Diagnostics.origin(caller).notice("Only variables should be assigned by reference");
+                return Write.run(destination, source);
+            }
+            try {
+                destination.bind(location);
+                return caller.track(PhpValues.own(destination.read()));
+            } finally { PhpValues.drop(source); }
         }
     }
     @Operation public static final class Retain {
@@ -312,12 +370,16 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
         }
     }
     @Operation public static final class ArgumentValue {
-        @Specialization static Argument run(Object value) { return new Argument(value, null); }
+        @Specialization static Argument run(VirtualFrame frame, Object value) {
+            if (!PhpValues.isReferenceResult(value)) return new Argument(value, null);
+            return new Argument(activation(frame).track(PhpValues.own(PhpValues.unwrap(value))),
+                    PhpValues.referenceLocation(value), null, false, value);
+        }
     }
     @Operation @ConstantOperand(type = String.class, name = "name")
     public static final class ArgumentName {
         @Specialization static Argument run(String name, Argument argument) {
-            return new Argument(argument.value(), argument.location(), name, argument.traversableUnpack());
+            return argument.named(name);
         }
     }
     @Operation public static final class ArgumentLocation {
@@ -394,9 +456,11 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
             return suspended;
         }
     }
-    @Operation public static final class Resume {
-        @Specialization static Object run(VirtualFrame frame, Object value) {
+    @Operation @ConstantOperand(type = boolean.class, name = "preserveReference")
+    public static final class Resume {
+        @Specialization static Object run(VirtualFrame frame, boolean preserveReference, Object value) {
             if (value instanceof Failure failure) throw failure.error();
+            if (!preserveReference && PhpValues.isReferenceResult(value)) value = PhpValues.valueResult(value);
             return activation(frame).track(value);
         }
     }

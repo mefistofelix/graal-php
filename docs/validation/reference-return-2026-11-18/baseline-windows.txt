@@ -1,0 +1,7 @@
+FAIL quiet-offset-probes oracle=0 target=0 mode=output
+FAIL coalesce-quiet-vs-invalid-type oracle=0 target=0 mode=output
+FAIL probe-float-precision-warning oracle=0 target=0 mode=output
+FAIL write-first-byte-and-assignment-result oracle=0 target=0 mode=output
+FAIL write-negative-out-of-range oracle=0 target=0 mode=output
+FAIL coalesce-write-byte-result oracle=0 target=0 mode=output
+FAIL non-reference-generator-rejects-reference-foreach oracle=0 target=0 mode=output

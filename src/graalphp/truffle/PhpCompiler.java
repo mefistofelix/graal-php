@@ -133,7 +133,9 @@ public final class PhpCompiler {
             for (var statement : body) compiler.statement(statement);
             builder.beginReturn();
             if (!generator) builder.beginCheckReturn();
+            if (returnsReference && !generator) builder.beginReturnReference();
             if (main) builder.emitLoadConstant(1L); else builder.emitLoadNull();
+            if (returnsReference && !generator) builder.endReturnReference();
             if (!generator) builder.endCheckReturn();
             builder.endReturn();
             builder.endSource();
@@ -159,7 +161,13 @@ public final class PhpCompiler {
             case Ir.Return returned -> {
                 b.beginReturn();
                 if (!generatorFunction) b.beginCheckReturn();
-                expression(returned.value());
+                if (returnsReference && !generatorFunction) {
+                    b.beginReturnReference();
+                    referenceOperand(returned.value());
+                    b.endReturnReference();
+                } else {
+                    expression(returned.value(), forwardsCallResult(returned.value()));
+                }
                 if (!generatorFunction) b.endCheckReturn();
                 b.endReturn();
             }
@@ -260,7 +268,7 @@ public final class PhpCompiler {
         var b = builder;
         b.beginBlock(); var cursor = b.createLocal();
         b.beginStoreLocal(cursor); b.beginOpenCursor(loop.reference());
-        if (loop.reference() && isLocation(loop.source())) location(loop.source()); else expression(loop.source());
+        if (loop.reference()) referenceOperand(loop.source()); else expression(loop.source());
         b.endOpenCursor(); b.endStoreLocal();
         b.beginTryFinally(() -> { b.beginCloseCursor(); b.emitLoadLocal(cursor); b.endCloseCursor(); });
         b.beginBlock(); var exit = b.createLabel();
@@ -276,6 +284,21 @@ public final class PhpCompiler {
     }
     @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
     private void expression(Ir.Expression expression) {
+        expression(expression, false);
+    }
+
+    private boolean forwardsCallResult(Ir.Expression expression) {
+        return functionName.equals("class_callable") && source.getName().equals("<async-library>")
+                && expression instanceof Ir.Call call && call.name().equals("__class_call");
+    }
+
+    private void referenceOperand(Ir.Expression expression) {
+        if (expression instanceof Ir.Index index) offsetReference(index);
+        else if (isLocation(expression)) location(expression);
+        else expression(expression, true);
+    }
+
+    private void expression(Ir.Expression expression, boolean preserveReference) {
         var b = builder;
         switch (expression) {
             case Ir.Literal literal -> { if (literal.value() == null) b.emitLoadNull(); else b.emitLoadConstant(literal.value()); }
@@ -305,7 +328,15 @@ public final class PhpCompiler {
             case Ir.Index index -> offsetRead(index);
             case Ir.Assign assignment -> {
                 if (!assignment.reference() && assignment.target() instanceof Ir.Index index) offsetAssign(index, assignment.value());
-                else if (assignment.reference()) { b.beginBind(); location(assignment.target()); location(assignment.value()); b.endBind(); }
+                else if (assignment.reference()) {
+                    if (assignment.target() instanceof Ir.Index index) offsetBind(index, assignment.value());
+                    else {
+                        b.beginBind();
+                        location(assignment.target());
+                        referenceOperand(assignment.value());
+                        b.endBind();
+                    }
+                }
                 else { b.beginWrite(); location(assignment.target()); expression(assignment.value()); b.endWrite(); }
             }
             case Ir.CompoundAssign assignment -> {
@@ -346,7 +377,7 @@ public final class PhpCompiler {
             case Ir.Call call -> {
                 String simple = call.name().substring(call.name().lastIndexOf('\\') + 1);
                 if (simple.equals("isset") || simple.equals("empty")) specialRead(simple, call.arguments(), 0);
-                else call(call);
+                else call(call, preserveReference);
             }
             case Ir.NamedArgument ignored -> throw new graalphp.runtime.PhpError("Named argument outside a call");
             case Ir.UnpackArgument ignored -> throw new graalphp.runtime.PhpError("Argument unpacking outside a call");
@@ -356,10 +387,10 @@ public final class PhpCompiler {
             case Ir.Clone clone -> cloneObject(clone.value());
             case Ir.Yield yielded -> generatorYield(yielded);
             case Ir.YieldFrom delegated -> generatorDelegate(delegated.value());
-            case Ir.DynamicStaticCall call -> memberCall("static", call.name(), call.type(), call.arguments());
-            case Ir.DynamicCall call -> memberCall("callable", "", call.callable(), call.arguments());
-            case Ir.MethodCall call -> memberCall("method", call.name(), call.object(), call.arguments());
-            case Ir.StaticCall call -> memberCall("static", call.name(), new Ir.Literal(call.type()), call.arguments());
+            case Ir.DynamicStaticCall call -> memberCall("static", call.name(), call.type(), call.arguments(), preserveReference);
+            case Ir.DynamicCall call -> memberCall("callable", "", call.callable(), call.arguments(), preserveReference);
+            case Ir.MethodCall call -> memberCall("method", call.name(), call.object(), call.arguments(), preserveReference);
+            case Ir.StaticCall call -> memberCall("static", call.name(), new Ir.Literal(call.type()), call.arguments(), preserveReference);
             case Ir.Construct construct -> construct(new Ir.Literal(construct.type()), construct.arguments());
             case Ir.DynamicConstruct construct -> construct(construct.type(), construct.arguments());
             case Ir.Closure closure -> {
@@ -386,7 +417,7 @@ public final class PhpCompiler {
     private void generatorDelegate(Ir.Expression source) {
         if (returnsReference) throw PhpError.fatal("Cannot use yield from inside a by-reference generator");
         var b = builder;
-        b.beginResume();
+        b.beginResume(false);
         b.beginYield();
         b.beginGeneratorDelegate();
         expression(source);
@@ -396,7 +427,7 @@ public final class PhpCompiler {
     }
     private void generatorYield(Ir.Yield yielded) {
         var b = builder;
-        b.beginResume();
+        b.beginResume(false);
         b.beginYield();
         boolean reference = returnsReference;
         b.beginGeneratorYield(reference);
@@ -406,15 +437,15 @@ public final class PhpCompiler {
         b.endYield();
         b.endResume();
     }
-    private void call(Ir.Call call) {
-        suspended(() -> {
+    private void call(Ir.Call call, boolean preserveReference) {
+        suspended(preserveReference, () -> {
             builder.beginInvoke(call.name(), call.globalFallback());
             arguments(call.arguments());
             builder.endInvoke();
         });
     }
-    private void memberCall(String kind, String name, Ir.Expression receiver, List<Ir.Expression> args) {
-        suspended(() -> {
+    private void memberCall(String kind, String name, Ir.Expression receiver, List<Ir.Expression> args, boolean preserveReference) {
+        suspended(preserveReference, () -> {
             builder.beginInvokeMember(kind, name);
             if (kind.equals("static")) ensureClass(receiver); else expression(receiver);
             arguments(args);
@@ -495,7 +526,7 @@ public final class PhpCompiler {
             }
             if (argument instanceof Ir.Index index) offsetArgument(index);
             else if (isLocation(argument)) { b.beginArgumentLocation(); location(argument); b.endArgumentLocation(); }
-            else { b.beginArgumentValue(); expression(argument); b.endArgumentValue(); }
+            else { b.beginArgumentValue(); expression(argument, true); b.endArgumentValue(); }
             if (name != null) b.endArgumentName();
         }
     }
@@ -532,8 +563,9 @@ public final class PhpCompiler {
     private void prepareOffset(Ir.Index index, boolean writable) {
         var b = builder;
         b.beginPrepareOffset();
-        if (writable && isLocation(index.array())) location(index.array());
-        else expression(index.array());
+        if (writable && index.array() instanceof Ir.Index parent) offsetSource(parent, true);
+        else if (writable && isLocation(index.array())) location(index.array());
+        else expression(index.array(), writable);
         if (index.key() == null) b.emitLoadConstant(ArrayAccessApi.APPEND); else expression(index.key());
         b.endPrepareOffset();
     }
@@ -541,9 +573,35 @@ public final class PhpCompiler {
         builder.beginCloseOffset(); builder.emitLoadLocal(access); builder.endCloseOffset();
     }
     private void offsetRead(BytecodeLocal access) {
-        suspended(() -> {
+        offsetRead(access, false);
+    }
+    private void offsetRead(BytecodeLocal access, boolean preserveReference) {
+        suspended(preserveReference, () -> {
             builder.beginOffsetRead(); builder.emitLoadLocal(access); builder.endOffsetRead();
         });
+    }
+    private void offsetReference(Ir.Index index) {
+        offsetSource(index, false);
+    }
+    private void offsetSource(Ir.Index index, boolean parent) {
+        var b = builder;
+        b.beginBlock(); var access = b.createLocal(); var result = b.createLocal();
+        b.beginStoreLocal(access); prepareOffset(index, true); b.endStoreLocal();
+        b.beginTryFinally(() -> closeOffset(access));
+        b.beginStoreLocal(result);
+        if (parent) {
+            b.beginConditional(); b.beginOffsetDirectLocation(); b.emitLoadLocal(access); b.endOffsetDirectLocation();
+            b.beginOffsetParent(); b.emitLoadLocal(access); b.endOffsetParent();
+            offsetRead(access, true);
+            b.endConditional();
+        } else {
+            suspended(true, () -> {
+                b.beginOffsetReference(); b.emitLoadLocal(access); b.endOffsetReference();
+            });
+        }
+        b.endStoreLocal();
+        b.endTryFinally();
+        b.emitLoadLocal(result); b.endBlock();
     }
     private void offsetReadForAssign(BytecodeLocal access) {
         suspended(() -> {
@@ -586,12 +644,40 @@ public final class PhpCompiler {
         b.endTryFinally();
         b.emitLoadLocal(result); b.endBlock();
     }
+    private void offsetBind(Ir.Index index, Ir.Expression value) {
+        var b = builder;
+        b.beginBlock(); var access = b.createLocal(); var result = b.createLocal(); var reference = b.createLocal();
+        b.beginStoreLocal(access); prepareOffset(index, true); b.endStoreLocal();
+        b.beginTryFinally(() -> closeOffset(access));
+        b.beginBlock();
+        b.beginStoreLocal(reference); referenceOperand(value); b.endStoreLocal();
+        b.beginStoreLocal(result);
+        b.beginConditional(); b.beginOffsetDirectLocation(); b.emitLoadLocal(access); b.endOffsetDirectLocation();
+        b.beginBind(); b.beginOffsetLocation(); b.emitLoadLocal(access); b.endOffsetLocation();
+        b.emitLoadLocal(reference); b.endBind();
+        b.beginBlock();
+        b.beginDrop(); b.emitLoadLocal(reference); b.endDrop();
+        b.beginRejectOffsetBind(); offsetRead(access); b.endRejectOffsetBind();
+        b.endBlock();
+        b.endConditional();
+        b.endStoreLocal();
+        b.endBlock();
+        b.endTryFinally();
+        b.emitLoadLocal(result); b.endBlock();
+    }
     private void offsetWriteExpression(BytecodeLocal access, Ir.Expression value) {
         var b = builder;
         b.beginBlock(); var assigned = b.createLocal();
         b.beginStoreLocal(assigned); expression(value); b.endStoreLocal();
+        b.beginConditional();
+        b.beginOffsetOverloaded(); b.emitLoadLocal(access); b.endOffsetOverloaded();
+        b.beginBlock();
         offsetWrite(access, assigned);
-        b.emitLoadLocal(assigned); b.endBlock();
+        b.emitLoadLocal(assigned);
+        b.endBlock();
+        b.beginOffsetWrite(); b.emitLoadLocal(access); b.emitLoadLocal(assigned); b.endOffsetWrite();
+        b.endConditional();
+        b.endBlock();
     }
     private void offsetUnset(Ir.Index index) {
         var b = builder;
@@ -620,9 +706,14 @@ public final class PhpCompiler {
         b.beginStoreLocal(access); prepareOffset(index, false); b.endStoreLocal();
         b.beginTryFinally(() -> closeOffset(access));
         b.beginStoreLocal(result);
+        b.beginConditional(); b.beginOffsetOverloaded(); b.emitLoadLocal(access); b.endOffsetOverloaded();
         b.beginConditional(); offsetExists(access);
         b.beginUnary("!"); offsetRead(access); b.endUnary();
         b.emitLoadConstant(true);
+        b.endConditional();
+        b.beginUnary("!");
+        b.beginOffsetQuiet(true); b.emitLoadLocal(access); b.endOffsetQuiet();
+        b.endUnary();
         b.endConditional();
         b.endStoreLocal();
         b.endTryFinally();
@@ -634,10 +725,7 @@ public final class PhpCompiler {
         b.beginStoreLocal(access); prepareOffset(index, false); b.endStoreLocal();
         b.beginTryFinally(() -> closeOffset(access));
         b.beginStoreLocal(result);
-        b.beginConditional(); offsetExists(access);
         offsetReadOrFallback(access, fallback);
-        expression(fallback);
-        b.endConditional();
         b.endStoreLocal();
         b.endTryFinally();
         b.emitLoadLocal(result); b.endBlock();
@@ -645,7 +733,7 @@ public final class PhpCompiler {
     private void offsetReadOrFallback(BytecodeLocal access, Ir.Expression fallback) {
         var b = builder;
         b.beginBlock(); var value = b.createLocal();
-        b.beginStoreLocal(value); offsetRead(access); b.endStoreLocal();
+        b.beginStoreLocal(value); offsetOptionalValue(access); b.endStoreLocal();
         b.beginConditional(); b.beginNonNull(); b.emitLoadLocal(value); b.endNonNull();
         b.emitLoadLocal(value);
         b.beginBlock(); b.beginDrop(); b.emitLoadLocal(value); b.endDrop(); expression(fallback); b.endBlock();
@@ -657,10 +745,7 @@ public final class PhpCompiler {
         b.beginStoreLocal(access); prepareOffset(index, true); b.endStoreLocal();
         b.beginTryFinally(() -> closeOffset(access));
         b.beginStoreLocal(result);
-        b.beginConditional(); offsetExists(access);
         offsetReadOrAssign(access, fallback);
-        offsetWriteExpression(access, fallback);
-        b.endConditional();
         b.endStoreLocal();
         b.endTryFinally();
         b.emitLoadLocal(result); b.endBlock();
@@ -668,11 +753,23 @@ public final class PhpCompiler {
     private void offsetReadOrAssign(BytecodeLocal access, Ir.Expression fallback) {
         var b = builder;
         b.beginBlock(); var value = b.createLocal();
-        b.beginStoreLocal(value); offsetRead(access); b.endStoreLocal();
+        b.beginStoreLocal(value); offsetOptionalValue(access); b.endStoreLocal();
         b.beginConditional(); b.beginNonNull(); b.emitLoadLocal(value); b.endNonNull();
         b.emitLoadLocal(value);
         b.beginBlock(); b.beginDrop(); b.emitLoadLocal(value); b.endDrop(); offsetWriteExpression(access, fallback); b.endBlock();
         b.endConditional(); b.endBlock();
+    }
+    private void offsetOptionalValue(BytecodeLocal access) {
+        var b = builder;
+        b.beginConditional();
+        b.beginOffsetOverloaded(); b.emitLoadLocal(access); b.endOffsetOverloaded();
+        b.beginConditional();
+        offsetExists(access);
+        offsetRead(access);
+        b.emitLoadNull();
+        b.endConditional();
+        b.beginOffsetQuiet(false); b.emitLoadLocal(access); b.endOffsetQuiet();
+        b.endConditional();
     }
     private void offsetCompound(String operator, Ir.Index index, Ir.Expression value) {
         var b = builder;
@@ -697,7 +794,7 @@ public final class PhpCompiler {
         b.beginStoreLocal(result);
         b.beginConditional(); b.beginOffsetDirectLocation(); b.emitLoadLocal(access); b.endOffsetDirectLocation();
         b.beginIncrement(delta, before); b.beginOffsetLocation(); b.emitLoadLocal(access); b.endOffsetLocation(); b.endIncrement();
-        b.beginOffsetIndirectIncrement(delta, before); b.emitLoadLocal(access); offsetRead(access); b.endOffsetIndirectIncrement();
+        b.beginOffsetIndirectIncrement(delta, before); b.emitLoadLocal(access); offsetRead(access, true); b.endOffsetIndirectIncrement();
         b.endConditional();
         b.endStoreLocal();
         b.endTryFinally();
@@ -706,24 +803,28 @@ public final class PhpCompiler {
     private void offsetArgument(Ir.Index index) {
         var b = builder;
         b.beginBlock(); var access = b.createLocal(); var result = b.createLocal();
-        b.beginStoreLocal(access); prepareOffset(index, isLocation(index.array())); b.endStoreLocal();
+        b.beginStoreLocal(access); prepareOffset(index, true); b.endStoreLocal();
         b.beginTryFinally(() -> closeOffset(access));
         b.beginStoreLocal(result);
         b.beginConditional(); b.beginOffsetDirectLocation(); b.emitLoadLocal(access); b.endOffsetDirectLocation();
-        b.beginArgumentLocation(); b.beginOffsetLocation(); b.emitLoadLocal(access); b.endOffsetLocation(); b.endArgumentLocation();
-        b.beginArgumentValue(); offsetRead(access); b.endArgumentValue();
+        b.beginOffsetDirectArgument(); b.emitLoadLocal(access); b.endOffsetDirectArgument();
+        b.beginArgumentValue(); offsetRead(access, true); b.endArgumentValue();
         b.endConditional();
         b.endStoreLocal();
         b.endTryFinally();
         b.emitLoadLocal(result); b.endBlock();
     }
     private void suspended(Runnable operation) {
+        suspended(false, operation);
+    }
+
+    private void suspended(boolean preserveReference, Runnable operation) {
         var b = builder;
         b.beginBlock(); var result = b.createLocal();
         b.beginStoreLocal(result); operation.run(); b.endStoreLocal();
         b.beginIfThen(); b.beginSuspended(); b.emitLoadLocal(result); b.endSuspended();
         b.beginStoreLocal(result); b.beginYield(); b.emitLoadLocal(result); b.endYield(); b.endStoreLocal(); b.endIfThen();
-        b.beginResume(); b.emitLoadLocal(result); b.endResume(); b.endBlock();
+        b.beginResume(preserveReference); b.emitLoadLocal(result); b.endResume(); b.endBlock();
     }
     private void checkpoint() {
         builder.beginDrop(); suspended(() -> builder.emitPoll()); builder.endDrop();

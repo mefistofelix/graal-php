@@ -249,6 +249,7 @@ public final class TypeRelations {
                 + " must be compatible with " + expected.owner() + "::" + expected.name();
         if (implementation.shared() != contract.shared() || visibility(implementation.visibility()) < visibility(contract.visibility()))
             throw PhpError.fatal(message);
+        if (expected.returnsReference() && !actual.returnsReference()) throw PhpError.fatal(message);
         var actualParameters = actual.parameters();
         var expectedParameters = expected.parameters();
         long actualRequired = required(actualParameters);

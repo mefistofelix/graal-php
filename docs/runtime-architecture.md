@@ -63,11 +63,13 @@ sul thread proprietario.
 
 ## Confini per le prossime milestone
 
-Per il return-by-reference, portare la cella direttamente oltre la chiamata
-e la continuation fino a chi la associa. Il chiamante per valore deve
-leggere e rilasciare quella cella secondo le regole COW. La verifica include
-ritorno di una variabile locale anche attraverso finally, argomenti
-by-reference e modifiche annidate via `&offsetGet`.
+Il return-by-reference trasporta una cella posseduta oltre la chiamata e
+la continuation. Il chiamante per valore ne legge il valore corrente e
+rilascia la cella secondo le regole COW. Gli argomenti valutati prima di una
+sospensione possono avere sia uno snapshot sia una cella per il binding.
+Il prossimo lavoro sul percorso reference riguarda le regole delle proprietà
+tipizzate e i casi di modifica indiretta sugli offset restituiti per valore.
+[Contratto ArrayAccess](arrayaccess.md).
 
 Il distruttore va eseguito sul dispatcher proprietario al punto semantico
 di rilascio. Prima di chiamare codice PHP completare la transizione dello
@@ -78,7 +80,7 @@ shutdown con il binario PHP 8.6.
 
 ## Sequenza di integrazione
 
-1. Usare questa base per completare offset by-reference, proprietà tipizzate,
+1. Usare questa base per completare i riferimenti alle proprietà tipizzate,
    distruttori e policy degli errori async. Sono prerequisiti anche per le strutture
    condivise e i callback nativi persistenti.
 2. Validare LOCAL→SHARED con il collector, poi pubblicare lo spawn sullo stesso

@@ -186,7 +186,7 @@ public final class CallArguments {
             else if (named) throw new PhpError("Error", "Positional argument after named argument");
             if (index < 0) throw new PhpError("Error", "Unknown named parameter $" + argument.name());
             if (ordered[index] != null) throw new PhpError("Error", "Named parameter overwrites previous argument");
-            ordered[index] = new Argument(argument.value(), argument.location(), null, argument.traversableUnpack());
+            ordered[index] = argument.named(null);
         }
         for (int i = 0; i < ordered.length; i++) if (ordered[i] == null) {
             if (i < required) throw new PhpError("ArgumentCountError", "Missing argument $" + names.get(i) + " for " + function);

@@ -36,8 +36,37 @@ public final class PhpValues {
     }
 
     public static Object own(Object value) { return managed(value) == null ? value : new Owned(value); }
-    public static Object unwrap(Object value) { return value instanceof Owned owned ? owned.value : value; }
+    public static Object unwrap(Object value) {
+        if (!(value instanceof Owned owned)) return value;
+        return owned.value instanceof Cell cell ? cell.value : owned.value;
+    }
     public static void drop(Object value) { if (value instanceof Owned owned) owned.close(); }
+
+    public static boolean isReferenceResult(Object value) {
+        return value instanceof Owned owned && owned.value instanceof Cell;
+    }
+
+    /** The result owns the cell. A location view is valid while that owner is live. */
+    @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+    public static Location referenceLocation(Object result) {
+        if (!(result instanceof Owned owned) || !(owned.value instanceof Cell cell)) return null;
+        var slot = new Slot(cell.heap);
+        slot.defined = true;
+        slot.content = cell;
+        return new Location(slot, null, null);
+    }
+
+    static Object copyReferenceResult(Object result) {
+        return result instanceof Owned owned ? own(owned.value) : null;
+    }
+
+    @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+    public static Object valueResult(Object result) {
+        if (!isReferenceResult(result)) return result;
+        Object value = own(unwrap(result));
+        drop(result);
+        return value;
+    }
     @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
     public static List<Object> keys(Object value) {
         if (!(unwrap(value) instanceof PhpArray array)) throw new PhpError("Expected an array");
@@ -74,8 +103,13 @@ public final class PhpValues {
 
     @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
     public static Object probeElement(Object value, Object key, Diagnostics.Origin origin) {
+        return quietElement(value, key, StringOffsets.ReadMode.PROBE, origin);
+    }
+
+    @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+    public static Object quietElement(Object value, Object key, StringOffsets.ReadMode mode, Diagnostics.Origin origin) {
         Object raw = unwrap(value);
-        if (StringOffsets.isString(raw)) return StringOffsets.read(raw, key, StringOffsets.ReadMode.PROBE, origin);
+        if (StringOffsets.isString(raw)) return StringOffsets.read(raw, key, mode, origin);
         if (!(raw instanceof PhpArray array)) return null;
         var slot = array.slot(normalizeKey(key));
         return slot == null ? null : own(slot.read());
@@ -254,10 +288,19 @@ public final class PhpValues {
         }
 
         public Reference reference() {
+            return new Reference(referenceCell());
+        }
+
+        private Cell referenceCell() {
             if (stringOffset()) throw new PhpError("Error", "Cannot create references to/from string offsets");
             if (parent == null && local.readonlyLabel != null)
                 throw new PhpError("Error", "Cannot acquire reference to readonly property " + local.readonlyLabel);
-            return new Reference(resolve(true).reference());
+            return resolve(true).reference();
+        }
+
+        @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+        public Object referenceResult() {
+            return own(referenceCell());
         }
 
         public boolean exists() { return stringOffset() ? probe() != null : resolve(false) != null; }

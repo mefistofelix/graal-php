@@ -304,9 +304,12 @@ public final class IterationApi {
 
     @TruffleBoundary
     public static State open(Activation caller, Object source, boolean reference) {
-        var state = new State(caller, source, reference);
-        caller.resources.add(state);
-        return state;
+        var location = reference ? PhpValues.referenceLocation(source) : null;
+        try {
+            var state = new State(caller, location == null ? source : location, reference);
+            caller.resources.add(state);
+            return state;
+        } finally { if (location != null) PhpValues.drop(source); }
     }
     @TruffleBoundary
     public static Object next(Activation caller, State state, PhpValues.Location value, PhpValues.Location key, IndirectCallNode call) {
@@ -472,10 +475,11 @@ public final class IterationApi {
             }
             case "__iter_ready": {
                 var state = (State) arguments[0].value();
-                if (state.reference && !GeneratorApi.byReference(state.iterator))
-                    throw new PhpError("Error", GeneratorApi.isGenerator(state.iterator)
-                            ? "You can only iterate a generator by-reference if it declared that it yields by-reference"
-                            : "An iterator cannot be used with foreach by reference");
+                if (state.reference && !GeneratorApi.byReference(state.iterator)) {
+                    if (GeneratorApi.isGenerator(state.iterator))
+                        throw new PhpError("Exception", "You can only iterate a generator by-reference if it declared that it yields by-reference");
+                    throw new PhpError("Error", "An iterator cannot be used with foreach by reference");
+                }
                 state.aggregating.clear();
                 return null;
             }
