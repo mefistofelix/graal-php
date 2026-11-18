@@ -21,26 +21,135 @@ public final class Scheduler implements AutoCloseable {
     public record Delay(long milliseconds) implements Effect {}
     /** Optional synchronous completion runs on the owner just before guest resumption,
      * including cancellation delivery. It must preserve ownership of its input. */
-    public record Await(Future future, Future cancellation, java.util.function.UnaryOperator<Object> finish) implements Effect {
+    public static final class Await implements Effect, AutoCloseable {
+        private final Future future;
+        private final Future cancellation;
+        private final java.util.function.UnaryOperator<Object> finish;
+        private boolean released;
+
         public Await(Future future) { this(future, null, null); }
         public Await(Future future, Future cancellation) { this(future, cancellation, null); }
+        public Await(Future future, Future cancellation, java.util.function.UnaryOperator<Object> finish) {
+            this.future = future;
+            this.cancellation = cancellation;
+            this.finish = finish;
+            PhpValues.retain(future);
+            if (cancellation != future) PhpValues.retain(cancellation);
+        }
+        @Override @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+        public void close() {
+            if (released) return;
+            released = true;
+            PhpValues.release(future);
+            if (cancellation != future) PhpValues.release(cancellation);
+        }
     }
     private record Parent(ContinuationResult continuation, Activation activation) {}
     private record Timer(long deadline, Runnable action) {}
 
-    public static final class Future implements TruffleObject {
+    /** Guest futures own results in the PHP graph. Native signals have no guest heap. */
+    public static final class Future extends PhpValues.HeapNode implements TruffleObject {
         public final CompletableFuture<Object> completion = new CompletableFuture<>();
         public Task task;
         public boolean observed;
         public Runnable cancelAction;
         public boolean cancelOnAbort;
         public boolean cancellationRequested;
+        Runnable abandon;
+        private Future boundState;
+        private FutureLink link;
+
+        public Future() { this(null); }
+        Future(PhpValues.Heap heap) { super(heap); }
+
+        Future state() { return boundState == null ? this : boundState; }
+
+        void bind(Future state) {
+            PhpValues.retain(state);
+            var previous = boundState;
+            boundState = state;
+            PhpValues.release(previous);
+        }
+
+        /** Transfers an owned result, or retains a borrowed result for a guest future. */
+        void completeValue(Object value) {
+            if (heap == null) {
+                if (!completion.complete(value)) PhpValues.drop(value);
+                return;
+            }
+            Object raw = PhpValues.unwrap(value);
+            var result = PhpValues.managed(raw);
+            try {
+                if (result != null && result.heap != heap) throw new PhpError("Future result belongs to another heap");
+                PhpValues.retain(raw);
+                if (!completion.complete(raw)) PhpValues.release(raw);
+            } finally { PhpValues.drop(value); }
+        }
+
+        void follow(Future source) {
+            if (link != null || completion.isDone()) throw new PhpError("Future is already initialized");
+            PhpValues.retain(source);
+            link = new FutureLink(source, this);
+            source.completion.whenComplete(link::deliver);
+        }
+
+        void unlink() {
+            if (link == null) return;
+            var source = link.detach();
+            link = null;
+            PhpValues.release(source);
+        }
+
+        @Override void children(java.util.function.Consumer<PhpValues.HeapNode> visit) {
+            if (boundState != null) visit.accept(boundState);
+            if (link != null) PhpValues.visitChild(link.source, visit);
+            if (completion.isDone() && !completion.isCompletedExceptionally()) {
+                PhpValues.visitChild(completion.getNow(null), visit);
+            }
+        }
+
+        @Override void discard() {
+            boundState = null;
+            if (link != null) {
+                link.detach();
+                link = null;
+            }
+            if (completion.isDone() && !completion.isCompletedExceptionally()) completion.obtrudeValue(null);
+            var dispose = abandon;
+            abandon = null;
+            cancelAction = null;
+            if (dispose != null) dispose.run();
+        }
+    }
+
+    /** Detaching both ends leaves a pending source with no reference to a discarded target. */
+    private static final class FutureLink {
+        private Future source;
+        private Future target;
+        FutureLink(Future source, Future target) { this.source = source; this.target = target; }
+        private void deliver(Object value, Throwable failure) {
+            var destination = target;
+            if (destination == null) return;
+            try {
+                if (failure == null) destination.completeValue(PhpValues.unwrap(value));
+                else destination.completion.completeExceptionally(failure);
+            } finally {
+                destination.cancelAction = null;
+                destination.unlink();
+            }
+        }
+        private Future detach() {
+            var previous = source;
+            source = null;
+            target = null;
+            return previous;
+        }
     }
 
     public static final class Scope implements TruffleObject {
         final Scope parent;
         final long deadline;
-        final List<Future> members = new ArrayList<>();
+        final java.util.Set<Future> members = new java.util.LinkedHashSet<>();
         int activeMembers; // Includes descendants; updated only by the owner.
         boolean cancelled;
         PhpError failure;
@@ -51,7 +160,7 @@ public final class Scheduler implements AutoCloseable {
     }
 
     public static final class Task {
-        public final Future future = new Future();
+        public final Future future;
         public final Scope scope;
         public ContextNode context;
         public Activation activation;
@@ -68,9 +177,10 @@ public final class Scheduler implements AutoCloseable {
         public int checkpoints = 128;
         private WaitRegistration registration;
         GeneratorApi.State generator;
-        Task(ContextNode context, Scope scope) {
+        Task(ContextNode context, Scope scope, PhpValues.Heap heap) {
             this.context = context;
             this.scope = scope;
+            future = new Future(heap);
             future.task = this;
         }
         public void checkCancellation() {
@@ -92,9 +202,8 @@ public final class Scheduler implements AutoCloseable {
     private final LinkedBlockingQueue<Runnable> incoming = new LinkedBlockingQueue<>();
     private final java.util.Set<CompletableFuture<Object>> dispatches = java.util.concurrent.ConcurrentHashMap.newKeySet();
     private final PriorityQueue<Timer> timers = new PriorityQueue<>(Comparator.comparingLong(Timer::deadline));
-    private final List<Task> tasks = new ArrayList<>();
+    private final java.util.Set<Task> tasks = new java.util.LinkedHashSet<>();
     private final List<Future> external = new ArrayList<>();
-    private final List<Future> kept = new ArrayList<>();
     private final List<Scope> scopes = new ArrayList<>();
     private final java.util.Set<Listener> listeners = new java.util.HashSet<>();
     public final Scope rootScope;
@@ -128,9 +237,18 @@ public final class Scheduler implements AutoCloseable {
     }
 
     public Future spawn(ObjectModel.Invocation invocation, Argument[] args, ContextNode context, boolean topLevel, Scope scope) {
+        return spawn(invocation, args, context, topLevel, scope, null);
+    }
+
+    Future spawnGuest(ObjectModel.Invocation invocation, Argument[] args, ContextNode context, Scope scope) {
+        return spawn(invocation, args, context, false, scope, request.heap);
+    }
+
+    private Future spawn(ObjectModel.Invocation invocation, Argument[] args, ContextNode context, boolean topLevel, Scope scope,
+                         PhpValues.Heap heap) {
         if (scope.cancelled || scope.disposed) throw new PhpError("Cannot spawn into a cancelled or disposed scope");
         var function = invocation.function();
-        var task = new Task(context, scope);
+        var task = new Task(context, scope, heap);
         try {
             task.activation = new Activation(request, function, task, topLevel, args);
             ObjectModel.bind(task.activation, invocation);
@@ -138,6 +256,7 @@ public final class Scheduler implements AutoCloseable {
             if (task.activation != null) task.activation.close();
             throw error;
         } finally { for (var argument : args) argument.close(); }
+        PhpValues.retain(task.future);
         tasks.add(task);
         addMember(scope, task.future);
         enqueue(() -> {
@@ -150,7 +269,7 @@ public final class Scheduler implements AutoCloseable {
         return task.future;
     }
     Task createGenerator(Activation caller, ObjectModel.Invocation invocation, Argument[] args) {
-        var task = new Task(caller.task.context, caller.task.scope);
+        var task = new Task(caller.task.context, caller.task.scope, null);
         task.activation = new Activation(request, invocation.function(), task, false, args, Diagnostics.origin(caller));
         ObjectModel.bind(task.activation, invocation);
         tasks.add(task);
@@ -233,24 +352,37 @@ public final class Scheduler implements AutoCloseable {
         wakeup.run();
         return future;
     }
-    public void keep(Future future) { kept.add(future); }
-
     /** Detaching releases the guest graph even if the source future never completes. */
     public final class Listener implements AutoCloseable {
         private java.util.function.BiConsumer<Object, PhpError> callback;
-        private Listener(java.util.function.BiConsumer<Object, PhpError> callback) { this.callback = callback; }
+        private Future source;
+        private Listener(Future future, java.util.function.BiConsumer<Object, PhpError> callback) {
+            source = future;
+            PhpValues.retain(source);
+            this.callback = callback;
+        }
         private void deliver(Object value, Throwable error) {
             var action = callback;
+            var pin = source;
+            source = null;
             close();
-            if (action != null) action.accept(value, error == null ? null
-                    : error instanceof PhpError php ? php : new PhpError(error.getMessage()));
+            try {
+                if (action != null) action.accept(value, error == null ? null
+                        : error instanceof PhpError php ? php : new PhpError(error.getMessage()));
+            } finally { PhpValues.release(pin); }
         }
-        @Override public void close() { callback = null; listeners.remove(this); }
+        @Override public void close() {
+            callback = null;
+            listeners.remove(this);
+            var pin = source;
+            source = null;
+            PhpValues.release(pin);
+        }
     }
 
     public Listener listen(Future future, java.util.function.BiConsumer<Object, PhpError> callback) {
         future.observed = true;
-        var listener = new Listener(callback);
+        var listener = new Listener(future, callback);
         listeners.add(listener);
         future.completion.whenComplete((value, error) -> enqueue(() -> listener.deliver(value, error)));
         return listener;
@@ -279,13 +411,33 @@ public final class Scheduler implements AutoCloseable {
     /** An already resolved source wins over cancellation and does not yield. */
     public static Object awaitValue(Activation caller, Future future, Future cancellation) {
         future.observed = true;
-        if (future.completion.isDone()) return caller.track(PhpValues.own(PhpValues.unwrap(result(future))));
-        if (cancellation != null && cancellation != future && cancellation.completion.isDone()) {
-            cancellation.observed = true;
+        if (!future.completion.isDone()
+                && (cancellation == null || cancellation == future || !cancellation.completion.isDone())) {
+            return new Await(future, cancellation == future ? null : cancellation);
+        }
+        // An awaitable synthesized from a channel may have no other owner yet.
+        if (future.completion.isDone()) {
+            try { return caller.track(PhpValues.own(PhpValues.unwrap(result(future)))); }
+            finally {
+                discardUnowned(future);
+                if (cancellation != future) discardUnowned(cancellation);
+            }
+        }
+        cancellation.observed = true;
+        try {
             if (future.cancelOnAbort) caller.request.scheduler.cancel(future);
             throw operationCancelled(cancellation);
+        } finally {
+            discardUnowned(future);
+            discardUnowned(cancellation);
         }
-        return new Await(future, cancellation == future ? null : cancellation);
+    }
+
+    static void discardUnowned(Future future) {
+        if (future != null && future.heap != null && future.owners == 0) {
+            PhpValues.retain(future);
+            PhpValues.release(future);
+        }
     }
 
     public void registerExternal(Scope scope, Future future) {
@@ -426,6 +578,7 @@ public final class Scheduler implements AutoCloseable {
         else if (future.cancelAction != null) future.cancelAction.run();
         else future.completion.completeExceptionally(reason == null
                 ? new PhpError("Async\\AsyncCancellation", "Operation has been cancelled") : reason);
+        if (future.completion.isDone()) future.unlink();
     }
 
     public void cancel(Task task) { cancel(task, null); }
@@ -439,8 +592,8 @@ public final class Scheduler implements AutoCloseable {
         if (task.waiting != null) {
             if (task.registration != null) {
                 Future source = task.registration.effect.future;
-                task.registration.close();
                 if (source.cancelOnAbort) cancel(source);
+                task.registration.close();
             }
             if (task.waiting.getResult() instanceof Await effect && effect.future.cancelOnAbort) cancel(effect.future);
             task.cancellationDelivered = true;
@@ -474,16 +627,18 @@ public final class Scheduler implements AutoCloseable {
             this.task = task;
             this.ticket = ticket;
             this.effect = effect;
-            source = listen(effect.future, (value, error) -> settle(value, error, false));
-            if (effect.cancellation != null && effect.cancellation != effect.future) {
-                cancellation = listen(effect.cancellation, (value, error) -> settle(null,
-                        operationCancelled(effect.cancellation), true));
-            }
+            try {
+                source = listen(effect.future, (value, error) -> settle(value, error, false));
+                if (effect.cancellation != null && effect.cancellation != effect.future) {
+                    cancellation = listen(effect.cancellation, (value, error) -> settle(null,
+                            operationCancelled(effect.cancellation), true));
+                }
+            } finally { effect.close(); }
         }
         private void settle(Object value, PhpError error, boolean abort) {
             if (!active) return;
-            close();
             if (abort && effect.future.cancelOnAbort) cancel(effect.future);
+            close();
             resumeLater(task, ticket, error == null ? PhpValues.own(PhpValues.unwrap(value)) : new Failure(error));
         }
         @Override public void close() {
@@ -507,8 +662,11 @@ public final class Scheduler implements AutoCloseable {
                 task.waiting = continuation;
                 long ticket = ++task.ticket;
                 if (task.cancelled && !task.cancellationDelivered && task.protectionDepth == 0) {
-                    if (continuation.getResult() instanceof Await effect && effect.finish != null && effect.future.cancelOnAbort)
-                        cancel(effect.future);
+                    if (continuation.getResult() instanceof Await effect) {
+                        try {
+                            if (effect.future.cancelOnAbort) cancel(effect.future);
+                        } finally { effect.close(); }
+                    }
                     task.cancellationDelivered = true;
                     resumeLater(task, ticket, new Failure(task.cancellation == null
                             ? new PhpError("Async\\AsyncCancellation", "Coroutine cancelled") : task.cancellation));
@@ -531,7 +689,6 @@ public final class Scheduler implements AutoCloseable {
                     case Delay delay -> {
                         if (request.nativeReactor && delay.milliseconds > 0) {
                             var future = request.libuv(task.activation).timer(delay.milliseconds);
-                            keep(future);
                             task.registration = new WaitRegistration(task, ticket, new Await(future));
                         } else {
                             timers.add(new Timer(deadline(Math.max(0, delay.milliseconds)), () -> resumeLater(task, ticket, null)));
@@ -551,8 +708,14 @@ public final class Scheduler implements AutoCloseable {
                     task.generator.completed(result, failure);
                     return;
                 }
-                if (failure == null) task.future.completion.complete(result);
+                if (failure == null) task.future.completeValue(result);
                 else { PhpValues.drop(result); task.future.completion.completeExceptionally(failure); }
+                if (task.future.heap != null) {
+                    tasks.remove(task);
+                    if (failure == null || task.future.observed) task.scope.members.remove(task.future);
+                    task.activation = null;
+                    PhpValues.release(task.future);
+                }
                 memberFinished(task.scope);
                 return;
             }
@@ -599,12 +762,13 @@ public final class Scheduler implements AutoCloseable {
         for (var listener : List.copyOf(listeners)) listener.close();
         for (var action : ready) if (action instanceof Resume resume) PhpValues.drop(resume.value);
         for (var task : tasks) {
+            if (task.waiting != null && task.waiting.getResult() instanceof Await effect) effect.close();
             if (task.activation != null) task.activation.close();
             for (var parent : task.parents) parent.activation.close();
-            if (!task.future.completion.isCompletedExceptionally()) PhpValues.drop(task.future.completion.getNow(null));
+            if (task.future.heap != null) PhpValues.release(task.future);
+            else if (!task.future.completion.isCompletedExceptionally()) PhpValues.drop(task.future.completion.getNow(null));
         }
         for (var future : external) if (!future.completion.isCompletedExceptionally()) PhpValues.drop(future.completion.getNow(null));
-        for (var future : kept) if (!future.completion.isCompletedExceptionally()) PhpValues.drop(future.completion.getNow(null));
         timers.clear();
         ready.clear();
         incoming.clear();

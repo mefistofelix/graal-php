@@ -1,5 +1,8 @@
 # Verifica — 26 settembre 2026
 
+Il [rapporto sul lifetime async](validation/future-lifetime-2026-11-18/README.md)
+aggiorna la copertura dei future TrueAsync e le misure cURL prima/dopo.
+
 Per il blocco storage/SPL del 18 novembre 2026 vedere il [rapporto con A/B da
 freddo e risultati funzionali](validation/array-storage-2026-11-18/README.md).
 

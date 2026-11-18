@@ -35,7 +35,7 @@ public final class PhpValues {
         }
     }
 
-    public static Object own(Object value) { return value instanceof HeapNode ? new Owned(value) : value; }
+    public static Object own(Object value) { return managed(value) == null ? value : new Owned(value); }
     public static Object unwrap(Object value) { return value instanceof Owned owned ? owned.value : value; }
     public static void drop(Object value) { if (value instanceof Owned owned) owned.close(); }
     @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
@@ -466,9 +466,9 @@ public final class PhpValues {
         @Override
         void children(Consumer<HeapNode> visit) {
             if (entries == null) {
-                for (var bucket : order) if (bucket.slot.content instanceof HeapNode node) visit.accept(node);
+                for (var bucket : order) visitChild(bucket.slot.content, visit);
             } else {
-                for (var slot : entries.values()) if (slot.content instanceof HeapNode node) visit.accept(node);
+                for (var slot : entries.values()) visitChild(slot.content, visit);
             }
         }
 
@@ -554,7 +554,7 @@ public final class PhpValues {
         public FieldCursor iterateFields() { return new FieldCursor(this); }
 
         @Override void children(Consumer<HeapNode> visit) {
-            for (var slot : fields.values()) if (slot.content instanceof HeapNode node) visit.accept(node);
+            for (var slot : fields.values()) visitChild(slot.content, visit);
         }
 
         @Override void discard() {
@@ -696,7 +696,7 @@ public final class PhpValues {
 
         @Override
         void children(Consumer<HeapNode> visit) {
-            if (value instanceof HeapNode node) visit.accept(node);
+            visitChild(value, visit);
         }
 
         @Override
@@ -730,7 +730,8 @@ public final class PhpValues {
         void set(Object value) { set(value, null); }
         void set(Object value, Diagnostics.Origin origin) {
             if (type != null) value = TypeRelations.check(value, type, origin != null && origin.site().strictTypes(), origin);
-            if (value instanceof HeapNode node && node.heap != heap) {
+            var node = managed(value);
+            if (node != null && node.heap != heap) {
                 throw new IllegalArgumentException("PHP containers must belong to the same request heap");
             }
             defined = true;
@@ -807,12 +808,23 @@ public final class PhpValues {
         throw new PhpError("Unsupported PHP value type: " + value.getClass().getSimpleName());
     }
 
+    static HeapNode managed(Object value) {
+        return value instanceof HeapNode node && node.heap != null ? node : null;
+    }
+
+    static void visitChild(Object value, Consumer<HeapNode> visit) {
+        var node = managed(value);
+        if (node != null) visit.accept(node);
+    }
+
     static void retain(Object value) {
-        if (value instanceof HeapNode node) node.owners++;
+        var node = managed(value);
+        if (node != null) node.owners++;
     }
 
     static void release(Object value) {
-        if (!(value instanceof HeapNode node)) return;
+        var node = managed(value);
+        if (node == null) return;
         var heap = node.heap;
 
         if (--node.owners > 0) {

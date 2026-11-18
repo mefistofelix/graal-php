@@ -387,7 +387,10 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
     @Operation public static final class Suspended {
         @Specialization static boolean run(VirtualFrame frame, Object value) {
             boolean suspended = value instanceof NestedCall || value instanceof Scheduler.Effect;
-            if (suspended && activation(frame).synchronousCallback) throw new PhpError("A synchronous native callback cannot suspend");
+            if (suspended && activation(frame).synchronousCallback) {
+                if (value instanceof Scheduler.Await waiting) waiting.close();
+                throw new PhpError("A synchronous native callback cannot suspend");
+            }
             return suspended;
         }
     }

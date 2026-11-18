@@ -200,9 +200,7 @@ public final class Operations {
         switch (name) {
             case "__mutex_wait": {
                 var mutex = (AsyncMutex) values[0];
-                var waiter = mutex.acquire(activation.task);
-                activation.request.scheduler.keep(waiter);
-                return waiter;
+                return mutex.acquire(activation.task);
             }
             case "__mutex_accept": ((AsyncMutex) values[0]).accept(activation.task, future(values[1])); return null;
             case "__mutex_abort": ((AsyncMutex) values[0]).abort(activation.task, future(values[1])); return null;
@@ -329,7 +327,7 @@ public final class Operations {
         return path.toAbsolutePath().normalize();
     }
     private static Scheduler.Future future(Object value) {
-        if (value instanceof Scheduler.Future future) return future;
+        if (value instanceof Scheduler.Future future) return future.state();
         throw new PhpError("Expected a task future");
     }
     private static void require(String name, Object[] values, int count) {

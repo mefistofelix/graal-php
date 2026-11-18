@@ -13,7 +13,11 @@ public final class AsyncAwait implements AutoCloseable {
         PhpError error;
         boolean settled;
         boolean cleanup;
-        Entry(Object key, Scheduler.Future source) { this.key = key; this.source = source; }
+        Entry(Object key, Scheduler.Future source) {
+            this.key = key;
+            this.source = source;
+            PhpValues.retain(source);
+        }
     }
 
     private final Request request;
@@ -25,7 +29,7 @@ public final class AsyncAwait implements AutoCloseable {
     private final List<Entry> entries = new ArrayList<>();
     private final List<Entry> completed = new ArrayList<>();
     private final List<Scheduler.Listener> subscriptions = new ArrayList<>();
-    private final Scheduler.Future future = new Scheduler.Future();
+    private final Scheduler.Future future;
     private int successes;
     private PhpError failure;
     private boolean finishQueued;
@@ -42,21 +46,23 @@ public final class AsyncAwait implements AutoCloseable {
         this.fillNull = fillNull || operation.equals("await_all_or_fail");
         ignoreErrors = operation.equals("await_all") || operation.equals("await_any_of")
                 || operation.equals("await_first_success");
+        future = new Scheduler.Future(request.heap);
+        future.abandon = this::close;
         future.cancelOnAbort = true;
         future.cancelAction = () -> {
             future.completion.completeExceptionally(new PhpError("Async\\AsyncCancellation", "Operation has been cancelled"));
             close();
         };
-        request.scheduler.keep(future);
-        request.resources.add(this);
         // Snapshot keys and awaitables before registering; the caller may mutate its COW array after yielding.
-        for (var key : PhpValues.keys(sources)) {
-            Object value = PhpValues.element(sources, key);
-            try {
-                Object source = PhpValues.unwrap(value);
-                if (source != null) entries.add(new Entry(key, AsyncApi.future(source)));
-            } finally { PhpValues.drop(value); }
-        }
+        try {
+            for (var key : PhpValues.keys(sources)) {
+                Object value = PhpValues.element(sources, key);
+                try {
+                    Object source = PhpValues.unwrap(value);
+                    if (source != null) entries.add(new Entry(key, AsyncApi.future(source)));
+                } finally { PhpValues.drop(value); }
+            }
+        } catch (RuntimeException error) { close(); throw error; }
     }
 
     public static Object await(Activation caller, String operation, Argument[] args) {
@@ -73,16 +79,20 @@ public final class AsyncAwait implements AutoCloseable {
                 : AsyncApi.future(PhpValues.unwrap(args[offset + 1].value()));
         boolean preserve = args.length <= offset + 2 || Operations.truth(args[offset + 2].value());
         boolean fillNull = args.length > offset + 3 && Operations.truth(args[offset + 3].value());
-        var operationState = new AsyncAwait(caller, operation, sources, count, preserve, fillNull);
+        PhpValues.retain(cancellation);
         try {
-            if (!operationState.entries.isEmpty() && !(counted && count == 0 && !operationState.ignoreErrors)
-                    && cancellation != null && cancellation.completion.isDone()) {
-                cancellation.observed = true;
-                throw Scheduler.operationCancelled(cancellation);
-            }
-            operationState.start();
-            return Scheduler.awaitValue(caller, operationState.future, cancellation);
-        } catch (RuntimeException error) { operationState.close(); throw error; }
+            var operationState = new AsyncAwait(caller, operation, sources, count, preserve, fillNull);
+            PhpValues.retain(operationState.future);
+            try {
+                if (!operationState.entries.isEmpty() && !(counted && count == 0 && !operationState.ignoreErrors)
+                        && cancellation != null && cancellation.completion.isDone()) {
+                    cancellation.observed = true;
+                    throw Scheduler.operationCancelled(cancellation);
+                }
+                operationState.start();
+                return Scheduler.awaitValue(caller, operationState.future, cancellation);
+            } finally { PhpValues.release(operationState.future); }
+        } finally { PhpValues.release(cancellation); }
     }
 
     private boolean enough() {
@@ -141,7 +151,7 @@ public final class AsyncAwait implements AutoCloseable {
         }
         try {
             if (failure != null) future.completion.completeExceptionally(failure);
-            else future.completion.complete(results());
+            else future.completeValue(results());
         } finally { close(); }
     }
 
@@ -172,9 +182,11 @@ public final class AsyncAwait implements AutoCloseable {
         closed = true;
         for (var subscription : subscriptions) subscription.close();
         for (var entry : completed) PhpValues.drop(entry.value);
+        for (var entry : entries) PhpValues.release(entry.source);
         subscriptions.clear();
         completed.clear();
         entries.clear();
         future.cancelAction = null;
+        future.abandon = null;
     }
 }

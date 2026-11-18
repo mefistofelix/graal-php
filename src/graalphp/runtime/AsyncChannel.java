@@ -2,6 +2,7 @@ package graalphp.runtime;
 
 import com.oracle.truffle.api.interop.TruffleObject;
 import java.util.ArrayDeque;
+import java.util.LinkedHashSet;
 import static graalphp.runtime.Execution.*;
 
 /** TrueAsync channel semantics on the cooperative request dispatcher. */
@@ -11,7 +12,7 @@ public final class AsyncChannel implements TruffleObject, AutoCloseable {
     public final Request request;
     private final ArrayDeque<Message> buffer = new ArrayDeque<>();
     private final ArrayDeque<Sender> senders = new ArrayDeque<>();
-    private final ArrayDeque<Scheduler.Future> receivers = new ArrayDeque<>();
+    private final LinkedHashSet<Scheduler.Future> receivers = new LinkedHashSet<>();
     public int capacity;
     public boolean closed;
 
@@ -21,7 +22,10 @@ public final class AsyncChannel implements TruffleObject, AutoCloseable {
     public boolean trySend(Object value) {
         if (closed) return false;
         if (!receivers.isEmpty()) {
-            receivers.removeFirst().completion.complete(PhpValues.own(value));
+            var receiver = receivers.removeFirst();
+            receiver.abandon = null;
+            receiver.cancelAction = null;
+            receiver.completeValue(value);
             return true;
         }
         if (buffer.size() >= capacity) return false;
@@ -40,15 +44,13 @@ public final class AsyncChannel implements TruffleObject, AutoCloseable {
             if (senders.remove(sender)) PhpValues.drop(sender.message.value);
             future.completion.completeExceptionally(new PhpError("Async\\AsyncCancellation", "Channel send cancelled"));
         };
-        request.scheduler.keep(future);
         return new Scheduler.Await(future, cancellation);
     }
 
     public Scheduler.Future receive() {
-        var future = new Scheduler.Future();
-        request.scheduler.keep(future);
+        var future = new Scheduler.Future(request.heap);
         if (!buffer.isEmpty()) {
-            future.completion.complete(buffer.removeFirst().value);
+            future.completeValue(buffer.removeFirst().value);
             if (!senders.isEmpty()) {
                 var sender = senders.removeFirst();
                 buffer.addLast(sender.message);
@@ -56,14 +58,17 @@ public final class AsyncChannel implements TruffleObject, AutoCloseable {
             }
         } else if (!senders.isEmpty()) {
             var sender = senders.removeFirst();
-            future.completion.complete(sender.message.value);
+            future.completeValue(sender.message.value);
             sender.future.completion.complete(null);
         } else if (closed) future.completion.completeExceptionally(closedError());
         else {
             receivers.addLast(future);
             future.cancelOnAbort = true;
+            future.abandon = () -> receivers.remove(future);
             future.cancelAction = () -> {
                 receivers.remove(future);
+                future.abandon = null;
+                future.cancelAction = null;
                 future.completion.completeExceptionally(new PhpError("Async\\AsyncCancellation", "Channel receive cancelled"));
             };
         }
@@ -79,7 +84,11 @@ public final class AsyncChannel implements TruffleObject, AutoCloseable {
             sender.future.completion.completeExceptionally(closedError());
         }
         senders.clear();
-        for (var receiver : receivers) receiver.completion.completeExceptionally(closedError());
+        for (var receiver : receivers) {
+            receiver.abandon = null;
+            receiver.cancelAction = null;
+            receiver.completion.completeExceptionally(closedError());
+        }
         receivers.clear();
     }
     @Override public void close() {

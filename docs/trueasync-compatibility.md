@@ -31,7 +31,7 @@ al PATH di sistema e non viene modificato `php.ini`.
 
 Il runner esegue lo stesso sorgente su entrambi i runtime e confronta stdout,
 errori e codici d'uscita; impone un limite al processo di riferimento. Sono
-inclusi 40 scenari mantenuti nel progetto e 42 PHPT upstream, estratti senza
+inclusi 46 scenari mantenuti nel progetto e 42 PHPT upstream, estratti senza
 modificare la sezione `--FILE--`. Un'API o una sintassi non implementata causa
 un fallimento, non uno skip. Il corpus selezionato non rappresenta l'intera
 suite upstream.
@@ -51,7 +51,7 @@ produce il risultato atteso e termina con access violation 0xC0000005.
 Il riproduttore mantenuto è `tests/php/trueasync-multi-close-reuse.php`;
 omettendo la distruzione esplicita è stata osservata una segnalazione di
 timer libuv rimasto aperto. Questo caso non viene conteggiato fra gli
-82 confronti passati: la suite integrata GraalPHP e quella di rete verificano
+88 confronti passati: la suite integrata GraalPHP e quella di rete verificano
 separatamente distruzione, riuso e shutdown corretto.
 
 Per ripetere il confronto con l'eseguibile Native Image, dopo la compilazione
@@ -130,12 +130,15 @@ errori e del disposal degli scope, diagnostica e priorità delle coroutine,
 warning di future inutilizzati, iteratori dei channel, opzioni di deadlock,
 watcher pubblico, segnali, networking e I/O trasparente.
 
-Il lifetime dei future PHP non segue ancora il loro ultimo riferimento guest:
-il runtime ne conserva i risultati fino alla fine della richiesta. Perciò
-il disposal automatico dei recvAsync perdenti e i carichi con molte attese
-temporanee richiedono ulteriore lavoro. Le guardie degli scope non sostituiscono
-la policy completa degli errori e del disposal; in particolare resta aperta
-la propagazione degli errori non osservati negli scope annidati o staccati.
+I risultati di FutureState, Future, coroutine TrueAsync, combinatori e
+recvAsync seguono l'ownership dell'heap PHP. Due Future costruiti sullo stesso
+FutureState condividono anche la cancellazione. L'ultimo riferimento a un
+recvAsync pendente rimuove la ricezione dalla coda. Se l'operazione è in
+attesa, la registrazione la mantiene viva sino a consegna o distacco. Il
+lavoro attivo di una coroutine prosegue secondo il suo scope anche dopo
+la perdita dell'handle. La propagazione degli errori non osservati e il
+disposal completo degli scope annidati e staccati restano aperti.
+[Evidenze](validation/future-lifetime-2026-11-18/README.md).
 
 Alcuni metodi di interrogazione sono implementati ma non coperti da tutto
 il corpus upstream. Parametri nominati e sintassi PHP ancora mancanti impediscono

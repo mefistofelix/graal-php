@@ -222,6 +222,49 @@ public final class TrueAsyncTest {
             $future = Async\\Future::failed(new Exception('broken'));
             try { $future->await(); } catch (Throwable $e) { echo $e->getMessage(); }
             """),
+        new Case("temporary-completed-future", """
+            $value = Async\\Future::completed(['a' => [3]])->await();
+            $value['a'][] = 4;
+            echo $value['a'][0], ':', $value['a'][1];
+            """),
+        new Case("abandoned-channel-receiver", """
+            $channel = new Async\\Channel(1);
+            $dropped = $channel->recvAsync()->ignore(); unset($dropped);
+            $channel->send([8]); $channel->close();
+            echo $channel->recv()[0], ':', $channel->count();
+            """),
+        new Case("losing-channel-receiver", """
+            $channel = new Async\\Channel(1);
+            $loser = $channel->recvAsync()->ignore();
+            echo Async\\await_any_or_fail([$loser, Async\\Future::completed(6)]), ':';
+            unset($loser);
+            $channel->send([7]);
+            $channel->close();
+            echo $channel->recv()[0];
+            """),
+        new Case("future-state-with-two-consumers", """
+            $state = new Async\\FutureState();
+            $first = new Async\\Future($state); $second = new Async\\Future($state);
+            unset($first); $state->complete([17]); unset($state);
+            echo $second->await()[0], ':', $second->await()[0];
+            """),
+        new Case("future-state-cancellation-shared", """
+            $state = new Async\\FutureState();
+            $first = new Async\\Future($state); $second = new Async\\Future($state);
+            $first->cancel(new Async\\AsyncCancellation('cancelled'));
+            echo $state->isCompleted(), ':', $second->isCancelled(), ':';
+            try { $second->await(); } catch (Async\\AsyncCancellation $error) {
+                echo $error->getMessage();
+            }
+            """),
+        new Case("temporary-coroutine-wait", """
+            $result = Async\\await(Async\\spawn(function() {
+                Async\\suspend();
+                return [1, 2];
+            }));
+            $result[] = 3;
+            echo $result[0], ':', $result[2];
+            """),
         new Case("await-all-order-and-cow", """
             $slow = Async\\spawn(function() { Async\\delay(15); return [1]; });
             $fast = Async\\spawn(fn() => [2]);
@@ -406,8 +449,10 @@ public final class TrueAsyncTest {
             var output = new ByteArrayOutputStream();
             String error = "";
             if (arguments.length > 1) {
-                var nativeProcess = new ProcessBuilder(Path.of(arguments[1]).toAbsolutePath().toString(), script.toString())
-                        .redirectErrorStream(true).start();
+                var nativeCommand = new java.util.ArrayList<>(List.of(Path.of(arguments[1]).toAbsolutePath().toString()));
+                if (arguments.length > 2 && arguments[2].equals("--interpreter")) nativeCommand.add(arguments[2]);
+                nativeCommand.add(script.toString());
+                var nativeProcess = new ProcessBuilder(nativeCommand).redirectErrorStream(true).start();
                 if (!nativeProcess.waitFor(15, TimeUnit.SECONDS)) {
                     nativeProcess.destroyForcibly();
                     throw new AssertionError("Native runtime timeout: " + test.name);

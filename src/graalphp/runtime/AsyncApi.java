@@ -31,9 +31,15 @@ public final class AsyncApi {
         @Override public void close() { storage.close(); values.clear(); }
     }
 
-    public static final class FutureState implements TruffleObject {
+    public static final class FutureState extends PhpValues.HeapNode implements TruffleObject {
         final Scheduler.Future future;
-        FutureState(Request request) { future = new Scheduler.Future(); request.scheduler.keep(future); }
+        FutureState(Request request) {
+            super(request.heap);
+            future = new Scheduler.Future(heap);
+            PhpValues.retain(future);
+        }
+        @Override void children(java.util.function.Consumer<PhpValues.HeapNode> visit) { visit.accept(future); }
+        @Override void discard() {}
     }
 
     public static ContextValue context(Request request, Scheduler.Scope scope) {
@@ -54,12 +60,8 @@ public final class AsyncApi {
                 request.resources.add(channel);
                 yield channel;
             }
-            case "async\\futurestate" -> new FutureState(request);
-            case "async\\future" -> {
-                var future = new Scheduler.Future();
-                request.scheduler.keep(future);
-                yield future;
-            }
+            case "async\\futurestate" -> caller.track(PhpValues.own(new FutureState(request)));
+            case "async\\future" -> caller.track(PhpValues.own(new Scheduler.Future(request.heap)));
             default -> UNHANDLED;
         };
     }
@@ -72,22 +74,25 @@ public final class AsyncApi {
         switch (name.toLowerCase(Locale.ROOT)) {
             case "async\\spawn":
                 arity(name, args, 1);
-                return scheduler.spawn(ObjectModel.callable(caller, value(args, 0)), copy(args, 1),
-                        caller.task.context.branch(), false, caller.task.scope);
+                return caller.track(PhpValues.own(scheduler.spawnGuest(ObjectModel.callable(caller, value(args, 0)),
+                        copy(args, 1), caller.task.context.branch(), caller.task.scope)));
             case "async\\spawn_with":
                 arity(name, args, 2);
                 if (!(value(args, 0) instanceof Scheduler.Scope scope)) throw new PhpError("Expected ScopeProvider");
-                return scheduler.spawn(ObjectModel.callable(caller, value(args, 1)), copy(args, 2),
-                        caller.task.context.branch(), false, scope);
+                return caller.track(PhpValues.own(scheduler.spawnGuest(ObjectModel.callable(caller, value(args, 1)),
+                        copy(args, 2), caller.task.context.branch(), scope)));
             case "async\\delay":
                 arity(name, args, 1);
                 long milliseconds = Operations.number(value(args, 0)).longValue();
                 if (milliseconds < 0) throw new PhpError("Delay must not be negative");
                 return new Scheduler.Delay(milliseconds);
             case "async\\suspend": return new Scheduler.Delay(0);
-            case "async\\await":
+            case "async\\await": {
                 arity(name, args, 1);
-                return Scheduler.awaitValue(caller, future(value(args, 0)), optionalFuture(args, 1));
+                var source = future(value(args, 0));
+                try { return Scheduler.awaitValue(caller, source, optionalFuture(args, 1)); }
+                finally { Scheduler.discardUnowned(source); }
+            }
             case "async\\await_all": case "async\\await_all_or_fail":
             case "async\\await_any_or_fail": case "async\\await_first_success":
             case "async\\await_any_of": case "async\\await_any_of_or_fail":
@@ -102,7 +107,7 @@ public final class AsyncApi {
             case "async\\timeout":
                 arity(name, args, 1);
                 return scheduler.timeout(Operations.number(value(args, 0)).longValue());
-            case "async\\current_coroutine": return caller.task.future;
+            case "async\\current_coroutine": return caller.track(PhpValues.own(caller.task.future));
             case "async\\current_context": return context(caller.request, caller.task.scope);
             case "async\\root_context": return context(caller.request, scheduler.rootScope);
             case "async\\request_context": return null; // CLI has no server-assigned request scope.
@@ -123,17 +128,16 @@ public final class AsyncApi {
         }
         if (type.equalsIgnoreCase("Async\\Future")) {
             CallArguments.positionalOnly(type + "::" + name, args);
-            var future = new Scheduler.Future();
+            var future = new Scheduler.Future(caller.request.heap);
             switch (name.toLowerCase(Locale.ROOT)) {
-                case "completed" -> future.completion.complete(args.length == 0 ? null : PhpValues.own(value(args, 0)));
+                case "completed" -> future.completeValue(args.length == 0 ? null : value(args, 0));
                 case "failed" -> {
                     arity(name, args, 1);
                     future.completion.completeExceptionally(error(value(args, 0)));
                 }
                 default -> { return UNHANDLED; }
             }
-            caller.request.scheduler.keep(future);
-            return future;
+            return caller.track(PhpValues.own(future));
         }
         return UNHANDLED;
     }
@@ -156,11 +160,11 @@ public final class AsyncApi {
                     channel.initialize((int) capacity); return null;
                 case "send":
                     args = CallArguments.builtin(name, args, java.util.List.of("value", "cancellationToken"), 1, (Object) null);
-                    var sent = channel.send(value(args, 0)); scheduler.keep(sent);
+                    var sent = channel.send(value(args, 0));
                     return Scheduler.awaitValue(caller, sent, optionalFuture(args, 1));
                 case "recv":
                     args = CallArguments.builtin(name, args, java.util.List.of("cancellationToken"), 0, (Object) null);
-                    var received = channel.receive(); scheduler.keep(received);
+                    var received = channel.receive();
                     return Scheduler.awaitValue(caller, received, optionalFuture(args, 0));
                 default:
                     CallArguments.builtin(name, args, java.util.List.of(), 0);
@@ -189,24 +193,28 @@ public final class AsyncApi {
                 case "providescope": return scope;
                 case "spawn":
                     arity(name, args, 1);
-                    return scheduler.spawn(ObjectModel.callable(caller, value(args, 0)), copy(args, 1),
-                            caller.task.context.branch(), false, scope);
+                    return caller.track(PhpValues.own(scheduler.spawnGuest(ObjectModel.callable(caller, value(args, 0)),
+                            copy(args, 1), caller.task.context.branch(), scope)));
                 case "awaitcompletion":
                     arity(name, args, 1);
                     var token = future(value(args, 0));
                     token.observed = true;
-                    if (scope.disposed) return null;
-                    if (scope.cancelled) throw new PhpError("Async\\AsyncCancellation", "The scope has been cancelled");
-                    scheduler.checkScopeWait(caller.task, scope);
-                    return Scheduler.awaitValue(caller, scheduler.scopeCompletion(scope), token);
+                    try {
+                        if (scope.disposed) return null;
+                        if (scope.cancelled) throw new PhpError("Async\\AsyncCancellation", "The scope has been cancelled");
+                        scheduler.checkScopeWait(caller.task, scope);
+                        return Scheduler.awaitValue(caller, scheduler.scopeCompletion(scope), token);
+                    } finally { Scheduler.discardUnowned(token); }
                 case "awaitaftercancellation":
                     if (args.length > 0 && value(args, 0) != null) throw new PhpError("Scope error handlers are not implemented");
                     var cancellation = optionalFuture(args, 1);
                     if (cancellation != null) cancellation.observed = true;
-                    if (scope.disposed) return null;
-                    if (!scope.cancelled) throw new PhpError("Async\\AsyncException", "Attempt to await a Scope that has not been cancelled");
-                    scheduler.checkScopeWait(caller.task, scope);
-                    return Scheduler.awaitValue(caller, scheduler.scopeCompletion(scope), cancellation);
+                    try {
+                        if (scope.disposed) return null;
+                        if (!scope.cancelled) throw new PhpError("Async\\AsyncException", "Attempt to await a Scope that has not been cancelled");
+                        scheduler.checkScopeWait(caller.task, scope);
+                        return Scheduler.awaitValue(caller, scheduler.scopeCompletion(scope), cancellation);
+                    } finally { Scheduler.discardUnowned(cancellation); }
                 case "cancel":
                     var reason = args.length == 0 || value(args, 0) == null
                             ? new PhpError("Async\\AsyncCancellation", "Scope cancelled") : error(value(args, 0));
@@ -271,8 +279,11 @@ public final class AsyncApi {
                 case "sendasync":
                     arity(name, args, 1);
                     return channel.trySend(value(args, 0));
-                case "recv": return new Scheduler.Await(channel.receive(), optionalFuture(args, 0));
-                case "recvasync": return channel.receive();
+                case "recv": {
+                    var cancellation = optionalFuture(args, 0);
+                    return Scheduler.awaitValue(caller, channel.receive(), cancellation);
+                }
+                case "recvasync": return caller.track(PhpValues.own(channel.receive()));
                 case "close": channel.closeChannel(); return null;
                 case "isclosed": return channel.closed;
                 case "capacity": return (long) channel.capacity;
@@ -288,7 +299,7 @@ public final class AsyncApi {
                 case "complete":
                     arity(name, args, 1);
                     if (state.future.completion.isDone()) throw new PhpError("FutureState is already completed");
-                    state.future.completion.complete(PhpValues.own(value(args, 0)));
+                    state.future.completeValue(value(args, 0));
                     return null;
                 case "error":
                     arity(name, args, 1);
@@ -299,16 +310,14 @@ public final class AsyncApi {
                 default: throw new PhpError("Unimplemented TrueAsync FutureState::" + name);
             }
         }
-        if (receiver instanceof Scheduler.Future future) {
+        if (receiver instanceof Scheduler.Future handle) {
+            var future = handle.state();
             var task = future.task;
             switch (name) {
                 case "__construct":
                     arity(name, args, 1);
                     if (!(value(args, 0) instanceof FutureState state)) throw new PhpError("Future requires FutureState");
-                    state.future.completion.whenComplete((value, error) -> {
-                        if (error == null) future.completion.complete(PhpValues.own(PhpValues.unwrap(value)));
-                        else future.completion.completeExceptionally(error);
-                    });
+                    handle.bind(state.future);
                     return null;
                 case "await": return Scheduler.awaitValue(caller, future, optionalFuture(args, 0));
                 case "map": case "catch": case "finally":
@@ -322,11 +331,16 @@ public final class AsyncApi {
                 case "cancel":
                     PhpError reason = args.length == 0 || value(args, 0) == null ? null : error(value(args, 0));
                     if (reason != null && !reason.matches("Async\\AsyncCancellation")) throw new PhpError("TypeError", "Expected AsyncCancellation");
+                    if (reason == null && task == null) reason = new PhpError("Async\\AsyncCancellation", "Future has been cancelled");
                     scheduler.cancel(future, reason);
                     return null;
-                case "ignore": future.observed = true; return future;
+                case "ignore": future.observed = true; return caller.track(PhpValues.own(handle));
                 case "iscompleted": return future.completion.isDone();
-                case "iscancelled": return (task == null ? future.cancellationRequested : task.cancelled) && future.completion.isDone();
+                case "iscancelled":
+                    if (task != null) return task.cancelled && future.completion.isDone();
+                    if (!future.completion.isCompletedExceptionally()) return false;
+                    try { Scheduler.result(future); return false; }
+                    catch (PhpError error) { return error.matches("Async\\AsyncCancellation"); }
                 case "iscancellationrequested": return !future.completion.isDone()
                         && (task == null ? future.cancellationRequested : task.cancelled);
                 case "isstarted": return task != null && task.started;
@@ -371,7 +385,7 @@ public final class AsyncApi {
         throw new PhpError("Expected Throwable");
     }
     public static Scheduler.Future future(Object value) {
-        if (value instanceof Scheduler.Future future) return future;
+        if (value instanceof Scheduler.Future future) return future.state();
         if (value instanceof AsyncChannel channel) return channel.receive();
         if (value instanceof ThreadChannel channel) return channel.receive();
         throw new PhpError("Expected Async\\Completable");

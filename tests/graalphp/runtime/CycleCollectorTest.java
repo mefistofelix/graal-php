@@ -17,6 +17,7 @@ public final class CycleCollectorTest {
         }
     }
     public static void main(String[] args) {
+        futureResults();
         var random = new Random(862026);
         for (int trial = 0; trial < 256; trial++) {
             var heap = new PhpValues.Heap();
@@ -55,5 +56,40 @@ public final class CycleCollectorTest {
             }
         }
         System.out.println("PASS: 256 ownership graphs, 1280 collection phases, exactly-once resource release");
+    }
+
+    private static void futureResults() {
+        var heap = new PhpValues.Heap();
+        var source = new Scheduler.Future(heap);
+        var attached = new Scheduler.Future(heap);
+        var abandoned = new Scheduler.Future(heap);
+        PhpValues.retain(source);
+        PhpValues.retain(attached);
+        PhpValues.retain(abandoned);
+        attached.follow(source);
+        abandoned.follow(source);
+        PhpValues.release(abandoned);
+
+        var result = new Node(heap);
+        source.completeValue(PhpValues.own(result));
+        if (abandoned.completion.isDone()) throw new AssertionError("Disposed target was completed");
+        if (Scheduler.result(attached) != result) throw new AssertionError("Result was lost");
+        PhpValues.release(source);
+        if (result.discarded != 0) throw new AssertionError("Linked result lost its live owner");
+        PhpValues.release(attached);
+        if (result.discarded != 1) throw new AssertionError("Completed result survived its last owner");
+
+        var cyclic = new Scheduler.Future(heap);
+        PhpValues.retain(cyclic);
+        try (var scope = new PhpValues.Scope(heap)) {
+            var array = scope.variable(scope.array(cyclic));
+            cyclic.completeValue(array.read());
+        }
+        if (heap.liveArrays != 1) throw new AssertionError("Cycles reachable from a future must stay live");
+        PhpValues.release(cyclic);
+        if (heap.collectCycles() != 2 || heap.liveArrays != 0 || cyclic.completion.getNow(null) != null) {
+            throw new AssertionError("Unreachable future/array cycle was not cleared");
+        }
+        System.out.println("PASS: future result release, detached link and future/array cycle");
     }
 }

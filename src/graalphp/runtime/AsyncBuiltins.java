@@ -56,17 +56,14 @@ public final class AsyncBuiltins {
         var function = caller.request.context.asyncFunction(operation);
         source.observed = true;
         var args = new Argument[] {new Argument(source, null), new Argument(PhpValues.own(callback), null)};
-        var coroutine = caller.request.scheduler.spawn(new ObjectModel.Invocation(function, null, null, null),
-                args, caller.task.context.branch(), false, caller.task.scope);
+        var scheduler = caller.request.scheduler;
+        var coroutine = scheduler.spawnGuest(new ObjectModel.Invocation(function, null, null, null),
+                args, caller.task.context.branch(), caller.task.scope);
         if (operation.equals("coroutine_finally")) return null;
         coroutine.observed = true;
-        var result = new Scheduler.Future();
-        result.cancelAction = () -> caller.request.scheduler.cancel(coroutine);
-        coroutine.completion.whenComplete((value, error) -> {
-            if (error == null) result.completion.complete(PhpValues.own(PhpValues.unwrap(value)));
-            else result.completion.completeExceptionally(error);
-        });
-        caller.request.scheduler.keep(result);
-        return result;
+        var result = new Scheduler.Future(caller.request.heap);
+        result.cancelAction = () -> scheduler.cancel(coroutine);
+        result.follow(coroutine);
+        return caller.track(PhpValues.own(result));
     }
 }

@@ -1,0 +1,6 @@
+SHA-256                                                               Bytes  File
+262140c897125bdee8e4a4d2cf1ab2d00dcfeb4748589acd724aafc1becf5610    93454336  graalphp.exe
+4ccc324d49090629318f857af45bbd688f626a67725402ba87fc7167cd5c24d7      903949  graalphp.jar
+37f767ac826ec718e8f93e2371a8ecfe00386b370142bc7678b345281f1e63ba    96406312  graalphp-linux-x64
+a0dcd61cbe5a12d80fe5934f95486fbfa3f3ce9298dfc3173c61011809998f82    93204480  nov-packed-baseline.exe
+fb5ec5ebc227e74787fad0f87db258d9ed7d0291abf327e392a60c661b6cc333    96013096  nov-packed-baseline-linux-x64

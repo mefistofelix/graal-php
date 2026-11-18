@@ -12,7 +12,7 @@ senza duplicare il modello dei valori.
 | Codice e richieste | Tenere IR e target compilati nella generazione immutabile. Una cache futura per funzioni/metodi deve dipendere da generazione, classe ricevente, visibilità e dichiarazioni condizionali della richiesta. | Lo stesso call site lavora su due richieste e durante reload. L'autoload può sospendersi e un errore di pubblicazione conserva la generazione precedente. |
 | Valori locali | Usare dimensione, ordine e lookup direttamente sullo storage COW. La SPL conserva cursori indipendenti e condivide il backing quando l'oracolo lo richiede. La cardinalità non alloca un elenco. | Confrontare array vuoti, chiavi miste/binarie, buchi, reference e scritture dopo clone. Misurare carico completo da processo nuovo a dimensioni diverse. |
 | JIT | Mantenere specializzabile il percorso scalare e spostare diagnostica e operazioni rare dietro confini Truffle. Gli array sequenziali usano bucket contigui indicizzati direttamente. Una chiave incompatibile o un unset promuove lo storage a una mappa ordinata. | Verificare prima alias, append dopo unset, COW e iteratori by-reference. Confrontare wall time, CPU e RSS sia per array packed sia associativi. |
-| Coroutine e lifetime | Continuation Truffle su sospensione effettiva. Il task possiede activation, valori pendenti e registrazioni. Per completare i future collegare il risultato all'ultimo riferimento guest e definire chi drena le registrazioni dopo cancellazione. | Verificare completamento immediato, race con cancellazione, cleanup e distruttori osservabili. L'oracolo è TrueAsync per l'API async e PHP per il lifetime dei valori. |
+| Coroutine e lifetime | Continuation Truffle su sospensione effettiva. Lo scheduler possiede il task fino al completamento. I future PHP possiedono il risultato nel grafo guest e le sottoscrizioni mantengono vive le sorgenti fino a consegna, distacco o cancellazione. | Verificare completamento immediato, race con cancellazione, cleanup e distruttori osservabili. L'oracolo è TrueAsync per l'API async e PHP per il lifetime dei valori. |
 | Thread PHP | Un solo runtime e heap. Il percorso locale resta confinato. La pubblicazione verso un altro worker deve promuovere tutto il grafo raggiungibile, preservando cicli, reference e identità, prima di renderlo osservabile. | Prima di esporre lo spawn pubblico dimostrare pubblicazione concorrente, assenza di corruzione e raccolta dei cicli tra thread. Mutex e ThreadChannel forniscono la sincronizzazione esplicita. |
 | I/O e C | Il proprietario PHP avanza libuv e i trasferimenti cURL. Le chiamate FFI bloccanti usano il pool nominato. Il bridge conserva lo stack C e riconsegna la callback alla coroutine. Per ampliare CData servono proprietario, ABI e lifetime espliciti per ogni buffer. | Verificare callback attraverso sospensione, riuso dopo cancellazione, saturazione del pool seriale e rilascio dopo il ritorno fisico del C. In embedding si sveglia il dispatcher alla readiness o alla deadline reale. |
 | Distribuzione | Una implementazione Truffle su JVM e Native Image. Xmake produce gli archivi e il bridge dagli stessi sorgenti. Il profilo musl full-static e il caricamento esterno hanno criteri distinti. | Riprodurre da ambiente pulito, verificare dipendenze effettive e programmi identici sui target. Compose e mobile seguono il completamento delle fondamenta. |
@@ -43,10 +43,43 @@ La cardinalità e le estremità usano la mappa ordinata direttamente. La stessa
 rappresentazione serve i quattro builtin `array_first`, `array_last`,
 `array_key_first`, `array_key_last` e il sottoinsieme da array di `ArrayObject`.
 
+## Ownership nei future
+
+L'heap PHP visita il risultato di un future come gli altri archi del grafo.
+`FutureState` e i suoi handle condividono completamento e cancellazione. I
+future di un `map`, `catch` o `finally` hanno un risultato proprio e staccano
+il collegamento al task sorgente quando si risolvono o quando vengono
+rilasciati. Il task attivo mantiene il proprio future. Quando termina cede
+il risultato e rilascia activation e registrazione attiva. Lo scheduler
+conserva gli errori necessari alla policy di fine scope.
+
+Il passaggio da chiamata PHP a continuation mantiene vivi sorgente e token.
+La registrazione successiva conserva le radici fino a consegna o cancellazione.
+Il risultato viene acquisito prima di rilasciare l'attesa. Una ricezione
+`Channel::recvAsync` pendente si rimuove dalla coda quando perde l'ultimo
+proprietario. I segnali degli adapter nativi e dei worker continuano a
+completarsi sul proprio percorso. L'ownership dei valori guest è modificata
+sul thread proprietario.
+
+## Confini per le prossime milestone
+
+Per il return-by-reference, portare la cella direttamente oltre la chiamata
+e la continuation fino a chi la associa. Il chiamante per valore deve
+leggere e rilasciare quella cella secondo le regole COW. La verifica include
+ritorno di una variabile locale anche attraverso finally, argomenti
+by-reference e modifiche annidate via `&offsetGet`.
+
+Il distruttore va eseguito sul dispatcher proprietario al punto semantico
+di rilascio. Prima di chiamare codice PHP completare la transizione dello
+slot che ha causato il rilascio. I casi di resurrezione e cicli richiedono
+una radice temporanea mentre il distruttore gira e una nuova verifica di
+raggiungibilità prima di liberare il backing. Confrontare ordine, errori e
+shutdown con il binario PHP 8.6.
+
 ## Sequenza di integrazione
 
 1. Usare questa base per completare offset by-reference, proprietà tipizzate,
-   distruttori e lifetime dei future. Sono prerequisiti anche per le strutture
+   distruttori e policy degli errori async. Sono prerequisiti anche per le strutture
    condivise e i callback nativi persistenti.
 2. Validare LOCAL→SHARED con il collector, poi pubblicare lo spawn sullo stesso
    heap e permettere i grafi completi nel ThreadChannel.

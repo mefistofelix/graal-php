@@ -25,12 +25,31 @@ Windows sia Linux x64 (WSL), per 564 esecuzioni. Passano le regressioni
 `build.bat verify` e `build.sh verify`. I [prodotti](validation/array-storage-2026-11-18/products.txt)
 identificano le build locali. Su Windows il benchmark freddo JVM con 1.024
 elementi contigui passa da 1.263 a 943 ms di wall time mediano e da 658 a
-500 MiB di picco RSS mediano. La campagna corrente cURL standard include
-1.572.864 payload verificati. I dati Linux sono funzionali. Le misure
-prestazionali della campagna corrente sono Windows.
+500 MiB di picco RSS mediano. Il confronto cURL standard con TrueAsync
+di quella campagna comprende 1.572.864 payload verificati su Windows.
 Riprendere da VALUE-01 e ASYNC-01 nel [TODO](../TODO.md), poi pubblicazione
 LOCAL→SHARED. PHP Fiber è fuori scope. I blocchi datati sotto conservano la
 copertura osservata al momento di ciascuna consegna.
+
+## Lifetime dei future TrueAsync, 18 novembre
+
+I risultati di FutureState, Future, coroutine, combinatori e recvAsync
+appartengono al grafo PHP. Le attese mantengono vivi sorgente e token finché
+durano. I task TrueAsync riusciti escono dalle liste attive e le ricezioni
+pendenti perdenti perdono il posto in coda con l'ultimo proprietario. I future
+costruiti dallo stesso stato condividono completamento e cancellazione.
+Gli errori non osservati degli scope annidati e staccati, i warning per
+future inutilizzati e gli scope strutturati completi restano aperti.
+
+Passano 88/88 casi TrueAsync su Windows e Linux in JVM, Native Image e
+modalità interprete per 528 confronti. Su Linux, il carico con 4.096 future
+completati riduce tempo CPU e picco RSS rispetto alla baseline pubblicata.
+
+Il confronto cURL prima/dopo su Windows mostra a 10.000 coroutine sospese
+131,1 → 108,6 MiB prima del traffico e p99 6,54 → 5,64 ms. Il throughput
+mediano scende da 22.955 a 21.622 req/s. A 1.000 sospese il throughput mediano
+sale e il p99 peggiora. I dati identificano il comportamento del benchmark
+sul singolo host. [Verifiche, campioni e riproduzione](validation/future-lifetime-2026-11-18/README.md).
 
 ## Blocco funzionale: ArrayIterator (parziale), 10 ottobre
 
@@ -580,9 +599,10 @@ portabili; non aggiungere un secondo setup né installare toolchain globali.
 
 - `spawn_thread` pubblico con grafi condivisi **non è ancora implementato**;
   worker reali/capsule condivisibili non equivalgono a heap PHP condiviso completo.
-- Risultati dei future trattenuti fino a fine richiesta, distruttori/weakrefs e
-  resurrection incompleti. Non descrivere l'attuale collector come piena
-  semantica PHP; PHP ha anche raccolta dei cicli oltre al reference counting.
+- L'ownership dei risultati TrueAsync segue il grafo PHP. Distruttori,
+  weak reference, resurrection e policy completa degli errori degli scope
+  restano da completare. Il collector implementa reference counting e
+  raccolta dei cicli con il modello heap corrente.
 - Callback FFI sospendibili limitate alla durata della chiamata e al suo thread
   C; persistenti/esterne aperte. Il percorso legacy ha un contratto diverso.
 - Pool di richiesta; max=1 può creare deadlock se una callback aspetta un altro

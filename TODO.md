@@ -11,9 +11,10 @@ La [revisione tecnica del 18 novembre](docs/runtime-architecture.md) collega le
 milestone alle dipendenze di storage, lifetime e concorrenza. Il primo blocco
 implementa array packed con promozione al formato associativo, cardinalità e accesso per posizione sullo
 storage COW, estremità
-degli array e un sottoinsieme da array di ArrayObject. I prossimi passi sono
-return-by-reference (anche per ArrayAccess), lifetime dei valori e dei future,
-poi promozione dei grafi per lo spawn su thread. Per SPL restano flags, sorting,
+degli array e un sottoinsieme da array di ArrayObject. Il blocco async collega i risultati
+all'ownership guest e rimuove i ricevitori pendenti abbandonati. I prossimi
+passi sono return-by-reference (anche per ArrayAccess), lifetime degli oggetti
+e policy degli errori di scope, poi promozione dei grafi per lo spawn su thread. Per SPL restano flags, sorting,
 backing da oggetto, classi di iteratore personalizzate e serializzazione.
 Compose e mobile restano in coda. Le misure SPL riguardano questo percorso.
 
@@ -106,6 +107,11 @@ Compose e mobile restano in coda. Le misure SPL riguardano questo percorso.
   di esecuzione e regressioni integrate verdi.
   [Evidenze e benchmark a freddo](docs/validation/array-storage-2026-11-18/README.md).
 
+- [x] Ownership dei risultati TrueAsync e rimozione delle ricezioni
+  abbandonate. Il task in esecuzione conserva la sua radice e le
+  sottoscrizioni trattengono l'operazione fino alla consegna.
+  [Verifiche e misure](docs/validation/future-lifetime-2026-11-18/README.md).
+
 ## Prestazioni e memoria
 
 - [ ] **PERF-01 — Spiegare e ridurre il costo del p99.** L'A/B sullo stesso
@@ -139,11 +145,11 @@ Compose e mobile restano in coda. Le misure SPL riguardano questo percorso.
   binarie e offset byte-oriented sono ora coperti dal blocco valori. Verificare
   ordine osservabile contro PHP 8.6 e invarianti dei cicli anche nelle sospensioni.
   Un miglior RSS della VM non chiude queste semantiche.
-- [ ] **ASYNC-01 — Lifetime dei future e policy degli scope.** I risultati dei
-  future sono ancora trattenuti fino a fine richiesta. Completare ultimo
-  riferimento guest, recvAsync perdenti, errori non osservati/disposal, scope
-  annidati e staccati, poi API mancanti quali Traversable, TaskGroup/TaskSet e
-  diagnostica. Criterio: stesso programma contro la release TrueAsync fissata,
+- [ ] **ASYNC-01 — Structured concurrency e policy degli scope.** Risultati
+  dei future TrueAsync e disposal di recvAsync perdenti seguono ora
+  l'ownership guest. Completare errori non osservati, warning, disposal e
+  scope annidati o staccati, poi Traversable nei combinatori, TaskGroup/TaskSet
+  e diagnostica. Criterio: stesso programma contro la release TrueAsync fissata,
   nessun adattamento del test per dichiarare una compatibilità inesistente.
 - [ ] **THREAD-01 — Grafi LOCAL→SHARED e spawn pubblico.** Promuovere array,
   oggetti, closure e reference nello stesso heap; integrare visibilità, ownership
