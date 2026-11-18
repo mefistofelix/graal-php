@@ -9,6 +9,10 @@ Non è ancora compatibile con applicazioni PHP generiche. La
 [contratto TrueAsync](docs/trueasync-compatibility.md) distinguono implementazione,
 verifiche e requisiti ancora aperti, compreso Compose.
 
+La [revisione tecnica del runtime](docs/runtime-architecture.md) descrive il percorso
+da PHP locale a memoria condivisa, con i criteri di verifica per ciascun passaggio.
+Il primo blocco applica queste scelte a SPL e agli array PHP.
+
 ## Riprendere il lavoro
 
 [AGENTS.md](AGENTS.md) raccoglie istruzioni e decisioni da preservare;

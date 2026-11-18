@@ -1,0 +1,5 @@
+SHA-256                                                               Bytes  File
+a0dcd61cbe5a12d80fe5934f95486fbfa3f3ce9298dfc3173c61011809998f82    93204480  graalphp.exe
+b481bfcb626da394deafda24cfff9219024ce5d197e4e578c3c64d154b6d6a88      900228  graalphp.jar
+fb5ec5ebc227e74787fad0f87db258d9ed7d0291abf327e392a60c661b6cc333    96013096  graalphp-linux-x64
+7d8881d3a251ac5e26acc634e9cc070256b2db38fd1e1654fb3dae90d6a4af2f      897862  nov-baseline.jar

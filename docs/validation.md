@@ -1,5 +1,9 @@
 # Verifica — 26 settembre 2026
 
+Per il blocco storage/SPL del 18 novembre 2026 vedere il [rapporto con A/B da
+freddo e risultati funzionali](validation/array-storage-2026-11-18/README.md).
+
+
 Toolchain: Oracle GraalVM 25.4.4.1.1+1.1, Java 25.0.4.1.1, Truffle 25.4.4.1.1.
 Oracoli: PHP 8.6.0RC2 e TrueAsync 0.10.0 / PHP 8.6.0-dev / ABI v0.26.0.
 

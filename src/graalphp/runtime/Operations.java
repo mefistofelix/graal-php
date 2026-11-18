@@ -27,7 +27,7 @@ public final class Operations {
         if (value == null || Boolean.FALSE.equals(value)) return false;
         if (value instanceof Number number) return number.doubleValue() != 0;
         if (value instanceof String text) return !text.isEmpty() && !text.equals("0");
-        if (value instanceof PhpValues.PhpArray) return !PhpValues.keys(value).isEmpty();
+        if (value instanceof PhpValues.PhpArray array) return array.size() != 0;
         return true;
     }
     @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary

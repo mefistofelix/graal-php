@@ -41,17 +41,18 @@ public final class PhpValues {
     @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
     public static List<Object> keys(Object value) {
         if (!(unwrap(value) instanceof PhpArray array)) throw new PhpError("Expected an array");
-        return List.copyOf(array.entries.keySet());
+        return array.keys();
     }
     @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
     public static boolean hasKey(Object value, Object key) {
         if (!(unwrap(value) instanceof PhpArray array)) throw new PhpError("Expected an array");
-        return array.entries.containsKey(normalizeKey(unwrap(key)));
+        return array.slot(normalizeKey(unwrap(key))) != null;
     }
     @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
     public static long keyPosition(Object value, Object key) {
         if (!(unwrap(value) instanceof PhpArray array)) throw new PhpError("Expected an array");
         Object normalized = normalizeKey(unwrap(key));
+        if (array.entries == null) return array.slot(normalized) == null ? -1 : (long) normalized;
         long index = 0;
         for (Object candidate : array.entries.keySet()) {
             if (candidate.equals(normalized)) return index;
@@ -66,7 +67,7 @@ public final class PhpValues {
         Object raw = unwrap(value);
         if (StringOffsets.isString(raw)) return StringOffsets.read(raw, key, StringOffsets.ReadMode.NORMAL, origin);
         if (!(raw instanceof PhpArray array)) throw new PhpError("Error", "Cannot access an array offset on this value");
-        var slot = array.entries.get(normalizeKey(key));
+        var slot = array.slot(normalizeKey(key));
         if (slot == null) throw new PhpError("Undefined array key: " + key);
         return own(slot.read());
     }
@@ -76,13 +77,13 @@ public final class PhpValues {
         Object raw = unwrap(value);
         if (StringOffsets.isString(raw)) return StringOffsets.read(raw, key, StringOffsets.ReadMode.PROBE, origin);
         if (!(raw instanceof PhpArray array)) return null;
-        var slot = array.entries.get(normalizeKey(key));
+        var slot = array.slot(normalizeKey(key));
         return slot == null ? null : own(slot.read());
     }
 
     @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
     public static void copyElement(Object array, Object key, Location destination) {
-        var slot = ((PhpArray) unwrap(array)).entries.get(normalizeKey(key));
+        var slot = ((PhpArray) unwrap(array)).slot(normalizeKey(key));
         if (slot == null) throw new PhpError("Error", "Undefined array key");
         destination.copySlot(slot);
     }
@@ -210,6 +211,21 @@ public final class PhpValues {
             }
         }
 
+        /** SPL replaces the bucket itself even when its previous value is a PHP reference. */
+        @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+        void replaceElement(Object key, Object value) {
+            validateValue(value);
+            retain(value);
+            try {
+                var slot = element(key).resolve(true);
+                if (slot.content instanceof Cell previous) {
+                    retain(value);
+                    slot.content = value;
+                    release(previous);
+                } else slot.set(value);
+            } finally { release(value); }
+        }
+
         public void assign(Location source) {
             set(source.read());
         }
@@ -258,14 +274,14 @@ public final class PhpValues {
             }
             if (!exists()) return;
             var array = parent.writableArray();
-            array.entries.remove(normalizeKey(key)).clear();
+            array.remove(normalizeKey(key));
         }
 
         @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
         public Location append() {
             var array = writableArray();
             long index = array.nextIndex;
-            if (array.entries.containsKey(index)) {
+            if (array.slot(index) != null) {
                 throw new IllegalStateException("Cannot append: next integer key is occupied");
             }
             var location = element(index);
@@ -274,7 +290,7 @@ public final class PhpValues {
         }
 
         public List<Object> keys() {
-            return List.copyOf(((PhpArray) read()).entries.keySet());
+            return ((PhpArray) read()).keys();
         }
 
         @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
@@ -309,7 +325,7 @@ public final class PhpValues {
                 array = parent.writableArray();
                 if (key == APPEND) {
                     key = array.nextIndex;
-                    if (array.entries.containsKey(key)) throw new PhpError("Cannot append: next integer key is occupied");
+                    if (array.slot(key) != null) throw new PhpError("Cannot append: next integer key is occupied");
                 }
             } else {
                 if (key == APPEND) throw new PhpError("Cannot read an append location");
@@ -319,7 +335,7 @@ public final class PhpValues {
                 array = value;
             }
             Object index = normalizeKey(key);
-            var slot = array.entries.get(index);
+            var slot = array.slot(index);
             if (slot == null && write) {
                 slot = new Slot(array.heap);
                 array.insert(index, slot);
@@ -342,9 +358,53 @@ public final class PhpValues {
     }
 
     public static final class PhpArray extends HeapNode {
-        private final LinkedHashMap<Object, Slot> entries = new LinkedHashMap<>();
+        // Absent while all live keys are exactly 0..order.size()-1.
+        private LinkedHashMap<Object, Slot> entries;
         private final List<Bucket> order = new ArrayList<>();
-        private final Set<ReferenceIterator> iterators = Collections.newSetFromMap(new IdentityHashMap<>());
+        private Set<ReferenceIterator> iterators;
+        // Positional SPL reads need a dense index only when deletions left holes.
+        private List<Object> liveKeys;
+        public int size() { return entries == null ? order.size() : entries.size(); }
+
+        private List<Object> keys() {
+            return entries == null ? new PackedKeys(order.size()) : List.copyOf(entries.keySet());
+        }
+
+        private Slot slot(Object key) {
+            if (entries != null) return entries.get(key);
+            if (key instanceof Long index && index >= 0 && index < order.size()) {
+                return order.get(index.intValue()).slot;
+            }
+            return null;
+        }
+
+        private void indexBuckets() {
+            var index = LinkedHashMap.<Object, Slot>newLinkedHashMap(order.size());
+            for (var bucket : order) index.put(bucket.key, bucket.slot);
+            entries = index;
+        }
+
+        private void remove(Object key) {
+            if (entries == null) indexBuckets();
+            liveKeys = null;
+            entries.remove(key).clear();
+        }
+
+        @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+        public Object keyAt(long position) {
+            if (position < 0 || position >= size()) return null;
+            int index = (int) position;
+            if (entries == null || order.size() == entries.size()) return order.get(index).key;
+            if (liveKeys == null) liveKeys = List.copyOf(entries.keySet());
+            return liveKeys.get(index);
+        }
+
+        public Object boundaryKey(boolean first) {
+            if (entries == null) return keyAt(first ? 0 : order.size() - 1);
+            var entry = first ? entries.firstEntry() : entries.lastEntry();
+            return entry == null ? null : entry.getKey();
+        }
+
         private long nextIndex;
         private boolean hasIntegerKey;
 
@@ -379,6 +439,7 @@ public final class PhpValues {
 
         private PhpArray copyStorage() {
             var copy = empty(heap);
+            if (entries != null) copy.entries = LinkedHashMap.newLinkedHashMap(entries.size());
             for (var bucket : order) {
                 if (bucket.slot.defined) {
                     copy.insert(bucket.key, bucket.slot.copyForArray());
@@ -388,7 +449,7 @@ public final class PhpValues {
             }
             copy.nextIndex = nextIndex;
             copy.hasIntegerKey = hasIntegerKey;
-            for (var iterator : iterators) {
+            if (iterators != null) for (var iterator : iterators) {
                 iterator.register(copy, iterator.positions.get(this));
             }
             heap.storageCopies++;
@@ -396,24 +457,35 @@ public final class PhpValues {
         }
 
         private void insert(Object key, Slot slot) {
-            entries.put(key, slot);
+            liveKeys = null;
+            if (entries == null && !(key instanceof Long index && index == order.size())) indexBuckets();
+            if (entries != null) entries.put(key, slot);
             order.add(new Bucket(key, slot));
         }
 
         @Override
         void children(Consumer<HeapNode> visit) {
-            for (var slot : entries.values()) {
-                if (slot.content instanceof HeapNode node) visit.accept(node);
+            if (entries == null) {
+                for (var bucket : order) if (bucket.slot.content instanceof HeapNode node) visit.accept(node);
+            } else {
+                for (var slot : entries.values()) if (slot.content instanceof HeapNode node) visit.accept(node);
             }
         }
 
         @Override
         void discard() {
-            entries.values().forEach(Slot::forget);
-            entries.clear();
+            if (entries == null) {
+                for (var bucket : order) bucket.slot.forget();
+            } else {
+                entries.values().forEach(Slot::forget);
+                entries = null;
+            }
+            liveKeys = null;
             order.clear();
-            for (var iterator : iterators) iterator.positions.remove(this);
-            iterators.clear();
+            if (iterators != null) {
+                for (var iterator : iterators) iterator.positions.remove(this);
+                iterators = null;
+            }
             heap.liveArrays--;
         }
     }
@@ -494,6 +566,14 @@ public final class PhpValues {
         }
     }
 
+    /** A by-value key snapshot of a packed array needs only its original length. */
+    private static final class PackedKeys extends java.util.AbstractList<Object> implements java.util.RandomAccess {
+        private final int length;
+        PackedKeys(int length) { this.length = length; }
+        @Override public int size() { return length; }
+        @Override public Object get(int index) { return (long) java.util.Objects.checkIndex(index, length); }
+    }
+
     private record Bucket(Object key, Slot slot) {}
 
     /** Holds the source reference, so unset/rebind of its variable does not redirect the loop. */
@@ -509,6 +589,7 @@ public final class PhpValues {
 
         private void register(PhpArray array, int position) {
             positions.put(array, position);
+            if (array.iterators == null) array.iterators = Collections.newSetFromMap(new IdentityHashMap<>());
             array.iterators.add(this);
         }
 

@@ -1,22 +1,21 @@
 # Attività aperte GraalPHP
 
-Aggiornato: 10 ottobre 2026. Leggere prima [AGENTS.md](AGENTS.md) e
+Aggiornato: 18 novembre 2026. Leggere prima [AGENTS.md](AGENTS.md) e
 [handoff](docs/handoff.md). Questa lista è operativa; la copertura completa
 rimane in [design-coverage.md](docs/design-coverage.md). Le caselle completate
 certificano soltanto il risultato descritto, non un'intera milestone del design.
 
 ## Punto di ripresa
 
-**L'utente ha rinviato le verifiche prestazionali.** Riprendere lo sviluppo
-funzionale, non PERF-01. Il blocco corrente di **LANG-01** chiude
-[ArrayAccess](docs/arrayaccess.md) sopra generatori, Reflection, unpacking,
-iterazione, classi e valori. La SPL concreta è iniziata da
-[EmptyIterator](docs/spl.md) e ha ora un primo sottoinsieme di
-`ArrayIterator`, ma il blocco resta aperto: completare `ArrayIterator`,
-`ArrayObject`, lifetime e le altre aree linguistiche. PHP Fiber è deliberatamente fuori scope: il
-modello async supportato è TrueAsync e non serve compatibilità con codice Fiber. Il loader SPL predefinito, include_path, binding completo
-fra unità e il typing delle restanti API native rimangono aperti.
-Linguaggio/TrueAsync/threading/FFI precedono Composer applicativo, Compose e mobile.
+La [revisione tecnica del 18 novembre](docs/runtime-architecture.md) collega le
+milestone alle dipendenze di storage, lifetime e concorrenza. Il primo blocco
+implementa array packed con promozione al formato associativo, cardinalità e accesso per posizione sullo
+storage COW, estremità
+degli array e un sottoinsieme da array di ArrayObject. I prossimi passi sono
+return-by-reference (anche per ArrayAccess), lifetime dei valori e dei future,
+poi promozione dei grafi per lo spawn su thread. Per SPL restano flags, sorting,
+backing da oggetto, classi di iteratore personalizzate e serializzazione.
+Compose e mobile restano in coda. Le misure SPL riguardano questo percorso.
 
 ## Concluso e da non rifare da zero
 
@@ -102,7 +101,12 @@ Linguaggio/TrueAsync/threading/FFI precedono Composer applicativo, Compose e mob
   [evidenze e hash](docs/validation/arrayiterator-2026-10-10/README.md). `ArrayObject`, flags, sorting, serializzazione,
   object backing e diagnostica completano il backlog SPL; LANG-01 resta aperto.
 
-## Prestazioni e memoria: rinviate per richiesta dell'utente
+- [x] Storage packed, lookup SPL per posizione, builtin di estremità e
+  sottoinsieme ArrayObject da array. Su Windows e Linux 94/94 nei tre modi
+  di esecuzione e regressioni integrate verdi.
+  [Evidenze e benchmark a freddo](docs/validation/array-storage-2026-11-18/README.md).
+
+## Prestazioni e memoria
 
 - [ ] **PERF-01 — Spiegare e ridurre il costo del p99.** L'A/B sullo stesso
   eseguibile del 26 settembre conferma RSS p50 −47,18%/−41,86%, con p99
@@ -117,7 +121,8 @@ Linguaggio/TrueAsync/threading/FFI precedono Composer applicativo, Compose e mob
 - [ ] **PERF-02 — Coprire durate e carichi reali diversi.** Aggiungere scenari
   brevi, lunghi e intermittenti interamente misurati, senza warmup nascosto;
   distinguere startup, prime richieste, lavoro e shutdown. Oggi il confronto
-  principale è HTTP locale, 64 client, 131.072 richieste, 1.000/10.000 sospese.
+  più recente è HTTP locale, 64 client, 65.536 richieste per prova, 1.000/10.000
+  sospese. I dati grezzi del 18 novembre sono nel rapporto dello storage.
   Linux non ha ancora il campionatore esterno equivalente. Non attribuire al
   cronometro le attese TrueAsync pre-payload finché la causa non è isolata.
 - [ ] **PERF-03 — Valutare il caricamento iniziale del codice.** `CodeRepository`

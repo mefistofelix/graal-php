@@ -23,6 +23,38 @@ public final class IterationTest {
             foreach($it as$k=>$v)echo $k,'=',$v,';';
             echo ':',count($it),':',iterator_count($it);
             """),
+        new Case("packed-promotion-live-reference-and-snapshot", """
+            $a=[10,20,30];$b=$a;
+            foreach($b as $k=>$v){echo $k,$v;if($k===0){unset($b[1]);$b[]='x';$b['s']=99;}}
+            foreach($a as $k=>&$v){if($k===0){$c=$a;unset($a[1]);$a[1]=40;}$v++;}
+            unset($v);foreach($a as $k=>$v)echo $k,$v;foreach($c as $k=>$v)echo $k,$v;
+            echo count($a),array_key_last($a),array_key_last($b);
+            """),
+        new Case("spl-array-object-iterators-and-exchange", """
+            $o=new ArrayObject(['x'=>1,'y'=>2]);$i=$o->getIterator();$j=$o->getIterator();
+            $i->next();$j['y']=4;echo $i->key(),$i->current(),$j->current(),count($o);
+            $old=$o->exchangeArray([8,9]);echo $old['y'],$i->key(),$i->current();
+            $c=clone $o;$c[]=3;unset($o[0]);foreach($o as $k=>$v)echo $k,$v;
+            echo count($c),$c[0],$o->offsetExists(0)===false;
+            """),
+        new Case("spl-array-object-reference-overwrite", """
+            $v=1;$a=['k'=>&$v];$o=new ArrayObject($a);$i=$o->getIterator();
+            $v=3;echo $o['k'],$i['k'];$o['k']=4;echo $v,$a['k'],$i['k'];
+            $o->exchangeArray($a);$v=8;echo $i['k'];$i['k']=9;echo $o['k'],$v;
+            """),
+        new Case("array-boundaries-after-unset-and-cow", """
+            $a=['a'=>[1],7=>[2],'z'=>[3]];
+            unset($a[7]);$b=$a;$x=array_first(array:$b);$x[0]=9;
+            echo array_key_first($a),array_first($a)[0],array_key_last($a),array_last($a)[0],':';
+            unset($b['a']);$b['a']=[8];echo array_key_first($b),array_last($b)[0],array_last($a)[0],':';
+            echo array_first([])===null,array_key_last([])===null;
+            """),
+        new Case("spl-positional-index-after-reinsert", """
+            $a=new ArrayIterator(['a'=>1,'b'=>2,'c'=>3,'d'=>4]);
+            unset($a['b']);$a->seek(1);echo $a->key(),$a->current();
+            $b=clone $a;$b['b']=5;$a->seek(3);echo $a->key(),$a->current();
+            unset($a['c']);$a->rewind();foreach($a as $k=>$v)echo $k,$v;
+            """),
         new Case("spl-array-iterator-empty", """
             $it=new ArrayIterator;echo $it->valid()===false,':',$it->key()===null,':',$it->current()===null,':';
             echo iterator_count($it),':',count($it->getArrayCopy()),':';

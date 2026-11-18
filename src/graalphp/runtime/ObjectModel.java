@@ -323,7 +323,7 @@ public final class ObjectModel {
             }
             return method(caller, value, "__invoke", false);
         }
-        if (value instanceof PhpValues.PhpArray && PhpValues.keys(value).size() == 2) {
+        if (value instanceof PhpValues.PhpArray array && array.size() == 2) {
             Object receiver = PhpValues.element(value, 0L);
             Object member = PhpValues.element(value, 1L);
             try {

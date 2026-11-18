@@ -1,8 +1,24 @@
-# SPL concreta: EmptyIterator e ArrayIterator parziale
+# SPL concreta, iteratori e ArrayObject
 
 Avvio del 10 ottobre 2026, dopo ArrayAccess. La superficie SPL resta
 incompleta: questo è un passo incrementale di LANG-01, non una certificazione
 che le classi SPL o Composer siano supportati.
+
+## Aggiornamento del 18 novembre
+
+Il costruttore array di ArrayIterator ora conserva il backing via COW. Una
+reference nell'array sorgente rimane visibile all'iteratore fino alla
+sostituzione dello slot SPL. Le letture di posizione usano l'ordine dei bucket o l'indice
+delle chiavi vive dopo un unset. Questa sezione aggiorna il comportamento
+descritto nel rapporto storico del 10 ottobre.
+
+ArrayObject supporta costruzione da array, getArrayCopy, count, offset, append,
+getIterator, clone ed exchangeArray. Gli iteratori ottenuti condividono le
+modifiche al backing, anche dopo exchangeArray, con posizione individuale.
+Clonare l'ArrayObject separa i due contenitori. Rimangono aperti i costruttori
+da oggetto, flags/proprietà, iteratorClass, sorting, serializzazione,
+by-reference e la copertura completa degli errori e delle subclassi.
+[Verifiche](validation/array-storage-2026-11-18/README.md).
 
 ## EmptyIterator
 

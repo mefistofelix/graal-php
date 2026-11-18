@@ -216,9 +216,8 @@ public final class ClassLoading implements AutoCloseable {
             int separator = text.indexOf("::");
             return separator < 0 ? null : name(text.substring(0, separator));
         }
-        if (!(value instanceof PhpValues.PhpArray)) return null;
-        var keys = PhpValues.keys(value);
-        if (keys.size() != 2 || !keys.containsAll(List.of(0L, 1L))) return null;
+        if (!(value instanceof PhpValues.PhpArray array) || array.size() != 2
+                || !PhpValues.hasKey(array, 0L) || !PhpValues.hasKey(array, 1L)) return null;
         Object receiver = PhpValues.element(value, 0L);
         try { return PhpValues.unwrap(receiver) instanceof String text ? name(text) : null; }
         finally { PhpValues.drop(receiver); }

@@ -44,18 +44,16 @@ public final class IterationApi {
             private $store;
             private int $position = 0;
             public function __construct(array $array = [], int $flags = 0) {
-                $copy = [];
-                foreach ($array as $key => $value) $copy[$key] = $value;
-                $this->store = new stdClass;
-                $this->store->data = $copy;
+                if ($this->store === null) $this->store = new stdClass;
+                $this->store->data = $array;
+                $this->position = 0;
             }
             public function getArrayCopy(): array { return $this->store->data; }
             public function count(): int { return count($this->store->data); }
             public function rewind(): void { $this->position = 0; }
             public function valid(): bool { return $this->position < count($this->store->data); }
             public function key(): mixed {
-                $keys = __spl_array_keys($this->store->data);
-                return $keys[$this->position] ?? null;
+                return __spl_array_key_at($this->store->data, $this->position);
             }
             public function current(): mixed {
                 if (!$this->valid()) return null;
@@ -71,13 +69,34 @@ public final class IterationApi {
             public function offsetGet(mixed $offset): mixed { return $this->store->data[$offset] ?? null; }
             public function offsetSet(mixed $offset, mixed $value): void {
                 if ($offset === null) $this->store->data[] = $value;
-                else $this->store->data[$offset] = $value;
+                else __spl_replace_element($this->store, $offset, $value);
             }
             public function append(mixed $value): void { $this->store->data[] = $value; }
             public function offsetUnset(mixed $offset): void {
                 $index = __spl_array_position($this->store->data, $offset);
                 if ($index >= 0 && $index < $this->position) $this->position--;
                 unset($this->store->data[$offset]);
+            }
+        }
+        class ArrayObject implements IteratorAggregate, ArrayAccess, Countable {
+            private $storage;
+            public function __construct(array $array = []) {
+                if ($this->storage === null) $this->storage = new ArrayIterator($array);
+                else $this->storage->__construct($array);
+            }
+            public function __clone(): void { $this->storage = new ArrayIterator($this->storage->getArrayCopy()); }
+            public function getArrayCopy(): array { return $this->storage->getArrayCopy(); }
+            public function getIterator(): Iterator { return clone $this->storage; }
+            public function count(): int { return $this->storage->count(); }
+            public function offsetExists(mixed $key): bool { return $this->storage->offsetExists($key); }
+            public function offsetGet(mixed $key): mixed { return $this->storage->offsetGet($key); }
+            public function offsetSet(mixed $key, mixed $value): void { $this->storage->offsetSet($key, $value); }
+            public function offsetUnset(mixed $key): void { $this->storage->offsetUnset($key); }
+            public function append(mixed $value): void { $this->storage->append($value); }
+            public function exchangeArray(array $array): array {
+                $previous = $this->storage->getArrayCopy();
+                $this->storage->__construct($array);
+                return $previous;
             }
         }
         #[Attribute(1)]
@@ -330,17 +349,28 @@ public final class IterationApi {
     @TruffleBoundary
     public static Object function(Activation caller, String name, Argument[] arguments, IndirectCallNode call) {
         switch (name) {
-            case "__spl_array_keys", "__spl_array_has": {
-                var args = CallArguments.builtin(name, arguments,
-                        name.equals("__spl_array_keys") ? List.of("array") : List.of("array", "key"),
-                        name.equals("__spl_array_keys") ? 1 : 2);
-                Object source = checked(caller, args[0].value(), "array");
-                if (name.equals("__spl_array_has")) return PhpValues.hasKey(source, args[1].value());
-                try (var scope = new PhpValues.Scope(caller.request.heap)) {
-                    var array = scope.variable(scope.emptyArray());
-                    for (Object key : PhpValues.keys(source)) array.append().set(key);
-                    return caller.track(PhpValues.own(array.read()));
-                }
+            case "array_first", "array_last", "array_key_first", "array_key_last": {
+                var args = CallArguments.builtin(name, arguments, List.of("array"), 1);
+                var array = (PhpValues.PhpArray) checked(caller, args[0].value(), "array");
+                Object key = array.boundaryKey(name.endsWith("first"));
+                if (key == null) return null;
+                return name.startsWith("array_key_") ? key : caller.track(PhpValues.element(array, key));
+            }
+            case "__spl_array_key_at": {
+                var args = CallArguments.builtin(name, arguments, List.of("array", "position"), 2);
+                var array = (PhpValues.PhpArray) checked(caller, args[0].value(), "array");
+                return array.keyAt((long) checked(caller, args[1].value(), "int"));
+            }
+            case "__spl_replace_element": {
+                var args = CallArguments.builtin(name, arguments, List.of("store", "key", "value"), 3);
+                Object store = checked(caller, args[0].value(), "stdClass");
+                var data = ((PhpValues.PhpObject) store).field("data");
+                data.replaceElement(PhpValues.unwrap(args[1].value()), PhpValues.unwrap(args[2].value()));
+                return null;
+            }
+            case "__spl_array_has": {
+                var args = CallArguments.builtin(name, arguments, List.of("array", "key"), 2);
+                return PhpValues.hasKey(checked(caller, args[0].value(), "array"), args[1].value());
             }
             case "__spl_array_position": {
                 var args = CallArguments.builtin(name, arguments, List.of("array", "key"), 2);
@@ -364,8 +394,8 @@ public final class IterationApi {
                 Object value = checked(caller, args[0].value(), "Countable|array");
                 long mode = (long) scalar(caller, name, 2, "mode", args[1].value(), "int");
                 if (mode != 0 && mode != 1) throw new PhpError("ValueError", name + "(): Argument #2 ($mode) must be either COUNT_NORMAL or COUNT_RECURSIVE");
-                if (value instanceof PhpValues.PhpArray) {
-                    if (mode == 0) return (long) PhpValues.keys(value).size();
+                if (value instanceof PhpValues.PhpArray array) {
+                    if (mode == 0) return (long) array.size();
                     return countArray(value, Diagnostics.origin(caller), Collections.newSetFromMap(new IdentityHashMap<>()));
                 }
                 return Operations.invokeFunction(caller, caller.request.context.asyncFunction("iterator_object_count"),
@@ -374,7 +404,7 @@ public final class IterationApi {
             case "iterator_count": {
                 var args = CallArguments.builtin(name, arguments, List.of("iterator"), 1);
                 Object value = checked(caller, args[0].value(), "Traversable|array");
-                if (value instanceof PhpValues.PhpArray) return (long) PhpValues.keys(value).size();
+                if (value instanceof PhpValues.PhpArray array) return (long) array.size();
                 var state = open(caller, PhpValues.own(value), false);
                 return Operations.invokeFunction(caller, caller.request.context.asyncFunction("iterator_count_values"),
                         new Argument[] {new Argument(state, null)}, call);
@@ -531,7 +561,7 @@ public final class IterationApi {
     private static long countResult(Diagnostics.Origin origin, Object value) {
         if (value == null || value instanceof Boolean) return Operations.truth(value) ? 1 : 0;
         if (value instanceof Number number) return number.longValue();
-        if (value instanceof PhpValues.PhpArray) return PhpValues.keys(value).isEmpty() ? 0 : 1;
+        if (value instanceof PhpValues.PhpArray array) return array.size() == 0 ? 0 : 1;
         if (value instanceof String text) {
             var number = java.util.regex.Pattern.compile("^[\\s]*([+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?)").matcher(text);
             if (!number.find()) return 0;

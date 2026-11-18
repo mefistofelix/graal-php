@@ -1,6 +1,6 @@
 # Stato di consegna GraalPHP
 
-Aggiornato: **10 ottobre 2026**. Punto d'ingresso: [AGENTS.md](../AGENTS.md).
+Aggiornato: **18 novembre 2026**. Punto d'ingresso: [AGENTS.md](../AGENTS.md).
 Questo documento permette di riprendere senza la chat; [TODO.md](../TODO.md)
 contiene il lavoro aperto. Gli hash e i risultati sono quelli dell'ultima
 campagna indicata, non una garanzia che ogni futuro checkout vi corrisponda.
@@ -11,29 +11,26 @@ Runtime sperimentale PHP 8.6 direttamente su Truffle Bytecode DSL, con JVM e
 Native Image Windows/Linux x64 funzionanti. Non ancora un sostituto generale
 di PHP; non sono completate tutte le milestone del design.
 
-**L'utente ha chiesto di continuare lo sviluppo funzionale e riverificare le
-performance più avanti.** Non riprendere automaticamente PERF-01. Il blocco
-corrente è la [SPL concreta](spl.md), iniziata da `EmptyIterator` dopo
-[ArrayAccess](arrayaccess.md), generatori, Reflection, unpacking, iterazione,
-classi e valori. Gli offset overloaded usano
-il normale dispatcher PHP e possono sospendersi attraverso TrueAsync senza
-sostituire le location native di array/stringhe.
+La [revisione architetturale](runtime-architecture.md) definisce confini,
+dipendenze e prove di accettazione per completare il runtime. Il primo blocco
+applicato usa storage packed per gli array sequenziali e porta le letture di
+cardinalità e posizione direttamente su PhpArray,
+mantiene i riferimenti sorgente fino alla sostituzione dello slot SPL e aggiunge
+quattro builtin per le estremità degli array e ArrayObject da array con
+iterazione, clone e exchangeArray. Per perimetro e misure consultare il
+[rapporto](validation/array-storage-2026-11-18/README.md).
 
-Il seguito funzionale immediato è completare la **SPL concreta** con
-il resto di `ArrayIterator` e `ArrayObject`, insieme a lifetime, valori, firme dei builtin e
-TrueAsync. PHP Fiber è deliberatamente
-fuori scope: non serve compatibilità con codice Fiber e non è un building block
-interno; l'async pubblico resta TrueAsync sopra le continuation Truffle. Il
-loader SPL predefinito, include_path e il binding completo tra unità restano
-aperti: non dichiarare Composer funzionante. Shared-memory threading e FFI
-restano priorità successive; Composer applicativo, Compose e mobile sono rinviati.
-Procedere nel lavoro già autorizzato senza riconfermare queste decisioni.
-
-Il default CLI `engine.CompilerIdleDelay=500` rimane invariato e il JIT attivo.
-La diagnostica precedente [cURL p99](curl-p99.md) resta storica: nessuna nuova
-misura RAM/CPU/throughput/p99 è stata eseguita per i blocchi autoload/classi/valori. Quando
-si tornerà alle performance, mantenere il vincolo di nessun warmup escluso e
-separare GC/invalidazioni, peer e lifetime reale dei compiler worker.
+Il corpus SPL passa 94/94 su JVM, Native Image e modalità interprete, sia
+Windows sia Linux x64 (WSL), per 564 esecuzioni. Passano le regressioni
+`build.bat verify` e `build.sh verify`. I [prodotti](validation/array-storage-2026-11-18/products.txt)
+identificano le build locali. Su Windows il benchmark freddo JVM con 1.024
+elementi contigui passa da 1.263 a 943 ms di wall time mediano e da 658 a
+500 MiB di picco RSS mediano. La campagna corrente cURL standard include
+1.572.864 payload verificati. I dati Linux sono funzionali. Le misure
+prestazionali della campagna corrente sono Windows.
+Riprendere da VALUE-01 e ASYNC-01 nel [TODO](../TODO.md), poi pubblicazione
+LOCAL→SHARED. PHP Fiber è fuori scope. I blocchi datati sotto conservano la
+copertura osservata al momento di ciascuna consegna.
 
 ## Blocco funzionale: ArrayIterator (parziale), 10 ottobre
 
