@@ -31,6 +31,17 @@ Riprendere da VALUE-01 e ASYNC-01 nel [TODO](../TODO.md), poi pubblicazione
 LOCAL→SHARED. PHP Fiber è fuori scope. I blocchi datati sotto conservano la
 copertura osservata al momento di ciascuna consegna.
 
+## Caricamento su richiesta, 19 novembre
+
+Senza watch l'entry già compilata parte subito e include/autoload caricano
+le altre unità al primo uso. Le unità sono riutilizzate nel contesto. Con
+watch la generazione continua a essere completa, atomica e fissata per
+richiesta. Passano 228 prove autoload e le regressioni include/reload.
+Con 512 file inutilizzati l'avvio CLI Linux scende da 46,39 a 6,55 ms e
+la mediana del picco RSS da 51,75 a 26,12 MiB. Nel cURL Windows con
+1.000 sospese l'avvio diminuisce e il p50 RSS sale da 108,97 a 127,07 MiB.
+[Prove funzionali e benchmark a freddo](validation/lazy-code-2026-11-19/README.md).
+
 ## Errori degli scope TrueAsync, 19 novembre
 
 La policy degli errori usa le continuation della coroutine che fallisce.

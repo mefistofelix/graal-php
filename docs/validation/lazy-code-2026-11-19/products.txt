@@ -1,0 +1,6 @@
+SHA-256                                                               Bytes  File
+f8f138ec107ad4f618034d57c3126ed2933532445db606dae70a7daf8992470e    94167040  graalphp.exe
+f5c3313756e628af31ccf1f6819440bfebe3a14b97657d43b00199b607d7cdbf    97127208  graalphp-linux-x64
+ba6c81bccd27dcd3ce29bdf8499cfd37c85b976b47064cc1a3470c1fcf9c0d5e      965124  graalphp.jar
+4ec9f27757c05e3d56dc4527054787e6eb60114ed50796794c473e953593bc60    94064640  scope-errors-graalphp.exe
+b78cb7c1050250d14d9d050ab2d63984ce8c852f29edb27acfb936c556cb4d75    97454888  scope-errors-graalphp-linux-x64

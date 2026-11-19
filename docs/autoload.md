@@ -147,13 +147,13 @@ non completano i costruttori speciali di tutti gli errori/builtin.
 I nomi binari non UTF-8 e tutte le coercizioni/diagnostiche
 PHP richiedono ulteriore lavoro, come il frontend generale.
 
-La root rimane precompilata da `CodeRepository`: autoload ritarda
-**l'installazione/esecuzione** del file nella richiesta, non introduce un nuovo
-indicizzatore lazy. File non supportati nella root possono ancora bloccare il
-primo indice; gli include devono essere presenti nella generazione fissata.
-Non viene quindi dichiarata funzionante un'applicazione Composer arbitraria.
+Dal 19 novembre, senza watch, `CodeRepository` compila un file al primo
+include e riusa quell'unità per il contesto. L'installazione e l'esecuzione
+restano per-request e seguono il chiamante. Con watch, gli include consultano
+la generazione fissata, completa e atomica. In quella modalità un errore nel
+codice della root può ancora impedire la pubblicazione.
+[Verifiche e misure](validation/lazy-code-2026-11-19/README.md).
 
 `LANG-01` rimane aperto. I contratti di classe ora implementati e le forme di
 dichiarazione mancanti sono distinti nel rapporto successivo; continuare a
-coordinarli con valori, TrueAsync e reload. **PERF-01 e le misure di prestazioni sono rinviati** per
-richiesta dell'utente, senza cancellare le evidenze storiche.
+coordinarli con valori, TrueAsync e reload.

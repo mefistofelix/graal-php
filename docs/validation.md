@@ -1,5 +1,8 @@
 # Verifica — 26 settembre 2026
 
+[Caricamento su richiesta](validation/lazy-code-2026-11-19/README.md)
+verifica include e autoload e confronta avvio CLI Linux e cURL Windows.
+
 [Errori degli scope](validation/scope-errors-2026-11-19/README.md)
 verifica handler sospendibili e drenaggio e misura l'A/B cURL da freddo.
 

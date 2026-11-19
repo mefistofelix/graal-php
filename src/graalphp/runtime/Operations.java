@@ -334,7 +334,7 @@ public final class Operations {
                 require(name, values, 1);
                 Path included = resolve(activation, string(values[0]));
                 if (name.endsWith("_once") && activation.request.included.contains(included)) return 1L;
-                var unit = activation.request.generation.units().get(included);
+                var unit = activation.request.context.repository().include(activation.request.generation, included);
                 if (unit == null) throw new PhpError("File absent from request generation: " + included.getFileName());
                 activation.request.install(unit);
                 return include(activation, unit.main(), call);

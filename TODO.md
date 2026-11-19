@@ -157,11 +157,11 @@ Compose e mobile restano in coda. Le misure SPL riguardano questo percorso.
   sospese. I dati grezzi del 18 novembre sono nel rapporto dello storage.
   Linux non ha ancora il campionatore esterno equivalente. Non attribuire al
   cronometro le attese TrueAsync pre-payload finché la causa non è isolata.
-- [ ] **PERF-03 — Valutare il caricamento iniziale del codice.** `CodeRepository`
-  precompila tutta la root anche senza watch. Impatto RAM/startup non quantificato;
-  non è stato modificato per la riduzione RAM. Un eventuale caricamento differito
-  deve preservare include dinamici, autoload e snapshot della generazione durante
-  reload, senza scan/stat nel normale percorso di richiesta.
+- [x] **PERF-03 — Caricare il codice al primo uso senza watch.** L'entry non
+  richiede una scansione della root. Include dinamici e autoload usano unità
+  compilate al primo accesso e memorizzate nel contesto. Con watch le richieste
+  restano fissate alle generazioni pubblicate. Verificati avvio CLI e cURL a
+  freddo. [Misure](docs/validation/lazy-code-2026-11-19/README.md).
 
 ## Fondamenta prioritarie
 

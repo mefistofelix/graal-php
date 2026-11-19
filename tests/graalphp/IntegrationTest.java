@@ -97,6 +97,7 @@ public final class IntegrationTest {
         cpuDeadline();
         objectCycles();
         isolationAndHost();
+        lazyIncludesWithoutWatch();
         includesAndReload();
         autoloadIsolationAndReload();
         classContractsReload();
@@ -385,6 +386,34 @@ public final class IntegrationTest {
             equal("new request uses new iterator and Countable implementations", "value:new:2", output.toString());
         }
     }
+    private static void lazyIncludesWithoutWatch() throws Exception {
+        Path root = Files.createTempDirectory("graalphp-lazy-").toAbsolutePath();
+        Path subdirectory = Files.createDirectory(root.resolve("lib"));
+        Path main = root.resolve("main.php");
+        Path library = subdirectory.resolve("library.php");
+        Files.writeString(root.resolve("unused.php"), "<?php function deliberately_broken(");
+        Files.writeString(main, """
+            <?php
+            $library = 'lib/library.php';
+            require_once $library;
+            require_once $library;
+            return compiled_value();
+            """);
+        Files.writeString(library, "<?php require_once 'nested.php';");
+        Path nested = subdirectory.resolve("nested.php");
+        Files.writeString(nested, "<?php function compiled_value() { return 17; }");
+        try (var context = Context.newBuilder("php").allowAllAccess(true).build()) {
+            var source = Source.newBuilder("php", main.toFile()).build();
+            equal("non-watch entry and dynamic nested includes skip unused code", 17L, context.eval(source).asLong());
+            Files.writeString(nested, "<?php function compiled_value() { return 23; }");
+            equal("non-watch includes reuse the compiled unit", 17L, context.eval(source).asLong());
+        }
+        try (var context = Context.newBuilder("php").allowAllAccess(true).build()) {
+            equal("new non-watch context sees code on first use", 23L,
+                    context.eval(Source.newBuilder("php", main.toFile()).build()).asLong());
+        }
+    }
+
     private static void includesAndReload() throws Exception {
         Path root = Files.createTempDirectory("graalphp-reload-").toAbsolutePath();
         Path main = root.resolve("main.php"); Path library = root.resolve("library.php");

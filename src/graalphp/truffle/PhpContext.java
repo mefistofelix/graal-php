@@ -45,8 +45,9 @@ public final class PhpContext implements AutoCloseable {
     }
     @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
     public Object execute(Execution.Unit parsed) {
-        var generation = repository(parsed).snapshot();
-        var unit = parsed.path() == null ? parsed : generation.units().get(parsed.path());
+        var code = repository(parsed);
+        var generation = code.snapshot();
+        var unit = code.entry(generation, parsed);
         if (unit == null) throw new PhpError("Entry file absent from current generation: " + parsed.path().getFileName());
         var request = new Execution.Request(this, generation);
         if (request.hosted) {

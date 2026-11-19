@@ -12,9 +12,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
-/** Events update only affected units. Overflow explicitly requests a full reconciliation. */
+/** Load files on demand without watch. Watched generations publish complete snapshots. */
 public final class CodeRepository implements AutoCloseable {
     public record Generation(long id, Map<Path, Execution.Unit> units, Assumption current) {}
     private final PhpLanguage language;
@@ -24,6 +25,7 @@ public final class CodeRepository implements AutoCloseable {
     private final Map<WatchKey, Path> directories = new HashMap<>();
     private final Set<Path> registered = new HashSet<>();
     private final Set<Path> dirty = new HashSet<>();
+    private final Map<Path, Execution.Unit> loaded = new ConcurrentHashMap<>();
     private WatchService watcher;
     private Thread thread;
     private volatile boolean closed;
@@ -34,21 +36,45 @@ public final class CodeRepository implements AutoCloseable {
     public CodeRepository(PhpLanguage language, Path root, boolean watch) {
         this.language = language;
         this.root = root == null ? null : root.toAbsolutePath().normalize();
-        if (root == null) return;
+        if (root == null || !watch) return;
         try {
-            if (watch) watcher = FileSystems.getDefault().newWatchService();
+            watcher = FileSystems.getDefault().newWatchService();
             reconcile = true;
             publish();
-            if (watch) {
-                thread = new Thread(this::watch, "graalphp-reload");
-                thread.setDaemon(true);
-                thread.start();
-            }
+            thread = new Thread(this::watch, "graalphp-reload");
+            thread.setDaemon(true);
+            thread.start();
         } catch (IOException error) { throw new PhpError("Project index: " + error.getMessage()); }
     }
 
     public Generation snapshot() { return current.get(); }
     public Path root() { return root == null ? Path.of("").toAbsolutePath() : root; }
+
+    public Execution.Unit entry(Generation generation, Execution.Unit parsed) {
+        return watcher == null || parsed.path() == null ? parsed : generation.units.get(parsed.path());
+    }
+
+    public Execution.Unit include(Generation generation, Path path) {
+        if (watcher != null) return generation.units.get(path);
+        if (root == null || !path.startsWith(root) || excluded(path) || !path.toString().endsWith(".php")) return null;
+        return loaded.computeIfAbsent(path, this::readIncludedUnit);
+    }
+
+    private Execution.Unit readIncludedUnit(Path path) {
+        // The watch index does not traverse symbolic links.
+        for (Path directory = path; ; directory = directory.getParent()) {
+            if (Files.isSymbolicLink(directory)) return null;
+            if (directory.equals(root)) break;
+        }
+        if (!Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS)) return null;
+        try { return compile(path, Files.readString(path)); }
+        catch (IOException error) { throw new PhpError("Cannot read included file " + path.getFileName() + ": " + error.getMessage()); }
+    }
+
+    private Execution.Unit compile(Path path, String content) {
+        return PhpCompiler.compile(language,
+                Source.newBuilder("php", content, path.getFileName().toString()).uri(path.toUri()).build());
+    }
 
     private Set<Path> scan(Path start) throws IOException {
         var files = new HashSet<Path>();
@@ -89,8 +115,7 @@ public final class CodeRepository implements AutoCloseable {
             String content = Files.readString(path);
             var previous = old.units.get(path);
             if (previous != null && previous.content().equals(content)) continue;
-            units.put(path, PhpCompiler.compile(language,
-                    Source.newBuilder("php", content, path.getFileName().toString()).uri(path.toUri()).build()));
+            units.put(path, compile(path, content));
             compiled++;
         }
         if (!units.equals(old.units)) {
