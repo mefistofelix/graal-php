@@ -241,6 +241,13 @@ public final class Operations {
             }
             case "__mutex_accept": ((AsyncMutex) values[0]).accept(activation.task, future(values[1])); return null;
             case "__mutex_abort": ((AsyncMutex) values[0]).abort(activation.task, future(values[1])); return null;
+            case "__scope_failure_next":
+                return activation.track(PhpValues.own(((Scheduler.ScopeFailure) values[0]).nextHandler()));
+            case "__scope_failure_error": return ((Scheduler.ScopeFailure) values[0]).error;
+            case "__scope_failure_scope": return ((Scheduler.ScopeFailure) values[0]).scope;
+            case "__scope_failure_is_drain": return ((Scheduler.ScopeFailure) values[0]).drain != null;
+            case "__scope_failure_delivered": ((Scheduler.ScopeFailure) values[0]).delivered(); return null;
+            case "__scope_failure_rejected": ((Scheduler.ScopeFailure) values[0]).rejected((PhpError) values[1]); return null;
             case "get_class":
                 require(name, values, 1);
                 String builtinClass = ObjectModel.className(values[0]);

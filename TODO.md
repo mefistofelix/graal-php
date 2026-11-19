@@ -134,6 +134,10 @@ Compose e mobile restano in coda. Le misure SPL riguardano questo percorso.
   o drenaggio, stato osservabile, waiter e deadline one-shot.
   [Confronti](docs/validation/scope-disposal-2026-11-19/README.md).
 
+- [x] Handler degli errori degli scope e del drenaggio, con callback
+  sospendibili nella coroutine sorgente e risultato originale osservabile.
+  [Confronti e A/B cURL](docs/validation/scope-errors-2026-11-19/README.md).
+
 ## Prestazioni e memoria
 
 - [ ] **PERF-01 — Spiegare e ridurre il costo del p99.** L'A/B sullo stesso
@@ -174,13 +178,17 @@ Compose e mobile restano in coda. Le misure SPL riguardano questo percorso.
 - [ ] **ASYNC-01 — Structured concurrency e policy degli scope.** Risultati
   dei future TrueAsync e disposal di recvAsync perdenti seguono ora
   l'ownership guest. La chiusura esplicita si distingue dal drenaggio.
-  Completare errori non osservati, finalizer, warning e distruzione implicita,
+  Il nucleo degli handler è implementato. Completare finalizer, warning,
+  distruzione implicita e propagazione delle eccezioni multiple,
   poi Traversable nei combinatori, TaskGroup/TaskSet
   e diagnostica. Criterio: stesso programma contro la release TrueAsync fissata,
   nessun adattamento del test per dichiarare una compatibilità inesistente.
 - [ ] **THREAD-01 — Grafi LOCAL→SHARED e spawn pubblico.** Promuovere array,
   oggetti, closure e reference nello stesso heap; integrare visibilità, ownership
   e collector mantenendo veloce il caso locale. Poi esporre API vicina a TrueAsync.
+  Il dispatcher di una continuation deve seguire il task proprietario. Prima
+  della pubblicazione, i valori raggiungibili devono usare storage condiviso e
+  le nuove scritture in quel grafo devono applicare la stessa barriera.
   Criterio: identità condivisa e COW corretti, test con thread reali e
   sincronizzazione esplicita, race che non corrompono il runtime; nessuna copia
   in un'altra istanza PHP. Oggi mutex/ThreadChannel accettano scalari e capsule.

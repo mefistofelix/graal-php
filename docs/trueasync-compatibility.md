@@ -31,7 +31,7 @@ al PATH di sistema e non viene modificato `php.ini`.
 
 Il runner esegue lo stesso sorgente su entrambi i runtime e confronta stdout,
 errori e codici d'uscita; impone un limite al processo di riferimento. Sono
-inclusi 52 scenari mantenuti nel progetto e 45 PHPT upstream, estratti senza
+inclusi 54 scenari mantenuti nel progetto e 52 PHPT upstream, estratti senza
 modificare la sezione `--FILE--`. Un'API o una sintassi non implementata causa
 un fallimento, non uno skip. Il corpus selezionato non rappresenta l'intera
 suite upstream.
@@ -51,7 +51,7 @@ produce il risultato atteso e termina con access violation 0xC0000005.
 Il riproduttore mantenuto è `tests/php/trueasync-multi-close-reuse.php`;
 omettendo la distruzione esplicita è stata osservata una segnalazione di
 timer libuv rimasto aperto. Questo caso non viene conteggiato fra gli
-97 confronti passati: la suite integrata GraalPHP e quella di rete verificano
+106 confronti passati: la suite integrata GraalPHP e quella di rete verificano
 separatamente distruzione, riuso e shutdown corretto.
 
 Per ripetere il confronto con l'eseguibile Native Image, dopo la compilazione
@@ -104,6 +104,12 @@ tools\graalvm-25.4.4.1.1+1.1\bin\java.exe --enable-native-access=ALL-UNNAMED -cp
   coroutine avviate, che continuano a essere conteggiate dal runtime fino
   al drenaggio. `isFinished()` può diventare vero prima di `isClosed()`.
   [Confronti Windows e Linux](validation/scope-disposal-2026-11-19/README.md).
+- `setExceptionHandler()` e `setChildScopeExceptionHandler()` ricevono
+  scope, coroutine ed errore. Gli handler di `awaitAfterCancellation()`
+  ricevono errore e scope. I callback possono sospendersi nella coroutine
+  che ha generato l'errore; il future conserva l'eccezione originale per
+  eventuali attese successive. Un future osservato fa consegnare l'errore
+  al suo osservatore. [Confronti e A/B](validation/scope-errors-2026-11-19/README.md).
 
 ### Dettagli osservati nel binario 0.10.0
 

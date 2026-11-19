@@ -198,6 +198,8 @@ public final class AsyncApi {
                         java.util.List.of("errorHandler", "cancellation"), 0, null, null);
                 case "cancel" -> CallArguments.builtin(method, args, java.util.List.of("cancellationError"), 0, (Object) null);
                 case "disposeaftertimeout" -> CallArguments.builtin(method, args, java.util.List.of("timeout"), 1);
+                case "setexceptionhandler", "setchildscopeexceptionhandler" ->
+                        CallArguments.builtin(method, args, java.util.List.of("exceptionHandler"), 1);
                 default -> CallArguments.builtin(method, args, java.util.List.of(), 0);
             };
             switch (name) {
@@ -214,17 +216,18 @@ public final class AsyncApi {
                         if (scope.disposed) return null;
                         if (scope.cancelled) throw new PhpError("Async\\AsyncCancellation", "The scope has been cancelled");
                         scheduler.checkScopeWait(caller.task, scope);
-                        return Scheduler.awaitValue(caller, scheduler.scopeCompletion(scope, false), token);
+                        return Scheduler.awaitValue(caller, scheduler.scopeCompletion(scope), token);
                     } finally { Scheduler.discardUnowned(token); }
                 case "awaitaftercancellation":
-                    if (args.length > 0 && value(args, 0) != null) throw new PhpError("Scope error handlers are not implemented");
+                    Object errorHandler = value(args, 0);
+                    if (errorHandler != null) ObjectModel.callable(caller, errorHandler);
                     var cancellation = optionalFuture(args, 1);
                     if (cancellation != null) cancellation.observed = true;
                     try {
                         if (scope.disposed) return null;
                         if (!scope.cancelled) throw new PhpError("Async\\AsyncException", "Attempt to await a Scope that has not been cancelled");
                         scheduler.checkScopeWait(caller.task, scope);
-                        return Scheduler.awaitValue(caller, scheduler.scopeCompletion(scope, true), cancellation);
+                        return Scheduler.awaitValue(caller, scheduler.scopeDrain(scope, errorHandler), cancellation);
                     } finally { Scheduler.discardUnowned(cancellation); }
                 case "cancel":
                     var reason = args.length == 0 || value(args, 0) == null
@@ -234,6 +237,11 @@ public final class AsyncApi {
                     return null;
                 case "getchildscopes":
                     return caller.track(PhpValues.own(caller.locals.array(scheduler.children(scope).toArray())));
+                case "setexceptionhandler": case "setchildscopeexceptionhandler":
+                    Object handler = value(args, 0);
+                    ObjectModel.callable(caller, handler);
+                    scope.setExceptionHandler(handler, name.equals("setchildscopeexceptionhandler"));
+                    return null;
                 case "asnotsafely": scope.allowZombies = false; return scope;
                 case "allowzombies": scope.allowZombies = true; return scope;
                 case "dispose": case "disposesafely":

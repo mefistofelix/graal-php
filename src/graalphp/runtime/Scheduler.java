@@ -158,14 +158,107 @@ public final class Scheduler implements AutoCloseable {
         boolean draining;
         PhpError completionFailure;
         Timer disposalTimer;
+        Object exceptionHandler;
+        Object childScopeExceptionHandler;
         public boolean disposed;
         public AsyncApi.ContextValue context;
         final List<Future> waiters = new ArrayList<>();
-        final List<Future> drainWaiters = new ArrayList<>();
+        final List<ScopeDrain> drainWaiters = new ArrayList<>();
         Scope(Scope parent, long deadline, boolean allowZombies) {
             this.parent = parent;
             this.deadline = deadline;
             this.allowZombies = allowZombies;
+        }
+        void setExceptionHandler(Object callback, boolean children) {
+            if (disposed) throw new PhpError("Async\\AsyncException", "Scope object has been disposed");
+            PhpValues.retain(callback);
+            if (children) {
+                PhpValues.release(childScopeExceptionHandler);
+                childScopeExceptionHandler = callback;
+            } else {
+                PhpValues.release(exceptionHandler);
+                exceptionHandler = callback;
+            }
+        }
+        void releaseHandlers() {
+            PhpValues.release(exceptionHandler);
+            PhpValues.release(childScopeExceptionHandler);
+            exceptionHandler = null;
+            childScopeExceptionHandler = null;
+        }
+    }
+
+    private static final class ScopeDrain {
+        final Future future = new Future();
+        final Object handler;
+        ScopeDrain(Object handler) { this.handler = handler; PhpValues.retain(handler); }
+        void release() { PhpValues.release(handler); }
+    }
+
+    /** Runs error handlers on the coroutine which failed, even across a suspension. */
+    final class ScopeFailure implements TruffleObject {
+        final Future source;
+        final Scope origin;
+        final PhpError original;
+        Scope scope;
+        PhpError error;
+        ScopeDrain drain;
+        List<ScopeDrain> drains;
+        int nextDrain;
+        boolean triedHandler;
+        boolean handled;
+
+        ScopeFailure(Task task, PhpError original) {
+            source = task.future;
+            origin = scope = task.scope;
+            this.original = error = original;
+        }
+
+        Object nextHandler() {
+            drain = null;
+            while (scope != null) {
+                if (!triedHandler) {
+                    triedHandler = true;
+                    Object handler = scope != origin && scope.childScopeExceptionHandler != null
+                            ? scope.childScopeExceptionHandler : scope.exceptionHandler;
+                    if (handler != null) return handler;
+                }
+                if (drains == null) {
+                    handled |= !scope.cancelled && !scope.waiters.isEmpty();
+                    disposeScope(scope, new PhpError("Async\\AsyncCancellation", "Scope was cancelled"),
+                            scope.allowZombies, error, source);
+                    drains = List.copyOf(scope.drainWaiters);
+                }
+                while (nextDrain < drains.size()) {
+                    drain = drains.get(nextDrain++);
+                    if (drain.future.completion.isDone()) continue;
+                    if (drain.handler != null) return drain.handler;
+                    drain.future.completion.completeExceptionally(error);
+                    handled = true;
+                }
+                if (handled) return null;
+                scope = scope.parent;
+                triedHandler = false;
+                drain = null;
+                drains = null;
+                nextDrain = 0;
+            }
+            if (!handled) cancelScope(rootScope, error, source);
+            return null;
+        }
+
+        void delivered() {
+            handled = true;
+            if (drain == null) scope = null;
+        }
+
+        void rejected(PhpError failure) {
+            if (drain != null) {
+                drain.future.completion.completeExceptionally(failure);
+                handled = true;
+            } else if (failure != error) {
+                error = failure.previous == null ? new PhpError(failure.type, failure.getMessage(), error) : failure;
+            }
         }
     }
 
@@ -186,6 +279,7 @@ public final class Scheduler implements AutoCloseable {
         public int protectionDepth;
         public int checkpoints = 128;
         private WaitRegistration registration;
+        private ScopeFailure scopeFailure;
         GeneratorApi.State generator;
         Task(ContextNode context, Scope scope, PhpValues.Heap heap) {
             this.context = context;
@@ -336,17 +430,30 @@ public final class Scheduler implements AutoCloseable {
     public List<Scope> children(Scope parent) {
         return scopes.stream().filter(scope -> scope.parent == parent).toList();
     }
-    public Future scopeCompletion(Scope scope, boolean drain) {
-        var waiters = drain ? scope.drainWaiters : scope.waiters;
+    public Future scopeCompletion(Scope scope) {
         var future = new Future();
         future.observed = true;
         future.cancelOnAbort = true;
         future.cancelAction = () -> {
-            waiters.remove(future);
+            scope.waiters.remove(future);
             future.completion.completeExceptionally(new PhpError("Async\\AsyncCancellation", "Operation has been cancelled"));
         };
         if (scope.activeMembers == 0) future.completion.complete(null);
-        else waiters.add(future);
+        else scope.waiters.add(future);
+        return future;
+    }
+
+    Future scopeDrain(Scope scope, Object handler) {
+        if (scope.activeMembers == 0) return scopeCompletion(scope);
+        var registration = new ScopeDrain(handler);
+        var future = registration.future;
+        future.observed = true;
+        future.cancelOnAbort = true;
+        future.cancelAction = () -> {
+            if (scope.drainWaiters.remove(registration)) registration.release();
+            future.completion.completeExceptionally(new PhpError("Async\\AsyncCancellation", "Operation has been cancelled"));
+        };
+        scope.drainWaiters.add(registration);
         return future;
     }
     public void checkScopeWait(Task caller, Scope scope) {
@@ -616,27 +723,37 @@ public final class Scheduler implements AutoCloseable {
     }
 
     public void cancelScope(Scope scope, PhpError error) {
+        cancelScope(scope, error, null);
+    }
+
+    private void cancelScope(Scope scope, PhpError error, Future source) {
         if (scope.hostCancelled) return;
         scope.hostCancelled = true;
         scope.cancelled = true;
         scope.failure = error;
         clearDisposalTimer(scope);
-        for (var member : List.copyOf(scope.members)) cancel(member, error);
-        for (var child : scopes) if (child.parent == scope) cancelScope(child, error);
+        for (var member : List.copyOf(scope.members)) if (member != source) cancel(member, error);
+        for (var child : scopes) if (child.parent == scope) cancelScope(child, error, source);
     }
 
     void disposeScope(Scope scope, PhpError error, boolean safely) {
+        disposeScope(scope, error, safely, safely ? null : error, null);
+    }
+
+    private void disposeScope(Scope scope, PhpError cancellation, boolean safely, PhpError completion, Future source) {
         if (scope.disposed || scope.cancelled) return;
         clearDisposalTimer(scope);
         if (scope.activeMembers == 0) {
             scope.disposed = true;
+            scope.releaseHandlers();
             return;
         }
         scope.cancelled = true;
         scope.draining = true;
-        scope.completionFailure = safely ? null : error;
-        for (var child : scopes) if (child.parent == scope) disposeScope(child, error, safely);
-        if (!safely) for (var member : List.copyOf(scope.members)) cancel(member, error);
+        scope.completionFailure = completion;
+        for (var child : scopes) if (child.parent == scope)
+            disposeScope(child, cancellation, safely, safely ? null : cancellation, source);
+        if (!safely) for (var member : List.copyOf(scope.members)) if (member != source) cancel(member, cancellation);
         completeScopeWaiters(scope.waiters, scope.completionFailure);
     }
 
@@ -660,9 +777,16 @@ public final class Scheduler implements AutoCloseable {
 
     private void updateScope(Scope scope) {
         if (scope.activeMembers != 0) return;
-        if (scope.draining) scope.disposed = true;
+        if (scope.draining) {
+            scope.disposed = true;
+            scope.releaseHandlers();
+        }
         completeScopeWaiters(scope.waiters, scope.completionFailure);
-        completeScopeWaiters(scope.drainWaiters, null);
+        for (var waiter : scope.drainWaiters) {
+            waiter.future.completion.complete(null);
+            waiter.release();
+        }
+        scope.drainWaiters.clear();
     }
 
     private static void completeScopeWaiters(List<Future> waiters, PhpError error) {
@@ -765,6 +889,23 @@ public final class Scheduler implements AutoCloseable {
                     task.generator.completed(result, failure);
                     return;
                 }
+                if (task.scopeFailure != null) {
+                    PhpValues.drop(result);
+                    result = null;
+                    failure = task.scopeFailure.original;
+                    task.scopeFailure = null;
+                    task.future.observed = true; // The failure was delivered through its scope.
+                } else if (failure != null && failure.catchable && !task.future.observed
+                        && task.future.heap != null && !task.scope.hostCancelled
+                        && !failure.matches("Async\\AsyncCancellation")) {
+                    task.scopeFailure = new ScopeFailure(task, failure);
+                    var handler = request.context.asyncFunction("report_scope_failure");
+                    task.activation = new Activation(request, handler, task, false,
+                            new Argument[] {new Argument(task.scopeFailure, null)});
+                    try { result = handler.target().call(task.activation); failure = null; }
+                    catch (PhpError error) { result = null; failure = error; cancelScope(rootScope, error, task.future); }
+                    continue;
+                }
                 if (failure == null) task.future.completeValue(result);
                 else { PhpValues.drop(result); task.future.completion.completeExceptionally(failure); }
                 if (task.future.heap != null) {
@@ -842,6 +983,11 @@ public final class Scheduler implements AutoCloseable {
             else if (!task.future.completion.isCompletedExceptionally()) PhpValues.drop(task.future.completion.getNow(null));
         }
         for (var future : external) if (!future.completion.isCompletedExceptionally()) PhpValues.drop(future.completion.getNow(null));
+        for (var scope : scopes) {
+            scope.releaseHandlers();
+            for (var waiter : scope.drainWaiters) waiter.release();
+            scope.drainWaiters.clear();
+        }
         timers.clear();
         ready.clear();
         incoming.clear();

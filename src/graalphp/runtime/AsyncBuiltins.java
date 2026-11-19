@@ -29,6 +29,19 @@ public final class AsyncBuiltins {
             __protect_enter();
             try { return $callback(); } finally { __protect_leave(); }
         }
+        function report_scope_failure($report) {
+            while (($handler = __scope_failure_next($report)) !== null) {
+                try {
+                    $error = __scope_failure_error($report);
+                    $scope = __scope_failure_scope($report);
+                    if (__scope_failure_is_drain($report)) $handler($error, $scope);
+                    else $handler($scope, Async\\current_coroutine(), $error);
+                    __scope_failure_delivered($report);
+                } catch (Throwable $raised) {
+                    __scope_failure_rejected($report, $raised);
+                }
+            }
+        }
         function mutex_lock($mutex, $cancellation = null) {
             $waiter = null; $accepted = false;
             try {

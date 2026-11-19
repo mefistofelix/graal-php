@@ -31,6 +31,20 @@ Riprendere da VALUE-01 e ASYNC-01 nel [TODO](../TODO.md), poi pubblicazione
 LOCAL→SHARED. PHP Fiber è fuori scope. I blocchi datati sotto conservano la
 copertura osservata al momento di ciascuna consegna.
 
+## Errori degli scope TrueAsync, 19 novembre
+
+La policy degli errori usa le continuation della coroutine che fallisce.
+Gli handler locali, quelli dei discendenti e quelli attivi durante il
+drenaggio possono sospendersi. L'osservatore del future continua a ricevere
+l'eccezione originale. Passano 106 programmi su JVM, Native Image e
+`--interpreter` su Windows e Linux.
+[Risultati, hash e A/B cURL](validation/scope-errors-2026-11-19/README.md).
+
+Da riprendere i finalizer degli scope, la distruzione implicita, il warning
+dei future e la propagazione completa delle eccezioni multiple. THREAD-01
+richiede prima associare il dispatcher all'activation e applicare la
+barriera di pubblicazione al grafo effettivamente trasferito.
+
 ## Chiusura degli scope TrueAsync, 19 novembre
 
 La chiusura distingue il completamento logico dal drenaggio effettivo.
@@ -41,9 +55,8 @@ scope vuoti e argomenti nominati. Passano 97 scenari TrueAsync nelle sei
 combinazioni piattaforma/modalità.
 [Evidenze e prodotti](validation/scope-disposal-2026-11-19/README.md).
 
-Il blocco successivo di ASYNC-01 riguarda gli errori non osservati e i
-callback sospendibili. Restano aperti i finalizer degli scope, la
-distruzione implicita, i warning e TaskGroup/TaskSet.
+Restano aperti i finalizer degli scope, la distruzione implicita, i
+warning e TaskGroup/TaskSet.
 
 ## Riferimenti a proprietà tipizzate, 19 novembre
 

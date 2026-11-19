@@ -166,6 +166,33 @@ public final class TrueAsyncTest {
             $p->awaitAfterCancellation();
             echo Async\\await($c), '|', ($p->isClosed() ? 1 : 0), ($s->isClosed() ? 1 : 0);
             """),
+        new Case("scope-error-handler-suspends-in-failing-coroutine", """
+            $s = Async\\Scope::inherit()->asNotSafely();
+            $s->setExceptionHandler(function (Async\\Scope $owner, Async\\Coroutine $source, Throwable $e) use ($s) {
+                echo $owner === $s, $source === Async\\current_coroutine(), ':', $e->getMessage(), '|';
+                Async\\suspend(); echo 'resumed|';
+            });
+            $source = $s->spawn(function () { throw new RuntimeException('first'); });
+            Async\\suspend(); echo 'caller|'; Async\\suspend();
+            try { Async\\await($source); } catch (RuntimeException $e) { echo $e->getMessage(), '|'; }
+            $observed = $s->spawn(function () { throw new RuntimeException('observed'); });
+            try { Async\\await($observed); } catch (RuntimeException $e) { echo $e->getMessage(); }
+            """),
+        new Case("scope-cancellation-handler-suspends-and-keeps-source-error", """
+            $s = (new Async\\Scope())->asNotSafely();
+            $channel = new Async\\Channel();
+            $source = $s->spawn(function () use ($channel) {
+                try { $channel->recv(); }
+                catch (Async\\AsyncCancellation $e) { throw new RuntimeException('cleanup'); }
+            });
+            Async\\suspend(); $s->cancel();
+            $s->awaitAfterCancellation(function (Throwable $e, Async\\Scope $owner) use ($s, $source) {
+                echo $source === Async\\current_coroutine(), $owner === $s, ':', $e->getMessage(), '|';
+                Async\\suspend(); echo 'resumed|';
+            });
+            echo 'drained|';
+            try { Async\\await($source); } catch (RuntimeException $e) { echo $e->getMessage(); }
+            """),
         new Case("coroutine-result", """
             use function Async\\spawn;
             use function Async\\await;
@@ -493,12 +520,19 @@ public final class TrueAsyncTest {
                 "protect/007-protect_exception_in_closure.phpt", "protect/008-protect_with_exception.phpt",
                 "protect/009-protect_with_spawn.phpt", "protect/010-protect_with_await.phpt",
                 "scope/009-scope_dispose_basic.phpt",
+                "scope/010-scope_exception_handlers.phpt",
                 "scope/012-scope_dispose_after_timeout.phpt", "scope/022-scope_awaitCompletion_basic.phpt",
                 "scope/023-scope_awaitCompletion_timeout.phpt",
                 "scope/041-scope_awaitCompletion_marks_future_used.phpt",
+                "scope/043-scope_setExceptionHandler_replace.phpt",
                 "scope/044-scope_awaitAfterCancellation_not_cancelled.phpt",
                 "scope/045-scope_awaitCompletion_self_deadlock.phpt",
-                "scope/051-scope_awaitCompletion_deadlock_from_grandchild.phpt")) {
+                "scope/047-scope_exception_handler_fires.phpt",
+                "scope/048-scope_child_exception_handler_fires.phpt",
+                "scope/049-scope_awaitAfterCancellation_error_handler_fires.phpt",
+                "scope/050-scope_awaitAfterCancellation_no_handler_propagates.phpt",
+                "scope/051-scope_awaitCompletion_deadlock_from_grandchild.phpt",
+                "scope/054-scope_awaitAfterCancellation_error_handler_throws.phpt")) {
             String contents = Files.readString(upstream.resolve(path)).replace("\r\n", "\n");
             int start = contents.indexOf("--FILE--\n") + 9;
             int end = contents.indexOf("\n--EXPECT", start);

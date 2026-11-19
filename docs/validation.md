@@ -1,5 +1,8 @@
 # Verifica — 26 settembre 2026
 
+[Errori degli scope](validation/scope-errors-2026-11-19/README.md)
+verifica handler sospendibili e drenaggio e misura l'A/B cURL da freddo.
+
 [Chiusura degli scope](validation/scope-disposal-2026-11-19/README.md)
 verifica cancellazione, drenaggio e deadline contro TrueAsync su Windows e Linux.
 
