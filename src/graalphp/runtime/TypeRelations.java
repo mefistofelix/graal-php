@@ -217,7 +217,7 @@ public final class TypeRelations {
                     return switch (scalar) {
                         case "int" -> integer(value, origin);
                         case "float" -> Operations.number(value).doubleValue();
-                        case "string" -> Operations.string(value);
+                        case "string" -> value instanceof Double decimal ? Casts.floatingString(decimal) : Operations.string(value);
                         default -> Operations.truth(value);
                     };
                 } catch (PhpError invalid) {

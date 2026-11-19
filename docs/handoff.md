@@ -31,6 +31,20 @@ Riprendere da VALUE-01 e ASYNC-01 nel [TODO](../TODO.md), poi pubblicazione
 LOCAL→SHARED. PHP Fiber è fuori scope. I blocchi datati sotto conservano la
 copertura osservata al momento di ciascuna consegna.
 
+## Cast scalari e literal, 19 novembre
+
+Sono disponibili i quattro cast scalari canonici. Il lexer gestisce
+esponenti, forme con punto iniziale o finale ed escape binari nei literal
+interpolati. `__toString()` usa una normale continuation, rispetta
+`strict_types` del metodo e include il contratto implicito Stringable
+nelle classi con metodo pubblico. Passano 194 programmi in ogni
+combinazione di piattaforma e modalità.
+[Confronti e prodotti](validation/scalar-casts-2026-11-19/README.md).
+
+Restano da coprire cast array/oggetti, alias deprecati e diagnostica
+completa. ASYNC-01 prosegue con Traversable nei combinatori, finalizer,
+warning e TaskGroup/TaskSet.
+
 ## Buffer FFI posseduti, 19 novembre
 
 Gli array di byte C sono valori `FFI\CData` con lifetime nel grafo

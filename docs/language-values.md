@@ -1,5 +1,14 @@
 # Enum, match, clonazione, stringhe e strict_types
 
+Dal 19 novembre i cast espliciti `(int)`, `(float)`, `(bool)` e
+`(string)` seguono la pipeline ordinaria. I valori stringa usano
+il prefisso numerico PHP e preservano i byte nelle conversioni di
+ritorno a stringa. Il lexer riconosce esponenti e escape ottali ed
+esadecimali nei literal a doppie virgolette. La conversione di un
+oggetto può invocare `__toString()` e sospendersi. Le classi con un
+metodo pubblico conforme implementano implicitamente `Stringable`.
+[Verifica](validation/scalar-casts-2026-11-19/README.md).
+
 Blocco funzionale del 26 settembre 2026, successivo ai
 [contratti delle classi](class-contracts.md). Riprende l'implementazione enum
 rimasta non committata, corregge i casi emersi dal confronto differenziale e

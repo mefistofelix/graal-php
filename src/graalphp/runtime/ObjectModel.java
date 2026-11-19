@@ -413,6 +413,7 @@ public final class ObjectModel {
                     yield -number.doubleValue();
                 } finally { PhpValues.drop(operand); }
             }
+            case Ir.Cast cast -> Casts.apply(null, cast.kind(), constant(request, cast.value(), lexicalClass), null);
             case Ir.Binary binary -> {
                 Object left = constant(request, binary.left(), lexicalClass);
                 try {

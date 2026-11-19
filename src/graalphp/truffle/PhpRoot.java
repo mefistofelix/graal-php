@@ -391,6 +391,15 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
             } finally { PhpValues.drop(value); }
         }
     }
+    @Operation @ConstantOperand(type = String.class, name = "kind")
+    public static final class CastValue {
+        @Specialization
+        static Object run(VirtualFrame frame, String kind, Object value, @Cached IndirectCallNode call,
+                          @com.oracle.truffle.api.dsl.Bind BytecodeNode bytecode,
+                          @com.oracle.truffle.api.dsl.Bind("$bytecodeIndex") int bci) {
+            return Casts.apply(activation(frame).at(bytecode, bci), kind, value, call);
+        }
+    }
     @Operation public static final class ArgumentValue {
         @Specialization static Argument run(VirtualFrame frame, Object value) {
             if (!PhpValues.isReferenceResult(value)) return new Argument(value, null);

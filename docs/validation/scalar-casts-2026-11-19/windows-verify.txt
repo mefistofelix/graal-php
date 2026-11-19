@@ -1,0 +1,7 @@
+PASS: 95 integration scenarios (Truffle, async, reload, threads, NFI, host)
+PASS: 53 semantic scenarios + storage/lifetime invariants
+PASS: future result release, detached link and future/array cycle
+PASS: 256 ownership graphs, 1280 collection phases, exactly-once resource release
+PASS: 56 field-iteration ownership and ordering checks
+PASS: 52 attribute metadata and source-range checks
+PASS: 106 differential scenarios against TrueAsync 0.10.0

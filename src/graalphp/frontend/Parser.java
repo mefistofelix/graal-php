@@ -485,9 +485,14 @@ public final class Parser {
             if (accept("=>")) return new Yield(first, expression(0));
             return new Yield(null, first);
         }
-        if (accept("(")) { var value = expression(0); take(")"); return value; }
-        if (accept("!") || accept("-") || accept("+")) return new Unary(token.text, expression(11));
-        if (accept("++") || accept("--")) return new Increment(expression(11), token.text.equals("++") ? 1 : -1, true);
+        if (at("(")) {
+            String cast = scalarCast();
+            if (cast != null) { position += 3; return new Cast(cast, expression(13)); }
+            take("("); var value = expression(0); take(")"); return value;
+        }
+        if (accept("!")) return new Unary(token.text, expression(12));
+        if (accept("-") || accept("+")) return new Unary(token.text, expression(13));
+        if (accept("++") || accept("--")) return new Increment(expression(13), token.text.equals("++") ? 1 : -1, true);
         if (accept("[")) {
             var entries = new ArrayList<ArrayEntry>();
             if (!at("]")) do {
@@ -600,6 +605,30 @@ public final class Parser {
         };
     }
 
+    private String scalarCast() {
+        if (position + 2 >= tokens.size()) return null;
+        var opening = tokens.get(position);
+        var type = tokens.get(position + 1);
+        var closing = tokens.get(position + 2);
+        if (!closing.text.equals(")") || !horizontalSpace(opening.end, type.start)
+                || !horizontalSpace(type.end, closing.start)) return null;
+        return switch (type.text.toLowerCase(java.util.Locale.ROOT)) {
+            case "int" -> "int";
+            case "float" -> "float";
+            case "bool" -> "bool";
+            case "string" -> "string";
+            default -> null;
+        };
+    }
+
+    private boolean horizontalSpace(int start, int end) {
+        for (int index = start; index < end; index++) {
+            char item = text.charAt(index);
+            if (item != ' ' && item != '\t') return false;
+        }
+        return true;
+    }
+
     private String identifier() {
         var token = peek();
         if (!token.text.matches("[A-Za-z_\\\\][A-Za-z_0-9\\\\]*")) fail("Expected identifier, found " + token.text);
@@ -625,6 +654,38 @@ public final class Parser {
         throw new PhpError(source.getName() + ":" + line + ": " + message);
     }
 
+    private static final class QuotedLiteral {
+        final StringBuilder text = new StringBuilder();
+        java.io.ByteArrayOutputStream bytes;
+
+        void addByte(int value) {
+            if (bytes == null) bytes = new java.io.ByteArrayOutputStream();
+            flushText();
+            bytes.write(value);
+        }
+
+        Object take() {
+            if (bytes == null) {
+                String value = text.toString();
+                text.setLength(0);
+                return value;
+            }
+            flushText();
+            Object value = graalphp.runtime.PhpString.fromBytes(bytes.toByteArray());
+            bytes = null;
+            return value;
+        }
+
+        private void flushText() {
+            if (!text.isEmpty()) bytes.writeBytes(text.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            text.setLength(0);
+        }
+    }
+
+    private static boolean digit(char value) { return value >= '0' && value <= '9'; }
+    private static boolean octal(char value) { return value >= '0' && value <= '7'; }
+    private static int hex(char value) { return value < 128 ? Character.digit(value, 16) : -1; }
+
     private void lex() {
         int i = text.startsWith("<?php") ? 5 : 0;
         while (i < text.length()) {
@@ -637,52 +698,82 @@ public final class Parser {
             }
             int start = i;
             if (c == '\'' || c == '"') {
-                char quote = c; i++; var literal = new StringBuilder();
+                char quote = c; i++; var literal = new QuotedLiteral();
                 var parts = new ArrayList<Expression>();
                 while (i < text.length() && text.charAt(i) != quote) {
                     c = text.charAt(i++);
                     if (c == '\\' && i < text.length()) {
                         char escaped = text.charAt(i++);
-                        if (quote == '\'' && escaped != '\\' && escaped != '\'') literal.append('\\').append(escaped);
-                        else literal.append(switch (escaped) { case 'n' -> '\n'; case 'r' -> '\r'; case 't' -> '\t'; default -> escaped; });
+                        if (quote == '\'') {
+                            if (escaped != '\\' && escaped != '\'') literal.text.append('\\');
+                            literal.text.append(escaped);
+                        } else if (octal(escaped)) {
+                            int value = escaped - '0';
+                            for (int count = 1; count < 3 && i < text.length() && octal(text.charAt(i)); count++)
+                                value = (value << 3) + text.charAt(i++) - '0';
+                            literal.addByte(value);
+                        } else if (escaped == 'x' && i < text.length() && hex(text.charAt(i)) >= 0) {
+                            int value = hex(text.charAt(i++));
+                            if (i < text.length() && hex(text.charAt(i)) >= 0)
+                                value = (value << 4) + hex(text.charAt(i++));
+                            literal.addByte(value);
+                        } else {
+                            switch (escaped) {
+                                case 'n' -> literal.text.append('\n');
+                                case 'r' -> literal.text.append('\r');
+                                case 't' -> literal.text.append('\t');
+                                case 'v' -> literal.text.append('\013');
+                                case 'e' -> literal.text.append('\033');
+                                case 'f' -> literal.text.append('\f');
+                                case '\\', '"', '$' -> literal.text.append(escaped);
+                                default -> literal.text.append('\\').append(escaped);
+                            }
+                        }
                     } else if (quote == '"' && c == '$' && i < text.length()
                             && (Character.isLetter(text.charAt(i)) || text.charAt(i) == '_')) {
-                        parts.add(new Literal(literal.toString()));
-                        literal.setLength(0);
+                        parts.add(new Literal(literal.take()));
                         int nameStart = i;
                         while (i < text.length() && (Character.isLetterOrDigit(text.charAt(i)) || text.charAt(i) == '_')) i++;
                         parts.add(new Variable(text.substring(nameStart, i)));
                     } else if (quote == '"' && c == '{' && i < text.length() && text.charAt(i) == '$') {
                         int end = text.indexOf('}', i);
                         if (end < 0) throw new PhpError("Unterminated string interpolation");
-                        parts.add(new Literal(literal.toString()));
-                        literal.setLength(0);
+                        parts.add(new Literal(literal.take()));
                         var parser = new Parser(Source.newBuilder("php", text.substring(i, end), source.getName()).build());
                         parts.add(parser.expression(0));
                         if (!parser.at("<eof>")) throw new PhpError("Invalid string interpolation");
                         i = end + 1;
                     } else {
-                        literal.append(c);
+                        literal.text.append(c);
                     }
                 }
                 if (i == text.length()) throw new PhpError("Unterminated string");
-                Object value = literal.toString();
+                Object value = literal.take();
                 if (!parts.isEmpty()) {
-                    parts.add(new Literal(literal.toString()));
+                    parts.add(new Literal(value));
                     Expression interpolated = parts.getFirst();
                     for (int part = 1; part < parts.size(); part++) interpolated = new Binary(".", interpolated, parts.get(part));
                     value = interpolated;
                 }
                 tokens.add(new Token("<literal>", value, start, ++i)); continue;
             }
-            if (Character.isDigit(c)) {
-                while (i < text.length() && Character.isDigit(text.charAt(i))) i++;
-                boolean decimal = i < text.length() - 1 && text.charAt(i) == '.' && Character.isDigit(text.charAt(i + 1));
-                if (decimal) { i++; while (i < text.length() && Character.isDigit(text.charAt(i))) i++; }
+            if (digit(c) || c == '.' && i + 1 < text.length() && digit(text.charAt(i + 1))) {
+                while (i < text.length() && digit(text.charAt(i))) i++;
+                boolean decimal = i < text.length() && text.charAt(i) == '.';
+                if (decimal) { i++; while (i < text.length() && digit(text.charAt(i))) i++; }
+                if (i < text.length() && (text.charAt(i) == 'e' || text.charAt(i) == 'E')) {
+                    int exponent = i + 1;
+                    if (exponent < text.length() && (text.charAt(exponent) == '+' || text.charAt(exponent) == '-')) exponent++;
+                    if (exponent < text.length() && digit(text.charAt(exponent))) {
+                        i = exponent + 1;
+                        while (i < text.length() && digit(text.charAt(i))) i++;
+                        decimal = true;
+                    }
+                }
                 String number = text.substring(start, i);
                 Object value;
                 try { if (decimal) value = Double.parseDouble(number); else value = Long.parseLong(number); }
-                catch (NumberFormatException error) { throw new PhpError("Numeric literal out of supported range: " + number); }
+                catch (NumberFormatException overflow) { value = Double.parseDouble(number); }
                 tokens.add(new Token("<literal>", value, start, i)); continue;
             }
             if (c == '$' || c == '_' || c == '\\' || Character.isLetter(c)) {

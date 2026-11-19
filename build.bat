@@ -77,6 +77,7 @@ if /i "%~1"=="arrayaccess-test" (set "LANGUAGE_TEST=ArrayAccessTest" & goto lang
 if /i "%~1"=="weak-reference-test" (set "LANGUAGE_TEST=WeakReferenceTest" & goto language_test)
 if /i "%~1"=="destructor-test" (set "LANGUAGE_TEST=DestructorTest" & goto language_test)
 if /i "%~1"=="typed-property-reference-test" (set "LANGUAGE_TEST=TypedPropertyReferenceTest" & goto language_test)
+if /i "%~1"=="scalar-cast-test" (set "LANGUAGE_TEST=ScalarCastTest" & goto language_test)
 if /i "%~1"=="benchmark" ("%GRAALPHP_JDK%\bin\java.exe" -cp "build\classes;%DEPS%/*" graalphp.lab.Main --benchmark & exit /b !errorlevel!)
 "%GRAALPHP_JDK%\bin\java.exe" --enable-native-access=ALL-UNNAMED -jar build\graalphp.jar --version
 exit /b %errorlevel%

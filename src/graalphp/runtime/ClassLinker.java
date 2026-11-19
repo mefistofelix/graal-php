@@ -148,6 +148,17 @@ public final class ClassLinker {
             if (entry.getValue().abstractMethod()) requirements.add(entry.getValue());
         }
         methods.putAll(definition.methods());
+        var stringConversion = methods.get("__tostring");
+        if (stringConversion != null) {
+            String method = "Method " + definition.name() + "::__toString()";
+            if (stringConversion.shared()) throw failure(method + " cannot be static");
+            if (!stringConversion.function().parameters().isEmpty()) throw failure(method + " cannot take arguments");
+            if (!"string".equalsIgnoreCase(stringConversion.function().returnType()))
+                throw failure(method + " must take a return type of string");
+            if (definition.kind() == Ir.TypeKind.CLASS && stringConversion.visibility().equals("public")
+                    && (parent == null || !parent.isA("Stringable")) && interfaces.stream().noneMatch(type -> type.isA("Stringable")))
+                interfaces.add(request.type("Stringable"));
+        }
         if (parent != null) {
             requirements.addAll(parent.requirements);
             for (var entry : methods.entrySet()) {

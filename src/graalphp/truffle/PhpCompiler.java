@@ -80,10 +80,11 @@ public final class PhpCompiler {
         var methods = new java.util.LinkedHashMap<String, graalphp.runtime.ObjectModel.Method>();
         for (var method : declaration.methods()) {
             var value = method.function();
-            var compiled = function(language, source, path, value.name(), value.parameters(), value.body(),
-                    false, declaration.name(), value.returnType(), strictTypes, value.generator(), value.returnsReference(), declaration.kind() == Ir.TypeKind.TRAIT ? declaration.name() : null)
-                    .annotated(source, value, source.isInternal() && graalphp.runtime.IterationApi.tentativeType(declaration.name()));
             String key = value.name().toLowerCase(java.util.Locale.ROOT);
+            String returnType = key.equals("__tostring") && value.returnType() == null ? "string" : value.returnType();
+            var compiled = function(language, source, path, value.name(), value.parameters(), value.body(),
+                    false, declaration.name(), returnType, strictTypes, value.generator(), value.returnsReference(), declaration.kind() == Ir.TypeKind.TRAIT ? declaration.name() : null)
+                    .annotated(source, value, source.isInternal() && graalphp.runtime.IterationApi.tentativeType(declaration.name()));
             if (methods.putIfAbsent(key, new graalphp.runtime.ObjectModel.Method(compiled, method.shared(), method.visibility(), method.abstractMethod(), method.finalMethod())) != null) {
                 throw new PhpError("Cannot redeclare method " + declaration.name() + "::" + value.name());
             }
@@ -370,6 +371,10 @@ public final class PhpCompiler {
                 }
             }
             case Ir.Unary unary -> { b.beginUnary(unary.operator()); expression(unary.value()); b.endUnary(); }
+            case Ir.Cast cast -> {
+                Runnable conversion = () -> { b.beginCastValue(cast.kind()); expression(cast.value()); b.endCastValue(); };
+                if (cast.kind().equals("string")) afterFinalizers(() -> suspended(false, conversion)); else conversion.run();
+            }
             case Ir.Binary binary -> {
                 if (binary.operator().equals("&&") || binary.operator().equals("||")) {
                     b.beginConditional(); truth(binary.left());

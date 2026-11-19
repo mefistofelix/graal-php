@@ -17,6 +17,7 @@ public final class PhpContext implements AutoCloseable {
         if (builtinTypes == null) builtinTypes = PhpCompiler.builtinTypes(language,
                 com.oracle.truffle.api.source.Source.newBuilder("php", EnumApi.INTERFACES + IterationApi.TYPES + GeneratorApi.TYPES + ReflectionApi.TYPES + """
                     class stdClass {}
+                    interface Stringable { public function __toString(): string; }
                     final class WeakReference {
                         private function __construct() {}
                         public static function create(object $object): WeakReference { return __weakref_create($object); }

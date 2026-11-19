@@ -70,7 +70,7 @@ public final class Ir {
     public record Global(List<String> names) implements Form {}
     public record Break() implements Form {}
     public record Continue() implements Form {}
-    public sealed interface Expression permits Literal, Variable, Index, Assign, Binary, Unary, Call, ArrayLiteral,
+    public sealed interface Expression permits Literal, Variable, Index, Assign, Binary, Unary, Cast, Call, ArrayLiteral,
             CompoundAssign, Increment, Conditional, Coalesce, Property, StaticProperty, MethodCall, StaticCall,
             Construct, DynamicConstruct, DynamicCall, Closure, Constant, NamedArgument, UnpackArgument, ClassConstant, ClassName, InstanceOf, EnumCaseValue,
             Match, ThrowExpression, Clone, DynamicStaticCall, Yield, YieldFrom {}
@@ -106,6 +106,7 @@ public final class Ir {
     public record DynamicStaticCall(Expression type, String name, List<Expression> arguments) implements Expression {}
     public record Binary(String operator, Expression left, Expression right) implements Expression {}
     public record Unary(String operator, Expression value) implements Expression {}
+    public record Cast(String kind, Expression value) implements Expression {}
     public record Call(String name, List<Expression> arguments, boolean globalFallback) implements Expression {
         public Call(String name, List<Expression> arguments) { this(name, arguments, false); }
     }

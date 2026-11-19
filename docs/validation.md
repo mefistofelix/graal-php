@@ -1,5 +1,8 @@
 # Verifica — 26 settembre 2026
 
+[Cast scalari e literal](validation/scalar-casts-2026-11-19/README.md)
+verifica parsing, conversioni e chiamate Stringable sospendibili.
+
 [Buffer FFI posseduti](validation/ffi-buffers-2026-11-19/README.md)
 verifica ABI dei puntatori, copie binarie e rilascio dopo il drenaggio.
 

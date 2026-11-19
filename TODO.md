@@ -146,6 +146,10 @@ Compose e mobile restano in coda. Le misure SPL riguardano questo percorso.
   binari, limiti, chiamate e callback sync/async, GC e rilascio dopo drain.
   [Verifica](docs/validation/ffi-buffers-2026-11-19/README.md).
 
+- [x] Cast scalari canonici, literal con esponenti ed escape binari e
+  `__toString()` sospendibile con Stringable.
+  [Confronti](docs/validation/scalar-casts-2026-11-19/README.md).
+
 ## Prestazioni e memoria
 
 - [ ] **PERF-01 — Spiegare e ridurre il costo del p99.** L'A/B sullo stesso
