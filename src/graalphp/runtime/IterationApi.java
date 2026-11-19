@@ -309,7 +309,10 @@ public final class IterationApi {
             var state = new State(caller, location == null ? source : location, reference);
             caller.resources.add(state);
             return state;
-        } finally { if (location != null) PhpValues.drop(source); }
+        } finally {
+            if (source instanceof PhpValues.Location direct) direct.closeReceiver();
+            else if (location != null) PhpValues.drop(source);
+        }
     }
     @TruffleBoundary
     public static Object next(Activation caller, State state, PhpValues.Location value, PhpValues.Location key, IndirectCallNode call) {

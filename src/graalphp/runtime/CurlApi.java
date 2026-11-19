@@ -113,7 +113,7 @@ public final class CurlApi {
             handle.busy = false;
             caller.request.resources.remove(this);
             try { PhpValues.release(handle); }
-            finally { caller.request.heap.collectCycles(); }
+            finally { caller.request.heap.collectAutomatically(); }
         }
     }
     private static Object execute(Activation caller, Handle handle) {

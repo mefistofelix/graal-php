@@ -1,6 +1,6 @@
 # Attività aperte GraalPHP
 
-Aggiornato: 18 novembre 2026. Leggere prima [AGENTS.md](AGENTS.md) e
+Aggiornato: 19 novembre 2026. Leggere prima [AGENTS.md](AGENTS.md) e
 [handoff](docs/handoff.md). Questa lista è operativa; la copertura completa
 rimane in [design-coverage.md](docs/design-coverage.md). Le caselle completate
 certificano soltanto il risultato descritto, non un'intera milestone del design.
@@ -117,6 +117,10 @@ Compose e mobile restano in coda. Le misure SPL riguardano questo percorso.
   stringhe e la classe di eccezione del generatore per valore.
   [99 casi per modalità e A/B](docs/validation/reference-return-2026-11-18/README.md).
 
+- [x] WeakReference integrata nell'ownership PHP, raccolta esplicita e
+  automatica e lifetime dei receiver di proprietà attraverso sospensioni.
+  [Verifiche e A/B cURL](docs/validation/weak-reference-2026-11-19/README.md).
+
 ## Prestazioni e memoria
 
 - [ ] **PERF-01 — Spiegare e ridurre il costo del p99.** L'A/B sullo stesso
@@ -144,8 +148,10 @@ Compose e mobile restano in coda. Le misure SPL riguardano questo percorso.
 
 ## Fondamenta prioritarie
 
-- [ ] **VALUE-01 — Lifetime PHP completo.** Distruttori, weak reference,
-  resurrection, errori/shutdown e rilascio dei receiver temporanei. Restano
+- [ ] **VALUE-01 — Lifetime PHP completo.** Distruttori, resurrezione,
+  errori/shutdown, WeakMap e i receiver nelle restanti espressioni composte.
+  Il nucleo WeakReference, GC e receiver è descritto nel
+  [contratto](docs/object-lifetime.md). Restano
   riferimenti a proprietà tipizzate e stringhe binarie nelle restanti coercizioni. Chiavi
   binarie e offset byte-oriented sono ora coperti dal blocco valori. Verificare
   ordine osservabile contro PHP 8.6 e invarianti dei cicli anche nelle sospensioni.

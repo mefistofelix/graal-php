@@ -44,6 +44,7 @@ public final class IntegrationTest {
             $easy = curl_init('unsupported-scheme://localhost/');
             curl_setopt($easy, CURLOPT_RETURNTRANSFER, true);
             cycle($easy);
+            gc_collect_cycles();
             echo curl_exec($easy) === false, ':', curl_errno($easy);
             """, "1:1");
         check("nested continuations, array lifetime and finally", """

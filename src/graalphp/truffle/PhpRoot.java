@@ -36,16 +36,19 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
         @Specialization static Object run(VirtualFrame frame, PhpValues.Location location) {
             try { return activation(frame).track(PhpValues.own(location.read())); }
             catch (java.util.NoSuchElementException error) { throw new PhpError(error.getMessage()); }
+            finally { location.closeReceiver(); }
         }
     }
     @Operation public static final class QuietRead {
         @Specialization static Object run(VirtualFrame frame, PhpValues.Location location) {
-            return activation(frame).track(PhpValues.own(location.readOrNull()));
+            try { return activation(frame).track(PhpValues.own(location.readOrNull())); }
+            finally { location.closeReceiver(); }
         }
     }
     @Operation public static final class ProbeRead {
         @Specialization static Object run(VirtualFrame frame, PhpValues.Location location) {
-            return activation(frame).track(PhpValues.own(location.probe()));
+            try { return activation(frame).track(PhpValues.own(location.probe())); }
+            finally { location.closeReceiver(); }
         }
     }
     @Operation @ConstantOperand(type = String.class, name = "name")
@@ -53,7 +56,8 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
         @Specialization static PhpValues.Location run(VirtualFrame frame, String name, Object receiver,
                 @com.oracle.truffle.api.dsl.Bind BytecodeNode bytecode, @com.oracle.truffle.api.dsl.Bind("$bytecodeIndex") int bci) {
             var caller = activation(frame).at(bytecode, bci);
-            return ObjectModel.property(caller, receiver, name).at(caller);
+            try { return ObjectModel.property(caller, receiver, name).at(caller).withReceiver(receiver); }
+            catch (RuntimeException error) { PhpValues.drop(receiver); throw error; }
         }
     }
     @Operation @ConstantOperand(type = String.class, name = "type") @ConstantOperand(type = String.class, name = "name")
@@ -142,7 +146,10 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
         }
         @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
         static Object checked(Activation caller, Object value) {
-            if (value instanceof PhpValues.Location location) return caller.track(location.referenceResult());
+            if (value instanceof PhpValues.Location location) {
+                try { return caller.track(location.referenceResult()); }
+                finally { location.closeReceiver(); }
+            }
             if (!PhpValues.isReferenceResult(value))
                 Diagnostics.origin(caller).notice("Only variable references should be returned by reference");
             return value;
@@ -152,16 +159,19 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
     public static final class Increment {
         @Specialization @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
         static Object run(int delta, boolean before, PhpValues.Location location) {
-            location.checkIncrement();
-            Object previous = location.read();
-            Object value = Operations.binary("+", previous, (long) delta);
-            location.set(value);
-            return before ? value : previous;
+            try {
+                location.checkIncrement();
+                Object previous = location.read();
+                Object value = Operations.binary("+", previous, (long) delta);
+                location.set(value);
+                return before ? value : previous;
+            } finally { location.closeReceiver(); }
         }
     }
-    @Operation public static final class ReadForAssignOperation {
-        @Specialization static Object run(VirtualFrame frame, PhpValues.Location location) {
-            return activation(frame).track(PhpValues.own(location.readForAssignOperation()));
+    @Operation @ConstantOperand(type = boolean.class, name = "coalesce")
+    public static final class ReadForAssignOperation {
+        @Specialization static Object run(VirtualFrame frame, boolean coalesce, PhpValues.Location location) {
+            return activation(frame).track(PhpValues.own(coalesce ? location.readOrNull() : location.readForAssignOperation()));
         }
     }
     @Operation @ConstantOperand(type = String.class, name = "operator")
@@ -273,10 +283,12 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
     @Operation
     public static final class Write {
         @Specialization static Object run(PhpValues.Location location, Object value) {
-            Object result = location.write(PhpValues.unwrap(value));
-            if (result == PhpValues.unwrap(value)) return value;
-            PhpValues.drop(value);
-            return result;
+            try {
+                Object result = location.write(PhpValues.unwrap(value));
+                if (result == PhpValues.unwrap(value)) return value;
+                PhpValues.drop(value);
+                return result;
+            } finally { location.closeReceiver(); }
         }
     }
     @Operation
@@ -296,8 +308,15 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
             try {
                 destination.bind(location);
                 return caller.track(PhpValues.own(destination.read()));
-            } finally { PhpValues.drop(source); }
+            } finally {
+                destination.closeReceiver();
+                location.closeReceiver();
+                PhpValues.drop(source);
+            }
         }
+    }
+    @Operation public static final class CloseLocation {
+        @Specialization static void run(PhpValues.Location location) { location.closeReceiver(); }
     }
     @Operation public static final class Retain {
         @Specialization static Object run(VirtualFrame frame, Object value) {
@@ -384,7 +403,10 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
     }
     @Operation public static final class ArgumentLocation {
         @Specialization static Argument run(VirtualFrame frame, PhpValues.Location location) {
-            return new Argument(activation(frame).track(PhpValues.own(location.read())), location);
+            try {
+                return new Argument(activation(frame).track(PhpValues.own(location.read())), location,
+                        null, false, location.takeReceiver());
+            } catch (RuntimeException error) { location.closeReceiver(); throw error; }
         }
     }
     @Operation public static final class MaterializeUnpack {
@@ -493,9 +515,13 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
                     }
                     var item = (ArrayItem) object;
                     var element = item.key == Append.KEY ? array.append() : array.element(PhpValues.unwrap(item.key));
-                    if (item.reference) element.bind((PhpValues.Location) item.value);
-                    else element.set(PhpValues.unwrap(item.value));
-                    PhpValues.drop(item.key); PhpValues.drop(item.value);
+                    try {
+                        if (item.reference) element.bind((PhpValues.Location) item.value);
+                        else element.set(PhpValues.unwrap(item.value));
+                    } finally {
+                        if (item.value instanceof PhpValues.Location location) location.closeReceiver();
+                        PhpValues.drop(item.key); PhpValues.drop(item.value);
+                    }
                 }
                 return activation.track(PhpValues.own(array.read()));
             }
@@ -510,7 +536,10 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
         static boolean run(String type, Object value) { return value instanceof PhpError error && error.matches(type); }
     }
     @Operation public static final class Unset {
-        @Specialization static void run(PhpValues.Location location) { location.unset(); }
+        @Specialization static void run(PhpValues.Location location) {
+            try { location.unset(); }
+            finally { location.closeReceiver(); }
+        }
     }
     @Operation @ConstantOperand(type = String.class, name = "name")
     public static final class Global {
@@ -523,6 +552,7 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
         @Specialization static Object run(VirtualFrame frame) {
             var caller = activation(frame);
             caller.task.checkCancellation();
+            caller.request.heap.collectAutomatically();
             if (caller.request.hosted && !caller.synchronousCallback && --caller.task.checkpoints == 0) {
                 caller.task.checkpoints = 128;
                 return new Scheduler.Cooperate();

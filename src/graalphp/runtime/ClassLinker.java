@@ -32,7 +32,8 @@ public final class ClassLinker {
     public static Linked link(Request request, Definition definition) {
         RuntimeClass parent = definition.parent() == null ? null : request.type(definition.parent());
         if (parent != null && (parent.definition.kind() != Ir.TypeKind.CLASS || parent.definition.finalType()))
-            throw failure("Class " + definition.name() + " cannot extend " + parent.definition.name());
+            throw failure("Class " + definition.name() + " cannot extend "
+                    + (parent.definition.finalType() ? "final class " : "") + parent.definition.name());
         var interfaces = new ArrayList<RuntimeClass>();
         var interfaceNames = new java.util.HashSet<String>();
         for (String name : definition.interfaces()) {

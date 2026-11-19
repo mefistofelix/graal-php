@@ -328,16 +328,8 @@ public final class PhpCompiler {
             case Ir.Index index -> offsetRead(index);
             case Ir.Assign assignment -> {
                 if (!assignment.reference() && assignment.target() instanceof Ir.Index index) offsetAssign(index, assignment.value());
-                else if (assignment.reference()) {
-                    if (assignment.target() instanceof Ir.Index index) offsetBind(index, assignment.value());
-                    else {
-                        b.beginBind();
-                        location(assignment.target());
-                        referenceOperand(assignment.value());
-                        b.endBind();
-                    }
-                }
-                else { b.beginWrite(); location(assignment.target()); expression(assignment.value()); b.endWrite(); }
+                else if (assignment.target() instanceof Ir.Index index) offsetBind(index, assignment.value());
+                else assign(assignment);
             }
             case Ir.CompoundAssign assignment -> {
                 if (assignment.target() instanceof Ir.Index index) {
@@ -861,22 +853,76 @@ public final class PhpCompiler {
     }
     private void compound(Ir.CompoundAssign assignment) {
         var b = builder;
-        b.beginBlock(); var target = b.createLocal(); var old = b.createLocal();
-        b.beginStoreLocal(target); location(assignment.target()); b.endStoreLocal();
+        if (assignment.target() instanceof Ir.Property property && !assignment.operator().equals("??")) {
+            if (property.object() instanceof Ir.Variable) {
+                b.beginBlock(); var value = b.createLocal();
+                b.beginStoreLocal(value); expression(assignment.value()); b.endStoreLocal();
+                withTarget(property, target -> compound(assignment, target, () -> b.emitLoadLocal(value)));
+                b.endBlock();
+            } else {
+                withTarget(property, target -> {
+                    b.beginBlock(); var value = b.createLocal();
+                    b.beginStoreLocal(value); expression(assignment.value()); b.endStoreLocal();
+                    compound(assignment, target, () -> b.emitLoadLocal(value));
+                    b.endBlock();
+                });
+            }
+        } else withTarget(assignment.target(), target -> compound(assignment, target, () -> expression(assignment.value())));
+    }
+    private void assign(Ir.Assign assignment) {
+        var b = builder;
+        Runnable operand = () -> {
+            if (assignment.reference()) referenceOperand(assignment.value()); else expression(assignment.value());
+        };
+        if (assignment.target() instanceof Ir.Property property && property.object() instanceof Ir.Variable) {
+            b.beginBlock(); var value = b.createLocal();
+            b.beginStoreLocal(value); operand.run(); b.endStoreLocal();
+            assign(assignment.reference(), () -> location(property), () -> b.emitLoadLocal(value));
+            b.endBlock();
+        } else if (assignment.target() instanceof Ir.Property) {
+            withTarget(assignment.target(), target -> assign(assignment.reference(), () -> b.emitLoadLocal(target), operand));
+        } else assign(assignment.reference(), () -> location(assignment.target()), operand);
+    }
+    private void assign(boolean reference, Runnable target, Runnable value) {
+        var b = builder;
+        if (reference) {
+            b.beginBind(); target.run(); value.run(); b.endBind();
+        } else {
+            b.beginWrite(); target.run(); value.run(); b.endWrite();
+        }
+    }
+    private void withTarget(Ir.Expression expression, java.util.function.Consumer<BytecodeLocal> operation) {
+        var b = builder;
+        b.beginBlock(); var target = b.createLocal();
+        b.beginStoreLocal(target); location(expression); b.endStoreLocal();
+        if (expression instanceof Ir.Property) {
+            var result = b.createLocal();
+            b.beginTryFinally(() -> {
+                b.beginCloseLocation(); b.emitLoadLocal(target); b.endCloseLocation();
+            });
+            b.beginStoreLocal(result); operation.accept(target); b.endStoreLocal();
+            b.endTryFinally();
+            b.emitLoadLocal(result);
+        } else operation.accept(target);
+        b.endBlock();
+    }
+    private void compound(Ir.CompoundAssign assignment, BytecodeLocal target, Runnable value) {
+        var b = builder;
+        b.beginBlock(); var old = b.createLocal();
         b.beginStoreLocal(old);
-        if (assignment.operator().equals("??")) b.beginQuietRead(); else b.beginReadForAssignOperation();
+        b.beginReadForAssignOperation(assignment.operator().equals("??"));
         b.emitLoadLocal(target);
-        if (assignment.operator().equals("??")) b.endQuietRead(); else b.endReadForAssignOperation();
+        b.endReadForAssignOperation();
         b.endStoreLocal();
         if (assignment.operator().equals("??")) {
             b.beginConditional(); b.beginNonNull(); b.emitLoadLocal(old); b.endNonNull();
             b.emitLoadLocal(old);
-            b.beginWrite(); b.emitLoadLocal(target); expression(assignment.value()); b.endWrite();
+            b.beginWrite(); b.emitLoadLocal(target); value.run(); b.endWrite();
             b.endConditional();
         } else {
             b.beginWrite(); b.emitLoadLocal(target);
             b.beginCompoundValue(assignment.operator()); b.emitLoadLocal(target); b.emitLoadLocal(old);
-            expression(assignment.value()); b.endCompoundValue();
+            value.run(); b.endCompoundValue();
             b.endWrite();
         }
         b.endBlock();

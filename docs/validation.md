@@ -1,5 +1,8 @@
 # Verifica — 26 settembre 2026
 
+[WeakReference e GC](validation/weak-reference-2026-11-19/README.md)
+confronta il corpus Windows/Linux e l'A/B cURL.
+
 [Ritorni per riferimento](validation/reference-return-2026-11-18/README.md)
 confronta Windows/Linux e misura a freddo chiamate e accessi annidati.
 

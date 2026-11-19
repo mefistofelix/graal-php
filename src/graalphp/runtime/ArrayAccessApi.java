@@ -45,15 +45,20 @@ public final class ArrayAccessApi {
                     : source instanceof PhpValues.Location variable ? variable
                     : PhpValues.isReferenceResult(source) ? PhpValues.referenceLocation(source) : null;
             if (parent != null) {
-                Object pin = view != null ? view.owner : source instanceof PhpValues.Location ? null : source;
-                Object raw = parent.readOrNull();
-                if (implementsArrayAccess(raw)) {
-                    var access = new Access(caller, null, PhpValues.own(raw), key, true);
+                Object pin = view != null ? view.owner : source instanceof PhpValues.Location ? parent.takeReceiver() : source;
+                try {
+                    Object raw = parent.readOrNull();
+                    if (implementsArrayAccess(raw)) {
+                        var access = new Access(caller, null, PhpValues.own(raw), key, true);
+                        PhpValues.drop(pin);
+                        return access;
+                    }
+                    var location = key == APPEND ? parent.deferredAppend() : parent.element(PhpValues.unwrap(key));
+                    return new Access(caller, location.at(caller), pin, key, false);
+                } catch (RuntimeException error) {
                     PhpValues.drop(pin);
-                    return access;
+                    throw error;
                 }
-                var location = key == APPEND ? parent.deferredAppend() : parent.element(PhpValues.unwrap(key));
-                return new Access(caller, location.at(caller), pin, key, false);
             }
             Object raw = PhpValues.unwrap(source);
             return new Access(caller, null, source, key, implementsArrayAccess(raw));

@@ -95,7 +95,7 @@ public final class Execution {
     public static final class Request implements AutoCloseable {
         public final PhpContext context;
         public final CodeRepository.Generation generation;
-        public final PhpValues.Heap heap = new PhpValues.Heap();
+        public final PhpValues.Heap heap = new PhpValues.Heap(true);
         public final PhpValues.Scope globals = new PhpValues.Scope(heap);
         public final Map<String, PhpValues.Location> variables = new HashMap<>();
         public final Map<String, Function> functions = new HashMap<>();
@@ -228,7 +228,10 @@ public final class Execution {
             }
             resources.clear();
             try { scheduler.close(); }
-            finally { try { autoload.close(); } finally { globals.close(); } }
+            finally {
+                try { autoload.close(); }
+                finally { try { globals.close(); } finally { heap.finish(); } }
+            }
             if (failure != null) throw failure;
         }
     }

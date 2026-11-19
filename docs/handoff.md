@@ -1,6 +1,6 @@
 # Stato di consegna GraalPHP
 
-Aggiornato: **18 novembre 2026**. Punto d'ingresso: [AGENTS.md](../AGENTS.md).
+Aggiornato: **19 novembre 2026**. Punto d'ingresso: [AGENTS.md](../AGENTS.md).
 Questo documento permette di riprendere senza la chat; [TODO.md](../TODO.md)
 contiene il lavoro aperto. Gli hash e i risultati sono quelli dell'ultima
 campagna indicata, non una garanzia che ogni futuro checkout vi corrisponda.
@@ -30,6 +30,24 @@ di quella campagna comprende 1.572.864 payload verificati su Windows.
 Riprendere da VALUE-01 e ASYNC-01 nel [TODO](../TODO.md), poi pubblicazione
 LOCAL→SHARED. PHP Fiber è fuori scope. I blocchi datati sotto conservano la
 copertura osservata al momento di ciascuna consegna.
+
+## Riferimenti deboli e raccolta, 19 novembre
+
+WeakReference usa il grafo degli owner PHP e conserva l'identità
+dell'istanza debole finché rimane viva. Sono disponibili raccolta esplicita
+e controllo di quella automatica. Le location di proprietà rilasciano il
+receiver dopo l'operazione. Con la policy a soglia un multi cURL ciclico
+viene liberato quando il ciclo viene effettivamente raccolto.
+
+115 casi passano in ciascuna combinazione JVM/Native Image/interprete su
+Windows e Linux. Nel benchmark cURL Windows con 1.000 sospese il p99
+passa da 8,07 a 4,85 ms e il picco RSS da 178,1 a 152,8 MiB. A 10.000
+throughput e p99 sono simili, con un picco RSS più alto.
+[Rapporto](validation/weak-reference-2026-11-19/README.md).
+
+Proseguire con distruttori, resurrezione e shutdown secondo il
+[contratto di lifetime](object-lifetime.md). La radice del finalizzando deve
+restare viva attraverso la continuation e il callback deve poter sospendere.
 
 ## Ritorni per riferimento e offset, 18 novembre
 

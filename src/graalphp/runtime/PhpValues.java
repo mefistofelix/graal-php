@@ -154,7 +154,7 @@ public final class PhpValues {
         public void close() {
             variables.forEach(location -> location.local.clear());
             variables.clear();
-            heap.collectCycles();
+            heap.collectAutomatically();
         }
     }
 
@@ -164,10 +164,27 @@ public final class PhpValues {
         private final Slot local;
         private final Location parent;
         private Object key;
+        private Object receiver;
         private boolean readonly;
         private Diagnostics.Origin origin;
         public Location at(Execution.Activation caller) { origin = Diagnostics.origin(caller); return this; }
         public Location freeze() { readonly = true; return this; }
+        public Location withReceiver(Object value) {
+            receiver = value instanceof Owned ? value : null;
+            return this;
+        }
+
+        public Object takeReceiver() {
+            var root = this;
+            while (root.parent != null) root = root.parent;
+            Object owner = root.receiver;
+            root.receiver = null;
+            return owner;
+        }
+
+        public void closeReceiver() {
+            if (receiver != null || parent != null) drop(takeReceiver());
+        }
 
         private Location(Slot local, Location parent, Object key) {
             this.local = local;
@@ -871,7 +888,7 @@ public final class PhpValues {
         var heap = node.heap;
 
         if (--node.owners > 0) {
-            heap.candidates.add(node);
+            heap.suspect(node);
             return;
         }
         var pending = new ArrayDeque<HeapNode>();
@@ -879,9 +896,10 @@ public final class PhpValues {
         while (!pending.isEmpty()) {
             var dead = pending.removeLast();
             heap.candidates.remove(dead);
+            heap.clearWeak(dead);
             dead.children(child -> {
                 if (--child.owners == 0) pending.add(child);
-                else heap.candidates.add(child);
+                else heap.suspect(child);
             });
             dead.discard();
         }
@@ -900,15 +918,86 @@ public final class PhpValues {
 
     /** Trial deletion: internal graph edges do not keep an unreachable cycle alive. */
     public static final class Heap {
-        Set<HeapNode> candidates = Collections.newSetFromMap(new IdentityHashMap<>());
+        private static final int INITIAL_PHP_THRESHOLD = 10_001;
+        private final int cycleThreshold;
+        private boolean automatic = true;
+        private boolean collecting;
+        private boolean collectionDue;
+        private WeakRegistry weak;
+        private IdentityHashMap<HeapNode, Boolean> candidates = new IdentityHashMap<>();
         long storageCopies;
         long liveArrays;
         long liveCells;
         public long liveObjects;
         private long cycleEpoch;
 
+        public Heap() { this(false); }
+        Heap(boolean guest) { cycleThreshold = guest ? INITIAL_PHP_THRESHOLD : 1; }
+
+        boolean automaticCollection() { return automatic; }
+        void automaticCollection(boolean enabled) { automatic = enabled; }
+
+        private void suspect(HeapNode node) {
+            if (candidates.put(node, Boolean.TRUE) == null && candidates.size() >= cycleThreshold)
+                collectionDue = true;
+        }
+
+        public void collectAutomatically() {
+            if (automatic && collectionDue) collectAutomaticBatch();
+        }
+
+        @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+        private void collectAutomaticBatch() {
+            if (candidates.size() >= cycleThreshold) collectCycles();
+            else collectionDue = false;
+        }
+
+        PhpObject weakReference(Object targetValue, ObjectModel.RuntimeClass type) {
+            var target = managed(targetValue);
+            if (target == null || target.heap != this || !(target instanceof TruffleObject))
+                throw new PhpError("Error", "WeakReference requires an object managed by this PHP heap");
+            if (weak == null) weak = new WeakRegistry();
+            var reference = weak.byTarget.get(target);
+            if (reference != null) return reference;
+            reference = new PhpObject(this, type);
+            weak.byTarget.put(target, reference);
+            weak.byReference.put(reference, target);
+            return reference;
+        }
+
+        Object weakTarget(PhpObject reference) {
+            return weak == null ? null : weak.byReference.get(reference);
+        }
+
+        private void clearWeak(HeapNode node) {
+            if (weak == null || !(node instanceof TruffleObject)) return;
+            var reference = weak.byTarget.remove(node);
+            if (reference != null) weak.byReference.remove(reference);
+            if (node instanceof PhpObject object) {
+                var target = weak.byReference.remove(object);
+                if (target != null) weak.byTarget.remove(target);
+            }
+        }
+
+        void finish() {
+            try { collectCycles(); }
+            finally { weak = null; }
+        }
+
         public int collectCycles() {
-            if (candidates.isEmpty()) return 0;
+            return collectCycles(false);
+        }
+
+        int collectGuestCycles() { return collectCycles(true); }
+
+        private int collectCycles(boolean countGuestValues) {
+            if (collecting || candidates.isEmpty()) return 0;
+            collecting = true;
+            try { return collectGraph(countGuestValues); }
+            finally { collecting = false; }
+        }
+
+        private int collectGraph(boolean countGuestValues) {
             long epoch = ++cycleEpoch;
             var graph = new ArrayList<HeapNode>(candidates.size());
             Consumer<HeapNode> discover = node -> {
@@ -918,9 +1007,10 @@ public final class PhpValues {
                 node.cycleLive = false;
                 graph.add(node);
             };
-            candidates.forEach(discover);
+            candidates.keySet().forEach(discover);
             // Do not scan a table sized for a past coroutine peak on every scope close.
-            candidates = Collections.newSetFromMap(new IdentityHashMap<>());
+            candidates = new IdentityHashMap<>();
+            collectionDue = false;
             // Scratch counts belong to the nodes: each graph edge is visited without
             // allocating boxed counts or repeatedly scanning identity hash tables.
             for (int i = 0; i < graph.size(); i++) graph.get(i).children(discover);
@@ -935,6 +1025,7 @@ public final class PhpValues {
             while (!pending.isEmpty()) {
                 pending.removeLast().children(markLive);
             }
+            if (weak != null) for (var node : graph) if (!node.cycleLive) clearWeak(node);
             for (var node : graph) if (!node.cycleLive) {
                 node.children(child -> {
                     if (child.cycleLive) release(child);
@@ -944,9 +1035,15 @@ public final class PhpValues {
             for (var node : graph) if (!node.cycleLive) {
                 node.owners = 0;
                 node.discard();
-                collected++;
+                if (!countGuestValues || node instanceof PhpArray || node instanceof TruffleObject) collected++;
             }
             return collected;
         }
+    }
+
+    /** These indexes support identity and invalidation. Neither index is an ownership edge. */
+    private static final class WeakRegistry {
+        private final IdentityHashMap<HeapNode, PhpObject> byTarget = new IdentityHashMap<>();
+        private final IdentityHashMap<PhpObject, HeapNode> byReference = new IdentityHashMap<>();
     }
 }

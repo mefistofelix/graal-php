@@ -140,6 +140,8 @@ public final class ObjectModel {
     @TruffleBoundary
     public static Object create(Activation caller, String name) {
         if (name.equalsIgnoreCase("Generator")) throw new PhpError("Error", "The \"Generator\" class is reserved for internal use and cannot be manually instantiated");
+        if (name.equalsIgnoreCase("WeakReference"))
+            throw new PhpError("Error", "Direct instantiation of WeakReference is not allowed, use WeakReference::create instead");
         Object builtin = ReflectionApi.allocate(name);
         if (builtin != AsyncApi.UNHANDLED) return builtin;
         builtin = AsyncApi.allocate(caller, name);
@@ -164,7 +166,8 @@ public final class ObjectModel {
             if (!(raw instanceof PhpValues.PhpObject object)) throw new PhpError("Error", "__clone method called on non-object");
             if (object.descriptor instanceof GeneratorApi.State)
                 throw new PhpError("Error", "Trying to clone an uncloneable object of class Generator");
-            if (object.descriptor instanceof RuntimeClass type && type.definition.kind() == Ir.TypeKind.ENUM)
+            if (object.descriptor instanceof RuntimeClass type
+                    && (type.definition.kind() == Ir.TypeKind.ENUM || type.definition.name().equals("WeakReference")))
                 throw new PhpError("Error", "Trying to clone an uncloneable object of class " + type.definition.name());
             return caller.track(PhpValues.own(object.copyObject()));
         } finally { PhpValues.drop(value); }

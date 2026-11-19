@@ -1,0 +1,5 @@
+SHA-256                                                               Bytes  File
+667c3833fcd94ce7817e8e5dc460af0717ab72470048079feb559d95131fa0e7    94019584  graalphp.exe
+284faa0a9dfd2026b25593d115ed09d44c8fc3758e67ad80c8e4496b70d6b7a7      941053  graalphp.jar
+de97d0c045ee7645bbbc226f237d0f6d30ccd70ecbdfaf8710036c4cac788dcb    96733992  graalphp-linux-x64
+0afc5e45274fcd767f818b8a1dc6163c049fff63421eff115b5213f16a0af0c7    93970432  weak-reference-baseline.exe

@@ -106,6 +106,7 @@ public final class GeneratorApi {
                 Object key = yielded.automatic() ? nextKey++ : PhpValues.unwrap(yielded.key());
                 if (!yielded.automatic() && key instanceof Long number && number >= nextKey)
                     nextKey = number == Long.MAX_VALUE ? Long.MAX_VALUE : number + 1;
+                if (currentReference != null) currentReference.closeReceiver();
                 Object rawValue;
                 if (yielded.reference() && yielded.value() instanceof PhpValues.Location location) {
                     currentReference = location;
@@ -235,6 +236,7 @@ public final class GeneratorApi {
             atYield = false;
             current().set(null);
             key().set(null);
+            if (currentReference != null) currentReference.closeReceiver();
             currentReference = null;
             boolean forcedClose = closed && failure != null && !failure.catchable
                     && failure.type.equals("GeneratorExit");

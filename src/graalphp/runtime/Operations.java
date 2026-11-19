@@ -198,6 +198,21 @@ public final class Operations {
         service = SqliteApi.function(activation, name, values);
         if (service != AsyncApi.UNHANDLED) return service;
         switch (name) {
+            case "gc_collect_cycles", "gc_enabled", "gc_enable", "gc_disable": {
+                CallArguments.builtin(name, args, List.of(), 0);
+                var heap = activation.request.heap;
+                if (name.equals("gc_collect_cycles")) return (long) heap.collectGuestCycles();
+                if (name.equals("gc_enabled")) return heap.automaticCollection();
+                heap.automaticCollection(name.equals("gc_enable"));
+                return null;
+            }
+            case "__weakref_create": {
+                return activation.track(PhpValues.own(activation.request.heap.weakReference(values[0],
+                        activation.request.type("WeakReference"))));
+            }
+            case "__weakref_get": {
+                return activation.track(PhpValues.own(activation.request.heap.weakTarget((PhpValues.PhpObject) values[0])));
+            }
             case "__mutex_wait": {
                 var mutex = (AsyncMutex) values[0];
                 return mutex.acquire(activation.task);
