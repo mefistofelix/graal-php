@@ -31,6 +31,23 @@ Riprendere da VALUE-01 e ASYNC-01 nel [TODO](../TODO.md), poi pubblicazione
 LOCAL→SHARED. PHP Fiber è fuori scope. I blocchi datati sotto conservano la
 copertura osservata al momento di ciascuna consegna.
 
+## Distruttori e resurrezione, 19 novembre
+
+Il runtime accoda i finalizzandi quando il grafo perde l'ultimo owner o
+quando il trial deletion individua un ciclo. I callback passano per le
+continuation e tengono viva la radice fino al ritorno. Sono verificati
+resurrezione, weak reference, visibilità privata, fallimento di costruzione,
+eccezioni da unset, cicli e shutdown ordinario. 99 programmi passano in
+ognuna delle sei modalità Windows/Linux. I benchmark includono il maggior
+p99 Windows nella prova cURL con 1.000 coroutine sospese.
+[Evidenze](validation/destructor-2026-11-19/README.md).
+
+Restano aperti shutdown fatali e hosted, ordine completo tra finalizzazioni
+concorrenti e altri punti di rilascio. La prossima base del modello valori è
+applicare alla cella reference i vincoli delle proprietà tipizzate che la
+possiedono, con rimozione del vincolo su unset o scarto dell'oggetto.
+[Contratto di lifetime](object-lifetime.md).
+
 ## Riferimenti deboli e raccolta, 19 novembre
 
 WeakReference usa il grafo degli owner PHP e conserva l'identità

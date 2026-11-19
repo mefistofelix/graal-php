@@ -755,6 +755,21 @@ public final class Scheduler implements AutoCloseable {
         else enqueue(new Resume(task, ticket, value));
     }
 
+    void finishObjects() {
+        var finalizers = request.heap.finalizers;
+        if (finalizers == null || closed || pending() || rootScope.cancelled || request.fatalFailure != null) return;
+        finalizers.scheduleShutdown();
+        if (!finalizers.ready) return;
+        var function = request.context.asyncFunction("drain_object_finalizers");
+        var scope = newScope(null);
+        do {
+            var cleanup = spawn(new ObjectModel.Invocation(function, null, null, null), new Argument[0],
+                    new ContextNode(null, java.util.Map.of()), false, scope);
+            runUntil(cleanup);
+            finalizers.scheduleShutdown();
+        } while (finalizers.ready);
+    }
+
     @Override public void close() {
         if (closed) return;
         closed = true;

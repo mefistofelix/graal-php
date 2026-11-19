@@ -71,12 +71,12 @@ Il prossimo lavoro sul percorso reference riguarda le regole delle proprietà
 tipizzate e i casi di modifica indiretta sugli offset restituiti per valore.
 [Contratto ArrayAccess](arrayaccess.md).
 
-Il distruttore va eseguito sul dispatcher proprietario al punto semantico
-di rilascio. Prima di chiamare codice PHP completare la transizione dello
-slot che ha causato il rilascio. I casi di resurrezione e cicli richiedono
-una radice temporanea mentre il distruttore gira e una nuova verifica di
-raggiungibilità prima di liberare il backing. Confrontare ordine, errori e
-shutdown con il binario PHP 8.6.
+Il collector accoda i distruttori mantenendo una radice temporanea. Le
+operazioni guest drenano la coda dopo la transizione dello slot sul
+dispatcher proprietario. Il ciclo viene riesaminato dopo i callback, così
+la resurrezione può preservare identità e riferimenti deboli.
+Restano da verificare gli altri errori e punti semantici di rilascio.
+[Contratto di lifetime](object-lifetime.md).
 
 ## Sequenza di integrazione
 

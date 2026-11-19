@@ -1,5 +1,8 @@
 # Verifica — 26 settembre 2026
 
+[Distruttori e resurrezione](validation/destructor-2026-11-19/README.md)
+confronta semantica PHP e costo del lowering su cURL e CLI.
+
 [WeakReference e GC](validation/weak-reference-2026-11-19/README.md)
 confronta il corpus Windows/Linux e l'A/B cURL.
 

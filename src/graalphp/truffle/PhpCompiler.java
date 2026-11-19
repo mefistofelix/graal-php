@@ -130,6 +130,8 @@ public final class PhpCompiler {
             builder.beginRoot();
             builder.beginSource(source);
             var compiler = new PhpCompiler(builder, language, source, path, owner, name, strictTypes, generator, returnsReference, traitName);
+            if (compiler.guestFinalizers()) builder.beginTryFinally(compiler::releaseFrameVariables);
+            builder.beginBlock();
             for (var statement : body) compiler.statement(statement);
             builder.beginReturn();
             if (!generator) builder.beginCheckReturn();
@@ -138,6 +140,8 @@ public final class PhpCompiler {
             if (returnsReference && !generator) builder.endReturnReference();
             if (!generator) builder.endCheckReturn();
             builder.endReturn();
+            builder.endBlock();
+            if (compiler.guestFinalizers()) builder.endTryFinally();
             builder.endSource();
             builder.endRoot();
         });
@@ -156,7 +160,12 @@ public final class PhpCompiler {
                 b.endDrop();
             }
             case Ir.Block block -> { b.beginBlock(); for (var child : block.statements()) statement(child); b.endBlock(); }
-            case Ir.ExpressionStatement expression -> { b.beginDrop(); expression(expression.expression()); b.endDrop(); }
+            case Ir.ExpressionStatement expression -> {
+                b.beginBlock();
+                b.beginDrop(); expression(expression.expression()); b.endDrop();
+                finalizers();
+                b.endBlock();
+            }
             case Ir.Echo echo -> { for (var expression : echo.expressions()) { b.beginEcho(); expression(expression); b.endEcho(); } }
             case Ir.Return returned -> {
                 b.beginReturn();
@@ -198,10 +207,13 @@ public final class PhpCompiler {
             }
             case Ir.Throw thrown -> { b.beginThrow(); expression(thrown.value()); b.endThrow(); }
             case Ir.Unset unset -> {
+                b.beginBlock();
                 for (var variable : unset.locations()) {
                     if (variable instanceof Ir.Index index) offsetUnset(index);
                     else { b.beginUnset(); location(variable); b.endUnset(); }
+                    finalizers();
                 }
+                b.endBlock();
             }
             case Ir.Global global -> { for (String name : global.names()) b.emitGlobal(name); }
             case Ir.Break ignored -> { if (loops.isEmpty()) throw new PhpError("break outside a loop"); b.emitBranch(loops.peek().exit()); }
@@ -303,7 +315,7 @@ public final class PhpCompiler {
         switch (expression) {
             case Ir.Literal literal -> { if (literal.value() == null) b.emitLoadNull(); else b.emitLoadConstant(literal.value()); }
             case Ir.Variable variable -> { b.beginRead(); b.emitVariable(variable.name()); b.endRead(); }
-            case Ir.Property property -> { b.beginRead(); location(property); b.endRead(); }
+            case Ir.Property property -> afterFinalizers(() -> { b.beginRead(); location(property); b.endRead(); });
             case Ir.StaticProperty property -> { b.beginRead(); location(property); b.endRead(); }
             case Ir.Constant constant -> {
                 switch (constant.name()) {
@@ -325,18 +337,18 @@ public final class PhpCompiler {
             case Ir.InstanceOf instance -> {
                 b.beginIsInstanceOf(); expression(instance.value()); expression(instance.type()); b.endIsInstanceOf();
             }
-            case Ir.Index index -> offsetRead(index);
-            case Ir.Assign assignment -> {
+            case Ir.Index index -> afterFinalizers(() -> offsetRead(index));
+            case Ir.Assign assignment -> afterFinalizers(() -> {
                 if (!assignment.reference() && assignment.target() instanceof Ir.Index index) offsetAssign(index, assignment.value());
                 else if (assignment.target() instanceof Ir.Index index) offsetBind(index, assignment.value());
                 else assign(assignment);
-            }
-            case Ir.CompoundAssign assignment -> {
+            });
+            case Ir.CompoundAssign assignment -> afterFinalizers(() -> {
                 if (assignment.target() instanceof Ir.Index index) {
                     if (assignment.operator().equals("??")) offsetCoalesceAssign(index, assignment.value());
                     else offsetCompound(assignment.operator(), index, assignment.value());
                 } else compound(assignment);
-            }
+            });
             case Ir.Increment increment -> {
                 if (increment.target() instanceof Ir.Index index) offsetIncrement(index, increment.delta(), increment.before());
                 else { b.beginIncrement(increment.delta(), increment.before()); location(increment.target()); b.endIncrement(); }
@@ -430,19 +442,19 @@ public final class PhpCompiler {
         b.endResume();
     }
     private void call(Ir.Call call, boolean preserveReference) {
-        suspended(preserveReference, () -> {
+        afterFinalizers(() -> suspended(preserveReference, () -> {
             builder.beginInvoke(call.name(), call.globalFallback());
             arguments(call.arguments());
             builder.endInvoke();
-        });
+        }));
     }
     private void memberCall(String kind, String name, Ir.Expression receiver, List<Ir.Expression> args, boolean preserveReference) {
-        suspended(preserveReference, () -> {
+        afterFinalizers(() -> suspended(preserveReference, () -> {
             builder.beginInvokeMember(kind, name);
             if (kind.equals("static")) ensureClass(receiver); else expression(receiver);
             arguments(args);
             builder.endInvokeMember();
-        });
+        }));
     }
     private void ensureClass(Ir.Expression type) {
         suspended(() -> {
@@ -460,7 +472,9 @@ public final class PhpCompiler {
             b.beginInvokeMember("constructor", "__construct"); b.emitLoadLocal(object);
             arguments(args); b.endInvokeMember();
         });
-        b.endDrop(); b.emitLoadLocal(object); b.endBlock();
+        b.endDrop();
+        b.beginMarkConstructed(); b.emitLoadLocal(object); b.endMarkConstructed();
+        b.emitLoadLocal(object); b.endBlock();
     }
     private void match(Ir.Match match) {
         var b = builder;
@@ -503,7 +517,9 @@ public final class PhpCompiler {
         b.beginStoreLocal(object); b.beginCloneObject(); expression(value); b.endCloneObject(); b.endStoreLocal();
         b.beginDrop(); suspended(() -> {
             b.beginInvokeMember("clone", "__clone"); b.emitLoadLocal(object); b.endInvokeMember();
-        }); b.endDrop(); b.emitLoadLocal(object); b.endBlock();
+        }); b.endDrop();
+        b.beginMarkConstructed(); b.emitLoadLocal(object); b.endMarkConstructed();
+        b.emitLoadLocal(object); b.endBlock();
     }
     private void arguments(List<Ir.Expression> arguments) {
         var b = builder;
@@ -820,6 +836,33 @@ public final class PhpCompiler {
     }
     private void checkpoint() {
         builder.beginDrop(); suspended(() -> builder.emitPoll()); builder.endDrop();
+        finalizers();
+    }
+    private boolean guestFinalizers() {
+        return !source.isInternal() && !source.getName().equals("<async-library>");
+    }
+    private void afterFinalizers(Runnable expression) {
+        if (!guestFinalizers()) { expression.run(); return; }
+        var b = builder;
+        b.beginBlock(); var result = b.createLocal();
+        b.beginStoreLocal(result); expression.run(); b.endStoreLocal();
+        finalizers();
+        b.emitLoadLocal(result);
+        b.endBlock();
+    }
+    private void finalizers() {
+        if (!guestFinalizers()) return;
+        builder.beginIfThen(); builder.emitHasFinalizers();
+        drainFinalizers();
+        builder.endIfThen();
+    }
+    private void releaseFrameVariables() {
+        builder.beginIfThen(); builder.emitReleaseFrameVariables();
+        drainFinalizers();
+        builder.endIfThen();
+    }
+    private void drainFinalizers() {
+        builder.beginDrop(); suspended(() -> builder.emitInvokeFinalizers()); builder.endDrop();
     }
     private void quietRead(Ir.Expression value) { quietRead(value, false); }
     private void quietRead(Ir.Expression value, boolean probe) {

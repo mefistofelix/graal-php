@@ -896,6 +896,7 @@ public final class PhpValues {
         while (!pending.isEmpty()) {
             var dead = pending.removeLast();
             heap.candidates.remove(dead);
+            if (heap.finalizers != null && dead instanceof PhpObject object && heap.finalizers.schedule(object)) continue;
             heap.clearWeak(dead);
             dead.children(child -> {
                 if (--child.owners == 0) pending.add(child);
@@ -924,6 +925,7 @@ public final class PhpValues {
         private boolean collecting;
         private boolean collectionDue;
         private WeakRegistry weak;
+        ObjectFinalizers finalizers;
         private IdentityHashMap<HeapNode, Boolean> candidates = new IdentityHashMap<>();
         long storageCopies;
         long liveArrays;
@@ -936,6 +938,21 @@ public final class PhpValues {
 
         boolean automaticCollection() { return automatic; }
         void automaticCollection(boolean enabled) { automatic = enabled; }
+
+        public void constructed(Object value) {
+            if (!(unwrap(value) instanceof PhpObject object) || !(object.descriptor instanceof ObjectModel.RuntimeClass type)
+                    || type.destructor == null) return;
+            registerFinalizer(object);
+        }
+
+        @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+        private void registerFinalizer(PhpObject object) {
+            if (finalizers == null) finalizers = new ObjectFinalizers();
+            finalizers.register(object);
+        }
+
+        public boolean pendingFinalizers() { return finalizers != null && finalizers.ready; }
+        public boolean usesFinalizers() { return finalizers != null; }
 
         private void suspect(HeapNode node) {
             if (candidates.put(node, Boolean.TRUE) == null && candidates.size() >= cycleThreshold)
@@ -980,7 +997,14 @@ public final class PhpValues {
         }
 
         void finish() {
-            try { collectCycles(); }
+            try {
+                if (finalizers != null) {
+                    var abandoned = finalizers;
+                    finalizers = null;
+                    abandoned.discardPending();
+                }
+                collectCycles();
+            }
             finally { weak = null; }
         }
 
@@ -1024,6 +1048,11 @@ public final class PhpValues {
             for (var node : graph) if (node.cycleOwners > 0) markLive.accept(node);
             while (!pending.isEmpty()) {
                 pending.removeLast().children(markLive);
+            }
+            if (finalizers != null) {
+                for (var node : graph) if (!node.cycleLive && node instanceof PhpObject object
+                        && finalizers.schedule(object)) markLive.accept(node);
+                while (!pending.isEmpty()) pending.removeLast().children(markLive);
             }
             if (weak != null) for (var node : graph) if (!node.cycleLive) clearWeak(node);
             for (var node : graph) if (!node.cycleLive) {

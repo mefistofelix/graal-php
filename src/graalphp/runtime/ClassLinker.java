@@ -30,6 +30,13 @@ public final class ClassLinker {
     }
 
     public static Linked link(Request request, Definition definition) {
+        var destructor = definition.methods().get("__destruct");
+        if (destructor != null) {
+            String method = "Method " + definition.name() + "::__destruct()";
+            if (destructor.shared()) throw failure(method + " cannot be static");
+            if (!destructor.function().parameters().isEmpty()) throw failure(method + " cannot take arguments");
+            if (destructor.function().returnType() != null) throw failure(method + " cannot declare a return type");
+        }
         RuntimeClass parent = definition.parent() == null ? null : request.type(definition.parent());
         if (parent != null && (parent.definition.kind() != Ir.TypeKind.CLASS || parent.definition.finalType()))
             throw failure("Class " + definition.name() + " cannot extend "

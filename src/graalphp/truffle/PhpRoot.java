@@ -548,6 +548,32 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
     @Operation public static final class CanRunCleanup {
         @Specialization static boolean run(VirtualFrame frame) { return activation(frame).request.fatalFailure == null; }
     }
+    @Operation public static final class MarkConstructed {
+        @Specialization static void run(VirtualFrame frame, Object object) {
+            activation(frame).request.heap.constructed(object);
+        }
+    }
+    @Operation public static final class HasFinalizers {
+        @Specialization static boolean run(VirtualFrame frame) {
+            return activation(frame).request.heap.pendingFinalizers();
+        }
+    }
+    @Operation public static final class ReleaseFrameVariables {
+        @Specialization static boolean run(VirtualFrame frame) {
+            var activation = activation(frame);
+            if (activation.request.fatalFailure != null || !activation.request.heap.usesFinalizers()) return false;
+            release(activation);
+            return activation.request.heap.pendingFinalizers();
+        }
+        @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+        static void release(Activation activation) { activation.locals.close(); }
+    }
+    @Operation public static final class InvokeFinalizers {
+        @Specialization static Object run(VirtualFrame frame, @Cached IndirectCallNode call) {
+            var caller = activation(frame);
+            return Operations.drainFinalizers(caller, caller.function.owner(), call);
+        }
+    }
     @Operation public static final class Poll {
         @Specialization static Object run(VirtualFrame frame) {
             var caller = activation(frame);

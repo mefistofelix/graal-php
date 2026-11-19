@@ -121,6 +121,10 @@ Compose e mobile restano in coda. Le misure SPL riguardano questo percorso.
   automatica e lifetime dei receiver di proprietà attraverso sospensioni.
   [Verifiche e A/B cURL](docs/validation/weak-reference-2026-11-19/README.md).
 
+- [x] Distruttori nei casi verificati di ultimo owner, cicli,
+  resurrezione, sospensione e shutdown ordinario.
+  [Copertura e A/B](docs/validation/destructor-2026-11-19/README.md).
+
 ## Prestazioni e memoria
 
 - [ ] **PERF-01 — Spiegare e ridurre il costo del p99.** L'A/B sullo stesso
@@ -148,8 +152,10 @@ Compose e mobile restano in coda. Le misure SPL riguardano questo percorso.
 
 ## Fondamenta prioritarie
 
-- [ ] **VALUE-01 — Lifetime PHP completo.** Distruttori, resurrezione,
-  errori/shutdown, WeakMap e i receiver nelle restanti espressioni composte.
+- [ ] **VALUE-01 — Lifetime PHP completo.** Shutdown fatale e hosted,
+  ordini di distruzione e receiver nelle restanti espressioni composte,
+  eccezioni concorrenti e concatenate, WeakMap. Il nucleo dei distruttori
+  e la resurrezione sono verificati con il corpus di lifetime.
   Il nucleo WeakReference, GC e receiver è descritto nel
   [contratto](docs/object-lifetime.md). Restano
   riferimenti a proprietà tipizzate e stringhe binarie nelle restanti coercizioni. Chiavi

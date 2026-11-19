@@ -35,7 +35,30 @@ easy fino alla raccolta di quel ciclo. Il caso integrato richiama
 `gc_collect_cycles()` e verifica che l'easy venga staccata e torni utilizzabile.
 Le chiusure acicliche seguono immediatamente l'ultimo proprietario.
 
-## Limiti e dipendenze del prossimo blocco
+## Distruttori PHP
+
+Il runtime registra il distruttore dopo la costruzione o il clone
+completati. Quando il conteggio arriva a zero, il collector conserva
+una radice temporanea e accoda l'oggetto. Le operazioni guest scaricano
+la coda sul dispatcher dopo la transizione dello slot e possono sospendere.
+Alla conclusione si rilascia la radice. Un oggetto risorto mantiene gli
+stessi riferimenti deboli e il distruttore resta già invocato.
+
+Per i cicli il trial deletion conserva temporaneamente il sottografo
+dei finalizzandi. La raccolta esplicita esegue le finalizzazioni e
+verifica di nuovo la raggiungibilità prima di contare i nodi raccolti.
+Un callback può quindi salvare un oggetto del ciclo. Un ciclo ancora
+raggiungibile da quel callback rimane nel grafo.
+
+I casi verificati comprendono l'uscita normale dai frame, errori di
+costruzione, eccezioni dal distruttore di un unset, visibilità
+privata, ordine genitore/figlio alla distruzione e shutdown normale.
+Lo shutdown accoda i distruttori registrati in ordine inverso, con gli
+oggetti ancora accessibili. Una coda di pari livello viene differita
+durante il callback in corso. Le nuove finalizzazioni provocate dal
+callback possono essere eseguite prima di riprendere quella coda.
+
+## Limiti
 
 Il contratto copre gli oggetti gestiti dal grafo di ownership della richiesta.
 Le risorse e gli oggetti interop fuori dal grafo, WeakMap e le API di
@@ -43,10 +66,9 @@ statistica del collector restano aperti. Il lifetime nei casi ancora
 incompleti va verificato anche con argomenti composti, riferimenti a
 proprietà tipizzate e riassegnazione del ricevitore durante un `??=`.
 
-Il binario PHP 8.6 conserva i weak reference mentre gira `__destruct` e li
-invalida se l'oggetto muore, anche dopo un'eventuale resurrezione. TrueAsync
-0.10.0 permette a un distruttore di sospendersi. Il prossimo blocco deve
-perciò tenere viva una radice temporanea, completare la mutazione che
-innesca il rilascio, invocare il codice PHP sul dispatcher e ricontrollare
-gli owner dopo il ritorno. L'oracolo verifica separatamente ordine, errore
-del distruttore, errore del costruttore, shutdown e grafi ciclici.
+Restano aperti tutti i percorsi di shutdown fatale e hosted, le eccezioni
+multiple concatenate, il punto preciso di distruzione in tutte le
+espressioni e l'ordine completo tra coroutine concorrenti. Il caso di
+sospensione dalla coroutine che rilascia l'oggetto passa contro TrueAsync.
+Il rilascio delle risorse C conserva i suoi confini di drenaggio. I
+distruttori sospendibili usano lo scheduler PHP.

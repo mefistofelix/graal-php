@@ -203,6 +203,9 @@ public final class Execution {
         }
         @Override public void close() {
             PhpError failure = null;
+            RuntimeException finalizerFailure = null;
+            try { scheduler.finishObjects(); }
+            catch (RuntimeException error) { finalizerFailure = error; }
             // Notify blocked native callbacks before joining their workers; retain all roots until drain completes.
             scheduler.abortDispatches(fatalFailure == null ? new PhpError("Request is shutting down") : fatalFailure);
             for (var resource : List.copyOf(resources)) {
@@ -217,7 +220,10 @@ public final class Execution {
                 catch (PhpError error) { if (failure == null) failure = error; else failure.addSuppressed(error); }
             }
             // A stuck C call can still invoke its callback. Preserve its roots on failed shutdown.
-            if (failure != null) throw failure;
+            if (failure != null) {
+                if (finalizerFailure != null) failure.addSuppressed(finalizerFailure);
+                throw failure;
+            }
             if (libuv != null) libuv.close();
             for (var resource : List.copyOf(resources).reversed()) {
                 try { resource.close(); }
@@ -232,7 +238,11 @@ public final class Execution {
                 try { autoload.close(); }
                 finally { try { globals.close(); } finally { heap.finish(); } }
             }
-            if (failure != null) throw failure;
+            if (failure != null) {
+                if (finalizerFailure != null) failure.addSuppressed(finalizerFailure);
+                throw failure;
+            }
+            if (finalizerFailure != null) throw finalizerFailure;
         }
     }
 

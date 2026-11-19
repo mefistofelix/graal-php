@@ -126,6 +126,11 @@ public final class Operations {
         } catch (PhpError error) { child.close(); throw error; }
     }
     @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+    public static Object drainFinalizers(Activation caller, String scope, IndirectCallNode call) {
+        return invokeFunction(caller, caller.request.context.asyncFunction("drain_object_finalizers"),
+                new Argument[] {new Argument(scope, null)}, call);
+    }
+    @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
     public static Object invokeMember(Activation caller, String kind, String name, Object receiver, Argument[] args, IndirectCallNode call) {
         try {
             if (kind.equals("static") && string(receiver).equalsIgnoreCase("FFI")) return FfiApi.staticMethod(caller, name, args);
@@ -201,11 +206,28 @@ public final class Operations {
             case "gc_collect_cycles", "gc_enabled", "gc_enable", "gc_disable": {
                 CallArguments.builtin(name, args, List.of(), 0);
                 var heap = activation.request.heap;
-                if (name.equals("gc_collect_cycles")) return (long) heap.collectGuestCycles();
+                if (name.equals("gc_collect_cycles")) {
+                    if (!heap.usesFinalizers()) return (long) heap.collectGuestCycles();
+                    return invokeFunction(activation, activation.request.context.asyncFunction("collect_object_cycles"),
+                            new Argument[] {new Argument(activation.function.owner(), null)}, call);
+                }
                 if (name.equals("gc_enabled")) return heap.automaticCollection();
                 heap.automaticCollection(name.equals("gc_enable"));
                 return null;
             }
+            case "__object_collect_cycles": return (long) activation.request.heap.collectGuestCycles();
+            case "__object_finalizers_pending": return activation.request.heap.pendingFinalizers();
+            case "__object_drain_finalizers":
+                return drainFinalizers(activation, (String) values[0], call);
+            case "__object_next_finalizer":
+                return activation.request.heap.finalizers == null ? null
+                        : activation.track(activation.request.heap.finalizers.take());
+            case "__object_defer_finalizers": return activation.request.heap.finalizers.defer(activation);
+            case "__object_restore_finalizers":
+                if (values[0] instanceof ObjectFinalizers.Batch batch) batch.restore();
+                return null;
+            case "__object_run_finalizer":
+                return activation.request.heap.finalizers.invoke(activation, (PhpValues.PhpObject) values[0], (String) values[1], call);
             case "__weakref_create": {
                 return activation.track(PhpValues.own(activation.request.heap.weakReference(values[0],
                         activation.request.type("WeakReference"))));

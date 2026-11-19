@@ -1,0 +1,6 @@
+SHA-256                                                               Bytes  File
+47de7dd8b4b067a76a3d43db0bfabb0993c925e42d6f10606620a90cffd22723    94015488  graalphp.exe
+53228abd2752811546eb2b00551104c5de9ded0aad0949677a15190a6dc07db2    96668456  graalphp-linux-x64
+2bf5c99337d8670fc864fc5c097f5842a2b92d53f584ebf44da7fd2507e5cb51      955983  graalphp.jar
+667c3833fcd94ce7817e8e5dc460af0717ab72470048079feb559d95131fa0e7    94019584  destructor-baseline.exe
+de97d0c045ee7645bbbc226f237d0f6d30ccd70ecbdfaf8710036c4cac788dcb    96733992  destructor-baseline-linux-x64

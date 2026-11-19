@@ -55,6 +55,7 @@ public final class ObjectModel {
         public final PhpValues.PhpObject statics;
         public final List<RuntimeClass> interfaces;
         public final Map<String, Method> methods;
+        final Method destructor;
         public final List<Method> requirements;
         public final List<Ir.PropertyDeclaration> properties;
         public final Map<String, ClassConstant> constants;
@@ -70,6 +71,7 @@ public final class ObjectModel {
             this.parent = parent;
             this.interfaces = List.copyOf(interfaces);
             this.methods = java.util.Collections.unmodifiableMap(new LinkedHashMap<>(methods));
+            destructor = this.methods.get("__destruct");
             this.requirements = List.copyOf(requirements);
             this.properties = List.copyOf(properties);
             this.constants = java.util.Collections.unmodifiableMap(new LinkedHashMap<>(constants));
@@ -244,11 +246,13 @@ public final class ObjectModel {
     }
 
     private static void access(Activation caller, RuntimeClass owner, String visibility) {
-        if (visibility.equals("public")) return;
-        String scope = caller.function.owner();
-        if (scope != null && (scope.equalsIgnoreCase(owner.definition.name)
-                || visibility.equals("protected") && (caller.request.type(scope).isA(owner.definition.name) || owner.isA(scope)))) return;
-        throw new PhpError("Error", "Cannot access " + visibility + " member of " + owner.definition.name);
+        if (!canAccess(caller.request, caller.function.owner(), owner, visibility))
+            throw new PhpError("Error", "Cannot access " + visibility + " member of " + owner.definition.name);
+    }
+
+    static boolean canAccess(Request request, String scope, RuntimeClass owner, String visibility) {
+        return visibility.equals("public") || scope != null && (scope.equalsIgnoreCase(owner.definition.name)
+                || visibility.equals("protected") && (request.type(scope).isA(owner.definition.name) || owner.isA(scope)));
     }
 
     @TruffleBoundary
