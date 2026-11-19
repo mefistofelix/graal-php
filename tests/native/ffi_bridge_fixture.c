@@ -55,6 +55,18 @@ EXPORT void gp_test_void(void (*cb)(void)) { cb(); }
 EXPORT double gp_test_pair(int (*first)(int), double (*second)(double)) {
     return first(21) + second(1.25);
 }
+EXPORT int gp_test_buffer(uint8_t *bytes, size_t length, void (*checkpoint)(void)) {
+    if (!bytes || !length) return -1;
+    bytes[0] = 9;
+    checkpoint();
+    int sum = 0;
+    for (size_t i = 0; i < length; i++) sum += bytes[i];
+    INC(&finished);
+    return sum;
+}
+EXPORT int gp_test_buffer_first(const char *bytes) {
+    return bytes ? (uint8_t) bytes[0] : -1;
+}
 typedef struct { int64_t (*callback)(int64_t); int64_t result; } Foreign;
 #ifdef _WIN32
 static DWORD WINAPI foreign(void *p) { Foreign *f = p; f->result = f->callback(42); return 0; }

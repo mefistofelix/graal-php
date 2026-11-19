@@ -115,9 +115,11 @@ GP_EXPORT uint64_t gp_builtin_lookup(const char *library, const char *symbol) {
     } else if (strcmp(library, "libuv") == 0) {
         GP_SYMBOL(uv_version); GP_SYMBOL(uv_sleep); GP_SYMBOL(uv_available_parallelism);
     } else if (strcmp(library, "runtime") == 0) {
-        GP_SYMBOL(gp_ffi_create); GP_SYMBOL(gp_ffi_set_i); GP_SYMBOL(gp_ffi_set_d); GP_SYMBOL(gp_ffi_set_s);
+        GP_SYMBOL(gp_ffi_create); GP_SYMBOL(gp_ffi_set_i); GP_SYMBOL(gp_ffi_set_d); GP_SYMBOL(gp_ffi_set_s); GP_SYMBOL(gp_ffi_set_p);
         GP_SYMBOL(gp_ffi_step); GP_SYMBOL(gp_ffi_count); GP_SYMBOL(gp_ffi_get_i); GP_SYMBOL(gp_ffi_get_d);
         GP_SYMBOL(gp_ffi_get_s); GP_SYMBOL(gp_ffi_abort); GP_SYMBOL(gp_ffi_close);
+        GP_SYMBOL(gp_ffi_buffer_alloc); GP_SYMBOL(gp_ffi_buffer_free); GP_SYMBOL(gp_ffi_buffer_write);
+        GP_SYMBOL(gp_ffi_buffer_move); GP_SYMBOL(gp_ffi_buffer_fill);
         GP_SYMBOL(gp_sleep_echo); GP_SYMBOL(gp_thread_id); GP_SYMBOL(gp_callback);
         GP_SYMBOL(gp_callback_thread);
         GP_SYMBOL(gp_reactor_create); GP_SYMBOL(gp_reactor_step); GP_SYMBOL(gp_reactor_destroy);

@@ -1,0 +1,4 @@
+SHA-256                                                               Bytes  File
+01c7259fac58ca4215181d7a811b40764cead8b69a0a286cf13f43cf0277f8f8    94199808  graalphp.exe
+eb42536a5c20c2372eb14085ec852b6675d7a2fec26423bee227726ff517e53a    96930600  graalphp-linux-x64
+44dd682fec8e80567f12e429c002e4e84aba56843a912c59362a8c86cdad3052      969673  graalphp.jar

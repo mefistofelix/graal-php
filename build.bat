@@ -1,7 +1,19 @@
 @echo off
 setlocal EnableDelayedExpansion
-cd /d "%~dp0"
-set "GRAALPHP_JDK=%~dp0tools\graalvm-25.4.4.1.1+1.1"
+if /i "%~nx0"=="graalphp-build-run.bat" goto normalized
+rem cmd can misroute CALL labels in long batch files with LF line endings.
+set "GRAALPHP_BUILD_ROOT=%~dp0"
+cd /d "%GRAALPHP_BUILD_ROOT%"
+if not exist build mkdir build
+set "GRAALPHP_BUILD_SOURCE=%~f0"
+set "GRAALPHP_BUILD_COPY=%GRAALPHP_BUILD_ROOT%build\graalphp-build-run.bat"
+powershell.exe -NoProfile -NonInteractive -Command "$s=[IO.File]::ReadAllText($env:GRAALPHP_BUILD_SOURCE).Replace([string][char]13,''); [IO.File]::WriteAllText($env:GRAALPHP_BUILD_COPY,$s.Replace([string][char]10,[Environment]::NewLine),[Text.UTF8Encoding]::new($false))"
+if not "!errorlevel!"=="0" exit /b 1
+call "%GRAALPHP_BUILD_COPY%" %*
+exit /b !errorlevel!
+:normalized
+cd /d "%GRAALPHP_BUILD_ROOT%"
+set "GRAALPHP_JDK=%GRAALPHP_BUILD_ROOT%tools\graalvm-25.4.4.1.1+1.1"
 set "DEPS=build\deps\25.4.4.1.1"
 if exist "%GRAALPHP_JDK%\bin\javac.exe" goto dependencies
 if not exist tools mkdir tools
@@ -90,7 +102,7 @@ if /i "%~2"=="trueasync" (
     set "CURL_EXECUTABLE=trueasync"
 ) else if /i "%~2"=="native" (
     call :build_native_image
-    set "CURL_EXECUTABLE=%~dp0build\graalphp.exe"
+    set "CURL_EXECUTABLE=%GRAALPHP_BUILD_ROOT%build\graalphp.exe"
 ) else (call :native_libraries)
 if not "!errorlevel!"=="0" exit /b 1
 if not exist build\test-classes mkdir build\test-classes
@@ -119,7 +131,7 @@ if not exist build\test-classes mkdir build\test-classes
 "%GRAALPHP_JDK%\bin\javac.exe" --release 25 -proc:none -cp "build\classes;%DEPS%/*" -d build\test-classes tests\graalphp\NetworkIntegrationTest.java
 if not "!errorlevel!"=="0" exit /b 1
 set "NETWORK_EXECUTABLE="
-if /i "%~2"=="native" set "NETWORK_EXECUTABLE=%~dp0build\graalphp.exe"
+if /i "%~2"=="native" set "NETWORK_EXECUTABLE=%GRAALPHP_BUILD_ROOT%build\graalphp.exe"
 "%GRAALPHP_JDK%\bin\java.exe" --enable-native-access=ALL-UNNAMED -cp "build\classes;build\test-classes;%DEPS%/*" graalphp.NetworkIntegrationTest "!NETWORK_EXECUTABLE!"
 exit /b %errorlevel%
 :verify
@@ -197,7 +209,7 @@ set "AUTOLOAD_EXECUTABLE="
 if /i not "%~2"=="native" goto language_compile
 call :build_native_image
 if not "!errorlevel!"=="0" exit /b 1
-set "AUTOLOAD_EXECUTABLE=%~dp0build\graalphp.exe"
+set "AUTOLOAD_EXECUTABLE=%GRAALPHP_BUILD_ROOT%build\graalphp.exe"
 :language_compile
 if not exist build\test-classes mkdir build\test-classes
 set "LANGUAGE_SUPPORT="
@@ -252,7 +264,7 @@ set "FATAL_EXECUTABLE="
 if /i not "%~2"=="native" goto ffi_fatal_execute
 call :build_native_image
 if not "!errorlevel!"=="0" exit /b 1
-set "FATAL_EXECUTABLE=%~dp0build\graalphp.exe"
+set "FATAL_EXECUTABLE=%GRAALPHP_BUILD_ROOT%build\graalphp.exe"
 :ffi_fatal_execute
 "%GRAALPHP_JDK%\bin\java.exe" --enable-native-access=ALL-UNNAMED -cp "build\classes;build\test-classes;%DEPS%/*" graalphp.NativeBridgeFatalTest build\ffi-bridge-fixture.dll "!FATAL_EXECUTABLE!"
 exit /b %errorlevel%
@@ -324,7 +336,7 @@ if not "!errorlevel!"=="0" exit /b 1
 certutil -hashfile tools\llvm\bin\llvm-objcopy.exe SHA256 | findstr /i /c:"f257e6c8e936d21309f813a5a79d649de3d5c2f3bff7a15da4857f6626d16f4d" >nul
 if not "!errorlevel!"=="0" exit /b 1
 if not exist build\native mkdir build\native
-set "XMAKE_GLOBALDIR=%~dp0build\xmake-global"
+set "XMAKE_GLOBALDIR=%GRAALPHP_BUILD_ROOT%build\xmake-global"
 tools\xmake.exe f -y -p windows -a x64 -m release --sdk=build/toolchain --curl_costs=n
 if not "!errorlevel!"=="0" exit /b 1
 tools\xmake.exe -y graalphp-native

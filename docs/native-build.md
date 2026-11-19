@@ -19,6 +19,11 @@ declarative platform branches. Windows uses `/MD`; static archives do not
 imply a static CRT. This runtime keeps artifacts and generated state under
 `build/`, following its existing disposable-directory policy.
 
+The root Windows entry point keeps LF in the repository. It runs an internal
+CRLF copy in `build/` so cmd resolves subroutine labels consistently after
+jumping to later commands. Xmake and the portable MSVC SDK still run from
+the repository root.
+
 ## Upstream findings for the Linux adaptation
 
 - **zlib 1.3.2:** `Makefile.in` and the Windows manifest select the same 15

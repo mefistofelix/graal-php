@@ -100,11 +100,28 @@ runtime segnala l'errore e conserva quelle radici.
 
 `FFI::cdef` analizza dichiarazioni C a runtime senza compilazione aggiuntiva:
 tipi numerici primitivi, alias typedef, parametri nominati o anonimi, input
-`char*` tramite stringa, callback tramite puntatori a funzione e relativi
+`char*` tramite stringa, puntatori di tipi primitivi e `void*` tramite
+buffer `FFI\CData` o `null`, callback tramite puntatori a funzione e relativi
 typedef. Il modello dei tipi resta separato dal binding NFI. I simboli vengono
-risolti e memorizzati nella cache. I puntatori restituiti, CData, layout di
-struct/union, variadici C e buffer nativi posseduti non sono implementati:
-le dichiarazioni fuori dal sottoinsieme sono rifiutate.
+risolti e memorizzati nella cache. Puntatori restituiti, layout di struct/union,
+variadiche C, memoria persistente e puntatori ricevuti dalle callback
+restano fuori dal sottoinsieme.
+
+### Buffer nativi posseduti
+
+`$ffi->new('char[64]')` alloca un array di byte azzerato. Sono disponibili
+`FFI::sizeof`, `FFI::memcpy`, `FFI::memset` e `FFI::string`.
+Le operazioni sulla memoria controllano i limiti in base al buffer.
+`FFI::string` senza lunghezza si ferma al primo zero entro quel limite.
+Le stringhe binarie preservano i byte e `memcpy` tra buffer accetta
+sovrapposizioni. Il vecchio ingresso statico `FFI::new` è deprecato da PHP.
+
+Il buffer appartiene al grafo della richiesta. Una chiamata che lo passa al
+C lo trattiene attraverso callback, sospensioni e cancellazione. Il C riceve
+un puntatore valido per la durata della chiamata e il buffer viene liberato
+quando non ha più proprietari. Il contratto della funzione C continua a
+determinare le dimensioni dei suoi accessi e la sincronizzazione concorrente.
+[ABI, lifetime e confronti](validation/ffi-buffers-2026-11-19/README.md).
 
 Le callback `FFI::cdef` possono sospendersi: il bridge conserva lo stack C e
 le esegue sulla stessa coroutine PHP, anche per una chiamata `async: true`.

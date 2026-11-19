@@ -142,6 +142,10 @@ Compose e mobile restano in coda. Le misure SPL riguardano questo percorso.
   stesso proprietario e deadline host indipendente dal numero di scope.
   [Verifica rete e misure](docs/validation/dispatcher-2026-11-19/README.md).
 
+- [x] Buffer FFI posseduti e passaggio di puntatori in ingresso. Verificati
+  binari, limiti, chiamate e callback sync/async, GC e rilascio dopo drain.
+  [Verifica](docs/validation/ffi-buffers-2026-11-19/README.md).
+
 ## Prestazioni e memoria
 
 - [ ] **PERF-01 — Spiegare e ridurre il costo del p99.** L'A/B sullo stesso
@@ -213,8 +217,9 @@ Compose e mobile restano in coda. Le misure SPL riguardano questo percorso.
   e typing nei restanti builtin, readonly/hooks e diagnostica completa. PHP Fiber è un non-obiettivo deliberato: l'async pubblico è TrueAsync.
   Pianificare blocchi coerenti con valori, sospensioni e reload; le feature
   usate da Composer sono prioritarie, eseguire Composer non lo è.
-- [ ] **FFI-01 — Modello C e callback generiche.** CData, puntatori/buffer con
-  lifetime, strutture/union, variadiche e zero-copy; registrazione/unregistrazione
+- [ ] **FFI-01 — Modello C e callback generiche.** I buffer CData in ingresso
+  possiedono lo storage fino al drain. Completare puntatori restituiti e
+  callback con puntatori, strutture/union, variadiche e zero-copy; registrazione/unregistrazione
   persistente delle callback e callback da thread C esterni nel nuovo bridge.
   Criterio: ABI, radici guest, affinità, GC, errore, cancellazione e drain
   verificati su Windows/Linux, JVM/Native Image; nessun frame managed su stack C.

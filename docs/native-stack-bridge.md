@@ -26,11 +26,12 @@ considerato una soluzione già pronta per questo requisito.
 `FFI::cdef` usa ora il bridge per le funzioni con parametri callback. La callback
 può sospendersi senza un driver scritto in PHP dall'utente. La funzione interna
 `native_invoke` conserva la stessa coroutine, scope e contesto; non crea una
-coroutine PHP separata per la callback. Chiamate senza callback conservano il
-percorso NFI diretto.
+coroutine PHP separata per la callback. Le chiamate con soli argomenti
+scalari e stringhe in ingresso continuano a usare NFI diretto.
 
 Sono coperti i tipi già accettati dal parser: interi di 8/16/32/64 bit, float,
-double, void, stringhe in ingresso, typedef e più parametri callback. Firme e
+double, void, stringhe in ingresso, puntatori a buffer posseduti,
+typedef e più parametri callback. Firme e
 closure sono costruite con il libffi 3.4.8 incluso nella distribuzione GraalVM
 fissata dal progetto, riutilizzando lo stesso ABI di NFI. Non si aggiunge una
 seconda versione libffi al link. Il codice mantiene un massimo di 64 parametri
@@ -42,6 +43,11 @@ le closure trattengono esplicitamente receiver e ambiente PHP. Le librerie
 esterne rimangono radicate nel contesto NFI. Stack, stringhe e closure vengono
 liberati al ritorno C, inclusi i percorsi di errore, senza accumularli fino al
 termine della richiesta.
+
+Il bridge trattiene ogni `FFI\CData` usato come puntatore fino al ritorno
+fisico della funzione, anche se PHP rilascia l'ultimo alias durante una
+callback sospesa. Il percorso di cancellazione drena lo stack prima di
+rilasciare il buffer. [Verifiche](validation/ffi-buffers-2026-11-19/README.md).
 
 Con `async: true` un singolo job del pool nominato conserva il thread C per
 tutta la chiamata. Tra due passi attende una future con safepoint Truffle; lo
@@ -65,8 +71,8 @@ registrazione/unregistrazione restano da implementare. Il percorso sperimentale
 `ffi_call`/`ffi_callback` conserva le sue regole precedenti per callback NFI
 sincrone, incluso il dispatch da thread esterni.
 
-Restano fuori dal type system attuale CData, strutture, puntatori generici,
-variadiche e callback che ricevono altre callback. Non è supporto di stack
+Restano fuori dal type system attuale strutture, puntatori restituiti e
+ricevuti dalle callback, variadiche e callback che ricevono altre callback. Non è supporto di stack
 misti Java/C arbitrari, né una validazione di tutte le DLL o di macOS/mobile.
 
 Verifica riproducibile dell'API ordinaria, con GC forzato a ogni checkpoint:

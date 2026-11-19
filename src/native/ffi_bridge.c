@@ -77,7 +77,7 @@ static ffi_type *type(char k) {
     case 'i': return &ffi_type_sint32; case 'I': return &ffi_type_uint32;
     case 'l': return &ffi_type_sint64; case 'L': return &ffi_type_uint64;
     case 'f': return &ffi_type_float; case 'd': return &ffi_type_double;
-    case 's': case '[': return &ffi_type_pointer;
+    case 's': case 'p': case '[': return &ffi_type_pointer;
     default: return NULL;
     }
 }
@@ -215,6 +215,28 @@ EXPORT int gp_ffi_set_s(uint64_t handle, int index, const char *value) {
     size_t n = strlen(value) + 1;
     char *copy = malloc(n); if (!copy) return -2;
     memcpy(copy, value, n); free(v->p); v->p = copy; return 0;
+}
+EXPORT int gp_ffi_set_p(uint64_t handle, int index, uint64_t value) {
+    char kind;
+    Value *argument = slot((Call *) (uintptr_t) handle, index, &kind);
+    if (!argument || kind != 'p') return -1;
+    argument->p = (void *) (uintptr_t) value;
+    return 0;
+}
+EXPORT uint64_t gp_ffi_buffer_alloc(int32_t length) {
+    return length > 0 ? (uint64_t) (uintptr_t) calloc(1, (size_t) length) : 0;
+}
+EXPORT void gp_ffi_buffer_free(uint64_t address) {
+    free((void *) (uintptr_t) address);
+}
+EXPORT void gp_ffi_buffer_write(uint64_t address, const uint8_t *bytes, int32_t length) {
+    if (length > 0) memcpy((void *) (uintptr_t) address, bytes, (size_t) length);
+}
+EXPORT void gp_ffi_buffer_move(uint64_t destination, uint64_t source, int32_t length) {
+    if (length > 0) memmove((void *) (uintptr_t) destination, (const void *) (uintptr_t) source, (size_t) length);
+}
+EXPORT void gp_ffi_buffer_fill(uint64_t address, int32_t value, int32_t length) {
+    if (length > 0) memset((void *) (uintptr_t) address, value, (size_t) length);
 }
 EXPORT int gp_ffi_step(uint64_t handle) {
     Call *c = (Call *) (uintptr_t) handle;

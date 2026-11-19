@@ -519,6 +519,7 @@ public final class ObjectModel {
         if (value instanceof CurlApi.Handle) return "CurlHandle";
         if (value instanceof CurlMultiApi.Handle) return "CurlMultiHandle";
         if (value instanceof FfiApi.Binding) return "FFI";
+        if (value instanceof FfiApi.CData) return "FFI\\CData";
         return name;
     }
 

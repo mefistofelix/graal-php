@@ -1,0 +1,2 @@
+PASS: 89 integration scenarios (Truffle, async, reload, threads, NFI, host)
+PASS: 106 differential scenarios against TrueAsync 0.10.0

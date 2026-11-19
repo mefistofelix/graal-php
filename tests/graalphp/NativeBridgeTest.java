@@ -22,7 +22,7 @@ public final class NativeBridgeTest {
             });
             context.eval(Source.newBuilder("php", Path.of("tests/php/ffi-bridge.php").toFile()).build());
         }
-        if (!output.toString().startsWith("PASS transparent FFI:") || collections.get() != 80)
+        if (!output.toString().startsWith("PASS transparent FFI:") || collections.get() != 82)
             throw new AssertionError(output + "; collections=" + collections.get());
         System.out.println(output + "; full-GC requests=" + collections.get());
     }

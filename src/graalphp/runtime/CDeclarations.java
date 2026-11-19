@@ -8,7 +8,9 @@ import java.util.regex.Pattern;
 
 /** Runtime C declarations. Types stay independent of the NFI binding/cache. */
 public final class CDeclarations {
-    public record Type(String nfi, boolean callback, boolean string) {}
+    public record Type(String nfi, boolean callback, boolean string) {
+        boolean pointer() { return nfi.equals("POINTER"); }
+    }
     public record Parameter(String name, Type type) {}
     public record Function(String name, Type result, List<Parameter> parameters) {
         public String signature() {
@@ -57,7 +59,7 @@ public final class CDeclarations {
             var match = FUNCTION.matcher(statement);
             if (!match.matches()) throw error("Unsupported declaration: " + statement);
             Type result = type(match.group(1));
-            if (result.string || result.callback) throw error("Pointer returns require CData, which is not implemented yet");
+            if (result.string || result.pointer() || result.callback) throw error("Pointer returns are not implemented yet");
             String name = match.group(2);
             var function = new Function(name, result, parameters(match.group(3)));
             if (functions.putIfAbsent(name, function) != null) throw error("Duplicate function " + name);
@@ -94,7 +96,8 @@ public final class CDeclarations {
         var callback = CALLBACK.matcher(declaration);
         if (callback.matches()) {
             var function = new Function("callback", type(callback.group(1)), parameters(callback.group(3)));
-            if (function.result.string || function.parameters.stream().anyMatch(p -> p.type.callback)) {
+            if (function.result.string || function.result.pointer()
+                    || function.parameters.stream().anyMatch(p -> p.type.callback || p.type.pointer())) {
                 throw error("Callback pointer ownership is not implemented yet");
             }
             return new Parameter(callback.group(2), new Type(function.signature(), true, false));
@@ -108,6 +111,12 @@ public final class CDeclarations {
     private Type known(String declaration) {
         String normalized = declaration.replaceAll("\\b(const|volatile|restrict)\\b", " ").strip().replaceAll("\\s+", " ");
         if (normalized.replace(" ", "").equals("char*")) return new Type("STRING", false, true);
+        if (normalized.endsWith("*")) {
+            String base = normalized.substring(0, normalized.length() - 1).strip();
+            var target = types.get(base);
+            if (target != null && !target.callback && !target.pointer() && !target.string)
+                return new Type("POINTER", false, false);
+        }
         return types.get(normalized);
     }
     private Type type(String declaration) {

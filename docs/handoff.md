@@ -31,6 +31,21 @@ Riprendere da VALUE-01 e ASYNC-01 nel [TODO](../TODO.md), poi pubblicazione
 LOCAL→SHARED. PHP Fiber è fuori scope. I blocchi datati sotto conservano la
 copertura osservata al momento di ciascuna consegna.
 
+## Buffer FFI posseduti, 19 novembre
+
+Gli array di byte C sono valori `FFI\CData` con lifetime nel grafo
+PHP. Sono passati `sizeof`, `memcpy`, `memset`, `string` e le chiamate
+C con puntatori in input, anche con callback sospese e cancellazione.
+Passano le build Windows/Linux e il confronto con PHP 8.6 RC2 su Windows
+per il programma FFI comune. Il percorso Windows genera una copia CRLF
+interna del batch, mantenendo LF nei sorgenti.
+[Prove, comandi e prodotti](validation/ffi-buffers-2026-11-19/README.md).
+
+Restano aperti i puntatori restituiti o ricevuti dalle callback, layout di
+strutture, buffer persistenti e registrazione di callback con lifetime
+oltre la singola invocazione. THREAD-01 resta sul percorso di pubblicazione
+dei grafi. La successiva verifica di linguaggio riguarda cast scalari.
+
 ## Dispatcher e deadline, 19 novembre
 
 Il task seleziona il dispatcher delle continuation e delle notifiche.

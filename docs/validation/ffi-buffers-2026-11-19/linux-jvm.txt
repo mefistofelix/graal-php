@@ -1,0 +1,2 @@
+PASS transparent FFI: nested C stacks, owner coroutine/thread, scalar ABIs, buffers, GC, pool serialization, error/cancel drain, SQLite callback; full-GC requests=82
+PASS Linux C buffer stdout: FFI\CData|5|AAAA|4141414100|0|4|008001ff00

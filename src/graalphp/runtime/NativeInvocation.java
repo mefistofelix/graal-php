@@ -60,12 +60,24 @@ public final class NativeInvocation implements TruffleObject, Drainable {
                         var callback = new NativeCallback(caller, ObjectModel.callable(caller, value));
                         ownedCallbacks.add(callback); value = callback;
                     }
-                } else if (type.string() ? !(value instanceof String) : !(value instanceof Number)) {
+                } else if (pointerArgument(type, value)) {
+                    if (value != null) {
+                        value = FfiApi.buffer(caller, value);
+                        PhpValues.retain(value);
+                    }
+                } else if (!type.string() && !(value instanceof Number)) {
                     throw new PhpError("TypeError", "Invalid native argument " + i);
                 }
                 arguments[i] = value;
             }
-        } catch (RuntimeException error) { ownedCallbacks.forEach(NativeCallback::close); throw error; }
+        } catch (RuntimeException error) {
+            try { ownedCallbacks.forEach(NativeCallback::close); }
+            finally { releaseBuffers(); }
+            throw error;
+        }
+    }
+    private static boolean pointerArgument(CDeclarations.Type type, Object value) {
+        return type.pointer() || type.string() && !(value instanceof String);
     }
     static Object invoke(Activation caller, FfiApi.Binding binding, CDeclarations.Function function,
                          Argument[] values, boolean async, String pool, IndirectCallNode node) {
@@ -98,13 +110,19 @@ public final class NativeInvocation implements TruffleObject, Drainable {
         if (((Number) nativeCall(name, signature, args)).intValue() != 0) throw new PhpError("FFI\\Exception", "Native bridge " + name + " failed");
     }
     private void create() {
-        String signature = encode(function.result().nfi());
-        for (var p : function.parameters()) signature += encode(p.type().nfi());
-        handle = ((Number) nativeCall("create", "(UINT64,STRING):UINT64", address, signature)).longValue();
+        var signature = new StringBuilder(encode(function.result().nfi()));
+        for (int i = 0; i < arguments.length; i++) {
+            var type = function.parameters().get(i).type();
+            signature.append(pointerArgument(type, arguments[i]) ? "p" : encode(type.nfi()));
+        }
+        handle = ((Number) nativeCall("create", "(UINT64,STRING):UINT64", address, signature.toString())).longValue();
         if (handle == 0) throw new PhpError("FFI\\Exception", "Cannot allocate native invocation (maximum 64 parameters)");
         for (int i = 0; i < arguments.length; i++) {
             var type = function.parameters().get(i).type();
-            if (!type.callback()) put(i, type.nfi(), arguments[i]);
+            if (pointerArgument(type, arguments[i])) {
+                long pointer = arguments[i] instanceof FfiApi.CData buffer ? buffer.address : 0;
+                checked("set_p", "(UINT64,SINT32,UINT64):SINT32", handle, i, pointer);
+            } else if (!type.callback()) put(i, type.nfi(), arguments[i]);
         }
     }
     private void put(int index, String type, Object value) {
@@ -205,7 +223,13 @@ public final class NativeInvocation implements TruffleObject, Drainable {
         if (worker != null && !worker.completion.isDone()) throw new PhpError("Native worker is still active; preserving callback roots");
         if (!async && handle != 0) { abort(); checked("close", "(UINT64):SINT32", handle); handle = 0; }
         closed = true;
-        ownedCallbacks.forEach(NativeCallback::close);
-        caller.request.resources.remove(this);
+        try { ownedCallbacks.forEach(NativeCallback::close); }
+        finally {
+            releaseBuffers();
+            caller.request.resources.remove(this);
+        }
+    }
+    private void releaseBuffers() {
+        for (Object argument : arguments) if (argument instanceof FfiApi.CData buffer) PhpValues.release(buffer);
     }
 }

@@ -115,4 +115,44 @@ graal_assert($sqlite->gp_sqlite_scalar('SELECT 42', function($n) use (&$scalar) 
     checkpoint(); Async\delay(1); $scalar = $n; return 0;
 }) === 0 && $scalar === 42);
 graal_assert($ffi->gp_test_active() === 0, 'FFI scenario at line 78');
-echo 'PASS transparent FFI: nested C stacks, owner coroutine/thread, all scalar ABIs, strings, void, GC, pool serialization, error/cancel drain, SQLite callback';
+$buffers = FFI::cdef('typedef uint8_t *bytes; int gp_test_buffer(bytes buffer, size_t length, void (*checkpoint)(void));
+    int gp_test_buffer_first(const char *buffer);',
+    getenv('FFI_TEST_LIBRARY'));
+$buffer = $buffers->new('char[5]');
+graal_assert(get_class($buffer) === 'FFI\\CData' && FFI::sizeof($buffer) === 5, 'owned buffer size and type');
+FFI::memset($buffer, 65, 4);
+graal_assert(FFI::string($buffer) === 'AAAA', 'C string stops at zero');
+$copy = $buffers->new('uint8_t[5]');
+FFI::memcpy($copy, $buffer, 5);
+graal_assert($buffers->gp_test_buffer_first($copy) === 65
+    && $buffers->gp_test_buffer_first($copy, async: true) === 65, 'char pointer accepts a buffer without callback');
+try { FFI::memcpy($copy, 'X', 2); graal_assert(false, 'out of bounds C buffer source'); }
+catch (ValueError $e) { graal_assert(bin2hex(FFI::string($copy, 5)) === '4141414100'); }
+graal_assert($buffers->gp_test_buffer(null, 4, function () {}) === -1, 'nullable C pointer argument');
+foreach ([false, true] as $offload) {
+    $buffer = $buffers->new('unsigned char [4]');
+    FFI::memcpy($buffer, hex2bin('0001feff'), 4);
+    $weak = WeakReference::create($buffer);
+    $sum = $buffers->gp_test_buffer($buffer, 4, function () use (&$buffer, $weak) {
+        $buffer = null;
+        Async\suspend();
+        checkpoint();
+        graal_assert(bin2hex(FFI::string($weak->get(), 4)) === '0901feff', 'C pointer stays valid across callback suspension');
+    }, async: $offload, pool: 'serial-callbacks');
+    graal_assert($sum === 519 && $weak->get() === null, 'owned buffer released after physical C return');
+}
+$started = new Async\Channel(1); $weak = null; $finished = $ffi->gp_test_finished();
+$taking = Async\spawn(function () use ($buffers, $started, &$weak) {
+    $buffer = $buffers->new('char[4]');
+    $weak = WeakReference::create($buffer);
+    $buffers->gp_test_buffer($buffer, 4, function () use ($started, &$buffer) {
+        $buffer = null;
+        $started->send(true);
+        Async\delay(5000);
+    }, async: true, pool: 'serial-callbacks');
+});
+$started->recv(); graal_assert($weak->get() !== null, 'in-flight C owns the buffer');
+$taking->cancel();
+try { Async\await($taking); } catch (Async\AsyncCancellation $e) {}
+graal_assert($ffi->gp_test_finished() === $finished + 1 && $weak->get() === null, 'cancel drains C before dropping buffer');
+echo 'PASS transparent FFI: nested C stacks, owner coroutine/thread, scalar ABIs, buffers, GC, pool serialization, error/cancel drain, SQLite callback';

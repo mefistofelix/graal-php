@@ -1,5 +1,8 @@
 # Verifica — 26 settembre 2026
 
+[Buffer FFI posseduti](validation/ffi-buffers-2026-11-19/README.md)
+verifica ABI dei puntatori, copie binarie e rilascio dopo il drenaggio.
+
 [Dispatcher, libuv e deadline](validation/dispatcher-2026-11-19/README.md)
 verifica rete e callback native e confronta cURL e molti scope inattivi.
 
