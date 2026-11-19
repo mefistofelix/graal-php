@@ -130,6 +130,10 @@ Compose e mobile restano in coda. Le misure SPL riguardano questo percorso.
   clone, unset, raccolta e sospensione.
   [Copertura e A/B](docs/validation/typed-property-reference-2026-11-19/README.md).
 
+- [x] Chiusura degli scope TrueAsync con policy ereditata, cancellazione
+  o drenaggio, stato osservabile, waiter e deadline one-shot.
+  [Confronti](docs/validation/scope-disposal-2026-11-19/README.md).
+
 ## Prestazioni e memoria
 
 - [ ] **PERF-01 — Spiegare e ridurre il costo del p99.** L'A/B sullo stesso
@@ -169,8 +173,9 @@ Compose e mobile restano in coda. Le misure SPL riguardano questo percorso.
   Un miglior RSS della VM non chiude queste semantiche.
 - [ ] **ASYNC-01 — Structured concurrency e policy degli scope.** Risultati
   dei future TrueAsync e disposal di recvAsync perdenti seguono ora
-  l'ownership guest. Completare errori non osservati, warning, disposal e
-  scope annidati o staccati, poi Traversable nei combinatori, TaskGroup/TaskSet
+  l'ownership guest. La chiusura esplicita si distingue dal drenaggio.
+  Completare errori non osservati, finalizer, warning e distruzione implicita,
+  poi Traversable nei combinatori, TaskGroup/TaskSet
   e diagnostica. Criterio: stesso programma contro la release TrueAsync fissata,
   nessun adattamento del test per dichiarare una compatibilità inesistente.
 - [ ] **THREAD-01 — Grafi LOCAL→SHARED e spawn pubblico.** Promuovere array,

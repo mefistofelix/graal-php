@@ -21,7 +21,7 @@ build.bat trueasync
 
 `verify` e `trueasync` scaricano il runtime sotto `tools/trueasync-0.10.0`
 e i sorgenti upstream sotto `build/reference/`. Tutti i programmi di prova
-sono rigenerati in `build/trueasync-cases/`. Nessun percorso viene aggiunto
+sono rigenerati in directory isolate sotto `build/trueasync-cases/`. Nessun percorso viene aggiunto
 al PATH di sistema e non viene modificato `php.ini`.
 
 | Download | SHA-256 |
@@ -31,7 +31,7 @@ al PATH di sistema e non viene modificato `php.ini`.
 
 Il runner esegue lo stesso sorgente su entrambi i runtime e confronta stdout,
 errori e codici d'uscita; impone un limite al processo di riferimento. Sono
-inclusi 46 scenari mantenuti nel progetto e 42 PHPT upstream, estratti senza
+inclusi 52 scenari mantenuti nel progetto e 45 PHPT upstream, estratti senza
 modificare la sezione `--FILE--`. Un'API o una sintassi non implementata causa
 un fallimento, non uno skip. Il corpus selezionato non rappresenta l'intera
 suite upstream.
@@ -51,7 +51,7 @@ produce il risultato atteso e termina con access violation 0xC0000005.
 Il riproduttore mantenuto è `tests/php/trueasync-multi-close-reuse.php`;
 omettendo la distruzione esplicita è stata osservata una segnalazione di
 timer libuv rimasto aperto. Questo caso non viene conteggiato fra gli
-88 confronti passati: la suite integrata GraalPHP e quella di rete verificano
+97 confronti passati: la suite integrata GraalPHP e quella di rete verificano
 separatamente distruzione, riuso e shutdown corretto.
 
 Per ripetere il confronto con l'eseguibile Native Image, dopo la compilazione
@@ -97,8 +97,23 @@ tools\graalvm-25.4.4.1.1+1.1\bin\java.exe --enable-native-access=ALL-UNNAMED -cp
   esplicita conserva il motivo fornito dal chiamante.
 - Gli scope rifiutano attese dalla propria coroutine o dai propri discendenti;
   `awaitAfterCancellation` verifica che la cancellazione sia avvenuta.
+- `dispose()`, `disposeSafely()`, `disposeAfterTimeout()`, `allowZombies()`
+  e `asNotSafely()` controllano la politica di chiusura. Uno scope creato
+  con `new Scope()` cancella di default il lavoro residuo. Uno scope ereditato
+  eredita la politica del genitore. La chiusura sicura lascia terminare le
+  coroutine avviate, che continuano a essere conteggiate dal runtime fino
+  al drenaggio. `isFinished()` può diventare vero prima di `isClosed()`.
+  [Confronti Windows e Linux](validation/scope-disposal-2026-11-19/README.md).
 
 ### Dettagli osservati nel binario 0.10.0
+
+La cancellazione di uno scope vuoto chiude lo scope lasciando falso
+`isCancelled()`. Per uno scope attivo la chiusura avvia il drenaggio.
+L'attesa già registrata con `awaitCompletion()` riceve il motivo della
+cancellazione quando il lavoro viene interrotto e termina con successo
+quando lo scope lascia finire le proprie coroutine. `awaitAfterCancellation()`
+attende anche queste coroutine e i loro cleanup. Il budget host continua
+a valere durante il drenaggio, anche dopo una chiusura sicura.
 
 `await_first_success` restituisce `[valore, errori]`; `await_all` e `await_any_of`
 restituiscono `[risultati, errori]`. `await_any_of(n, ...)` conta i successi.

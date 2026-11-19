@@ -31,6 +31,20 @@ Riprendere da VALUE-01 e ASYNC-01 nel [TODO](../TODO.md), poi pubblicazione
 LOCAL→SHARED. PHP Fiber è fuori scope. I blocchi datati sotto conservano la
 copertura osservata al momento di ciascuna consegna.
 
+## Chiusura degli scope TrueAsync, 19 novembre
+
+La chiusura distingue il completamento logico dal drenaggio effettivo.
+Sono disponibili la policy ereditata, `allowZombies()`, `asNotSafely()`,
+`disposeSafely()` e la chiusura su deadline one-shot. I casi confrontano
+notifica ai waiter già registrati, propagazione ai discendenti, drenaggio,
+scope vuoti e argomenti nominati. Passano 97 scenari TrueAsync nelle sei
+combinazioni piattaforma/modalità.
+[Evidenze e prodotti](validation/scope-disposal-2026-11-19/README.md).
+
+Il blocco successivo di ASYNC-01 riguarda gli errori non osservati e i
+callback sospendibili. Restano aperti i finalizer degli scope, la
+distruzione implicita, i warning e TaskGroup/TaskSet.
+
 ## Riferimenti a proprietà tipizzate, 19 novembre
 
 La cella verifica i vincoli di ogni slot tipizzato che la condivide.

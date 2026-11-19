@@ -152,11 +152,21 @@ public final class Scheduler implements AutoCloseable {
         final java.util.Set<Future> members = new java.util.LinkedHashSet<>();
         int activeMembers; // Includes descendants; updated only by the owner.
         boolean cancelled;
+        boolean hostCancelled;
         PhpError failure;
+        boolean allowZombies;
+        boolean draining;
+        PhpError completionFailure;
+        Timer disposalTimer;
         public boolean disposed;
         public AsyncApi.ContextValue context;
         final List<Future> waiters = new ArrayList<>();
-        Scope(Scope parent, long deadline) { this.parent = parent; this.deadline = deadline; }
+        final List<Future> drainWaiters = new ArrayList<>();
+        Scope(Scope parent, long deadline, boolean allowZombies) {
+            this.parent = parent;
+            this.deadline = deadline;
+            this.allowZombies = allowZombies;
+        }
     }
 
     public static final class Task {
@@ -218,7 +228,7 @@ public final class Scheduler implements AutoCloseable {
         String configured = request.context.environment.getEnvironment().get("GRAALPHP_TIMEOUT_MS");
         long milliseconds = configured == null ? 30000 : Long.parseLong(configured);
         if (milliseconds <= 0) throw new PhpError("GRAALPHP_TIMEOUT_MS must be positive");
-        rootScope = new Scope(null, deadline(milliseconds));
+        rootScope = new Scope(null, deadline(milliseconds), true);
         scopes.add(rootScope);
     }
 
@@ -246,7 +256,10 @@ public final class Scheduler implements AutoCloseable {
 
     private Future spawn(ObjectModel.Invocation invocation, Argument[] args, ContextNode context, boolean topLevel, Scope scope,
                          PhpValues.Heap heap) {
-        if (scope.cancelled || scope.disposed) throw new PhpError("Cannot spawn into a cancelled or disposed scope");
+        if (scope.cancelled || scope.disposed) {
+            for (var argument : args) argument.close();
+            throw new PhpError("Async\\AsyncException", "Cannot spawn a coroutine in a closed scope");
+        }
         var function = invocation.function();
         var task = new Task(context, scope, heap);
         try {
@@ -316,23 +329,24 @@ public final class Scheduler implements AutoCloseable {
         if (generatorCleanup > 0) generatorCleanup--;
     }
     public Scope newScope(Scope parent) {
-        var scope = new Scope(parent, rootScope.deadline);
+        var scope = new Scope(parent, rootScope.deadline, parent != null && parent.allowZombies);
         scopes.add(scope);
         return scope;
     }
     public List<Scope> children(Scope parent) {
         return scopes.stream().filter(scope -> scope.parent == parent).toList();
     }
-    public Future scopeCompletion(Scope scope) {
+    public Future scopeCompletion(Scope scope, boolean drain) {
+        var waiters = drain ? scope.drainWaiters : scope.waiters;
         var future = new Future();
         future.observed = true;
         future.cancelOnAbort = true;
         future.cancelAction = () -> {
-            scope.waiters.remove(future);
+            waiters.remove(future);
             future.completion.completeExceptionally(new PhpError("Async\\AsyncCancellation", "Operation has been cancelled"));
         };
-        if (finished(scope)) future.completion.complete(null);
-        else scope.waiters.add(future);
+        if (scope.activeMembers == 0) future.completion.complete(null);
+        else waiters.add(future);
         return future;
     }
     public void checkScopeWait(Task caller, Scope scope) {
@@ -342,7 +356,7 @@ public final class Scheduler implements AutoCloseable {
         }
     }
     public boolean finished(Scope scope) {
-        return scope.activeMembers == 0;
+        return scope.draining || scope.activeMembers == 0;
     }
     public Future timeout(long milliseconds) {
         if (milliseconds < 0) throw new PhpError("Timeout must not be negative");
@@ -518,7 +532,7 @@ public final class Scheduler implements AutoCloseable {
             if (!rootScope.cancelled && now >= rootScope.deadline) cancelScope(rootScope, new PhpError("Request deadline exceeded"));
             if (rootScope.cancelled && cleanupDeadline == Long.MAX_VALUE) cleanupDeadline = deadline(5000);
             if (now >= cleanupDeadline) throw new PhpError("Cleanup timed out after cancellation");
-            for (var scope : scopes) if (!scope.cancelled && now >= scope.deadline) cancelScope(scope, new PhpError("Scope deadline exceeded"));
+            for (var scope : scopes) if (!scope.hostCancelled && now >= scope.deadline) cancelScope(scope, new PhpError("Scope deadline exceeded"));
             while (!timers.isEmpty() && timers.peek().deadline <= now) ready.add(timers.remove().action);
             // Cross-thread work joins the local FIFO even while PHP stays runnable.
             if (!incoming.isEmpty()) incoming.drainTo(ready);
@@ -539,7 +553,7 @@ public final class Scheduler implements AutoCloseable {
     public long nextDeadline() {
         if (hasReady()) return System.nanoTime();
         long next = cleanupDeadline;
-        for (var scope : scopes) if (!scope.cancelled) next = Math.min(next, scope.deadline);
+        for (var scope : scopes) if (!scope.hostCancelled) next = Math.min(next, scope.deadline);
         if (!timers.isEmpty()) next = Math.min(next, timers.peek().deadline);
         return next;
     }
@@ -602,18 +616,61 @@ public final class Scheduler implements AutoCloseable {
     }
 
     public void cancelScope(Scope scope, PhpError error) {
-        if (scope.cancelled) return;
+        if (scope.hostCancelled) return;
+        scope.hostCancelled = true;
         scope.cancelled = true;
         scope.failure = error;
-        for (var member : scope.members) cancel(member, error);
+        clearDisposalTimer(scope);
+        for (var member : List.copyOf(scope.members)) cancel(member, error);
         for (var child : scopes) if (child.parent == scope) cancelScope(child, error);
     }
 
-    private void updateScope(Scope scope) {
-        if (finished(scope)) {
-            for (var waiter : scope.waiters) waiter.completion.complete(null);
-            scope.waiters.clear();
+    void disposeScope(Scope scope, PhpError error, boolean safely) {
+        if (scope.disposed || scope.cancelled) return;
+        clearDisposalTimer(scope);
+        if (scope.activeMembers == 0) {
+            scope.disposed = true;
+            return;
         }
+        scope.cancelled = true;
+        scope.draining = true;
+        scope.completionFailure = safely ? null : error;
+        for (var child : scopes) if (child.parent == scope) disposeScope(child, error, safely);
+        if (!safely) for (var member : List.copyOf(scope.members)) cancel(member, error);
+        completeScopeWaiters(scope.waiters, scope.completionFailure);
+    }
+
+    void disposeScopeAfter(Scope scope, long milliseconds) {
+        if (scope.disposed || scope.cancelled || scope.activeMembers == 0 && children(scope).isEmpty()) return;
+        long when = deadline(milliseconds);
+        if (scope.disposalTimer != null && scope.disposalTimer.deadline <= when) return;
+        clearDisposalTimer(scope);
+        scope.disposalTimer = new Timer(when, () -> disposeScope(scope,
+                new PhpError("Async\\AsyncCancellation", "Scope has been disposed due to timeout"), scope.allowZombies));
+        timers.add(scope.disposalTimer);
+        wakeup.run();
+    }
+
+    private void clearDisposalTimer(Scope scope) {
+        if (scope.disposalTimer != null) {
+            timers.remove(scope.disposalTimer);
+            scope.disposalTimer = null;
+        }
+    }
+
+    private void updateScope(Scope scope) {
+        if (scope.activeMembers != 0) return;
+        if (scope.draining) scope.disposed = true;
+        completeScopeWaiters(scope.waiters, scope.completionFailure);
+        completeScopeWaiters(scope.drainWaiters, null);
+    }
+
+    private static void completeScopeWaiters(List<Future> waiters, PhpError error) {
+        for (var waiter : waiters) {
+            if (error == null) waiter.completion.complete(null);
+            else waiter.completion.completeExceptionally(error);
+        }
+        waiters.clear();
     }
 
     private final class WaitRegistration implements AutoCloseable {
@@ -712,7 +769,8 @@ public final class Scheduler implements AutoCloseable {
                 else { PhpValues.drop(result); task.future.completion.completeExceptionally(failure); }
                 if (task.future.heap != null) {
                     tasks.remove(task);
-                    if (failure == null || task.future.observed) task.scope.members.remove(task.future);
+                    if (failure == null || task.future.observed || failure.matches("Async\\AsyncCancellation"))
+                        task.scope.members.remove(task.future);
                     task.activation = null;
                     PhpValues.release(task.future);
                 }

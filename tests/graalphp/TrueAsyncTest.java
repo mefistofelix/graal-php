@@ -98,6 +98,74 @@ public final class TrueAsyncTest {
             function call($a = 2, $b = 3) { return $a * $b; }
             $callback = 'call'; echo $callback(b: 5);
             """),
+        new Case("scope-empty-cancel-and-policy-identity", """
+            $s = new Async\\Scope();
+            echo $s->isFinished(), $s->isClosed() ? 'closed' : 'open', '|';
+            echo $s->asNotSafely() === $s, $s->allowZombies() === $s, '|';
+            $s->cancel();
+            echo $s->isClosed(), $s->isCancelled() ? 'cancelled' : 'idle';
+            """),
+        new Case("scope-dispose-safely-drains-zombies", """
+            $s = new Async\\Scope();
+            $pipe = new Async\\Channel();
+            $task = $s->spawn(function () use ($pipe) {
+                try { echo $pipe->recv(), '|'; return 17; }
+                finally { echo 'finally|'; }
+            });
+            Async\\suspend();
+            $s->disposeSafely();
+            echo ($s->isFinished() ? 1 : 0), ($s->isClosed() ? 1 : 0), ($s->isCancelled() ? 1 : 0), '|';
+            $pipe->send('ran');
+            $s->awaitAfterCancellation(cancellation: Async\\timeout(1000));
+            echo ($s->isClosed() ? 1 : 0), '|', Async\\await($task);
+            """),
+        new Case("scope-dispose-cancels-and-notifies-existing-waiter", """
+            $s = new Async\\Scope();
+            $pipe = new Async\\Channel();
+            $task = $s->spawn(function () use ($pipe) {
+                try { $pipe->recv(); } finally { echo 'finally|'; }
+            });
+            $waiter = Async\\spawn(function () use ($s) {
+                try { $s->awaitCompletion(cancellation: Async\\timeout(1000)); }
+                catch (Async\\AsyncCancellation $e) { echo $e->getMessage(), '|'; }
+            });
+            Async\\suspend();
+            $s->dispose();
+            echo ($s->isFinished() ? 1 : 0), ($s->isClosed() ? 1 : 0), ($s->isCancelled() ? 1 : 0), '|';
+            $s->awaitAfterCancellation();
+            Async\\await($waiter);
+            echo ($s->isClosed() ? 1 : 0), '|';
+            try { Async\\await($task); } catch (Async\\AsyncCancellation $e) { echo $e->getMessage(); }
+            """),
+        new Case("scope-timeout-cancels-live-coroutine", """
+            $s = new Async\\Scope();
+            $pipe = new Async\\Channel();
+            $task = $s->spawn(function () use ($pipe) {
+                try { $pipe->recv(); } finally { echo 'finally|'; }
+            });
+            $s->disposeAfterTimeout(timeout: 10);
+            try { Async\\await($task); }
+            catch (Async\\AsyncCancellation $e) { echo $e->getMessage(), '|'; }
+            echo ($s->isCancelled() ? 1 : 0), ($s->isClosed() ? 1 : 0);
+            """),
+        new Case("scope-timeout-on-empty-scope", """
+            $s = new Async\\Scope();
+            $s->disposeAfterTimeout(0);
+            $task = $s->spawn(function () { Async\\suspend(); return 13; });
+            echo Async\\await($task), '|', ($s->isClosed() ? 1 : 0);
+            """),
+        new Case("scope-inherits-disposal-policy", """
+            $p = (new Async\\Scope())->allowZombies();
+            $s = Async\\Scope::inherit(parentScope: $p);
+            $pipe = new Async\\Channel();
+            $c = $s->spawn(function () use ($pipe) { return $pipe->recv(); });
+            Async\\suspend();
+            $p->cancel();
+            echo ($p->isFinished() ? 1 : 0), ($s->isFinished() ? 1 : 0), '|';
+            $pipe->send(31);
+            $p->awaitAfterCancellation();
+            echo Async\\await($c), '|', ($p->isClosed() ? 1 : 0), ($s->isClosed() ? 1 : 0);
+            """),
         new Case("coroutine-result", """
             use function Async\\spawn;
             use function Async\\await;
@@ -395,6 +463,7 @@ public final class TrueAsyncTest {
         Path oracle = Path.of(arguments.length == 0 ? "tools/trueasync-0.10.0/php.exe" : arguments[0]).toAbsolutePath();
         Path directory = Path.of("build/trueasync-cases").toAbsolutePath();
         Files.createDirectories(directory);
+        Path generated = Files.createTempDirectory(directory, "run-");
         int failures = 0;
         var report = new StringBuilder();
         var cases = new java.util.ArrayList<>(CASES);
@@ -423,7 +492,9 @@ public final class TrueAsyncTest {
                 "protect/001-protect_basic.phpt", "protect/003-protect_nested.phpt",
                 "protect/007-protect_exception_in_closure.phpt", "protect/008-protect_with_exception.phpt",
                 "protect/009-protect_with_spawn.phpt", "protect/010-protect_with_await.phpt",
-                "scope/022-scope_awaitCompletion_basic.phpt",
+                "scope/009-scope_dispose_basic.phpt",
+                "scope/012-scope_dispose_after_timeout.phpt", "scope/022-scope_awaitCompletion_basic.phpt",
+                "scope/023-scope_awaitCompletion_timeout.phpt",
                 "scope/041-scope_awaitCompletion_marks_future_used.phpt",
                 "scope/044-scope_awaitAfterCancellation_not_cancelled.phpt",
                 "scope/045-scope_awaitCompletion_self_deadlock.phpt",
@@ -436,7 +507,7 @@ public final class TrueAsyncTest {
         }
         for (var test : cases) {
             String source = test.source.startsWith("<?php") ? test.source : "<?php\n" + test.source;
-            Path script = directory.resolve(test.name + ".php");
+            Path script = Files.createDirectory(generated.resolve(test.name)).resolve(test.name + ".php");
             Files.writeString(script, source);
             var oracleCommand = new java.util.ArrayList<>(List.of(oracle.toString(), "-n"));
             if (test.name.startsWith("curl-") && System.getProperty("os.name").startsWith("Windows")) {

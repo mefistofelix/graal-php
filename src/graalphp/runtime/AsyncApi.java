@@ -122,8 +122,10 @@ public final class AsyncApi {
     @TruffleBoundary
     public static Object staticMethod(Activation caller, String type, String name, Argument[] args) {
         if (type.equalsIgnoreCase("Async\\Scope") && name.equalsIgnoreCase("inherit")) {
-            args = CallArguments.builtin(name, args, java.util.List.of("scope"), 0, (Object) null);
-            var parent = args.length == 0 || value(args, 0) == null ? caller.task.scope : (Scheduler.Scope) value(args, 0);
+            args = CallArguments.builtin("Async\\Scope::inherit", args, java.util.List.of("parentScope"), 0, (Object) null);
+            Object candidate = value(args, 0);
+            if (candidate != null && !(candidate instanceof Scheduler.Scope)) throw new PhpError("TypeError", "Expected Async\\Scope");
+            var parent = candidate == null ? caller.task.scope : (Scheduler.Scope) candidate;
             return caller.request.scheduler.newScope(parent);
         }
         if (type.equalsIgnoreCase("Async\\Future")) {
@@ -147,7 +149,7 @@ public final class AsyncApi {
         receiver = PhpValues.unwrap(receiver);
         name = name.toLowerCase(Locale.ROOT);
         var scheduler = caller.request.scheduler;
-        if (receiver instanceof Scheduler.Future || receiver instanceof Scheduler.Scope || receiver instanceof AsyncChannel
+        if (receiver instanceof Scheduler.Future || receiver instanceof AsyncChannel
                 || receiver instanceof ContextValue || receiver instanceof FutureState || receiver instanceof PhpError) {
             CallArguments.positionalOnly(className(receiver) + "::" + name, args);
         }
@@ -188,6 +190,16 @@ public final class AsyncApi {
             };
         }
         if (receiver instanceof Scheduler.Scope scope) {
+            var method = "Async\\Scope::" + name;
+            args = switch (name) {
+                case "spawn" -> args;
+                case "awaitcompletion" -> CallArguments.builtin(method, args, java.util.List.of("cancellation"), 1);
+                case "awaitaftercancellation" -> CallArguments.builtin(method, args,
+                        java.util.List.of("errorHandler", "cancellation"), 0, null, null);
+                case "cancel" -> CallArguments.builtin(method, args, java.util.List.of("cancellationError"), 0, (Object) null);
+                case "disposeaftertimeout" -> CallArguments.builtin(method, args, java.util.List.of("timeout"), 1);
+                default -> CallArguments.builtin(method, args, java.util.List.of(), 0);
+            };
             switch (name) {
                 case "__construct": return null;
                 case "providescope": return scope;
@@ -196,14 +208,13 @@ public final class AsyncApi {
                     return caller.track(PhpValues.own(scheduler.spawnGuest(ObjectModel.callable(caller, value(args, 0)),
                             copy(args, 1), caller.task.context.branch(), scope)));
                 case "awaitcompletion":
-                    arity(name, args, 1);
                     var token = future(value(args, 0));
                     token.observed = true;
                     try {
                         if (scope.disposed) return null;
                         if (scope.cancelled) throw new PhpError("Async\\AsyncCancellation", "The scope has been cancelled");
                         scheduler.checkScopeWait(caller.task, scope);
-                        return Scheduler.awaitValue(caller, scheduler.scopeCompletion(scope), token);
+                        return Scheduler.awaitValue(caller, scheduler.scopeCompletion(scope, false), token);
                     } finally { Scheduler.discardUnowned(token); }
                 case "awaitaftercancellation":
                     if (args.length > 0 && value(args, 0) != null) throw new PhpError("Scope error handlers are not implemented");
@@ -213,19 +224,26 @@ public final class AsyncApi {
                         if (scope.disposed) return null;
                         if (!scope.cancelled) throw new PhpError("Async\\AsyncException", "Attempt to await a Scope that has not been cancelled");
                         scheduler.checkScopeWait(caller.task, scope);
-                        return Scheduler.awaitValue(caller, scheduler.scopeCompletion(scope), cancellation);
+                        return Scheduler.awaitValue(caller, scheduler.scopeCompletion(scope, true), cancellation);
                     } finally { Scheduler.discardUnowned(cancellation); }
                 case "cancel":
                     var reason = args.length == 0 || value(args, 0) == null
-                            ? new PhpError("Async\\AsyncCancellation", "Scope cancelled") : error(value(args, 0));
+                            ? new PhpError("Async\\AsyncCancellation", "Scope was cancelled") : error(value(args, 0));
                     if (!reason.matches("Async\\AsyncCancellation")) throw new PhpError("TypeError", "Expected AsyncCancellation");
-                    scheduler.cancelScope(scope, reason);
+                    scheduler.disposeScope(scope, reason, scope.allowZombies);
                     return null;
                 case "getchildscopes":
                     return caller.track(PhpValues.own(caller.locals.array(scheduler.children(scope).toArray())));
-                case "dispose":
-                    scope.disposed = true;
-                    scheduler.cancelScope(scope, new PhpError("Async\\AsyncCancellation", "Scope disposed"));
+                case "asnotsafely": scope.allowZombies = false; return scope;
+                case "allowzombies": scope.allowZombies = true; return scope;
+                case "dispose": case "disposesafely":
+                    scheduler.disposeScope(scope, new PhpError("Async\\AsyncCancellation", "Scope was cancelled"),
+                            name.equals("disposesafely") || scope.allowZombies);
+                    return null;
+                case "disposeaftertimeout":
+                    long delay = (long) TypeRelations.check(value(args, 0), "int", caller.function.strictTypes(), Diagnostics.origin(caller));
+                    if (delay < 0) throw new PhpError("ValueError", "Async\\Scope::disposeAfterTimeout(): Argument #1 ($timeout) must be greater than or equal to 0");
+                    scheduler.disposeScopeAfter(scope, delay);
                     return null;
                 case "isfinished": return scheduler.finished(scope);
                 case "isclosed": return scope.disposed;

@@ -1,5 +1,8 @@
 # Verifica — 26 settembre 2026
 
+[Chiusura degli scope](validation/scope-disposal-2026-11-19/README.md)
+verifica cancellazione, drenaggio e deadline contro TrueAsync su Windows e Linux.
+
 [Riferimenti a proprietà tipizzate](validation/typed-property-reference-2026-11-19/README.md)
 verifica l'ownership dei vincoli e misura il percorso CLI già disponibile.
 
