@@ -828,6 +828,22 @@ public final class IntegrationTest {
             } catch (PolyglotException error) { if (error.isInternalError()) throw error; }
         }
         equal("protect preserves the host CPU deadline", "protected cleanup", output.toString());
+        output.reset();
+        try (var context = Context.newBuilder("php").allowAllAccess(true).out(output)
+                .environment("GRAALPHP_TIMEOUT_MS", "500").build()) {
+            try {
+                context.eval("php", """
+                    $scope = new Async\\Scope();
+                    $scope->spawn(function () {
+                        try { Async\\delay(5000); } finally { echo 'drained'; }
+                    });
+                    Async\\suspend();
+                    $scope->disposeSafely();
+                    """);
+                throw new AssertionError("Host deadline did not interrupt a detached draining scope");
+            } catch (PolyglotException error) { if (error.isInternalError()) throw error; }
+        }
+        equal("host deadline cancels work still draining in a detached scope", "drained", output.toString());
     }
     private static void readFile() throws Exception {
         Path file = Files.createTempFile(Path.of("build"), "async-", ".txt");

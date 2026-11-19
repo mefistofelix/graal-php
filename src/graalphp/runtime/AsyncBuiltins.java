@@ -69,7 +69,7 @@ public final class AsyncBuiltins {
         var function = caller.request.context.asyncFunction(operation);
         source.observed = true;
         var args = new Argument[] {new Argument(source, null), new Argument(PhpValues.own(callback), null)};
-        var scheduler = caller.request.scheduler;
+        var scheduler = caller.task.dispatcher;
         var coroutine = scheduler.spawnGuest(new ObjectModel.Invocation(function, null, null, null),
                 args, caller.task.context.branch(), caller.task.scope);
         if (operation.equals("coroutine_finally")) return null;

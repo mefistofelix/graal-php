@@ -40,7 +40,7 @@ public final class NativeCallback implements TruffleObject, AutoCloseable {
         if (owner.request.fatalFailure != null) throw owner.request.fatalFailure;
         if (Thread.currentThread() != thread) {
             Object[] copied = values.clone();
-            var result = owner.request.scheduler.dispatch(() -> executeLocal(copied));
+            var result = owner.task.dispatcher.dispatch(() -> executeLocal(copied));
             var location = ((com.oracle.truffle.api.RootCallTarget) owner.function.target()).getRootNode();
             return com.oracle.truffle.api.TruffleSafepoint.setBlockedThreadInterruptibleFunction(location,
                     NativeCallback::waitForResult, result);

@@ -3,20 +3,23 @@ package graalphp.runtime;
 import com.oracle.truffle.api.interop.TruffleObject;
 import java.util.ArrayDeque;
 import java.util.LinkedHashSet;
-import static graalphp.runtime.Execution.*;
 
 /** TrueAsync channel semantics on the cooperative request dispatcher. */
 public final class AsyncChannel implements TruffleObject, AutoCloseable {
     private record Message(Object value) {}
     private record Sender(Message message, Scheduler.Future future) {}
-    public final Request request;
+    private final PhpValues.Heap heap;
+    final Scheduler dispatcher;
     private final ArrayDeque<Message> buffer = new ArrayDeque<>();
     private final ArrayDeque<Sender> senders = new ArrayDeque<>();
     private final LinkedHashSet<Scheduler.Future> receivers = new LinkedHashSet<>();
     public int capacity;
     public boolean closed;
 
-    public AsyncChannel(Request request) { this.request = request; }
+    AsyncChannel(Execution.Activation caller) {
+        heap = caller.request.heap;
+        dispatcher = caller.task.dispatcher;
+    }
     public int count() { return buffer.size(); }
 
     public boolean trySend(Object value) {
@@ -48,7 +51,7 @@ public final class AsyncChannel implements TruffleObject, AutoCloseable {
     }
 
     public Scheduler.Future receive() {
-        var future = new Scheduler.Future(request.heap);
+        var future = new Scheduler.Future(heap);
         if (!buffer.isEmpty()) {
             future.completeValue(buffer.removeFirst().value);
             if (!senders.isEmpty()) {

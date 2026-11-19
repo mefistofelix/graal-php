@@ -101,7 +101,7 @@ public final class CurlApi {
             if (handle.pending != null) {
                 // Owner-thread cURL cancellation removes the transfer synchronously.
                 // Never expose a reusable handle while C still owns its operation.
-                if (!handle.pending.completion.isDone()) caller.request.scheduler.cancel(handle.pending);
+                if (!handle.pending.completion.isDone()) caller.task.dispatcher.cancel(handle.pending);
                 if (!handle.pending.completion.isDone()) throw new PhpError("cURL transfer did not detach during cancellation");
                 if (!handle.pending.completion.isCompletedExceptionally()) {
                     Object status = handle.pending.completion.getNow(null);
@@ -121,7 +121,7 @@ public final class CurlApi {
         if (caller.synchronousCallback) throw new PhpError("Cannot suspend a native callback");
         var transfer = new Transfer(caller, handle);
         try {
-            handle.pending = caller.request.libuv(caller).submit("gp_reactor_curl", ",UINT64", handle.pointer);
+            handle.pending = caller.task.dispatcher.libuv(caller).submit("gp_reactor_curl", ",UINT64", handle.pointer);
             handle.pending.observed = true;
             if (handle.pending.completion.isDone()) return transfer.finish(Scheduler.result(handle.pending));
             return new Scheduler.Await(handle.pending, null, transfer::finish);

@@ -31,6 +31,22 @@ Riprendere da VALUE-01 e ASYNC-01 nel [TODO](../TODO.md), poi pubblicazione
 LOCAL→SHARED. PHP Fiber è fuori scope. I blocchi datati sotto conservano la
 copertura osservata al momento di ciascuna consegna.
 
+## Dispatcher e deadline, 19 novembre
+
+Il task seleziona il dispatcher delle continuation e delle notifiche.
+Il reactor libuv appartiene allo scheduler. Un solo controllo della
+deadline host sostituisce la scansione continua degli scope. Passano
+636 confronti TrueAsync e le prove native integrate di WebSocket,
+SQLite, cURL e callback FFI Windows/Linux. Il carico Linux con 2.048
+scope inattivi e 32.768 sospensioni passa da 339,70 a 41,64 ms di wall
+time mediano. Nella prova cURL Windows con 1.000 sospese il p99 scende e
+il picco RSS osservato aumenta.
+[Dati a freddo, prodotti e perimetro](validation/dispatcher-2026-11-19/README.md).
+
+THREAD-01 prosegue sulla pubblicazione dei grafi con identità, reference e
+COW; la proprietà del dispatcher è già esplicita. In FFI-01 procedere con
+buffer posseduti, ABI dei puntatori e verifica del rilascio dopo il ritorno C.
+
 ## Caricamento su richiesta, 19 novembre
 
 Senza watch l'entry già compilata parte subito e include/autoload caricano

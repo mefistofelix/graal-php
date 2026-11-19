@@ -1,0 +1,6 @@
+SHA-256                                                               Bytes  File
+5934473cba84b82ba2cf3cecbf4b5a794519d0ed5756ec3c5e4ac634a7884c0a    94035968  graalphp.exe
+49380bb7d88343644c2caeed1f1b7deb74e9b1781a9aff80b8387537a966dcf0    97061672  graalphp-linux-x64
+e1f438d35e08411db0f176115efffc3922ecafc0ccdc4ba0f2c8a78e6768d184      965583  graalphp.jar
+f8f138ec107ad4f618034d57c3126ed2933532445db606dae70a7daf8992470e    94167040  lazy-code-graalphp.exe
+f5c3313756e628af31ccf1f6819440bfebe3a14b97657d43b00199b607d7cdbf    97127208  lazy-code-graalphp-linux-x64

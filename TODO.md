@@ -138,6 +138,10 @@ Compose e mobile restano in coda. Le misure SPL riguardano questo percorso.
   sospendibili nella coroutine sorgente e risultato originale osservabile.
   [Confronti e A/B cURL](docs/validation/scope-errors-2026-11-19/README.md).
 
+- [x] Appartenenza delle continuation al dispatcher del task, libuv sullo
+  stesso proprietario e deadline host indipendente dal numero di scope.
+  [Verifica rete e misure](docs/validation/dispatcher-2026-11-19/README.md).
+
 ## Prestazioni e memoria
 
 - [ ] **PERF-01 — Spiegare e ridurre il costo del p99.** L'A/B sullo stesso
@@ -186,8 +190,8 @@ Compose e mobile restano in coda. Le misure SPL riguardano questo percorso.
 - [ ] **THREAD-01 — Grafi LOCAL→SHARED e spawn pubblico.** Promuovere array,
   oggetti, closure e reference nello stesso heap; integrare visibilità, ownership
   e collector mantenendo veloce il caso locale. Poi esporre API vicina a TrueAsync.
-  Il dispatcher di una continuation deve seguire il task proprietario. Prima
-  della pubblicazione, i valori raggiungibili devono usare storage condiviso e
+  Il dispatcher segue il task proprietario. Prima della pubblicazione, i
+  valori raggiungibili devono usare storage condiviso e
   le nuove scritture in quel grafo devono applicare la stessa barriera.
   Criterio: identità condivisa e COW corretti, test con thread reali e
   sincronizzazione esplicita, race che non corrompono il runtime; nessuna copia

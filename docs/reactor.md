@@ -1,6 +1,7 @@
 # Cooperazione tra scheduler PHP e loop host
 
-Il runtime separa l'avanzamento del lavoro dalla sua attesa. Lo scheduler
+Il runtime separa l'avanzamento del lavoro dalla sua attesa. Ogni task
+conserva lo scheduler proprietario, a cui accoda riprese e notifiche. Lo scheduler
 espone `pump(root, budget)` senza attese bloccanti, una notifica di lavoro e
 la prossima deadline effettiva. In modalità CLI, quando libuv è attivo, il driver
 attende nel suo backend; senza I/O nativo attende sulla coda dello scheduler.
@@ -62,9 +63,11 @@ pump con PHP pronto; l'attesa CLI senza libuv usa quella inbox bloccante.
 Le deadline host considerano entrambe le code, evitando di parcheggiare il
 dispatcher quando è arrivato lavoro esterno. Il conteggio degli scope include
 i discendenti ed è aggiornato agli eventi di spawn/completamento. Un conteggio
-di richiesta separato comprende anche gli scope indipendenti. Il completamento
+di richiesta separato comprende anche gli scope indipendenti. La deadline host
+si controlla una volta per iterazione, indipendentemente dal numero di scope.
+I timeout di chiusura restano timer one-shot. Il completamento
 di un worker aggiorna questi conteggi sul proprietario prima che la richiesta
-possa essere considerata terminata.
+possa essere considerata terminata. [Verifiche e misure](validation/dispatcher-2026-11-19/README.md).
 
 Il backend copre timer, wakeup, cancellazione, shutdown e socket TCP server
 (listen/accept/read/write/close). HTTP/1.1 e framing WebSocket usano questi

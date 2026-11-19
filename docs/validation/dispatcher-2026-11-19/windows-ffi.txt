@@ -1,0 +1,1 @@
+PASS transparent FFI: nested C stacks, owner coroutine/thread, all scalar ABIs, strings, void, GC, pool serialization, error/cancel drain, SQLite callback

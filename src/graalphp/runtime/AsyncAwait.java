@@ -20,7 +20,8 @@ public final class AsyncAwait implements AutoCloseable {
         }
     }
 
-    private final Request request;
+    private final PhpValues.Heap heap;
+    private final Scheduler dispatcher;
     private final String operation;
     private final boolean ignoreErrors;
     private final boolean preserveOrder;
@@ -39,14 +40,15 @@ public final class AsyncAwait implements AutoCloseable {
 
     private AsyncAwait(Activation caller, String operation, Object sources, long count,
                        boolean preserveOrder, boolean fillNull) {
-        request = caller.request;
+        heap = caller.request.heap;
+        dispatcher = caller.task.dispatcher;
         this.operation = operation;
         this.count = count;
         this.preserveOrder = preserveOrder;
         this.fillNull = fillNull || operation.equals("await_all_or_fail");
         ignoreErrors = operation.equals("await_all") || operation.equals("await_any_of")
                 || operation.equals("await_first_success");
-        future = new Scheduler.Future(request.heap);
+        future = new Scheduler.Future(heap);
         future.abandon = this::close;
         future.cancelOnAbort = true;
         future.cancelAction = () -> {
@@ -108,11 +110,11 @@ public final class AsyncAwait implements AutoCloseable {
                 try { accept(entry, Scheduler.result(entry.source), null); }
                 catch (PhpError error) { accept(entry, null, error); }
                 if (enough()) { finish(); return; }
-            } else subscriptions.add(request.scheduler.listen(entry.source, (value, error) -> {
+            } else subscriptions.add(dispatcher.listen(entry.source, (value, error) -> {
                 accept(entry, value, error);
                 if (enough() && !finishQueued) {
                     finishQueued = true;
-                    request.scheduler.enqueue(this::finish);
+                    dispatcher.enqueue(this::finish);
                 }
             }));
         }
@@ -137,7 +139,7 @@ public final class AsyncAwait implements AutoCloseable {
             var pending = entries.stream().filter(entry -> entry.source.task != null && !entry.source.completion.isDone()).toList();
             remaining = pending.size();
             // v0.10.0 drains remaining Coroutine triggers on these two APIs. It does not cancel them.
-            for (var entry : pending) subscriptions.add(request.scheduler.listen(entry.source, (value, error) -> {
+            for (var entry : pending) subscriptions.add(dispatcher.listen(entry.source, (value, error) -> {
                 if (closed) return;
                 if (error != null) {
                     entry.settled = true;
@@ -158,7 +160,7 @@ public final class AsyncAwait implements AutoCloseable {
     private Object results() {
         if (operation.equals("await_any_or_fail")) return completed.isEmpty() ? null
                 : PhpValues.own(PhpValues.unwrap(completed.getFirst().value));
-        try (var storage = new PhpValues.Scope(request.heap)) {
+        try (var storage = new PhpValues.Scope(heap)) {
             var results = storage.variable(storage.emptyArray());
             var errors = storage.variable(storage.emptyArray());
             // Error keys follow completion order. fillNull affects only results.

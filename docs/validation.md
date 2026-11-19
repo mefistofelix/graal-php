@@ -1,5 +1,8 @@
 # Verifica — 26 settembre 2026
 
+[Dispatcher, libuv e deadline](validation/dispatcher-2026-11-19/README.md)
+verifica rete e callback native e confronta cURL e molti scope inattivi.
+
 [Caricamento su richiesta](validation/lazy-code-2026-11-19/README.md)
 verifica include e autoload e confronta avvio CLI Linux e cURL Windows.
 

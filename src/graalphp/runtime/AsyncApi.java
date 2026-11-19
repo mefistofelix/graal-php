@@ -54,9 +54,9 @@ public final class AsyncApi {
         return switch (name.toLowerCase(Locale.ROOT)) {
             case "async\\mutex" -> new AsyncMutex();
             case "async\\threadchannel" -> new ThreadChannel();
-            case "async\\scope" -> request.scheduler.newScope(null);
+            case "async\\scope" -> caller.task.dispatcher.newScope(null);
             case "async\\channel" -> {
-                var channel = new AsyncChannel(request);
+                var channel = new AsyncChannel(caller);
                 request.resources.add(channel);
                 yield channel;
             }
@@ -69,7 +69,7 @@ public final class AsyncApi {
     @TruffleBoundary
     public static Object function(Activation caller, String name, Argument[] args,
                                   com.oracle.truffle.api.nodes.IndirectCallNode call) {
-        var scheduler = caller.request.scheduler;
+        var scheduler = caller.task.dispatcher;
         if (CallArguments.hasNames(args)) args = namedFunction(name, args);
         switch (name.toLowerCase(Locale.ROOT)) {
             case "async\\spawn":
@@ -109,7 +109,7 @@ public final class AsyncApi {
                 return scheduler.timeout(Operations.number(value(args, 0)).longValue());
             case "async\\current_coroutine": return caller.track(PhpValues.own(caller.task.future));
             case "async\\current_context": return context(caller.request, caller.task.scope);
-            case "async\\root_context": return context(caller.request, scheduler.rootScope);
+            case "async\\root_context": return context(caller.request, caller.request.scheduler.rootScope);
             case "async\\request_context": return null; // CLI has no server-assigned request scope.
             case "async\\coroutine_context":
                 if (caller.task.privateContext == null) caller.task.privateContext = new ContextValue(caller.request, null);
@@ -126,7 +126,7 @@ public final class AsyncApi {
             Object candidate = value(args, 0);
             if (candidate != null && !(candidate instanceof Scheduler.Scope)) throw new PhpError("TypeError", "Expected Async\\Scope");
             var parent = candidate == null ? caller.task.scope : (Scheduler.Scope) candidate;
-            return caller.request.scheduler.newScope(parent);
+            return caller.task.dispatcher.newScope(parent);
         }
         if (type.equalsIgnoreCase("Async\\Future")) {
             CallArguments.positionalOnly(type + "::" + name, args);
@@ -148,7 +148,7 @@ public final class AsyncApi {
     public static Object method(Activation caller, Object receiver, String name, Argument[] args) {
         receiver = PhpValues.unwrap(receiver);
         name = name.toLowerCase(Locale.ROOT);
-        var scheduler = caller.request.scheduler;
+        var scheduler = caller.task.dispatcher;
         if (receiver instanceof Scheduler.Future || receiver instanceof AsyncChannel
                 || receiver instanceof ContextValue || receiver instanceof FutureState || receiver instanceof PhpError) {
             CallArguments.positionalOnly(className(receiver) + "::" + name, args);
@@ -292,7 +292,7 @@ public final class AsyncApi {
             }
         }
         if (receiver instanceof AsyncChannel channel) {
-            if (channel.request != caller.request) throw new PhpError("Use ThreadChannel for cross-thread messaging");
+            if (channel.dispatcher != scheduler) throw new PhpError("Use ThreadChannel for cross-thread messaging");
             switch (name) {
                 case "__construct":
                     channel.capacity = args.length == 0 ? 0 : Math.toIntExact(Operations.number(value(args, 0)).longValue());

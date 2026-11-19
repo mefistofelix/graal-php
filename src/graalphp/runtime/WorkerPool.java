@@ -90,7 +90,7 @@ public final class WorkerPool implements AutoCloseable {
         if (queue.size() >= configuration.queueCapacity) throw new PhpError("Worker queue capacity exceeded");
         queue.addLast(job);
         outstanding++;
-        request.scheduler.registerExternal(caller.task.scope, job.future);
+        caller.task.dispatcher.registerExternal(caller.task.scope, job.future);
         if (threads.size() < Math.min(configuration.max, outstanding)) startWorker();
         notifyAll();
         return job.future;

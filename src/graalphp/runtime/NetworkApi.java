@@ -277,7 +277,7 @@ public final class NetworkApi {
             case "__net_listen": {
                 if (server.started || server.config == null || server.config.host == null) throw new PhpError("Server requires an unused listener");
                 server.started = true; server.config.locked = true;
-                server.reactor = caller.request.libuv(caller);
+                server.reactor = caller.task.dispatcher.libuv(caller);
                 var future = server.reactor.submit("gp_tcp_listen", ",STRING,SINT32,SINT32", server.config.host, server.config.port, server.config.backlog);
                 var cancelled = new java.util.concurrent.atomic.AtomicBoolean();
                 var listening = future.completion.thenCompose(id -> {
@@ -285,7 +285,7 @@ public final class NetworkApi {
                     return server.reactor.submit("gp_tcp_port", ",SINT64", server.listener).completion;
                 });
                 var result = new CompletableFuture<Object>();
-                listening.whenComplete((port, error) -> caller.request.scheduler.enqueue(() -> {
+                listening.whenComplete((port, error) -> caller.task.dispatcher.enqueue(() -> {
                     if (error != null) result.completeExceptionally(error);
                     else if (cancelled.get()) {
                         server.reactor.closeSocket(server.listener);

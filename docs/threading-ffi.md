@@ -10,6 +10,11 @@ Il runtime deve preservare l'integrità di storage, ownership e GC anche sotto
 race. L'utente deve sincronizzare le operazioni della propria applicazione:
 non sono previsti lock impliciti intorno a ogni accesso PHP.
 
+Il task conserva il proprio dispatcher. Le riprese da cURL, libuv, pool
+FFI e callback native seguono quel dispatcher. Libuv viene creato e
+chiuso dal suo proprietario. Questo confine prepara il lavoro di
+pubblicazione dei grafi. [Evidenze](validation/dispatcher-2026-11-19/README.md).
+
 ## Primitive esplicite
 
 `Async\Mutex` è un'estensione del runtime; non viene presentata come una classe

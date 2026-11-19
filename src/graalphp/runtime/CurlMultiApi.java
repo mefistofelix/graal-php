@@ -82,7 +82,7 @@ public final class CurlMultiApi {
         Handle(Activation caller, int provider) {
             super(caller.request.heap);
             request = caller.request;
-            reactor = request.libuv(caller);
+            reactor = caller.task.dispatcher.libuv(caller);
             this.provider = provider;
             group = reactor.allocateCurlGroup() * 2 + provider;
         }

@@ -297,10 +297,10 @@ public final class Operations {
             case "await": require(name, values, 1); return new Scheduler.Await(future(values[0]));
             case "cancel":
                 require(name, values, 1); var future = future(values[0]); future.observed = true;
-                activation.request.scheduler.cancel(future); return null;
+                activation.task.dispatcher.cancel(future); return null;
             case "spawn":
                 require(name, values, 1);
-                return activation.request.scheduler.spawn(ObjectModel.callable(activation, values[0]),
+                return activation.task.dispatcher.spawn(ObjectModel.callable(activation, values[0]),
                         copyArguments(args, 1), activation.task.context.branch(), false, activation.task.scope);
             case "context_get": require(name, values, 1); return activation.task.context.read(string(values[0]));
             case "context_set":

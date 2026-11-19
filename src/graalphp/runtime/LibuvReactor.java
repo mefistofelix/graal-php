@@ -34,16 +34,17 @@ public final class LibuvReactor implements AutoCloseable {
                 new Object[] {completion, caller.request.hosted ? 1 : 0})).longValue();
         if (handle == 0) throw new PhpError("Could not initialize libuv reactor");
         if (caller.request.hosted) {
+            var dispatcher = caller.task.dispatcher;
             poller = caller.request.context.environment.newTruffleThreadBuilder(() -> {
                 try {
                     while (true) {
                         int status = ((Number) nativeAccess.call("builtin:runtime", "gp_reactor_embed_wait", "(UINT64):SINT32", new Object[] {handle})).intValue();
                         if (status == 0) return;
                         if (status < 0) throw new PhpError("libuv backend wait failed: " + status);
-                        caller.request.scheduler.notifyHost();
+                        dispatcher.notifyHost();
                     }
                 } catch (PhpError error) {
-                    caller.request.scheduler.enqueue(() -> { throw error; });
+                    dispatcher.enqueue(() -> { throw error; });
                 }
             }).build();
             poller.setName("graalphp-libuv-host-poller");

@@ -113,7 +113,6 @@ public final class Execution {
         public final Scheduler scheduler;
         public final boolean hosted;
         public final boolean nativeReactor;
-        private volatile LibuvReactor libuv;
         private final Map<String, WorkerPool> workers = new HashMap<>();
 
         public Request(PhpContext context, CodeRepository.Generation generation) {
@@ -122,18 +121,6 @@ public final class Execution {
             nativeReactor = "libuv".equals(context.environment.getEnvironment().get("GRAALPHP_REACTOR"));
             scheduler = new Scheduler(this);
             classes.putAll(context.builtinTypes());
-        }
-        public LibuvReactor libuv(Activation caller) {
-            if (libuv == null) libuv = new LibuvReactor(caller);
-            return libuv;
-        }
-        public void pollIO() { if (libuv != null) libuv.step(0); }
-        public void armHostIO() { if (libuv != null) libuv.armHost(); }
-        public void wakeIO() { if (libuv != null) libuv.wakeup(); }
-        public boolean awaitIO(long timeoutNanos) {
-            if (libuv == null) return false;
-            libuv.step(timeoutNanos);
-            return true;
         }
         public PhpValues.Location global(String name) { return variables.computeIfAbsent(name, key -> globals.variable(null)); }
         public WorkerPool workers(Activation caller) {
@@ -224,7 +211,7 @@ public final class Execution {
                 if (finalizerFailure != null) failure.addSuppressed(finalizerFailure);
                 throw failure;
             }
-            if (libuv != null) libuv.close();
+            scheduler.closeIO();
             for (var resource : List.copyOf(resources).reversed()) {
                 try { resource.close(); }
                 catch (Exception error) {

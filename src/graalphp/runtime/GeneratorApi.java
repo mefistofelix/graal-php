@@ -86,11 +86,11 @@ public final class GeneratorApi {
             this.skipFirst = skipFirst;
             if (!started) {
                 started = true;
-                request.scheduler.startGenerator(task);
+                task.dispatcher.startGenerator(task);
             } else if (delegate != null) {
                 driveDelegate();
             } else {
-                request.scheduler.resumeGenerator(task, takeResume());
+                task.dispatcher.resumeGenerator(task, takeResume());
             }
             return future;
         }
@@ -127,7 +127,7 @@ public final class GeneratorApi {
             if (skipFirst) {
                 skipFirst = false;
                 atYield = false;
-                request.scheduler.resumeGenerator(task, takeResume());
+                task.dispatcher.resumeGenerator(task, takeResume());
                 return;
             }
             settle(null);
@@ -189,7 +189,7 @@ public final class GeneratorApi {
                 PhpValues.drop(delegatedResume);
                 throw error;
             }
-            future.completion.whenComplete((value, error) -> request.scheduler.enqueue(() -> {
+            future.completion.whenComplete((value, error) -> task.dispatcher.enqueue(() -> {
                 if (error != null) {
                     Throwable cause = error;
                     while (cause instanceof java.util.concurrent.CompletionException && cause.getCause() != null)
@@ -228,7 +228,7 @@ public final class GeneratorApi {
             if (failure == null && finished != null && finished.completed)
                 returned = PhpValues.own(finished.returned().readOrNull());
             PhpValues.drop(owner);
-            request.scheduler.resumeGenerator(task, failure == null ? returned : new Failure(failure));
+            task.dispatcher.resumeGenerator(task, failure == null ? returned : new Failure(failure));
         }
 
         public void completed(Object result, PhpError failure) {
@@ -253,7 +253,7 @@ public final class GeneratorApi {
             if (pending != null) settle(forcedClose ? new PhpError("Generator closed") : failure);
             if (closed) {
                 storage.close();
-                request.scheduler.generatorClosed();
+                task.dispatcher.generatorClosed();
             }
         }
 
@@ -290,16 +290,16 @@ public final class GeneratorApi {
                 pending.completion.completeExceptionally(new PhpError("Generator closed"));
             pending = null;
             if (!started || completed) {
-                request.scheduler.closeGenerator(task);
+                task.dispatcher.closeGenerator(task);
                 storage.close();
             } else {
-                request.scheduler.closeGenerator(task);
+                task.dispatcher.closeGenerator(task);
             }
         }
     }
 
     public static Object create(Activation caller, ObjectModel.Invocation invocation, Argument[] arguments) {
-        var task = caller.request.scheduler.createGenerator(caller, invocation, arguments);
+        var task = caller.task.dispatcher.createGenerator(caller, invocation, arguments);
         var state = new State(caller.request, task);
         var object = new PhpValues.PhpObject(caller.request.heap, state);
         state.object = object;
