@@ -125,6 +125,11 @@ Compose e mobile restano in coda. Le misure SPL riguardano questo percorso.
   resurrezione, sospensione e shutdown ordinario.
   [Copertura e A/B](docs/validation/destructor-2026-11-19/README.md).
 
+- [x] Vincoli delle proprietà tipizzate sulle celle reference, con
+  coercizioni per sito di scrittura, rifiuto atomico del binding,
+  clone, unset, raccolta e sospensione.
+  [Copertura e A/B](docs/validation/typed-property-reference-2026-11-19/README.md).
+
 ## Prestazioni e memoria
 
 - [ ] **PERF-01 — Spiegare e ridurre il costo del p99.** L'A/B sullo stesso
@@ -157,8 +162,8 @@ Compose e mobile restano in coda. Le misure SPL riguardano questo percorso.
   eccezioni concorrenti e concatenate, WeakMap. Il nucleo dei distruttori
   e la resurrezione sono verificati con il corpus di lifetime.
   Il nucleo WeakReference, GC e receiver è descritto nel
-  [contratto](docs/object-lifetime.md). Restano
-  riferimenti a proprietà tipizzate e stringhe binarie nelle restanti coercizioni. Chiavi
+  [contratto](docs/object-lifetime.md). Restano readonly e property hooks
+  nelle location tipizzate e stringhe binarie nelle restanti coercizioni. Chiavi
   binarie e offset byte-oriented sono ora coperti dal blocco valori. Verificare
   ordine osservabile contro PHP 8.6 e invarianti dei cicli anche nelle sospensioni.
   Un miglior RSS della VM non chiude queste semantiche.

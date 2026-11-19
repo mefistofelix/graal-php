@@ -282,9 +282,12 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
     }
     @Operation
     public static final class Write {
-        @Specialization static Object run(PhpValues.Location location, Object value) {
+        @Specialization static Object run(VirtualFrame frame, PhpValues.Location location, Object value) {
+            return write(location, value, activation(frame).function.strictTypes());
+        }
+        static Object write(PhpValues.Location location, Object value, boolean strict) {
             try {
-                Object result = location.write(PhpValues.unwrap(value));
+                Object result = location.write(PhpValues.unwrap(value), strict);
                 if (result == PhpValues.unwrap(value)) return value;
                 PhpValues.drop(value);
                 return result;
@@ -303,7 +306,7 @@ public abstract class PhpRoot extends RootNode implements BytecodeRootNode {
             var location = source instanceof PhpValues.Location variable ? variable : PhpValues.referenceLocation(source);
             if (location == null) {
                 Diagnostics.origin(caller).notice("Only variables should be assigned by reference");
-                return Write.run(destination, source);
+                return Write.write(destination, source, caller.function.strictTypes());
             }
             try {
                 destination.bind(location);

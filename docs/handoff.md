@@ -31,6 +31,21 @@ Riprendere da VALUE-01 e ASYNC-01 nel [TODO](../TODO.md), poi pubblicazione
 LOCAL→SHARED. PHP Fiber è fuori scope. I blocchi datati sotto conservano la
 copertura osservata al momento di ciascuna consegna.
 
+## Riferimenti a proprietà tipizzate, 19 novembre
+
+La cella verifica i vincoli di ogni slot tipizzato che la condivide.
+La scrittura diretta applica la coercizione della proprietà prima dei
+vincoli condivisi. Il binding incompatibile lascia invariati entrambi
+gli alias. I vincoli seguono le proprietà statiche e i clone, e vengono
+rimossi su unset e raccolta dei proprietari. La modalità strict dipende
+dal sito della scrittura. Passano 118 programmi per modalità su Windows
+e Linux, incluse JVM, Native Image e Native Image con `--interpreter`.
+[Evidenze e prestazioni](validation/typed-property-reference-2026-11-19/README.md).
+
+Prossimo blocco ASYNC-01 per chiusura, cancellazione e drenaggio degli
+scope TrueAsync. Per VALUE-01 rimangono le scritture implicite dei builtin,
+readonly e property hooks, WeakMap e i percorsi di lifetime elencati sotto.
+
 ## Distruttori e resurrezione, 19 novembre
 
 Il runtime accoda i finalizzandi quando il grafo perde l'ultimo owner o
@@ -43,9 +58,7 @@ p99 Windows nella prova cURL con 1.000 coroutine sospese.
 [Evidenze](validation/destructor-2026-11-19/README.md).
 
 Restano aperti shutdown fatali e hosted, ordine completo tra finalizzazioni
-concorrenti e altri punti di rilascio. La prossima base del modello valori è
-applicare alla cella reference i vincoli delle proprietà tipizzate che la
-possiedono, con rimozione del vincolo su unset o scarto dell'oggetto.
+concorrenti e altri punti di rilascio.
 [Contratto di lifetime](object-lifetime.md).
 
 ## Riferimenti deboli e raccolta, 19 novembre

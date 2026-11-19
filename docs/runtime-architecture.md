@@ -67,8 +67,9 @@ Il return-by-reference trasporta una cella posseduta oltre la chiamata e
 la continuation. Il chiamante per valore ne legge il valore corrente e
 rilascia la cella secondo le regole COW. Gli argomenti valutati prima di una
 sospensione possono avere sia uno snapshot sia una cella per il binding.
-Il prossimo lavoro sul percorso reference riguarda le regole delle proprietà
-tipizzate e i casi di modifica indiretta sugli offset restituiti per valore.
+La cella condivisa verifica i tipi dichiarati dagli slot che la possiedono,
+con coercizione per sito di scrittura. Il prossimo lavoro riguarda gli hook e
+i casi di modifica indiretta sugli offset restituiti per valore.
 [Contratto ArrayAccess](arrayaccess.md).
 
 Il collector accoda i distruttori mantenendo una radice temporanea. Le
@@ -80,9 +81,9 @@ Restano da verificare gli altri errori e punti semantici di rilascio.
 
 ## Sequenza di integrazione
 
-1. Usare questa base per completare i riferimenti alle proprietà tipizzate,
-   distruttori e policy degli errori async. Sono prerequisiti anche per le strutture
-   condivise e i callback nativi persistenti.
+1. Usare questa base per completare lifetime e policy degli errori async.
+   Distruttori, reference e gestione degli errori sono prerequisiti anche per
+   le strutture condivise e i callback nativi persistenti.
 2. Validare LOCAL→SHARED con il collector, poi pubblicare lo spawn sullo stesso
    heap e permettere i grafi completi nel ThreadChannel.
 3. Estendere modello CData, binding delle librerie e caricamento dinamico con

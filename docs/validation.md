@@ -1,5 +1,8 @@
 # Verifica — 26 settembre 2026
 
+[Riferimenti a proprietà tipizzate](validation/typed-property-reference-2026-11-19/README.md)
+verifica l'ownership dei vincoli e misura il percorso CLI già disponibile.
+
 [Distruttori e resurrezione](validation/destructor-2026-11-19/README.md)
 confronta semantica PHP e costo del lowering su cURL e CLI.
 

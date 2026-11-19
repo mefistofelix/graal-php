@@ -58,13 +58,32 @@ oggetti ancora accessibili. Una coda di pari livello viene differita
 durante il callback in corso. Le nuove finalizzazioni provocate dal
 callback possono essere eseguite prima di riprendere quella coda.
 
+## Riferimenti a proprietà tipizzate
+
+Una cella reference registra gli slot tipizzati che la condividono. Scrivere
+tramite qualsiasi alias verifica tutti i vincoli con lo `strict_types`
+della scrittura. La scrittura diretta sulla proprietà applica prima il tipo
+dichiarato del suo slot. Se le coercizioni per riferimento danno risultati
+incompatibili, la cella conserva il valore precedente. Anche il binding
+verifica il valore e i vincoli degli alias esistenti prima di modificare
+gli slot. La proprietà non inizializzata passa a `null` se il suo tipo lo
+ammette, altrimenti l'accesso per riferimento solleva un errore.
+
+La registrazione viene rimossa su unset, cambio di cella o rilascio
+dell'oggetto, anche durante una raccolta ciclica. Il clone che condivide
+la cella conserva un vincolo proprio. Queste registrazioni non sono archi
+forti del grafo PHP. I casi differenziali includono proprietà statiche,
+ritorni per riferimento e argomenti che sopravvivono a una sospensione.
+[Evidenze](validation/typed-property-reference-2026-11-19/README.md).
+
 ## Limiti
 
 Il contratto copre gli oggetti gestiti dal grafo di ownership della richiesta.
 Le risorse e gli oggetti interop fuori dal grafo, WeakMap e le API di
 statistica del collector restano aperti. Il lifetime nei casi ancora
-incompleti va verificato anche con argomenti composti, riferimenti a
-proprietà tipizzate e riassegnazione del ricevitore durante un `??=`.
+incompleti va verificato anche con argomenti composti e riassegnazione del
+ricevitore durante un `??=`. Restano da coprire le interazioni con readonly,
+property hooks e le scritture implicite dei builtin.
 
 Restano aperti tutti i percorsi di shutdown fatale e hosted, le eccezioni
 multiple concatenate, il punto preciso di distruzione in tutte le

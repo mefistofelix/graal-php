@@ -241,6 +241,11 @@ public final class PhpValues {
 
         @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
         public Object write(Object value) {
+            return write(value, origin != null && origin.site().strictTypes());
+        }
+
+        @com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+        public Object write(Object value, boolean strict) {
             if (readonly) throw new PhpError("Error", "Cannot modify readonly property");
             validateValue(value);
             if (stringOffset()) {
@@ -255,7 +260,7 @@ public final class PhpValues {
             retain(value);
             try {
                 var slot = resolve(true);
-                slot.set(value, origin);
+                slot.set(value, origin, strict);
                 return slot.read();
             } finally {
                 release(value);
@@ -301,7 +306,7 @@ public final class PhpValues {
 
         public void bind(Reference reference) {
             if (stringOffset()) throw new PhpError("Error", "Cannot create references to/from string offsets");
-            resolve(true).bind(reference.cell());
+            resolve(true).bind(reference.cell(), origin);
         }
 
         public Reference reference() {
@@ -589,10 +594,12 @@ public final class PhpValues {
                 var cloned = slot.copyForArray();
                 cloned.defined = slot.defined;
                 cloned.type = slot.type;
+                cloned.propertyLabel = slot.propertyLabel;
                 cloned.readonlyLabel = slot.readonlyLabel;
                 cloned.writeError = slot.writeError;
                 cloned.declared = slot.declared;
                 copy.attach(entry.getKey(), cloned);
+                cloned.registerTypeSource();
             }
             copy.sealedType = sealedType;
             return copy;
@@ -605,10 +612,15 @@ public final class PhpValues {
             fieldOrder.add(new FieldBucket(name, slot));
         }
         public void fieldType(String name, String type) {
+            fieldType(name, type, name);
+        }
+        public void fieldType(String name, String type, String propertyLabel) {
             Slot slot = fields.get(name);
             if (slot == null) { slot = new Slot(heap); attach(name, slot); }
             slot.type = type;
+            slot.propertyLabel = propertyLabel;
             slot.declared = true;
+            slot.registerTypeSource();
         }
         public List<String> fieldNames() { return List.copyOf(fields.keySet()); }
         public FieldCursor iterateFields() { return new FieldCursor(this); }
@@ -740,6 +752,7 @@ public final class PhpValues {
 
     private static final class Cell extends HeapNode {
         Object value;
+        private java.util.LinkedHashSet<Slot> typeSources;
 
         Cell(Heap heap, Object value) {
             super(heap);
@@ -748,10 +761,47 @@ public final class PhpValues {
             heap.liveCells++;
         }
 
-        void set(Object replacement) {
+        void set(Object replacement) { set(replacement, null, false); }
+
+        void set(Object replacement, Diagnostics.Origin origin, boolean strict) {
+            replace(typeSources == null ? replacement : constrain(replacement, origin, strict));
+        }
+
+        private void replace(Object replacement) {
             retain(replacement);
             release(value);
             value = replacement;
+        }
+
+        private Object constrain(Object incoming, Diagnostics.Origin origin, boolean strict) {
+            Slot first = null;
+            Object converted = incoming;
+            for (var source : typeSources) {
+                Object candidate;
+                try { candidate = TypeRelations.check(incoming, source.type, strict, origin); }
+                catch (PhpError error) {
+                    throw new PhpError("TypeError", "Cannot assign " + EnumApi.valueType(incoming)
+                            + " to reference held by property " + source.propertyLabel + " of type " + source.type);
+                }
+                if (first == null) {
+                    first = source; converted = candidate;
+                } else if (!java.util.Objects.equals(converted, candidate)) {
+                    throw new PhpError("TypeError", "Cannot assign " + EnumApi.valueType(incoming)
+                            + " to reference held by property " + first.propertyLabel + " of type " + first.type
+                            + " and property " + source.propertyLabel + " of type " + source.type
+                            + ", as this would result in an inconsistent type conversion");
+                }
+            }
+            return converted;
+        }
+
+        void addSource(Slot source) {
+            if (typeSources == null) typeSources = new java.util.LinkedHashSet<>();
+            typeSources.add(source);
+        }
+
+        void removeSource(Slot source) {
+            if (typeSources != null && typeSources.remove(source) && typeSources.isEmpty()) typeSources = null;
         }
 
         @Override
@@ -762,6 +812,7 @@ public final class PhpValues {
         @Override
         void discard() {
             value = null;
+            typeSources = null;
             heap.liveCells--;
         }
     }
@@ -772,6 +823,7 @@ public final class PhpValues {
         Object content;
         boolean defined;
         String type;
+        String propertyLabel;
         String readonlyLabel;
         String writeError;
         PhpObject container;
@@ -789,14 +841,17 @@ public final class PhpValues {
 
         void set(Object value) { set(value, null); }
         void set(Object value, Diagnostics.Origin origin) {
-            if (type != null) value = TypeRelations.check(value, type, origin != null && origin.site().strictTypes(), origin);
+            set(value, origin, origin != null && origin.site().strictTypes());
+        }
+        void set(Object value, Diagnostics.Origin origin, boolean strict) {
+            if (type != null) value = TypeRelations.check(value, type, strict, origin);
             var node = managed(value);
             if (node != null && node.heap != heap) {
                 throw new IllegalArgumentException("PHP containers must belong to the same request heap");
             }
             defined = true;
             if (content instanceof Cell cell) {
-                cell.set(value);
+                cell.set(value, origin, strict);
                 return;
             }
             retain(value);
@@ -805,20 +860,41 @@ public final class PhpValues {
         }
 
         Cell reference() {
-            if (type != null) throw new PhpError("References to typed properties are not implemented");
+            if (!defined && type != null && !TypeRelations.accepts(null, type))
+                throw new PhpError("Error", "Cannot access uninitialized non-nullable property " + propertyLabel + " by reference");
             defined = true;
             if (content instanceof Cell cell) return cell;
             // Transfer the owned value to the cell; do not acquire it a second time.
             var cell = new Cell(heap, content);
             content = cell;
+            registerTypeSource();
             return cell;
         }
 
-        void bind(Cell cell) {
+        void bind(Cell cell) { bind(cell, null); }
+        void bind(Cell cell, Diagnostics.Origin origin) {
+            if (cell == content) return;
+            if (cell.heap != heap) throw new IllegalArgumentException("PHP references must belong to the same request heap");
+            if (type != null) {
+                Object converted = TypeRelations.check(cell.value, type, origin != null && origin.site().strictTypes(), origin);
+                if (cell.typeSources != null) for (var source : cell.typeSources) {
+                    if (!TypeRelations.accepts(converted, source.type))
+                        throw new PhpError("TypeError", "Reference with value of type " + EnumApi.valueType(cell.value)
+                                + " held by property " + source.propertyLabel + " of type " + source.type
+                                + " is not compatible with property " + propertyLabel + " of type " + type);
+                }
+                if (converted != cell.value) cell.replace(converted);
+            }
             defined = true;
             cell.owners++;
+            if (type != null && content instanceof Cell previous) previous.removeSource(this);
             release(content);
             content = cell;
+            registerTypeSource();
+        }
+
+        void registerTypeSource() {
+            if (type != null && content instanceof Cell cell) cell.addSource(this);
         }
 
         Slot copyForArray() {
@@ -839,6 +915,7 @@ public final class PhpValues {
         }
 
         void forget() {
+            if (type != null && content instanceof Cell cell) cell.removeSource(this);
             content = null;
             defined = false;
         }

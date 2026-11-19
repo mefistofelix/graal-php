@@ -189,7 +189,8 @@ public final class ObjectModel {
             try { location.set(property.type() == null ? PhpValues.unwrap(value) : checkType(PhpValues.unwrap(value), TypeRelations.contextual(property.type(), request, owner, owner))); }
             finally { PhpValues.drop(value); }
         }
-        object.fieldType(storageName(owner, property), TypeRelations.contextual(property.type(), request, owner, owner));
+        object.fieldType(storageName(owner, property), TypeRelations.contextual(property.type(), request, owner, owner),
+                owner + "::$" + property.name());
     }
 
     private static String storageName(String owner, Ir.PropertyDeclaration property) {

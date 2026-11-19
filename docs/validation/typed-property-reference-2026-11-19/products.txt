@@ -1,0 +1,6 @@
+SHA-256                                                               Bytes  File
+6421b41f4d6d2c7538eee45cdea54cf9bd46540d0de86321c150ddf4236e13f9    93958144  graalphp.exe
+e368d43ad4ae81870ed130f78b85136e36e09221d074670e806289e1c0e35253    96733992  graalphp-linux-x64
+c695ca2f15831250f64bd5b761d76fa69a94ec586ec3174ae15d458549596ff2      958390  graalphp.jar
+47de7dd8b4b067a76a3d43db0bfabb0993c925e42d6f10606620a90cffd22723    94015488  typed-property-baseline.exe
+53228abd2752811546eb2b00551104c5de9ded0aad0949677a15190a6dc07db2    96668456  typed-property-baseline-linux-x64
